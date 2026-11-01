@@ -2,7 +2,7 @@
 The racing adapters: Forza, the Assetto Corsa games, the rally games, BeamNG.
 
 Packets and shared-memory pages are built here from the layouts the Race tab's
-decoders were written against (`gamecapture/heat3d_capture/telemetry`), sent the
+decoders were written against (3DHeat GameCapture, copied into `heat3d_watch/decoders`), sent the
 way the game sends them - UDP to localhost, or a named mapping - and the
 session folder the adapter leaves behind is read back.
 """
@@ -27,7 +27,7 @@ from heat3d_watch.adapters.base import Context
 from heat3d_watch.config import Settings
 from heat3d_watch.session import read_rows
 
-from heat3d_capture.telemetry import forza, kunos, rally
+from heat3d_watch.decoders import forza, kunos, rally
 
 windows = pytest.mark.skipif(sys.platform != "win32", reason="named shared memory is Windows only")
 
@@ -415,7 +415,7 @@ def test_rbr_finds_its_up_axis_from_the_stage(tmp_path):
 
 
 def beamng_packet(t, pos, vel) -> bytes:
-    from heat3d_capture.telemetry import beamng
+    from heat3d_watch.decoders import beamng
 
     floats = [t, *pos, *vel, 0.0, -1.0, 0.0, 0.0, 0.0, 1.0, 0.0] + [0.5, 0.0, 0.0, 0.0, 0.0, 3000.0, 3.0, 0.0, 0.0] + [0.0] * 16
     assert len(floats) == beamng.FLOATS
@@ -501,7 +501,7 @@ def test_forza_on_real_fh_companion_laps_replayed_as_data_out(tmp_path):
     into Data Out packets and driven through the adapter: the distance it adds
     up has to be the lap's length.
     """
-    from heat3d_capture.telemetry.fhcompanion import read_lap
+    from heat3d_watch.decoders.fhcompanion import read_lap
 
     laps = []
     for path in _fh_laps():

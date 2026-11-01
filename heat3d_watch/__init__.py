@@ -16,6 +16,6 @@ from pathlib import Path
 
 #: The tools' version: the repository's VERSION file, which the updater compares with releases.
 try:
-    __version__ = (Path(__file__).resolve().parents[2] / "VERSION").read_text(encoding="utf-8").strip()
+    __version__ = (Path(__file__).resolve().parents[1] / "VERSION").read_text(encoding="utf-8").strip()
 except OSError:
     __version__ = "0"

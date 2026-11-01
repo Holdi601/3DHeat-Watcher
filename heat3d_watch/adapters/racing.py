@@ -5,7 +5,7 @@ and BeamNG, recorded as routes, laps and stages.
 Every game here publishes its telemetry on purpose, for dashboards and motion
 rigs; nothing is injected and nothing the game does not hand out is read. The
 decoding is not written twice: it is gamecapture's lap recorders in
-`gamecapture/heat3d_capture/telemetry` (tested there against packets built from
+3DHeat GameCapture's `heat3d_capture/telemetry`, copied into `heat3d_watch/decoders` (tested there against packets built from
 the published layouts), and this module turns their frames into the watcher's
 rows - the car's position a few times a second with its speed, gear and pedals,
 an event per lap or stage, and the numbers a driver keeps: laps, best lap,
@@ -70,7 +70,7 @@ from .base import Adapter, Context
 log = logging.getLogger("heat3d_watch")
 
 try:  # The recorders live beside this package; __main__ and the tests put them on the path.
-    from heat3d_capture.telemetry import beamng, forza, fulllap, kunos, rally
+    from ..decoders import beamng, forza, fulllap, kunos, rally
 except ImportError as e:  # pragma: no cover - only without the repository around it
     beamng = forza = fulllap = kunos = rally = None  # type: ignore[assignment]
     _IMPORT_ERROR: str | None = f"gamecapture's lap recorders are not importable: {e}"
@@ -1118,7 +1118,7 @@ BEAMNG = [
         exes=("BeamNG.drive.x64.exe", "BeamNG.drive.exe"),
         kind="telemetry",
         multiplayer=False,
-        source="UDP 127.0.0.1:4460 from the heat3d protocol mod (gamecapture/mods/beamng/heat3d)",
+        source="UDP 127.0.0.1:4460 from the heat3d protocol mod (mods/beamng/heat3d in this repository)",
         records=(
             "own car's position (world, m, turned to Y up) at 10 Hz with speed, gear, throttle, brake",
             "drive start, resets (respawn), laps past where the drive began",

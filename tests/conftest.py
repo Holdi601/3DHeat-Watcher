@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-ROOT = Path(__file__).resolve().parents[2]
-for p in (ROOT, ROOT / "watcher", ROOT / "gamecapture", ROOT / "cs2"):
+ROOT = Path(__file__).resolve().parents[1]
+for p in (ROOT,):
     if str(p) not in sys.path:
         sys.path.append(str(p))
 

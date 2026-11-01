@@ -39,6 +39,15 @@ class Settings:
     replays: bool = True
     #: Extra folders to look for replays in, by adapter id.
     replay_folders: dict[str, list[str]] = field(default_factory=dict)
+    #: Your Riot ID ("Name#TAG"), so a League of Legends replay's line of yours
+    #: becomes your statistics. Empty: every player's line is kept, none is yours.
+    riot_id: str = ""
+    #: A Riot developer API key of your own (developer.riotgames.com), to fetch
+    #: each replayed match's official timeline - every player's position each
+    #: minute and every kill where it happened. Empty: nothing is fetched.
+    riot_api_key: str = ""
+    #: Your League of Legends server's platform id: EUW1, EUN1, NA1, KR, ...
+    riot_platform: str = "EUW1"
 
     @property
     def data_dir(self) -> Path:

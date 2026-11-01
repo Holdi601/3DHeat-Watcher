@@ -18,7 +18,7 @@ Counter-Strike 2
 CS2 saves the demos a player downloads from the match history (watch tab) to
 `<CS2>/game/csgo/replays/` and ones recorded with the `record` console command
 to `<CS2>/game/csgo/`. Each is converted with this repository's own CS2
-converter (`cs2/heat3d_cs2`: every player's position, look direction, health and
+converter (3DHeat CS2, github.com/Holdi601/3DHeat-CS2: every player's position, look direction, health and
 money every eighth tick; kills, deaths, damage, grenades, plants and defuses
 where they happened; rounds, score, economy) into the session folder, as the
 `<map>/<match>.parquet` table and `<match>.match.json` summary the viewer's heat
@@ -49,8 +49,27 @@ log = logging.getLogger("heat3d_watch")
 
 #: How long a new file must keep its size before it counts as written.
 SETTLE_SECONDS = 10.0
-#: The repository root: the converters of other games live beside the watcher.
-ROOT = Path(__file__).resolve().parents[3]
+#: The watcher's own folder: tools it works with are looked for beside it.
+ROOT = Path(__file__).resolve().parents[2]
+
+
+def cs2_tool() -> Path | None:
+    """
+    The folder of 3DHeat CS2 (github.com/Holdi601/3DHeat-CS2), the converter CS2
+    demos go through: `HEAT3D_CS2` when set, else a clone beside the watcher's
+    (`3DHeat-CS2` or `cs2`), else wherever Python can import it from.
+    """
+    import importlib.util
+
+    candidates = [Path(os.environ["HEAT3D_CS2"])] if os.environ.get("HEAT3D_CS2") else []
+    candidates += [ROOT.parent / "3DHeat-CS2", ROOT.parent / "cs2"]
+    for c in candidates:
+        if (c / "heat3d_cs2" / "__init__.py").is_file():
+            return c
+    spec = importlib.util.find_spec("heat3d_cs2")
+    if spec is not None and spec.origin:
+        return Path(spec.origin).resolve().parents[1]
+    return None
 
 
 def steam_root() -> Path | None:
@@ -225,9 +244,9 @@ class Cs2Demos(ReplayAdapter):
         try:
             import demoparser2  # noqa: F401
         except ImportError:
-            return "pip install -r ../cs2/requirements.txt"
-        if not (ROOT / "cs2" / "heat3d_cs2").is_dir():
-            return "the cs2 converter is not next to the watcher"
+            return "install 3DHeat CS2 and its requirements (github.com/Holdi601/3DHeat-CS2)"
+        if cs2_tool() is None:
+            return "3DHeat CS2 not found: clone github.com/Holdi601/3DHeat-CS2 beside the watcher, or set HEAT3D_CS2"
         return None
 
     def convert(self, path: Path, ctx: Context) -> None:
@@ -236,7 +255,7 @@ class Cs2Demos(ReplayAdapter):
         try:
             out = subprocess.run(
                 [sys.executable, "-m", "heat3d_cs2", "demos", str(path), "-o", str(session.folder), "--jobs", "1"],
-                cwd=ROOT / "cs2",
+                cwd=cs2_tool(),
                 capture_output=True,
                 text=True,
                 timeout=3600,
