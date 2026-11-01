@@ -172,8 +172,13 @@ def test_forza_breaks_the_route_at_a_fast_travel(tmp_path):
         a.feed(forza_packet(pos=(i * 0.5, 0, 0), vel=(30, 0, 0)))
     a.feed(forza_packet(pos=(5000, 0, 3000), vel=(30, 0, 0)))
     a.stop(ctx)
-    (jump,) = events(only_session(ctx), "teleport")
-    assert jump["x"] == 5000 and jump["metres"] > 5000
+    folder = only_session(ctx)
+    (jump,) = events(folder, "teleport")
+    # The route ends where the car was and the next starts where it arrived, for the viewer's line heat.
+    assert jump["x"] == 14.5 and jump["to_x"] == 5000 and jump["metres"] > 5000
+    rows = read_rows(folder)
+    after = rows[rows.index(jump) + 1]
+    assert after["event"] == "spawn" and (after["x"], after["z"]) == (5000, 3000)
 
 
 def test_forza_leaves_a_port_held_by_another_app_alone(tmp_path, monkeypatch):
@@ -434,9 +439,13 @@ def test_beamng_records_a_reset_as_a_respawn(tmp_path):
     folder = only_session(ctx)
     names = [r["event"] for r in read_rows(folder) if r["event"] != "position"]
     assert names[0] == "session_start" and "respawn" in names and names[-1] == "session_end"
-    # BeamNG's -Y forwards turned into the viewer's +Z: (x, z, -y); the reset jumps back from there.
+    # BeamNG's -Y forwards turned into the viewer's +Z: (x, z, -y); the reset jumps back from there,
+    # the route ending where the car was and the reset starting the next where it is.
     (jump,) = events(folder, "teleport")
-    assert jump["from_z"] == pytest.approx(98.0) and jump["from_y"] == 0 and jump["z"] == 0
+    assert jump["z"] == pytest.approx(98.0) and jump["y"] == 0 and jump["to_z"] == 0
+    assert names[names.index("teleport") + 1] == "respawn" and "spawn" not in names
+    (respawn,) = events(folder, "respawn")
+    assert respawn["z"] == 0
     assert meta(folder)["stats"]["bad_packets"] == 1
 
 

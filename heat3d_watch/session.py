@@ -15,7 +15,9 @@ Rows carry the same columns in every game:
     ms       wall-clock time, Unix milliseconds
     event    what happened: "position", "death", "kill", "spawn", ...
     x y z    where, in the game's own units and axes (see `axes` in meta.json)
-    player   who: a name, an id, "me" for the person playing
+    player   who: a name, an id, "me" for the person playing (where every player
+             goes by name, the player's own rows carry `own_car` 1, or the
+             name is meta.json's `player`)
     team     their side, when the game says
     session  the match, round or life it belongs to, when the game says
 
@@ -48,7 +50,10 @@ class Axes:
     flip_x: bool = False
     flip_y: bool = False
     flip_z: bool = False
-    #: World units per metre, so the viewer can size things; 1 for metres.
+    #: The viewer's unit scale: it multiplies every position by this when it loads
+    #: the table (0.01 would turn centimetres into metres). 1 keeps the game's own
+    #: units, which every adapter does: a level exported from the game is in the
+    #: same units, so the rows land on it. `units` says what one unit is.
     scale: float = 1.0
     #: A short note on the units, said in meta.json ("metres", "inches", "light years").
     units: str = "metres"

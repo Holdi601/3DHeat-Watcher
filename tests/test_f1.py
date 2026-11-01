@@ -184,7 +184,12 @@ def test_a_race_every_car_its_laps_and_its_events(tmp_path, fmt):
     assert by("collision")[0]["player"] == "Rival"
     (finish,) = by("finish")
     assert finish["player"] == "Player One" and finish["race_position"] == 1
-    assert by("teleport")[0]["reason"] == "flashback"
+    (flashback,) = by("teleport")
+    assert flashback["reason"] == "flashback" and flashback["own_car"] == 1
+    # The route ends where the flashback was called; the next starts where it took the car.
+    arrival = rows[rows.index(flashback) + 1]
+    assert arrival["event"] == "spawn" and arrival["reason"] == "flashback" and arrival["own_car"] == 1
+    assert flashback["x"] < arrival["x"] == flashback["to_x"]
     assert by("fastest_lap")[0]["lap_time"] == 90.5
     assert by("chequered_flag") and by("session_start") and by("session_end")
     assert not by("butn") and all(r.get("code") != "BUTN" for r in rows)

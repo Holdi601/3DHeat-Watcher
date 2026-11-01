@@ -81,7 +81,8 @@ def test_a_league_replay_becomes_a_session_and_the_timeline_gives_positions(tmp_
                 {"timestamp": 60000, "participantFrames": {"1": {"position": {"x": 500, "y": 700}, "level": 2},
                                                             "2": {"position": {"x": 14000, "y": 14200}}},
                  "events": [{"type": "CHAMPION_KILL", "timestamp": 61000, "position": {"x": 7000, "y": 7100},
-                             "killerId": 1, "victimId": 2}]},
+                             "killerId": 1, "victimId": 2},
+                            {"type": "GAME_END", "timestamp": 61500, "realTimestamp": 1_700_000_061_500}]},
             ],
         }
     }
@@ -106,6 +107,12 @@ def test_a_league_replay_becomes_a_session_and_the_timeline_gives_positions(tmp_
     kill = next(r for r in t if r["event"] == "kill")
     assert (kill["x"], kill["z"], kill["player"], kill["victim"]) == (7000.0, 7100.0, "Someone#EUW", "Other#EUW")
     assert sum(1 for r in t if r["event"] == "position") == 2
+    # The wall clock from the timeline's realTimestamp, and the player's rows named in meta.json.
+    from datetime import datetime
+
+    assert kill["ms"] == 1_700_000_061_000
+    assert meta["started"] == datetime.fromtimestamp(1_700_000_000).isoformat(timespec="seconds")
+    assert meta["player"] == "Someone#EUW"
 
 
 def test_without_a_key_nothing_is_fetched(tmp_path):

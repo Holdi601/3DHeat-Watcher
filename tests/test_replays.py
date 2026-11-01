@@ -175,3 +175,25 @@ def test_an_osu_replay_becomes_a_session_with_its_path(tmp_path):
     assert t.column("x").to_pylist() == [10.0, 30.0, 50.0]
     assert t.column("z").to_pylist() == [20.0, 40.0, 60.0]
     assert t.column("time").to_pylist() == [0.0, 0.016, 0.032]
+
+
+def test_the_replays_command_converts_what_is_already_on_disk_once(tmp_path, capsys):
+    from heat3d_watch import cli
+    from heat3d_watch.adapters.replays import ADAPTERS
+
+    a = next(x for x in ADAPTERS if x.id == "osu-replays")
+    folder = tmp_path / "old replays"
+    folder.mkdir()
+    for name in ("first.osr", "second.osr"):
+        (folder / name).write_bytes(_osr("0|10|20|0,16|30|40|1,16|50|60|0"))
+    (folder / "broken.osr").write_bytes(b"not a replay")
+    data = Path(os.environ["HEAT3D_WATCH_HOME"])  # the settings' default data folder in this test
+    assert cli.main(["replays", "osu-replays", str(folder)]) == 0
+    assert "converted 2 replay(s)" in capsys.readouterr().out
+    assert len(list((data / "sessions").glob("*/*/heat.parquet"))) == 2
+    # Noted as seen: the folder watch does not convert them a second time.
+    seen = json.loads((data / "state" / "replays-osu-replays.json").read_text(encoding="utf-8"))
+    assert {Path(k).name for k in seen} == {"first.osr", "second.osr"}
+    assert cli.main(["replays", "cs2-gsi"]) == 2  # not a replay adapter
+    assert cli.main(["replays", "osu-replays", str(tmp_path / "nowhere")]) == 2
+    assert a.convert_existing(Context(Settings(data=str(data)), data), folder / "none") == 0

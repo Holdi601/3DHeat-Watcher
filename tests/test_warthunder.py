@@ -104,8 +104,9 @@ def test_tracker_keeps_ids():
 def test_warthunder_battle(tmp_path):
     game = FakeGame()
     data = tmp_path / "data"
-    ctx = Context(Settings(data=str(data)), data)
-    a = dataclasses.replace(wt.ADAPTERS[0], url=game.url, player_name="Me", map_every=0, hud_every=0,
+    # The player's name is a setting: the kill feed's lines about it become kills and deaths.
+    ctx = Context(Settings(data=str(data), player_names={"warthunder-webmap": "Me"}), data)
+    a = dataclasses.replace(wt.ADAPTERS[0], url=game.url, map_every=0, hud_every=0,
                             indicators_every=0, gone_after=0, vehicle_grace=0)
     try:
         a.start(ctx)

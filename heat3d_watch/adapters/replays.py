@@ -221,13 +221,39 @@ class ReplayAdapter(Adapter):
             self._worker.join(5)
 
     def convert_existing(self, ctx: Context, folder: Path | None = None) -> int:
-        """Convert every replay in the folders (or `folder`) now, in this thread. Returns how many."""
+        """
+        Convert every replay in the folders (or `folder`) now, in this thread -
+        `python -m heat3d_watch replays <adapter> [folder]`. Each one converted
+        is noted as seen, so the folder watch does not convert it a second
+        time. Returns how many were converted.
+        """
         files = (
-            [p for pat in self.patterns for p in folder.glob(pat)] if folder is not None else self._files(ctx)
+            [p for pat in self.patterns for p in folder.glob(pat) if p.is_file()]
+            if folder is not None else self._files(ctx)
         )
-        for f in sorted(files):
-            self.convert(f, ctx)
-        return len(files)
+        try:
+            seen = json.loads(self._state_path(ctx).read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            seen = {}
+        if not self._state_path(ctx).exists():
+            # The folder watch's first look, taken now: what is there counts as noted, as in `start`.
+            for f in self._files(ctx):
+                st = f.stat()
+                seen[str(f)] = [st.st_size, st.st_mtime]
+        done = 0
+        for f in sorted(set(files)):
+            try:
+                log.info("%s: converting %s", self.id, f.name)
+                self.convert(f, ctx)
+            except Exception:  # noqa: BLE001 - one bad replay does not stop the next
+                log.exception("%s: could not convert %s", self.id, f.name)
+                continue
+            st = f.stat()
+            seen[str(f)] = [st.st_size, st.st_mtime]
+            done += 1
+        self._seen = seen
+        self._save(ctx)
+        return done
 
 
 @dataclass
@@ -446,7 +472,8 @@ ADAPTERS = [
             "rounds, score, economy; the signed-in player's scoreboard line as statistics",
         ),
         enable="download a match's demo in CS2 (Watch > Your Matches), or record one with the console's `record`",
-        axes=Axes(up="z", flip_y=True, units="inches (Source units)", scale=39.37),
+        # As the converter's own tables say in their footer, and the CS2 game-state adapter: Source units, scale 1.
+        axes=Axes(up="z", flip_y=True, units="inches (Source units)"),
         verified="the converter is tested on 165 real tournament demos; the folder watch and statistics by tests",
         multiplayer=True,
     ),

@@ -165,7 +165,8 @@ class RocketLeagueStats(Adapter):
     install: str = ""
     #: The rate `setup` sets when the API is off.
     packet_rate: int = 30
-    #: The player's own name in matches. Empty: the player the game's camera follows outside replays.
+    #: The player's own name in matches, when the settings' `player_names` has none for this
+    #: adapter. Empty: the player the game's camera follows outside replays.
     player_name: str = ""
     #: Seconds between connection attempts while the game does not answer.
     retry: float = 2.0
@@ -174,6 +175,8 @@ class RocketLeagueStats(Adapter):
     _decoder: Any = None
     _buf: str = ""
     _session: Session | None = None
+    #: The name from the settings, read at start.
+    _name: str = ""
     _guid: str | None = None
     _targets: Counter = field(default_factory=Counter)
     _players: dict[str, dict[str, Any]] = field(default_factory=dict)
@@ -245,6 +248,7 @@ class RocketLeagueStats(Adapter):
     # -- the connection ----------------------------------------------------------
 
     def start(self, ctx: Context) -> None:
+        self._name = str(ctx.settings.player_names.get(self.id) or "").strip()
         if not self.port:
             root = self.find_install(ctx)
             try:
@@ -352,8 +356,9 @@ class RocketLeagueStats(Adapter):
         self._session = None
 
     def me(self) -> str | None:
-        if self.player_name:
-            return self.player_name
+        name = self._name or self.player_name.strip()
+        if name:
+            return name
         if self._targets:
             return self._targets.most_common(1)[0][0]
         return None
@@ -475,6 +480,8 @@ ADAPTERS = [
             "stat feed (demolitions, saves, shots, epic saves, ...), kickoffs, replays, match start and end, winner",
             "own goals, assists, saves, shots, demos, touches, score and the team scores, from UpdateState",
             "every player's final line at match end",
+            "your own rows as `me`: the player named in the settings (`config --set "
+            "player_names.rocketleague-stats=<name>`), else the one the game's camera follows outside replays",
             "no car positions: the API has none",
         ),
         enable=r"`python -m heat3d_watch setup rocketleague-stats --apply` (sets PacketSendRate=30), "

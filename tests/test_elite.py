@@ -115,6 +115,8 @@ def test_the_adapter_records_a_sitting(tmp_path):
     assert st["credits_earned"] == 200 + 3000 + 500  # the bounty counts when redeemed
     assert st["bodies_scanned"] == 1 and st["landings"] == 1 and st["bad_lines"] == 1
     assert meta["axes"]["up"] == "y" and meta["axes"]["flip_z"] is True
+    # The journal is the commander's own: their rows are the player's, for a highlight to find.
+    assert meta["player"] == "Test Pilot"
 
     rows = read_rows(session)
     ev = [r["event"] for r in rows]

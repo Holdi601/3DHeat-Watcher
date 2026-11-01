@@ -29,8 +29,9 @@ change them, so the hue decides, not the exact value. The game names nobody on
 the map and gives objects no ids: other objects get ids here by following them
 from poll to poll (nearest of the same type and icon), which may swap two
 aircraft of one type that pass close by. The player's own name is not in the
-API either: give it (`player_name`) and kill-feed lines about the player become
-kills and deaths; without it they are recorded as the kill feed.
+API either: give it in the settings (`config --set
+player_names.warthunder-webmap=<your name>`) and kill-feed lines about the
+player become kills and deaths; without it they are recorded as the kill feed.
 
 Sources: the game's own page at http://127.0.0.1:8111 and its JSON; field facts
 as documented by the JoyPro 2 project (docs/telemetry-recording.md; GPL, used for
@@ -198,7 +199,8 @@ class Tracker:
 class WarThunder(Adapter):
     #: The game's web map. Only 127.0.0.1 is ever asked.
     url: str = "http://127.0.0.1:8111"
-    #: The player's name as the kill feed writes it. Empty: kill-feed lines stay the kill feed.
+    #: The player's name as the kill feed writes it, when the settings' `player_names` has
+    #: none for this adapter. Empty: kill-feed lines stay the kill feed.
     player_name: str = ""
     map_every: float = 10.0
     hud_every: float = 1.0
@@ -208,6 +210,8 @@ class WarThunder(Adapter):
     #: Seconds the own vehicle may be missing from the map before it counts as gone.
     vehicle_grace: float = 2.0
     _session: Session | None = None
+    #: The name from the settings, read at start.
+    _name: str = ""
     _map: MapInfo | None = None
     _next_map: float = 0.0
     _next_hud: float = 0.0
@@ -248,6 +252,7 @@ class WarThunder(Adapter):
     # -- lifecycle ---------------------------------------------------------------
 
     def start(self, ctx: Context) -> None:
+        self._name = str(ctx.settings.player_names.get(self.id) or "").strip()
         self._session = None
         self._map = None
         self._next_map = self._next_hud = self._next_ind = 0.0
@@ -430,7 +435,7 @@ class WarThunder(Adapter):
             setattr(self, attr, last)
 
     def is_me(self, name: str) -> bool:
-        p = self.player_name.strip()
+        p = (self._name or self.player_name).strip()
         return bool(p) and (name == p or name.endswith(" " + p))
 
     def _message(self, s: Session, key: str, e: dict[str, Any], wall: float) -> None:
@@ -490,8 +495,9 @@ ADAPTERS = [
             "spawns and the own vehicle leaving the map (destroyed, landed, back to the hangar), one sortie each",
             "other aircraft and ground units on the minimap as positions with tracked ids and side (no height)",
             "airfields, capture zones and bases once, and zones changing side",
-            "kill and damage feed lines (who, vehicle, verb); kills and deaths when `player_name` is set",
-            "spawns, distance, top altitude, top true airspeed, vehicle; kills and deaths with `player_name`",
+            "kill and damage feed lines (who, vehicle, verb); the player's kills and deaths when your name is "
+            "set (`config --set player_names.warthunder-webmap=<name>`)",
+            "spawns, distance, top altitude, top true airspeed, vehicle; kills and deaths with your name set",
         ),
         enable="",
         axes=Axes(up="y", flip_z=True, units="metres (map east/north; height only for the own aircraft)"),

@@ -423,7 +423,7 @@ _RECORDS = (
     "every car's position (world XYZ, m) at 10 Hz by driver name, own car marked, with speed and race position; "
     "own gear, throttle, brake",
     "session start with the track the game names; laps per car with lap time; finishes; own pit stops",
-    "teleports (back to the pits, a restart) so routes break there",
+    "teleports (back to the pits, a restart): `teleport` where the car was, `spawn` where it is now",
     "own laps, best lap, race position, distance, top speed",
 )
 _PC2_VERIFIED = (

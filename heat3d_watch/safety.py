@@ -23,7 +23,8 @@ In order, all of which must pass:
    modules are checked once more for an anti-cheat client.
 
 There is no elevation, no debug privilege, and no function in this package that
-writes to another process; `test_safety.py` fails the build if one appears.
+writes to another process; `test_memory_reading_cannot_write` in `tests/test_core.py`
+fails the build if one appears.
 """
 
 from __future__ import annotations
@@ -129,8 +130,11 @@ def remote_connections(pid: int) -> list[str]:
     import psutil
 
     try:
-        conns = psutil.Process(pid).net_connections(kind="inet")
-    except (psutil.Error, OSError):
+        p = psutil.Process(pid)
+        # `net_connections` is psutil 6.0's name; older releases call it `connections`.
+        read = getattr(p, "net_connections", None) or p.connections
+        conns = read(kind="inet")
+    except (psutil.Error, OSError, AttributeError):
         return ["its connections could not be read"]
     out = []
     for c in conns:

@@ -168,6 +168,14 @@ class Journal:
             self._meaning(s, ev, e, t, ms)
         except (TypeError, ValueError, KeyError):
             s.stat("bad_lines", 1, "add")
+        if self.commander and s.meta.get("player") != self.commander:
+            # The journal is the player's own: rows under the commander's name are theirs.
+            # Said in meta.json at once, so a highlight saved now finds them.
+            s.meta["player"] = self.commander
+            try:
+                s.write_meta()
+            except OSError:
+                pass
 
     def status(self, doc: dict) -> None:
         """One Status.json snapshot: a surface fix when the game gives latitude and longitude."""

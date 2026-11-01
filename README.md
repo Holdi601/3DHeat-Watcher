@@ -16,6 +16,7 @@ python -m heat3d_watch setup all      # what would have to be switched on (add -
 python -m heat3d_watch run            # watch; leave it running
 python -m heat3d_watch stats          # totals per game
 python -m heat3d_watch stats --csv out   # sessions, events and stats as CSV files
+python -m heat3d_watch replays cs2-demos # convert the demos already on disk (new ones are converted by `run`)
 ```
 
 Everything goes to `%LOCALAPPDATA%\3DHeat\Watcher` (set `HEAT3D_WATCH_HOME`, or

@@ -8,7 +8,9 @@
     sessions   the recordings so far
     stats      totals per game; --game for one, --csv DIR to write the tables out
     table      rebuild a session's heat.parquet from its events.jsonl
+    replays    convert the replays already on disk for one adapter (or a folder of them)
     update     update the tools to the newest release (--check to only ask)
+    config     show the settings, or change them (--set key=value ...)
 """
 
 from __future__ import annotations
@@ -16,12 +18,13 @@ from __future__ import annotations
 import argparse
 import csv
 import logging
+import re
 import sys
 from pathlib import Path
 
 from . import __version__, db
 from .adapters import Context, broken, load
-from .config import Settings, load as load_settings, save as save_settings
+from .config import Settings, load as load_settings, parse, parse_item, save as save_settings
 from .session import Axes, write_table
 
 
@@ -66,17 +69,43 @@ def cmd_run(args: argparse.Namespace, s: Settings) -> int:
     return 0
 
 
+def markdown_cell(text: str) -> str:
+    """
+    Text for one cell of a Markdown table, safe for kramdown and GitHub alike:
+    code spans kept (their pipes escaped), and outside them everything Markdown
+    or HTML would take for markup - `<CS2>` would vanish as a tag, `*` start an
+    emphasis, `|` end the cell, a path's backslash escape the next character -
+    written so it shows as typed.
+    """
+    pieces = text.split("`")
+    if len(pieces) % 2 == 0:
+        pieces[-2:] = ["`".join(pieces[-2:])]  # an unclosed span is plain text
+    out = []
+    for i, piece in enumerate(pieces):
+        if i % 2:
+            out.append(piece.replace("|", "\\|"))
+            continue
+        piece = re.sub(r"\\(?=[!-/:-@\[-`{-~])", r"\\\\", piece)
+        piece = piece.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        piece = piece.replace("*", "\\*").replace("|", "\\|")
+        out.append(piece)
+    return "`".join(out)
+
+
 def cmd_games(args: argparse.Namespace, s: Settings) -> int:
     adapters = sorted(load().values(), key=lambda a: (a.game.lower(), a.id))
     if args.markdown:
         print("| Game | What is recorded | From where | To switch it on | Online play | Checked |")
         print("|---|---|---|---|---|---|")
         for a in adapters:
-            records = "<br>".join(a.records)
+            # One item a line: the only HTML in the table is the break between them.
+            records = "<br>".join(markdown_cell(r) for r in a.records)
             online = "allowed (reads only what the game publishes)" if a.multiplayer and a.kind != "memory" else (
                 "never read while online" if a.kind == "memory" else "single-player"
             )
-            print(f"| {a.game} | {records} | {a.source} | {a.enable or '-'} | {online} | {a.verified or '-'} |")
+            cells = (markdown_cell(a.game), records, markdown_cell(a.source), markdown_cell(a.enable or "-"), online,
+                     markdown_cell(a.verified or "-"))
+            print("| " + " | ".join(cells) + " |")
         return 0
     for a in adapters:
         missing = a.missing()
@@ -99,11 +128,23 @@ def cmd_setup(args: argparse.Namespace, s: Settings) -> int:
         print(f"no adapter {args.adapter!r}; `games` lists them", file=sys.stderr)
         return 2
     ctx = Context(s, s.data_dir)
+    changed = False
     for a in targets:
+        if not a.can_setup:
+            # Nothing setup could switch on; asked for by name, it says what is needed instead.
+            if args.adapter != "all":
+                print(f"{a.id}: nothing for setup to change; {a.enable or 'it needs nothing switched on'}")
+            continue
         changes = a.setup(ctx, apply=args.apply)
+        changed = changed or bool(changes)
         for c in changes:
             print(f"{a.id}: {'changed' if args.apply else 'would change'}: {c}")
-    if not args.apply:
+        if not changes and args.adapter != "all":
+            print(f"{a.id}: nothing to change")
+    if not changed:
+        if args.adapter == "all":
+            print("Nothing to change.")
+    elif not args.apply:
         print("Nothing was changed. Run again with --apply to make these changes.")
     return 0
 
@@ -159,6 +200,7 @@ def cmd_stats(args: argparse.Namespace, s: Settings) -> int:
             print(f"   {event:32} {count:10}")
         stats = db.stat_totals(con, g)
         if stats:
+            # "best": the lowest for times and places (a best lap, a finishing position), else the highest.
             print(f"   {'stat':32} {'sessions':>8} {'total':>12} {'best':>12} {'average':>12}")
             for key, n, total, best, avg in stats:
                 print(f"   {key:32} {n:8} {total:12.6g} {best:12.6g} {avg:12.6g}")
@@ -177,6 +219,29 @@ def cmd_table(args: argparse.Namespace, s: Settings) -> int:
     return 0
 
 
+def cmd_replays(args: argparse.Namespace, s: Settings) -> int:
+    from .adapters.replays import ReplayAdapter
+
+    adapters = load()
+    a = adapters.get(args.adapter)
+    if not isinstance(a, ReplayAdapter):
+        ids = ", ".join(sorted(i for i, x in adapters.items() if isinstance(x, ReplayAdapter)))
+        print(f"no replay adapter {args.adapter!r}; these convert replays: {ids}", file=sys.stderr)
+        return 2
+    missing = a.missing()
+    if missing:
+        print(f"{a.id}: {missing}", file=sys.stderr)
+        return 1
+    folder = Path(args.folder) if args.folder else None
+    if folder is not None and not folder.is_dir():
+        print(f"no folder {folder}", file=sys.stderr)
+        return 2
+    _logging(s, args.verbose)
+    n = a.convert_existing(Context(s, s.data_dir), folder)
+    print(f"{a.id}: converted {n} replay(s); `sessions --game` lists them")
+    return 0
+
+
 def cmd_update(args: argparse.Namespace, s: Settings) -> int:
     import heat3d_update.__main__ as up
 
@@ -187,18 +252,27 @@ def cmd_config(args: argparse.Namespace, s: Settings) -> int:
     if args.set:
         for item in args.set:
             key, _, value = item.partition("=")
+            # `replay_folders.cs2-demos=D:\Demos` sets one entry of a dictionary; an empty value removes it.
+            key, dot, entry = key.partition(".")
             if key not in Settings.__dataclass_fields__:
                 print(f"no setting {key!r}", file=sys.stderr)
                 return 2
-            current = getattr(s, key)
-            if isinstance(current, bool):
-                setattr(s, key, value.lower() in ("1", "true", "yes", "on", "ja"))
-            elif isinstance(current, float):
-                setattr(s, key, float(value))
-            elif isinstance(current, list):
-                setattr(s, key, [v for v in value.split(",") if v])
-            else:
-                setattr(s, key, value)
+            try:
+                if dot:
+                    if not isinstance(getattr(s, key), dict) or not entry:
+                        print(f"{key} has no entries; set it as {key}=value", file=sys.stderr)
+                        return 2
+                    entries = dict(getattr(s, key))
+                    if value.strip():
+                        entries[entry] = parse_item(key, value)
+                    else:
+                        entries.pop(entry, None)
+                    setattr(s, key, entries)
+                else:
+                    setattr(s, key, parse(key, value))
+            except ValueError as e:
+                print(f"not saved: {e}", file=sys.stderr)
+                return 2
         print(f"saved {save_settings(s)}")
     for k in Settings.__dataclass_fields__:
         print(f"{k} = {getattr(s, k)!r}")
@@ -226,10 +300,15 @@ def main(argv: list[str] | None = None) -> int:
     sa.add_argument("--csv", metavar="DIR", help="write sessions, events and stats as CSV files")
     t = sub.add_parser("table", help="rebuild a session's heat.parquet")
     t.add_argument("folder")
+    rp = sub.add_parser("replays", help="convert the replays already on disk")
+    rp.add_argument("adapter", help="a replay adapter's id from `games` (cs2-demos, lol-replays, ...)")
+    rp.add_argument("folder", nargs="?", help="convert the replays in this folder instead of the game's own")
+    rp.add_argument("-v", "--verbose", action="store_true")
     u = sub.add_parser("update", help="update to the newest release")
     u.add_argument("--check", action="store_true")
     c = sub.add_parser("config", help="show or change the settings")
-    c.add_argument("--set", nargs="*", metavar="KEY=VALUE")
+    c.add_argument("--set", nargs="*", metavar="KEY=VALUE", help="read by the setting's type: true/false, a number, "
+                   "a list (a,b or JSON), a dictionary as JSON; KEY.ID=VALUE sets one entry of a dictionary")
     args = p.parse_args(argv)
     # Game names come in every script; a console or pipe in the Windows code page
     # would stop at the first one it cannot spell.
@@ -254,6 +333,7 @@ def main(argv: list[str] | None = None) -> int:
         "sessions": cmd_sessions,
         "stats": cmd_stats,
         "table": cmd_table,
+        "replays": cmd_replays,
         "update": cmd_update,
         "config": cmd_config,
     }[args.command]

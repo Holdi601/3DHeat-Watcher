@@ -239,3 +239,125 @@ def test_a_killed_watcher_s_session_is_finished_on_the_next_start(tmp_path):
     assert meta["ended"] and meta["recovered"] and meta["stats"]["kills"] == 4
     assert (s.folder / "heat.parquet").exists()
     assert recover(tmp_path) == []  # once only
+
+
+def test_a_best_is_the_lowest_for_times_and_places_the_highest_for_the_rest(tmp_path, capsys):
+    from heat3d_watch import cli
+
+    con = db.connect(tmp_path)
+    for lap, kills, place in ((91.5, 3, 4), (88.25, 5, 2), (95.0, 1, 7)):
+        s = Session.open(tmp_path, "Racer", "racer")
+        s.event("lap", x=0, y=0, z=0)
+        s.stat("best_lap", lap, "min")
+        s.stat("kills", kills)
+        s.stat("race_position", place)
+        s.close()
+        db.record(con, s)
+    best = {key: b for key, _n, _total, b, _avg in db.stat_totals(con, "Racer")}
+    assert best == {"best_lap": 88.25, "kills": 5.0, "race_position": 2.0}
+    con.close()
+    assert cli.main(["config", "--set", f"data={tmp_path}"]) == 0
+    capsys.readouterr()
+    assert cli.main(["stats", "--game", "Racer"]) == 0
+    line = next(l for l in capsys.readouterr().out.splitlines() if l.strip().startswith("best_lap"))
+    assert line.split()[3] == "88.25"
+
+
+def test_config_set_reads_each_value_by_the_setting_s_type(capsys):
+    from heat3d_watch import cli
+    from heat3d_watch.config import load, settings_path
+
+    assert cli.main([
+        "config", "--set",
+        'replay_folders={"cs2-demos": ["D:/Demos"], "lol-replays": "E:/League"}',
+        "scan_seconds=3", "memory=yes", "disabled=a, b", "player_names.warthunder-webmap=Someone",
+        "replay_folders.osu-replays=F:/One,F:/Two",
+    ]) == 0
+    s = load()
+    assert s.replay_folders == {"cs2-demos": ["D:/Demos"], "lol-replays": ["E:/League"],
+                                "osu-replays": ["F:/One", "F:/Two"]}
+    assert s.scan_seconds == 3.0 and s.memory is True and s.disabled == ["a", "b"]
+    assert s.player_names == {"warthunder-webmap": "Someone"}
+    assert cli.main(["config", "--set", "replay_folders.osu-replays="]) == 0  # an empty value removes the entry
+    assert "osu-replays" not in load().replay_folders
+    # Refused, and nothing saved: a dictionary that is not one, a number that is not one, an unknown key.
+    for bad in ("replay_folders=D:/Demos", "scan_seconds=often", "memory=perhaps", "nonsense=1"):
+        assert cli.main(["config", "--set", bad]) == 2
+    assert load().scan_seconds == 3.0 and isinstance(load().replay_folders, dict)
+    # A settings file an older version wrote with text in a dictionary's place is read without it.
+    settings_path().write_text(json.dumps({"replay_folders": "D:/Demos", "memory": "true", "scan_seconds": 4}),
+                               encoding="utf-8")
+    s = load()
+    assert s.replay_folders == {} and s.memory is True and s.scan_seconds == 4
+
+
+def test_run_once_stops_its_adapters_and_closes_their_sessions(tmp_path, monkeypatch):
+    settings = Settings(data=str(tmp_path))
+    fake = _Fake(id="fake", game="Fake Game", exes=("fakegame.exe",), interval=0.01)
+    w = Watcher(settings)
+    w.adapters = {"fake": fake}
+    monkeypatch.setattr("heat3d_watch.watcher.running_processes", lambda: {"fakegame.exe": (1234, None)})
+    w.run(once=True)
+    assert not w.active and fake.polls >= 1
+    meta = json.loads((fake.session.folder / "meta.json").read_text(encoding="utf-8"))
+    assert meta["ended"] and not meta.get("recovered")
+    con = db.connect(tmp_path)
+    assert db.per_game(con)[0][:2] == ("Fake Game", 1)
+
+
+def test_remote_connections_read_with_an_older_psutil(monkeypatch):
+    import psutil
+
+    from heat3d_watch import safety
+
+    class Addr:
+        def __init__(self, ip, port):
+            self.ip, self.port = ip, port
+
+    class Conn:
+        def __init__(self, ip):
+            self.raddr = Addr(ip, 443) if ip else ()
+
+    class OldProcess:  # psutil before 6.0: `connections`, no `net_connections`
+        def __init__(self, pid):
+            pass
+
+        def connections(self, kind="inet"):
+            return [Conn("127.0.0.1"), Conn(""), Conn("203.0.113.7")]
+
+    monkeypatch.setattr(psutil, "Process", OldProcess)
+    assert safety.remote_connections(1) == ["203.0.113.7:443"]
+
+
+def test_every_adapter_keeps_the_game_s_own_units():
+    from heat3d_watch.adapters import load
+
+    # The viewer multiplies positions by `scale`; levels exported from a game are in its own units.
+    assert {a.id: a.axes.scale for a in load().values() if a.axes.scale != 1} == {}
+
+
+def test_games_markdown_is_a_table_kramdown_reads_as_written(capsys):
+    from heat3d_watch import cli
+    from heat3d_watch.adapters import load
+
+    assert cli.main(["games", "--markdown"]) == 0
+    lines = capsys.readouterr().out.splitlines()
+    assert len(lines) == 2 + len(load())
+    for line in lines[2:]:
+        # No HTML but the breaks between items: `<CS2>` and the like are escaped or in code spans.
+        outside = "".join(p for i, p in enumerate(line.split("`")) if i % 2 == 0).replace("<br>", "")
+        assert "<" not in outside and ">" not in outside, line
+        assert len(re.findall(r"(?<!\\)\|", re.sub(r"`[^`]*`", "", line))) == 7, line
+    assert cli.markdown_cell(r"<CS2>\game | a*b `x|y`") == r"&lt;CS2&gt;\game \| a\*b `x\|y`"
+    assert cli.markdown_cell(r"%STEAM%\<account>") == r"%STEAM%\\&lt;account&gt;"
+
+
+def test_setup_says_so_when_a_game_has_nothing_it_could_switch_on(capsys):
+    from heat3d_watch import cli
+    from heat3d_watch.adapters import load
+
+    adapters = load()
+    assert not adapters["richard-burns-rally"].can_setup and adapters["ea-wrc"].can_setup
+    assert cli.main(["setup", "richard-burns-rally"]) == 0
+    out = capsys.readouterr().out
+    assert "nothing for setup to change" in out and "udpTelemetry=1" in out and "--apply" not in out

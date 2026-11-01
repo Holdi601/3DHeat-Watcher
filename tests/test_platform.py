@@ -414,6 +414,28 @@ def test_position_at_finds_the_last_own_position_before_the_moment(tmp_path):
     assert position_at(ctx.data, "Another Game", start + 5600) is None
 
 
+def test_position_at_takes_the_rows_the_source_marks_as_the_player_s(tmp_path):
+    ctx = _ctx(tmp_path)
+    start = (time.time() - 120) * 1000
+    # A race of every car by its driver, the player's own car marked by the game's player car index.
+    race = Session.open(ctx.data, "Some Racer", "some-racer", when=start / 1000 - 10)
+    for i in range(10):
+        race.position(float(i), 0.0, 0.0, player="A Driver", own_car=1, ms=start + i * 1000)
+        race.position(50.0, 0.0, 50.0, player="Rival", own_car=0, ms=start + i * 1000 + 500)
+    hit = position_at(ctx.data, "Some Racer", start + 4200)
+    assert hit and hit["x"] == 4.0
+    # A journal of the player's own under the name the game gives them, said in meta.json.
+    log = Session.open(ctx.data, "Some Explorer", "some-explorer", when=start / 1000 - 10)
+    log.position(7.0, 8.0, 9.0, player="Cmdr Example", ms=start + 1000)
+    log.position(1.0, 1.0, 1.0, player="Somebody Else", ms=start + 1500)
+    assert position_at(ctx.data, "Some Explorer", start + 2000) is None  # nothing says whose they are
+    log.meta["player"] = "Cmdr Example"
+    log.write_meta()
+    assert position_at(ctx.data, "Some Explorer", start + 2000)["x"] == 7.0
+    race.close()
+    log.close()
+
+
 def _nvidia(tmp_path: Path) -> tuple[Path, Path]:
     overlay = tmp_path / "NVIDIA Overlay"
     captures = tmp_path / "Captures"

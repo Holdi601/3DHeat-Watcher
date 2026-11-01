@@ -111,14 +111,24 @@ def event_totals(con: sqlite3.Connection, game: str) -> list[tuple]:
     ).fetchall()
 
 
+def lower_is_better(key: str) -> bool:
+    """
+    Whether a stat's best is its lowest: the times kept as a best (`best_lap`,
+    `best_stage`) and places (`race_position`, `grid_position`). Everything else
+    - kills, distance, top speed, a game's own counters - is best at its highest.
+    """
+    return key.startswith("best_") or key == "position" or key.endswith("_position")
+
+
 def stat_totals(con: sqlite3.Connection, game: str) -> list[tuple]:
     """Each numeric stat of a game: summed, best, average over the sessions that have it."""
-    return con.execute(
-        """SELECT t.key, COUNT(*), SUM(t.value), MAX(t.value), AVG(t.value) FROM stats t
+    rows = con.execute(
+        """SELECT t.key, COUNT(*), SUM(t.value), MIN(t.value), MAX(t.value), AVG(t.value) FROM stats t
            JOIN sessions s ON s.id = t.session
            WHERE s.game = ? AND t.value IS NOT NULL GROUP BY t.key ORDER BY t.key""",
         (game,),
     ).fetchall()
+    return [(key, n, total, low if lower_is_better(key) else high, avg) for key, n, total, low, high, avg in rows]
 
 
 def rows(con: sqlite3.Connection, table: str) -> tuple[list[str], Iterable[tuple]]:

@@ -204,3 +204,18 @@ def test_setup_prefers_tastatsapi_and_adds_the_section(tmp_path):
     assert str(ta) in a.setup(ctx, apply=True)[0]
     assert rl.read_ini(ta) == {"PacketSendRate": "30", "Port": "49123"}
     assert ta.read_bytes().decode().startswith("[Core.System]\nPaths=x\n\n[TAGame.MatchStatsExporter_TA]\n")
+
+
+def test_rocketleague_takes_the_player_s_name_from_the_settings(tmp_path):
+    data = tmp_path / "data"
+    ctx = Context(Settings(data=str(data), player_names={"rocketleague-stats": "Someone"}), data)
+    a = dataclasses.replace(rl.ADAPTERS[0], port=49999)
+    a.start(ctx)
+    a._targets["Spectated"] += 5  # the camera follows someone else: the setting still decides
+    assert a.me() == "Someone" and a._who("Someone") == "me" and a._who("Spectated") == "Spectated"
+    a.stop(ctx)
+    b = dataclasses.replace(rl.ADAPTERS[0], port=49999)
+    b.start(Context(Settings(data=str(data)), data))
+    b._targets["Spectated"] += 5
+    assert b.me() == "Spectated"
+    b.stop(Context(Settings(data=str(data)), data))

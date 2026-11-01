@@ -585,7 +585,11 @@ def position_at(data_dir: Path, game: str, ms: float, *, within_ms: float = 5000
 
     Looks through `<data>/sessions/<game>/*/events.jsonl` of every session whose
     time span covers `ms` (any adapter but `skip_adapter`), and returns the
-    latest own row with a position no more than `within_ms` before `ms`:
+    latest own row with a position no more than `within_ms` before `ms`. A row
+    is the player's own when the source says so: its `player` is "me", it
+    carries `own_car: 1` (racing games that record every car by its driver), or
+    its `player` is the session's `player` in meta.json (the name the source
+    gives the player: Elite's commander, the Riot ID in the settings). Returns
     {"x", "y", "z", "ms", "session" (the row's match/round, if any), "folder",
     "adapter", "axes"} - or None when no recording was there.
     """
@@ -612,7 +616,8 @@ def position_at(data_dir: Path, game: str, ms: float, *, within_ms: float = 5000
             # meta.json keeps whole seconds; allow for that at both ends.
             if started is None or ms < started * 1000 - 1000 or ms > ended * 1000 + 1000 + within_ms:
                 continue
-            row = _last_own_position(folder / "events.jsonl", ms, within_ms)
+            me = meta.get("player") if isinstance(meta.get("player"), str) and meta.get("player") else None
+            row = _last_own_position(folder / "events.jsonl", ms, within_ms, me)
             if row and (best is None or row["ms"] > best["ms"]):
                 best = {
                     "x": row["x"], "y": row["y"], "z": row["z"], "ms": row["ms"],
@@ -622,21 +627,29 @@ def position_at(data_dir: Path, game: str, ms: float, *, within_ms: float = 5000
     return best
 
 
-def _last_own_position(path: Path, ms: float, within_ms: float) -> dict[str, Any] | None:
+def own_row(r: dict[str, Any], me: str | None = None) -> bool:
+    """Whether a row is the player's own, by what its source marked (see `position_at`)."""
+    player = r.get("player")
+    return player == "me" or r.get("own_car") in (1, True) or (me is not None and player == me)
+
+
+def _last_own_position(path: Path, ms: float, within_ms: float, me: str | None = None) -> dict[str, Any] | None:
     best = None
+    # Cheap tests before a line is parsed: most lines of a race are other cars'.
+    needles = ['"me"', '"own_car":1'] + ([json.dumps(me, ensure_ascii=False)] if me else [])
     try:
         f = path.open("r", encoding="utf-8", errors="replace")
     except OSError:
         return None
     with f:
         for line in f:
-            if '"x"' not in line or '"me"' not in line:
+            if '"x"' not in line or not any(n in line for n in needles):
                 continue
             try:
                 r = json.loads(line)
             except ValueError:
                 continue
-            if r.get("player") != "me" or "x" not in r:
+            if not own_row(r, me) or "x" not in r:
                 continue
             t = r.get("ms")
             if not isinstance(t, (int, float)) or t > ms or t < ms - within_ms:

@@ -198,8 +198,27 @@ class LolReplays(ReplayAdapter):
 
 
 def record_timeline(s, timeline: dict[str, Any], players: list[dict[str, Any]], mid: str) -> None:
-    """Match-V5's timeline into positions: each player each minute, each kill where it happened."""
+    """
+    Match-V5's timeline into positions: each player each minute, each kill where it happened.
+
+    Its times are milliseconds into the game; the events that carry a
+    `realTimestamp` too (the game's first PAUSE_END, its GAME_END) give the
+    wall clock, so the rows get their real `ms` and the session its real start,
+    and an NVIDIA highlight saved during the game finds the player's rows.
+    """
     info = timeline.get("info", {})
+    start_ms = next(
+        (float(e["realTimestamp"]) - float(e.get("timestamp", 0))
+         for frame in info.get("frames", []) for e in frame.get("events", [])
+         if isinstance(e.get("realTimestamp"), (int, float)) and e["realTimestamp"] > 0),
+        None,
+    )
+    if start_ms is not None:
+        s.started = start_ms / 1000.0
+
+    def wall(t: float) -> float | None:
+        return start_ms + t * 1000.0 if start_ms is not None else None
+
     by_puuid = {p.get("PUUID"): p for p in players if p.get("PUUID")}
     names: dict[int, tuple[str, Any]] = {}
     for part in info.get("participants", []):
@@ -213,8 +232,8 @@ def record_timeline(s, timeline: dict[str, Any], players: list[dict[str, Any]], 
             if not pos:
                 continue
             who, team = names.get(int(pid), (f"participant {pid}", None))
-            s.event("position", t=t, x=pos.get("x"), y=0.0, z=pos.get("y"), player=who, team=team, session=mid,
-                    level=pf.get("level"), gold=pf.get("totalGold"))
+            s.event("position", t=t, ms=wall(t), x=pos.get("x"), y=0.0, z=pos.get("y"), player=who, team=team,
+                    session=mid, level=pf.get("level"), gold=pf.get("totalGold"))
         for e in frame.get("events", []):
             pos = e.get("position")
             if e.get("type") != "CHAMPION_KILL" or not pos:
@@ -222,10 +241,10 @@ def record_timeline(s, timeline: dict[str, Any], players: list[dict[str, Any]], 
             t_e = float(e.get("timestamp", 0)) / 1000.0
             killer = names.get(int(e.get("killerId", 0)), ("minion or tower", None))
             victim = names.get(int(e.get("victimId", 0)), ("?", None))
-            s.event("kill", t=t_e, x=pos["x"], y=0.0, z=pos["y"], player=killer[0], team=killer[1], session=mid,
-                    victim=victim[0])
-            s.event("death", t=t_e, x=pos["x"], y=0.0, z=pos["y"], player=victim[0], team=victim[1], session=mid,
-                    killer=killer[0])
+            s.event("kill", t=t_e, ms=wall(t_e), x=pos["x"], y=0.0, z=pos["y"], player=killer[0], team=killer[1],
+                    session=mid, victim=victim[0])
+            s.event("death", t=t_e, ms=wall(t_e), x=pos["x"], y=0.0, z=pos["y"], player=victim[0], team=victim[1],
+                    session=mid, killer=killer[0])
 
 
 # -------------------------------------------------------------------- Valorant
@@ -388,8 +407,10 @@ ADAPTERS = [
         "from Riot's Match-V5 API",
         records=(
             "each player's champion, role, team, kills, deaths, assists, gold, damage to champions and result",
-            "your own line as statistics, with your Riot ID in the settings",
-            "with your own Riot API key: every player's position each minute and every kill where it happened",
+            "your own line as statistics, and your rows named as yours (meta.json `player`), with your Riot ID "
+            "in the settings",
+            "with your own Riot API key: every player's position each minute and every kill where it happened, "
+            "at the wall-clock time the timeline gives",
             "not: the moment-to-moment game, which is obfuscated against cheating and not decoded",
         ),
         enable="save a replay in the League client (match history > download); for positions set riot_api_key "

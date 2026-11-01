@@ -286,7 +286,9 @@ class Driving:
     The session opens with the first thing worth recording, so a game left in
     its menus leaves no folder behind. A jump further than the car could have
     driven - a rewind, a reset to the road, a fast travel - is a `teleport`
-    row, so the viewer's line heat does not draw a line across the map.
+    row where the car was and a `spawn` row where it is now, so the viewer's
+    line heat can end a route at the one and start the next at the other,
+    instead of drawing a line across the map.
     """
 
     def __init__(self, adapter: Adapter, ctx: Context, *, hz: float = 10.0, jump: float = 50.0):
@@ -301,6 +303,8 @@ class Driving:
         self.metres = 0.0
         self.pending: dict[str, float] = {}
         self.ranges: dict[str, list[float]] = {}
+        #: Jumps seen so far (`teleport` rows written).
+        self.jumps = 0
 
     def open(self, **meta: Any) -> Session:
         if self.session is None:
@@ -333,6 +337,7 @@ class Driving:
         clock: float | None = None,
         team: str | None = None,
         session: str | None = None,
+        arrival: str = "spawn",
         **attrs: Any,
     ) -> bool:
         """
@@ -342,7 +347,8 @@ class Driving:
         them) - and `clock`, the game's own time in seconds, is what a jump is
         timed by when the game gives one. `key` tells cars apart when
         their names can change (the names arrive later); the player by default.
-        Returns whether a row was written.
+        `arrival` names the row a jump arrives with, when the game says what it
+        was (BeamNG's reset: `respawn`). Returns whether a row was written.
         """
         if not all(isinstance(v, (int, float)) and math.isfinite(v) for v in (x, y, z)):
             return False
@@ -361,8 +367,8 @@ class Driving:
             d = math.dist((m.x, m.y, m.z), (x, y, z))
             fastest = max(speed or 0.0, m.speed, 100.0)
             if d > self.jump + fastest * dt * 1.5:
-                s.event("teleport", x=x, y=y, z=z, player=player, team=team, session=session,
-                        from_x=round(m.x, 3), from_y=round(m.y, 3), from_z=round(m.z, 3), metres=round(d, 1))
+                self.jumped(m, x, y, z, player=player, arrival=arrival, team=team, session=session,
+                            metres=round(d, 1), own_car=attrs.get("own_car"))
                 m.emitted = now
             else:
                 m.metres += d
@@ -390,6 +396,18 @@ class Driving:
         s.position(x, y, z, player=player, team=team, session=session, **attrs)
         return True
 
+    def jumped(self, m: "_Mover", x: float, y: float, z: float, *, player: str | None, arrival: str = "spawn",
+               **attrs: Any) -> None:
+        """
+        A car moved without driving there: `teleport` where it was - the end of
+        its route - and `spawn` (or `arrival`) where it is now, the start of the next.
+        """
+        s = self.open()
+        self.jumps += 1
+        s.event("teleport", x=m.x, y=m.y, z=m.z, player=player, to_x=round(x, 3), to_y=round(y, 3), to_z=round(z, 3),
+                **attrs)
+        s.event(arrival, x=x, y=y, z=z, player=player, after="teleport", **attrs)
+
     def event(self, name: str, *, player: str | None = "me", key: str | None = None, where: bool = True, **attrs: Any) -> None:
         """An event, at the player's last known position unless told otherwise."""
         s = self.open()
@@ -416,6 +434,7 @@ class Driving:
         self.laps = 0
         self.metres = 0.0
         self.ranges.clear()
+        self.jumps = 0
 
 
 # ------------------------------------------------------------------ Forza
@@ -550,7 +569,7 @@ _FORZA_COMMON = dict(
         "own car's position (world XYZ, m) at 10 Hz with speed, gear, throttle, brake, lap",
         "drive start and end (session_start/session_end), laps with the game's lap time",
         "race start and finish with the race position",
-        "teleports (rewind, fast travel) so routes break there",
+        "teleports (rewind, fast travel): `teleport` where the car was, `spawn` where it is now",
         "laps, best lap, distance, top speed, races",
     ),
     enable=(
@@ -738,7 +757,7 @@ def _kunos_records(laps: str) -> tuple[str, ...]:
         "own car's position (world XYZ, m: mean of the tyre contact points) at 10 Hz with speed, gear, throttle, brake",
         "session start and end with the track and car the game names",
         laps,
-        "teleports (back to the pits, a restart) so routes break there",
+        "teleports (back to the pits, a restart): `teleport` where the car was, `spawn` where it is now",
         "laps, best lap, distance, top speed",
     )
 
@@ -943,10 +962,17 @@ class RallyAdapter(Adapter):
             return docs / "DiRT Rally 2.0" / "hardwaresettings" / "hardware_settings_config.xml"
         return None
 
+    @property
+    def can_setup(self) -> bool:
+        # Richard Burns Rally's telemetry is a plugin's (RSF/NGP), switched on in its own ini by hand.
+        return self.config_file() is not None
+
     def setup(self, ctx: Context, *, apply: bool) -> list[str]:
         path = self.config_file()
-        if path is None or not path.exists():
-            return [f"{path} not found - start the game once first"] if path else []
+        if path is None:
+            return []
+        if not path.exists():
+            return [f"{path} not found - start the game once first"]
         text = path.read_text(encoding="utf-8")
         if self.flavour == "wrc":
             new, changes = _wrc_config(text, self.port)
@@ -981,7 +1007,7 @@ def _wrc_config(text: str, port: int) -> tuple[str, list[str]]:
 _RALLY_RECORDS = (
     "own car's position (world XYZ, m) at 10 Hz with speed, gear, throttle, brake, stage distance",
     "stage start (the stage clock starting), finish with the stage time, restarts",
-    "teleports (a reset to the road) so routes break there",
+    "teleports (a reset to the road): `teleport` where the car was, `spawn` where it is now",
     "stages, best stage time, distance, top speed",
 )
 _RALLY_VERIFIED = (
@@ -1072,8 +1098,11 @@ class BeamNGAdapter(Adapter):
             for lap in self._splitter.flush():
                 self._closed(lap)
             self._splitter = kunos.LineSplitter()
-            d.sample(x, y, z, speed=frame["speed"], force=True, session=str(self._runs + 1))
-            d.event("respawn", session=str(self._runs + 1))
+            jumps = d.jumps
+            d.sample(x, y, z, speed=frame["speed"], force=True, session=str(self._runs + 1), arrival="respawn")
+            if d.jumps == jumps:
+                # Reset close to where the car was: no jump to cut, the reset still starts a run.
+                d.event("respawn", session=str(self._runs + 1))
             self._runs += 1
         elif self._last_time < 0:
             self._runs = 1

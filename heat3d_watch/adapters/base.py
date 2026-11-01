@@ -114,6 +114,11 @@ class Adapter:
         """Switch the game's own output on. Returns what was (or would be) changed."""
         return []
 
+    @property
+    def can_setup(self) -> bool:
+        """Whether `setup` can switch anything on for this game; `enable` says how otherwise."""
+        return type(self).setup is not Adapter.setup
+
     def start(self, ctx: Context) -> None:
         """The game was seen running."""
 

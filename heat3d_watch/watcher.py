@@ -51,6 +51,8 @@ class Runner(threading.Thread):
         self.adapter = adapter
         self.ctx = ctx
         self.halt = threading.Event()
+        #: Set once the adapter has been started and polled once (or could not start).
+        self.looked = threading.Event()
         self.failed = False
 
     def run(self) -> None:
@@ -60,6 +62,7 @@ class Runner(threading.Thread):
         except Exception:  # noqa: BLE001
             log.exception("%s: could not start", a.id)
             self.failed = True
+            self.looked.set()
             return
         failures = 0
         while not self.halt.is_set():
@@ -69,11 +72,13 @@ class Runner(threading.Thread):
             except Exception:  # noqa: BLE001
                 failures += 1
                 log.exception("%s: poll failed (%d)", a.id, failures)
+                self.looked.set()
                 if failures >= MAX_FAILURES:
                     self.failed = True
                     break
                 self.halt.wait(min(5.0, a.interval * 10 + 0.5))
                 continue
+            self.looked.set()
             self.halt.wait(a.interval)
         try:
             a.stop(self.ctx)
@@ -160,7 +165,7 @@ class Watcher:
         release = up.available()
         if release is None:
             return
-        log.info("3DHeat Extractors %s is out (this is %s); updating", release.version, up.installed_version())
+        log.info("3DHeat Watcher %s is out (this is %s); updating", release.version, up.installed_version())
         from .notify import notify
 
         notify("3DHeat Watcher", f"Updating to {release.version}")
@@ -173,19 +178,26 @@ class Watcher:
         self.shutdown()
         up.restart()
 
-    def run(self, *, once: bool = False) -> None:
+    def run(self, *, once: bool = False, look: float = 10.0) -> None:
+        """
+        Watch until stopped. `once`: start the adapters for the games running
+        now, let each take one look (at most `look` seconds), then stop them
+        the way a game ending would - their sessions closed and counted.
+        """
         log.info("watching; data in %s", self.settings.data_dir)
         self.recover()
         try:
             while True:
                 self.step()
                 if once:
+                    deadline = time.monotonic() + look
+                    for runner in list(self.active.values()):
+                        runner.looked.wait(max(0.0, deadline - time.monotonic()))
                     break
                 self.maybe_update()
                 time.sleep(self.settings.scan_seconds)
         finally:
-            if not once:
-                self.shutdown()
+            self.shutdown()
 
     def recover(self) -> None:
         """Finish the sessions a watcher that was killed left open."""

@@ -357,11 +357,12 @@ class F1Adapter(Adapter):
             who = self._who(i)
             key = str(i)
             if own and self._flashback:
-                # The game went back in time: the car is where it was, not driven there.
+                # The game went back in time: the car is where it was, not driven there. The route
+                # ends where the flashback was called and starts again where it took the car.
                 self._flashback = False
-                d.event("teleport", player=who, x=x, y=y, z=z, session=sid, reason="flashback", own_car=1)
                 m = d.movers.get(key)
                 if m is not None:
+                    d.jumped(m, x, y, z, player=who, session=sid, reason="flashback", own_car=1)
                     m.x, m.y, m.z, m.emitted = x, y, z, -1e9
             d.sample(
                 x, y, z,
@@ -516,10 +517,12 @@ def _f1(year: int, exe: str) -> F1Adapter:
         folder=f"F1 {year}",
         source=f"UDP telemetry 127.0.0.1:20777 (Documents\\My Games\\F1 {year}\\hardwaresettings\\hardware_settings_config.xml)",
         records=(
-            "every car's position (world XYZ, m) at 10 Hz, by driver name, team, own car marked, with speed, gear, throttle, brake",
+            "every car's position (world XYZ, m) at 10 Hz, by driver name, team, own car marked (`own_car` 1, from the "
+            "player car index), with speed, gear, throttle, brake",
             "laps per car with the lap time and race position; finishes and retirements",
             "the game's race events: session start and end, fastest lap, penalties, overtakes, collisions, "
-            "safety car, red flag, start lights, chequered flag, winner, flashbacks",
+            "safety car, red flag, start lights, chequered flag, winner, flashbacks (`teleport` where the car was, "
+            "`spawn` where it went back to)",
             "track, session type, laps and drivers of each session",
             "own laps, best lap, race and grid position, pit stops, penalties, overtakes, collisions, distance, top speed",
         ),
