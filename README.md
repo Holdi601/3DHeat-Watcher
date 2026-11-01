@@ -54,13 +54,8 @@ Everything goes to `%LOCALAPPDATA%\3DHeat\Watcher` (set `HEAT3D_WATCH_HOME`, or
   change and how; only `setup --apply` changes it, and the original is kept as
   `<file>.heat3d-backup`.
 
-## Updates
-
-The watcher looks for a newer release of the tools on GitHub at most once an
-hour while no game is running, installs it, and starts again - never in the
-middle of a game. `config --set auto_update=false` turns that off;
-`HEAT3D_NO_UPDATE=1` turns off the check as well. `python -m heat3d_watch update`
-updates on request.
+The watcher updates itself while no game is running and starts again - never
+in the middle of a game; `config --set auto_update=false` turns that off.
 
 Which game is recorded how, and from where: [`docs/watcher.md`](docs/watcher.md)
 and the wiki.
