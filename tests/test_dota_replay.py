@@ -251,6 +251,65 @@ def test_events_from_the_combat_log_and_objectives():
     assert (by["roshan_kill"].x, by["roshan_kill"].y) == (-2800.0, 2300.0)
 
 
+def _entry(tick, kind, attacker="", target="", value=0, **kw):
+    fields = dict(tick=tick, log_type=SimpleNamespace(value=kind), attacker_name=attacker, target_name=target,
+                  damage_source_name=kw.pop("source", attacker), inflictor_name=kw.pop("inflictor", ""), value=value,
+                  value_name=kw.pop("value_name", ""), attacker_is_illusion=False, target_is_illusion=False,
+                  target_is_hero=target.startswith("npc_dota_hero"), attacker_is_hero=attacker.startswith("npc_dota_hero"),
+                  location_x=None, location_y=None, ability_level=0, gold_reason=0, xp_reason=0, rune_type=None)
+    fields.update(kw)
+    return SimpleNamespace(**fields)
+
+
+def test_the_combat_log_about_heroes_becomes_rows():
+    axe, lina = "npc_dota_hero_axe", "npc_dota_hero_lina"
+    match = SimpleNamespace(
+        combat_log=[
+            _entry(10, "DAMAGE", axe, lina, 120, inflictor="axe_battle_hunger"),
+            _entry(11, "HEAL", lina, lina, 50, inflictor="item_flask"),
+            _entry(12, "PURCHASE", target=axe, value_name="item_blink"),
+            _entry(13, "GOLD", target=lina, value=40, gold_reason=12, location_x=-6700.0, location_y=-6650.0),
+            _entry(14, "DEATH", "npc_dota_axe_illusion", "npc_dota_creep_badguys_melee", source=axe),
+            _entry(15, "DAMAGE", "npc_dota_creep_badguys_melee", "npc_dota_creep_goodguys_melee", 20),
+        ],
+        chat=[SimpleNamespace(tick=20, player_slot=5, channel="all", text="gg")],
+    )
+    events = d._more_events(match, {axe: 0, lina: 5}, lambda t: t / 30)
+    got = [(e.tick, e.event, e.slot, e.other, e.value, e.text) for e in events]
+    assert got == [
+        (10, "hurt", 5, "hero_axe", 120, "axe_battle_hunger"),
+        (10, "damage", 0, "hero_lina", 120, "axe_battle_hunger"),
+        (11, "heal", 5, "hero_lina", 50, "item_flask"),
+        (12, "purchase", 0, "", None, "item_blink"),
+        (13, "gold", 5, "", 40, ""),
+        (14, "unit_kill", 0, "creep_badguys_melee", 0, ""),
+        (20, "chat", 5, "all", None, "gg"),
+    ]
+    gold = events[4]
+    assert (gold.x, gold.y) == (-6700.0, -6650.0)
+    columns = d.combat_columns(match.combat_log, lambda t: t / 30)
+    assert len(columns["tick"]) == 6 and columns["log_type"][0] == "DAMAGE" and columns["value_name"][2] == "item_blink"
+
+
+def test_the_heros_state_and_the_units_are_written(tmp_path):
+    r = _replay()
+    r.samples[0].extra = {"mana": 300.0, "yaw": 90.0, "items": "item_blink||item_tango", "moveSpeed": 300}
+    r.units = [(30, 1.0, 400, "CDOTA_BaseNPC_Creep_Lane", "npc_dota_creep_goodguys_melee", 2, 10.0, 20.0, 128.0, 550,
+                550, 180.0, -1)]
+    r.combat_log = {"tick": [10], "log_type": ["DAMAGE"]}
+    data, doc = d.write(r, tmp_path)
+    rows = pq.read_table(data).to_pylist()
+    first = [x for x in rows if x["event"] == "position" and x["slot"] == 0][0]
+    assert first["mana"] == 300.0 and first["items"] == "item_blink||item_tango"
+    assert first["dirY"] == pytest.approx(1.0) and first["dirX"] == pytest.approx(0.0, abs=1e-6)
+    units = pq.read_table(tmp_path / "42.units.parquet")
+    hints = json.loads(units.schema.metadata[b"heat3d"])
+    assert hints["columns"]["personId"] == "unit" and units.column("unit").to_pylist() == ["npc_dota_creep_goodguys_melee #400"]
+    assert units.column("team").to_pylist() == ["Radiant"] and units.column("dirX").to_pylist()[0] == pytest.approx(-1.0)
+    assert pq.read_table(tmp_path / "42.combatlog.parquet").num_rows == 1
+    assert json.loads(doc.read_text(encoding="utf-8"))["combatLog"] == {"file": "42.combatlog.parquet", "rows": 1}
+
+
 def test_read_refuses_other_files(tmp_path):
     f = tmp_path / "x.dem"
     f.write_bytes(b"HL2DEMO\0" + b"\0" * 32)  # a Source 1 demo
@@ -303,6 +362,9 @@ def test_adapter_converts_in_a_process_of_its_own(tmp_path, monkeypatch):
         import pyarrow as pa
 
         pq.write_table(pa.table({"event": ["position", "position", "death", "kill"]}), out / "42.parquet")
+        # The side tables, which sort before the match's own: not counted.
+        pq.write_table(pa.table({"tick": [1, 2, 3]}), out / "42.combatlog.parquet")
+        pq.write_table(pa.table({"unit": ["a"]}), out / "42.units.parquet")
         return SimpleNamespace(returncode=0, stdout="", stderr="")
 
     monkeypatch.setattr("heat3d_watch.adapters.replays.subprocess.run", run)

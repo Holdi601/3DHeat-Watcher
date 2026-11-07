@@ -89,14 +89,25 @@ game versions, and what they do not.
 are plain Source 2 demos, kept public for every match for a few weeks, and read
 by OpenDota and others for a decade. Each replay in `<Dota>/game/dota/replays`
 becomes a session with every hero's track 7.5 times a second (position, height,
-health, level), kills and deaths where they happened, towers, barracks, Roshan
-and Tormentors where they fell, and every ward where it was planted, as
-`dota/<match>.parquet` and `<match>.match.json`. `dota-replay <match id>`
-downloads a public match's replay by its id (the cluster and salt come from
-OpenDota; Valve answers 404 once a replay has expired). A half-hour match takes
-about a minute and 400 MB to convert, in a process of its own. Not read: creeps,
-couriers and illusions; what the fog of war hid from whom; items and abilities
-over time.
+health, level, facing, mana, experience, attributes, armour, speed, damage,
+items, the player's cursor), kills and deaths where they happened, towers,
+barracks, Roshan and Tormentors where they fell, every ward where it was
+planted and where it ended, the combat log's entries about the heroes (damage,
+heals, abilities, items, purchases, runes, gold, experience, modifiers, units
+killed), the chat, smokes and runes, as `dota/<match>.parquet`; every other
+unit (creeps, summons, illusions, couriers, wards, buildings) once a second as
+`<match>.units.parquet`; the whole combat log as `<match>.combatlog.parquet`;
+and the match with everything else gem extracts (draft, per-player series and
+logs, visibility, fights, advantages) as `<match>.match.json`. `dota-replay
+<match id>` downloads a public match's replay by its id (the cluster and salt
+come from OpenDota; Valve answers 404 once a replay has expired). A half-hour
+match takes about a minute and 400 MB to convert, in a process of its own.
+Checked on a 27-minute league match: kills counted from the combat log equal
+the game's own counts for all ten players, experience summed from the log
+equals each hero's total earned experience (within 2 of up to 19,720), and
+the gold in the log is each hero's earned gold less the passive income, which
+the log does not carry. Not read: projectiles, map pings, and units between
+their once-a-second samples.
 
 The watcher updates itself while no game is running and starts again - never
 in the middle of a game; `config --set auto_update=false` turns that off.

@@ -38,9 +38,21 @@ where its killer stood, a ward where it was planted. Every row has a `life`:
 a hero's lives counted from 1, so a track ends where the hero died instead of
 running on to the fountain it respawned at.
 
-Not read: creeps, couriers, summons and illusions; who could see whom; items
-and abilities over time. A replay gem cannot read to the end is converted as
-far as it goes and marked `incomplete` in the summary.
+Besides positions, each hero sample carries the hero's state - facing, mana,
+experience, attributes, armour, speed, damage, the items it carries - and its
+player's cursor. Every other unit (creeps, summons, illusions, couriers,
+wards, buildings, Roshan) is sampled once a second into a table of its own,
+`<match>.units.parquet`. The combat log's entries about a hero become rows
+too (damage taken and dealt, heals, abilities, items, purchases, runes, gold,
+experience, modifiers), and the whole log, every field, is in the summary,
+as columns. So is everything else gem extracts: the draft, chat, runes,
+couriers, smokes, neutral items, fights, visibility, per-player time series
+and logs, the gold and experience advantage.
+
+Not read: what gem does not extract (projectiles, the minimap's pings,
+abilities' cooldowns over time beyond gem's snapshots), and units between
+their once-a-second samples. A replay gem cannot read to the end is
+converted as far as it goes and marked `incomplete` in the summary.
 """
 
 from __future__ import annotations
@@ -205,6 +217,8 @@ class Sample:
     health: int | None = None
     max_health: int | None = None
     level: int | None = None
+    #: The rest of the hero's state, by column name (see `HERO_FIELDS`).
+    extra: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -224,6 +238,9 @@ class Event:
     z: float | None = None
     #: The other side of it: who a death was by, who a kill was of, the tower, the ward's type.
     other: str = ""
+    #: A number and a text the event has: damage, gold, an ability's level; the ability, item or chat line.
+    value: float | None = None
+    text: str = ""
 
 
 @dataclass
@@ -236,6 +253,12 @@ class Replay:
     events: list[Event]
     info: dict[str, Any] = field(default_factory=dict)
     hz: float = HZ
+    #: Every other unit once a second: see `_Sampler.units`.
+    units: list[tuple] = field(default_factory=list)
+    #: Everything else gem extracted, as JSON.
+    more: dict[str, Any] = field(default_factory=dict)
+    #: The whole combat log, as columns (see `combat_columns`).
+    combat_log: dict[str, list[Any]] = field(default_factory=dict)
 
 
 def world(cell: float, offset: float) -> float:
@@ -257,6 +280,32 @@ def hero_display(npc: str) -> str:
 
 
 # ------------------------------------------------------------------ reading, through gem
+
+
+#: A hero's state besides its place, health and level: the entity's field -> the table's column.
+HERO_FIELDS = {
+    "m_flMana": "mana",
+    "m_flMaxMana": "maxMana",
+    "m_iCurrentXP": "xp",
+    "m_flStrengthTotal": "strength",
+    "m_flAgilityTotal": "agility",
+    "m_flIntellectTotal": "intellect",
+    "m_flPhysicalArmorValue": "armor",
+    "m_flMagicalResistanceValue": "magicResist",
+    "m_iMoveSpeed": "moveSpeed",
+    "m_iDamageMin": "damageMin",
+    "m_iDamageMax": "damageMax",
+    "m_iAttackRange": "attackRange",
+    "m_flHealthThinkRegen": "healthRegen",
+    "m_flManaThinkRegen": "manaRegen",
+    "m_bIsMoving": "moving",
+    "m_iAbilityPoints": "abilityPoints",
+    "m_iRecentDamage": "recentDamage",
+}
+#: How many item slots a hero has: six, three in the backpack, the stash, the teleport and the neutral slot.
+ITEM_SLOTS = 19
+#: Units sampled once a second into their own table: every NPC class but the players' own heroes.
+UNIT_PREFIXES = ("CDOTA_BaseNPC", "CDOTA_Unit_", "CDOTA_NPC_")
 
 
 class _Sampler:
@@ -281,13 +330,57 @@ class _Sampler:
         self.structures: dict[str, tuple[float, float, float]] = {}
         self.roshan: list[tuple[int, float, float, float]] = []
         self._roshan_entity: Any = None
+        #: Each hero sample's further state, parallel to `raw`.
+        self.extra: list[dict[str, Any]] = []
+        #: Every other unit once a second: tick, entity index, class, name, team, x, y, z, health, max health,
+        #: facing, the player that owns it (-1 none).
+        self.units: list[tuple] = []
+        self._live: dict[int, Any] = {}
+        self._last_unit = -(10**9)
+        self._item_names: dict[int, str] = {}
         names = ("CDOTAPlayerController", *self.STRUCTURES)
         hook = getattr(parser, "_on_entity_filtered", None)
         if callable(hook):
             hook(self._entity, class_names=names)
+            hook(self._unit, class_prefixes=UNIT_PREFIXES)
         else:  # a gem without the filtered hook: every entity, filtered here
             parser.on_entity(lambda e, op: self._entity(e, op) if e.get_class_name() in names else None)
+            parser.on_entity(lambda e, op: self._unit(e, op) if e.get_class_name().startswith(UNIT_PREFIXES) else None)
         parser.on_tick_start(self._tick)
+
+    def _unit(self, e: Any, op: Any) -> None:
+        if int(op) & 0x04:
+            self._live.pop(e.get_index(), None)
+        else:
+            self._live[e.get_index()] = e
+
+    def _items(self, hero: Any, manager: Any) -> str:
+        """The items a hero carries, by slot, `|`-separated (an empty slot empty)."""
+        out = []
+        for i in range(ITEM_SLOTS):
+            h = hero.get(f"m_hItems.{i:04d}")
+            if h is None or h == 0xFFFFFF:
+                out.append("")
+                continue
+            name = self._item_names.get(h)
+            if name is None:
+                item = manager.find_by_handle(h)
+                name = (self._name(item) or item.get_class_name().removeprefix("CDOTA_Item_")) if item is not None else ""
+                if name:
+                    self._item_names[h] = name
+            out.append(name or "")
+        while out and not out[-1]:
+            out.pop()
+        return "|".join(out)
+
+    def _state(self, hero: Any, controller: Any, manager: Any) -> dict[str, Any]:
+        state = {column: hero.get(name) for name, column in HERO_FIELDS.items()}
+        angles = hero.get("CBodyComponent.m_angRotation")
+        state["yaw"] = float(angles[1]) if isinstance(angles, (list, tuple)) and len(angles) > 1 else None
+        state["items"] = self._items(hero, manager)
+        state["cursorX"] = controller.get("m_iCursor.0000")
+        state["cursorY"] = controller.get("m_iCursor.0001")
+        return state
 
     @staticmethod
     def _pos(e: Any) -> tuple[float, float, float] | None:
@@ -342,6 +435,23 @@ class _Sampler:
             if pos is None:
                 continue
             self.raw.append((tick, slot, *pos, hero.get("m_iHealth"), hero.get("m_iMaxHealth"), hero.get("m_iCurrentLevel")))
+            self.extra.append(self._state(hero, c, manager))
+        if tick - self._last_unit >= 30:
+            self._last_unit = tick
+            heroes = {c.get("m_hAssignedHero") for c in self.controllers.values()}
+            mine = {manager.find_by_handle(h) for h in heroes if h not in (None, 0xFFFFFF)}
+            for index, u in list(self._live.items()):
+                if u in mine or u.get("m_lifeState") not in (0, None):
+                    continue
+                pos = self._pos(u)
+                if pos is None:
+                    continue
+                angles = u.get("CBodyComponent.m_angRotation")
+                yaw = float(angles[1]) if isinstance(angles, (list, tuple)) and len(angles) > 1 else None
+                owner = u.get("m_nPlayerOwnerID")
+                self.units.append((tick, index, u.get_class_name(), self._name(u) or "", u.get("m_iTeamNum"), *pos,
+                                   u.get("m_iHealth"), u.get("m_iMaxHealth"), yaw,
+                                   owner if isinstance(owner, int) else -1))
         r = self._roshan_entity
         if r is not None and r.get("m_lifeState") in (0, None):
             pos = self._pos(r)
@@ -397,6 +507,8 @@ def read(path: str | Path, hz: float = HZ) -> Replay:
 
     end = getattr(match, "post_game_tick", None) or getattr(match, "game_end_tick", None)
     raw: list[tuple] = sampler.raw if sampler is not None else []
+    if raw and sampler is not None and len(sampler.extra) == len(raw):
+        raw = [(*r, x) for r, x in zip(raw, sampler.extra)]
     if raw:
         hz = TICK_RATE / step
     else:
@@ -410,8 +522,14 @@ def read(path: str | Path, hz: float = HZ) -> Replay:
     players = [_player(p) for p in match.players]
     by_hero = {p.hero_name: p.player_id for p in match.players if p.hero_name}
     events = _events(match, by_hero, at, sampler)
-    return Replay(match_id=int(match.match_id or _id_from_name(path)), players=players, samples=samples,
-                  events=events, info=_info(match, path), hz=hz)
+    events += _more_events(match, by_hero, at)
+    events.sort(key=lambda e: (e.tick, e.event))
+    units = [(u[0], round(at(u[0]), 3), *u[1:]) for u in (sampler.units if sampler is not None else [])
+             if end is None or u[0] <= end]
+    replay = Replay(match_id=int(match.match_id or _id_from_name(path)), players=players, samples=samples,
+                    events=events, info=_info(match, path), hz=hz, units=units, more=_more(match, at))
+    replay.combat_log = combat_columns(list(getattr(match, "combat_log", [])), at)
+    return replay
 
 
 def tracks(raw: list[tuple], at: Callable[[int], float], end: int | None = None) -> list[Sample]:
@@ -422,14 +540,14 @@ def tracks(raw: list[tuple], at: Callable[[int], float], end: int | None = None)
     """
     out: list[Sample] = []
     last: dict[int, float] = {}
-    for tick, slot, x, y, z, hp, mhp, lvl in raw:
+    for tick, slot, x, y, z, hp, mhp, lvl, *rest in raw:
         if end is not None and tick > end:
             break
         t = at(tick)
         if t <= last.get(slot, -math.inf):
             continue
         last[slot] = t
-        out.append(Sample(tick, round(t, 3), slot, x, y, z, hp, mhp, lvl))
+        out.append(Sample(tick, round(t, 3), slot, x, y, z, hp, mhp, lvl, rest[0] if rest else {}))
     return out
 
 
@@ -528,6 +646,166 @@ def _events(match: Any, by_hero: dict[str, int], at: Callable[[int], float], sam
     return out
 
 
+#: Combat log entries about a hero, by the log's type -> the row's event (the target's row; `DAMAGE` and
+#: `HEAL` also get a row at the attacker: "damage", "healed").
+COMBAT_ROWS = {
+    "DAMAGE": "hurt",
+    "HEAL": "heal",
+    "ABILITY": "ability",
+    "ITEM": "item",
+    "PURCHASE": "purchase",
+    "PICKUP_RUNE": "rune",
+    "GOLD": "gold",
+    "XP": "xp",
+    "MODIFIER_ADD": "modifier",
+    "MODIFIER_REMOVE": "modifier_end",
+    "KILLSTREAK": "killstreak",
+    "MULTIKILL": "multikill",
+    "BUYBACK": "buyback",
+    "DEATH": "unit_kill",
+}
+
+
+def _more_events(match: Any, by_hero: dict[str, int], at: Callable[[int], float]) -> list[Event]:
+    """
+    The combat log's entries about a player's hero (not its illusions), the
+    chat, smokes, runes, Aegis, neutral items found, wards taken out - each
+    at the hero (or where the game says it happened).
+    """
+    out: list[Event] = []
+    for e in getattr(match, "combat_log", []):
+        kind = getattr(e.log_type, "value", e.log_type)
+        event = COMBAT_ROWS.get(kind)
+        if event is None:
+            continue
+        attacker = by_hero.get(e.attacker_name) if not e.attacker_is_illusion else None
+        target = by_hero.get(e.target_name) if not e.target_is_illusion else None
+        what = _short(e.inflictor_name or e.value_name or "")
+        t = at(e.tick)
+        x = e.location_x if e.location_x is not None else None
+        y = e.location_y if e.location_y is not None else None
+        if kind == "DEATH":
+            # A hero's death is read elsewhere; here the units a player killed - with the hero, its illusions or
+            # its summons (the damage's source names the hero behind them).
+            killer = _killer(by_hero, e.damage_source_name, e.attacker_name)
+            if e.target_is_hero or killer is None:
+                continue
+            out.append(Event(e.tick, t, event, killer, x, y, other=_short(e.target_name), value=e.value, text=what))
+            continue
+        if kind in ("ABILITY", "ITEM", "PURCHASE", "GOLD", "XP", "KILLSTREAK", "MULTIKILL", "BUYBACK"):
+            who = attacker if kind in ("ABILITY", "ITEM") else target if target is not None else attacker
+            if who is None:
+                continue
+            out.append(Event(e.tick, t, event, who, x, y, other=_short(e.target_name if who == attacker else e.attacker_name),
+                             value=e.value or e.ability_level or e.gold_reason or e.xp_reason or None, text=what))
+            continue
+        if kind == "PICKUP_RUNE":
+            who = target if target is not None else attacker
+            if who is not None:
+                out.append(Event(e.tick, t, event, who, x, y, value=e.rune_type, text=what))
+            continue
+        if target is not None:
+            out.append(Event(e.tick, t, event, target, x, y, other=_short(e.attacker_name), value=e.value, text=what))
+        if kind in ("DAMAGE", "HEAL") and attacker is not None and attacker != target:
+            out.append(Event(e.tick, t, "damage" if kind == "DAMAGE" else "healed", attacker, x, y,
+                             other=_short(e.target_name), value=e.value, text=what))
+    for c in getattr(match, "chat", []):
+        out.append(Event(c.tick, at(c.tick), "chat", c.player_slot, other=c.channel, text=c.text))
+    for sm in getattr(match, "smoke_events", []):
+        slot = by_hero.get(sm.activator, -1)
+        x = sm.activation_x if sm.activation_x is not None else None
+        y = sm.activation_y if sm.activation_y is not None else None
+        out.append(Event(sm.tick, at(sm.tick), "smoke", slot, None if x is None else x - CELL_ORIGIN,
+                         None if y is None else y - CELL_ORIGIN, other=",".join(_short(h) for h in sm.smoked)))
+    for r in getattr(match, "runes", []):
+        slot = r.player_id if isinstance(r.player_id, int) and r.player_id >= 0 else -1
+        out.append(Event(r.spawn_tick, at(r.spawn_tick), "rune_spawn", slot, r.x - CELL_ORIGIN, r.y - CELL_ORIGIN,
+                         other=str(r.outcome or ""), value=r.rune_type))
+    for a in getattr(match, "aegis_events", []):
+        out.append(Event(a.tick, at(a.tick), "aegis", a.player_id, text=str(a.event_type)))
+    for n in getattr(match, "neutral_item_finds", []):
+        out.append(Event(n.tick, at(n.tick), "neutral_item", n.player_id, value=n.item_tier, text=str(n.item_key)))
+    for w in getattr(match, "wards", []):
+        left = getattr(w, "left_tick", None) or getattr(w, "end_tick", None)
+        if left and w.x is not None and w.y is not None:
+            slot = w.player_id if w.player_id is not None and w.player_id >= 0 else by_hero.get(w.placer, -1)
+            out.append(Event(left, at(left), f"{w.ward_type}_ward_end", slot, w.x - CELL_ORIGIN, w.y - CELL_ORIGIN,
+                             other=w.ward_type))
+    return out
+
+
+#: Combat log fields kept as columns in the summary, in this order.
+COMBAT_FIELDS = (
+    "tick", "log_type", "attacker_name", "damage_source_name", "target_name", "inflictor_name", "value",
+    "attacker_is_hero", "target_is_hero", "attacker_is_illusion", "target_is_illusion", "ability_level",
+    "gold_reason", "xp_reason", "value_name", "damage_type", "stun_duration", "neutral_camp_type",
+    "neutral_camp_team", "location_x", "location_y", "timestamp_s", "game_time_s", "will_reincarnate",
+    "visible_radiant", "visible_dire", "modifier_duration_s", "modifier_elapsed_duration_s", "attacker_team",
+    "target_team", "source", "aura_modifier", "modifier_purged", "modifier_purged_duration_s", "rune_type",
+)
+
+
+def _jsonable(v: Any) -> Any:
+    v = getattr(v, "value", v)  # an Enum
+    if isinstance(v, float) and not math.isfinite(v):
+        return None
+    return v if v is None or isinstance(v, (bool, int, float, str)) else str(v)
+
+
+def combat_columns(entries: list[Any], at: Callable[[int], float]) -> dict[str, list[Any]]:
+    """
+    The whole combat log as columns, every field gem reads, with the game
+    clock's time added: written as `<match>.combatlog.parquet` (a long
+    match's log is tens of thousands of entries).
+    """
+    columns: dict[str, list[Any]] = {k: [] for k in ("time", *COMBAT_FIELDS)}
+    for e in entries:
+        columns["time"].append(round(at(e.tick), 3))
+        for k in COMBAT_FIELDS:
+            columns[k].append(_jsonable(getattr(e, k, None)))
+    return columns
+
+
+def _columnar(items: list[Any]) -> dict[str, list[Any]] | list[Any]:
+    """A list of like dicts as one list per key: the same data, a fraction of the text."""
+    if not items or not all(isinstance(x, dict) for x in items):
+        return items
+    keys = list(dict.fromkeys(k for x in items for k in x))
+    return {k: [x.get(k) for x in items] for k in keys}
+
+
+def _more(match: Any, at: Callable[[int], float]) -> dict[str, Any]:
+    """
+    Everything else gem extracted, as JSON: per-player time series and logs,
+    the draft, runes, couriers, smokes, fights, visibility, advantages. The
+    combat log goes in as columns (`combat_columns`); gem's once-a-second
+    position log, which the samples supersede, is left out.
+    """
+    try:
+        from gem.results.serialization import to_dict
+    except Exception:  # noqa: BLE001 - a gem without it: the summary keeps what it has
+        return {}
+    try:
+        data = to_dict(match)
+    except Exception:  # noqa: BLE001
+        return {}
+    data.pop("combat_log", None)
+    for p in data.get("players") or []:
+        if isinstance(p, dict):
+            p.pop("position_log", None)
+            # The combat log entries gem keeps per player are in the log already: their ticks are enough.
+            for k, v in list(p.items()):
+                if isinstance(v, list) and v and isinstance(v[0], dict) and "log_type" in v[0]:
+                    p[k] = [{"tick": x.get("tick"), "value": x.get("value"), "name": x.get("value_name") or x.get("target_name")}
+                            for x in v]
+    data = json.loads(json.dumps(data, default=_jsonable))
+    # The long lists of like records, as columns.
+    for k in ("entity_visibility_events", "hero_visibility_events", "courier_snapshots", "neutral_creeps"):
+        if isinstance(data.get(k), list):
+            data[k] = _columnar(data[k])
+    return data
+
+
 def _short(npc: str) -> str:
     """
     A unit's name without its prefix: `hero_axe`, `goodguys_tower1_top`. The
@@ -605,12 +883,19 @@ HINTS = {
         "personId": "player",
         "teamId": "team",
         "sessionId": "life",
-        "extra": ["event", "hero", "other", "health", "level", "match"],
+        "lookMode": "vector",
+        "dirX": "dirX",
+        "dirY": "dirY",
+        "dirZ": "dirZ",
+        "extra": ["event", "hero", "other", "health", "level", "match", "value", "text", "mana", "items"],
     },
 }
 
+#: The hero state's columns in the table, after the fixed ones; `items` is text, the rest numbers.
+STATE_COLUMNS = (*HERO_FIELDS.values(), "items", "cursorX", "cursorY")
+
 COLUMNS = ("time", "tick", "event", "slot", "player", "hero", "team", "life", "x", "y", "z", "health", "maxHealth",
-           "level", "other")
+           "level", "other", "value", "text", "dirX", "dirY", "dirZ", *STATE_COLUMNS)
 
 
 def table(replay: Replay) -> Any:
@@ -634,22 +919,31 @@ def table(replay: Replay) -> Any:
     rows: dict[str, list[Any]] = {k: [] for k in COLUMNS}
 
     def add(tick: int, t: float, event: str, slot: int, x: float, y: float, z: float,
-            hp: int | None, mhp: int | None, lvl: int | None, other: str, life: int) -> None:
+            hp: int | None, mhp: int | None, lvl: int | None, other: str, life: int, value: float | None = None,
+            text: str = "", state: dict[str, Any] | None = None) -> None:
         p = by_slot.get(slot, {})
+        state = state or {}
+        yaw = state.get("yaw")
+        look = (math.cos(math.radians(yaw)), math.sin(math.radians(yaw)), 0.0) if isinstance(yaw, (int, float)) else (None,) * 3
         for k, v in (("time", t), ("tick", tick), ("event", event), ("slot", slot), ("player", p.get("name", "")),
                      ("hero", p.get("heroName", "")), ("team", p.get("team", "")), ("life", life), ("x", x),
-                     ("y", y), ("z", z), ("health", hp), ("maxHealth", mhp), ("level", lvl), ("other", other)):
+                     ("y", y), ("z", z), ("health", hp), ("maxHealth", mhp), ("level", lvl), ("other", other),
+                     ("value", value), ("text", text), ("dirX", look[0]), ("dirY", look[1]), ("dirZ", look[2])):
             rows[k].append(v)
+        for k in STATE_COLUMNS:
+            v = state.get(k)
+            rows[k].append(("" if v is None else str(v)) if k == "items" else (None if v is None else float(v)))
 
     for s in replay.samples:
         life = 1 + bisect.bisect_left(deaths.get(s.slot, []), s.tick)
-        add(s.tick, s.time, "position", s.slot, s.x, s.y, s.z, s.health, s.max_health, s.level, "", life)
+        add(s.tick, s.time, "position", s.slot, s.x, s.y, s.z, s.health, s.max_health, s.level, "", life, state=s.extra)
     for e in replay.events:
         if e.x is None or e.y is None:
             continue
         # A death ends the life it happened in; anything else belongs to the life it happened in.
         life = 1 + bisect.bisect_left(deaths.get(e.slot, []), e.tick)
-        add(e.tick, e.time, e.event, e.slot, e.x, e.y, 0.0 if e.z is None else e.z, None, None, None, e.other, life)
+        add(e.tick, e.time, e.event, e.slot, e.x, e.y, 0.0 if e.z is None else e.z, None, None, None, e.other, life,
+            e.value, e.text)
 
     n = len(rows["time"])
     order = np.lexsort((np.array(rows["slot"], dtype=np.int64),
@@ -663,7 +957,8 @@ def table(replay: Replay) -> Any:
         return pa.array(data, type=kind, mask=mask if mask.any() else None)
 
     def floats(name: str, kind: Any) -> Any:
-        return pa.array(np.array([rows[name][i] for i in order], dtype=np.float64), type=kind)
+        values = np.array([np.nan if rows[name][i] is None else rows[name][i] for i in order], dtype=np.float64)
+        return pa.array(values, type=kind, from_pandas=True)
 
     def text(name: str) -> Any:
         return pa.array([rows[name][i] for i in order], type=pa.string()).dictionary_encode()
@@ -685,9 +980,61 @@ def table(replay: Replay) -> Any:
         "maxHealth": ints("maxHealth", pa.int32()),
         "level": ints("level", pa.int8()),
         "other": text("other"),
+        "value": floats("value", pa.float32()),
+        "text": text("text"),
+        "dirX": floats("dirX", pa.float32()),
+        "dirY": floats("dirY", pa.float32()),
+        "dirZ": floats("dirZ", pa.float32()),
+        **{k: (text(k) if k == "items" else floats(k, pa.float32())) for k in STATE_COLUMNS},
     }
     hints = dict(HINTS, hz=replay.hz)
     return pa.table(columns).replace_schema_metadata({"heat3d": json.dumps(hints)})
+
+
+#: How the viewer should read the units' table: one track per unit, `unit` naming it.
+UNIT_HINTS = {
+    **HINTS,
+    "kind": "dota2-replay-units",
+    "columns": {**HINTS["columns"], "personId": "unit", "sessionId": "match",
+                "extra": ["name", "class", "team", "health", "owner", "match"]},
+}
+
+
+def units_table(replay: Replay) -> Any:
+    """Every unit but the players' heroes, once a second: creeps, summons, illusions, couriers, wards, buildings."""
+    import numpy as np
+    import pyarrow as pa
+
+    u = replay.units
+    teams = {RADIANT: "Radiant", DIRE: "Dire"}
+
+    def col(i: int) -> list[Any]:
+        return [r[i] for r in u]
+
+    def floats(values: list[Any], kind: Any = pa.float32()) -> Any:
+        return pa.array(np.array([np.nan if v is None else v for v in values], dtype=np.float64), type=kind, from_pandas=True)
+
+    yaw = np.array([np.nan if v is None else v for v in col(11)], dtype=np.float64) if u else np.zeros(0)
+    columns = {
+        "match": pa.array([str(replay.match_id)] * len(u), type=pa.string()).dictionary_encode(),
+        "time": floats(col(1), pa.float64()),
+        "tick": pa.array(col(0), type=pa.int32()),
+        "unit": pa.array([f"{name or cls} #{index}" for index, cls, name in zip(col(2), col(3), col(4))],
+                         type=pa.string()).dictionary_encode(),
+        "class": pa.array(col(3), type=pa.string()).dictionary_encode(),
+        "name": pa.array(col(4), type=pa.string()).dictionary_encode(),
+        "team": pa.array([teams.get(t, str(t if t is not None else "")) for t in col(5)], type=pa.string()).dictionary_encode(),
+        "x": floats(col(6)),
+        "y": floats(col(7)),
+        "z": floats(col(8)),
+        "health": floats(col(9)),
+        "maxHealth": floats(col(10)),
+        "dirX": pa.array(np.cos(np.radians(yaw)), type=pa.float32(), from_pandas=True),
+        "dirY": pa.array(np.sin(np.radians(yaw)), type=pa.float32(), from_pandas=True),
+        "dirZ": pa.array(np.where(np.isfinite(yaw), 0.0, np.nan), type=pa.float32(), from_pandas=True),
+        "owner": pa.array(col(12), type=pa.int16()),
+    }
+    return pa.table(columns).replace_schema_metadata({"heat3d": json.dumps(dict(UNIT_HINTS, hz=1.0))})
 
 
 def summary(replay: Replay) -> dict[str, Any]:
@@ -700,7 +1047,7 @@ def summary(replay: Replay) -> dict[str, Any]:
     span = (replay.samples[-1].time - replay.samples[0].time) if replay.samples else 0.0
     return {
         "format": "heat3d-dota-match",
-        "version": 1,
+        "version": 2,
         "match": str(replay.match_id),
         "map": "dota",
         **replay.info,
@@ -710,6 +1057,11 @@ def summary(replay: Replay) -> dict[str, Any]:
                        if e.event in ("tower_kill", "barracks_kill", "roshan_kill", "tormentor_kill")],
         "wards": [{**at(e), "type": e.other} for e in replay.events if e.event.endswith("_ward")],
         "samples": {"hz": replay.hz, "rows": len(replay.samples), "seconds": round(span, 1)},
+        "units": {"hz": 1.0, "rows": len(replay.units), "count": len({u[2] for u in replay.units})},
+        "events": dict(sorted(_count(e.event for e in replay.events).items())),
+        # Everything else the parser extracted, as it has it (see `_more`); the combat log in a table of its own.
+        "gem": replay.more,
+        "combatLog": {"file": f"{replay.match_id}.combatlog.parquet", "rows": len(replay.combat_log.get("tick", []))},
         "conventions": {
             "coordinates": "Dota world units: x east, y north, z up; the playable map runs about -8200..8200",
             "time": "the game clock in seconds: negative before the horn, standing while paused",
@@ -718,6 +1070,13 @@ def summary(replay: Replay) -> dict[str, Any]:
                       "a ward where it was planted",
         },
     }
+
+
+def _count(items: Any) -> dict[str, int]:
+    out: dict[str, int] = {}
+    for x in items:
+        out[x] = out.get(x, 0) + 1
+    return out
 
 
 def _r(v: float | None) -> float | None:
@@ -734,7 +1093,15 @@ def write(replay: Replay, folder: str | Path) -> tuple[Path, Path]:
     data = folder / f"{name}.parquet"
     doc = folder / f"{name}.match.json"
     pq.write_table(table(replay), data, compression="snappy", row_group_size=256_000)
-    doc.write_text(json.dumps(summary(replay), indent=1, ensure_ascii=False), encoding="utf-8")
+    if replay.units:
+        pq.write_table(units_table(replay), folder / f"{name}.units.parquet", compression="snappy",
+                       row_group_size=256_000)
+    if replay.combat_log.get("tick"):
+        import pyarrow as pa
+
+        pq.write_table(pa.table(replay.combat_log), folder / f"{name}.combatlog.parquet", compression="snappy")
+    # Compact: the parser's data runs to megabytes.
+    doc.write_text(json.dumps(summary(replay), ensure_ascii=False, default=str, separators=(",", ":")), encoding="utf-8")
     return data, doc
 
 

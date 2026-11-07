@@ -61,18 +61,22 @@ match's replay on its servers for a few weeks, and `python -m heat3d_watch
 dota-replay <match id>` fetches one by its id through OpenDota. Each is read with
 gem (github.com/whanyu1212/gem-dota, MIT, `pip install gem-dota`) in a process
 of its own (`heat3d_watch/decoders/dota_replay.py`): every hero's position,
-height, health and level 7.5 times a second while alive, kills and deaths where
-they happened, towers, barracks, Roshan and Tormentors where they fell, and
-every observer and sentry ward where it was planted - into
-`dota/<match>.parquet` and `<match>.match.json` in the session folder. Positions
-are Dota's world units, the same the game-state integration reports. The
-signed-in player's scoreboard line becomes the session's statistics: kills,
-deaths, assists, last hits, denies, net worth, GPM, XPM, hero damage, wards,
-and whether the match was won. Not read: creeps, couriers, summons and
-illusions; who could see whom through the fog of war; items and abilities over
-time. A new Dota patch can change the replay's entities before gem follows; a
-replay gem cannot read to the end is converted as far as it goes and marked
-`incomplete` in its summary.
+height, health, level, facing, mana, experience, attributes and items 7.5
+times a second while alive, kills and deaths where they happened, towers,
+barracks, Roshan and Tormentors where they fell, every ward where it was
+planted and where it ended, and the combat log's entries about the heroes
+(damage, heals, abilities, items, purchases, runes, gold, experience,
+modifiers) - into `dota/<match>.parquet`; every other unit (creeps, summons,
+illusions, couriers, buildings) once a second into `<match>.units.parquet`;
+the whole combat log into `<match>.combatlog.parquet`; and the match, the
+chat, the draft and everything else the parser extracts into
+`<match>.match.json`, in the session folder. Positions are Dota's world
+units, the same the game-state integration reports. The signed-in player's
+scoreboard line becomes the session's statistics: kills, deaths, assists,
+last hits, denies, net worth, GPM, XPM, hero damage, wards, and whether the
+match was won. A new Dota patch can change the replay's entities before gem
+follows; a replay gem cannot read to the end is converted as far as it goes
+and marked `incomplete` in its summary.
 
 #### War Thunder
 
