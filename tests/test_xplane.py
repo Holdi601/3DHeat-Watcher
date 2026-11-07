@@ -172,8 +172,12 @@ def test_a_flight_against_a_fake_xplane(tmp_path):
     assert st["max_altitude_m"] == pytest.approx(430.0)
     assert st["max_g"] == pytest.approx(2.1, abs=0.01)
     assert st["distance_km"] == pytest.approx(0.15, abs=0.03)
+    assert meta["geo"] == {"lat0": 47.0, "lon0": 8.0}
     t = pq.read_table(folder / "heat.parquet")
     assert "lat" in t.column_names and set(t.column("player").to_pylist()) == {"me"}
+    hints = json.loads(t.schema.metadata[b"heat3d"])
+    assert hints["geo"] == {"lat0": 47.0, "lon0": 8.0, "projection": "tangent-plane", "east": "x", "north": "z",
+                            "up": "y"}
 
 
 def test_a_jump_is_cut_and_a_far_new_flight_gets_its_own_map(tmp_path):

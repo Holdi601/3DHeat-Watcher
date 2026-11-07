@@ -215,7 +215,8 @@ def cmd_table(args: argparse.Namespace, s: Settings) -> int:
     meta = json.loads((folder / "meta.json").read_text(encoding="utf-8"))
     a = meta.get("axes", {})
     axes = Axes(**{k: v for k, v in a.items() if k in Axes.__dataclass_fields__})
-    out = write_table(folder, axes, meta.get("game", ""))
+    geo = meta.get("geo") if isinstance(meta.get("geo"), dict) else None
+    out = write_table(folder, axes, meta.get("game", ""), geo=geo)
     print(out or "no positions in this session")
     return 0
 

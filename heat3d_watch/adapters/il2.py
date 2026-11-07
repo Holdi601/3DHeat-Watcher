@@ -39,7 +39,9 @@ IL-2 Sturmovik: Great Battles - the game's telemetry UDP output, and its own Tac
    ("Event=Destroyed|id|text"). T = Lon|Lat|Alt[|U|V] or
    Lon|Lat|Alt|Roll|Pitch|Yaw[|U|V|Heading], longitude and latitude relative to
    the reference, empty fields unchanged. Positions go into a flat map around
-   the reference point: x east, y altitude, z north, metres.
+   the reference point: x east, y altitude, z north, metres. The reference
+   point is the session's `geo`, carried in meta.json and the table's footer,
+   so the viewer can lay the real world under the tracks.
 """
 
 from __future__ import annotations
@@ -700,7 +702,7 @@ def convert_acmi(ctx: Context, adapter: Adapter, path: Path, *, sample_seconds: 
     for k in ("DataSource", "DataRecorder", "Title", "ReferenceTime", "RecordingTime"):
         if glob.get(k):
             meta[k[0].lower() + k[1:]] = glob[k]
-    s = ctx.open(adapter, when=when, meta=meta)
+    s = ctx.open(adapter, when=when, meta=meta, geo=tangent.geo())
     counts: dict[str, set[str]] = {"spawn": set(), "death": set()}
     for r in rows:
         t = r.t - t0

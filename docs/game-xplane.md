@@ -62,7 +62,9 @@ X-Plane 12 accepts these only with Settings > Network > "Accept incoming
 connections" on. Positions go into a flat map around the sitting's first fix
 (`Tangent`): x east, z north in metres, y the altitude above sea level - so a
 level flight stays level however far it goes, which a true tangent plane would
-bend down with the earth.
+bend down with the earth. The map's origin is the session's `geo`: meta.json
+and the table's footer carry it, so the viewer can lay the real world under
+the flight.
 
 This module also holds what the other flight sims share: the flat map, the
 flight bookkeeping (takeoffs, landings, crashes, distance), the UDP socket and

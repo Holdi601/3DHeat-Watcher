@@ -127,6 +127,7 @@ def test_sorties_over_udp(tmp_path):
     assert st["max_eas_kmh"] == 288.0 and st["max_g"] == pytest.approx(3.0, abs=0.01) and st["ordnance_kg"] == 170
     assert st["flight_time"] == pytest.approx(2.0)  # state rows at ticks 100, 150, 200: two seconds between them
     assert meta["server_title"] == "A server" and meta["multiplayer"] is True
+    assert "geo" not in meta  # no world position, no place on the earth
 
 
 CFG = (
@@ -262,8 +263,11 @@ def test_finished_recordings_become_sessions(tmp_path):
         meta = json.loads(m.read_text(encoding="utf-8"))
         assert meta["origin"] == {"lat": 48.0, "lon": 44.0} and meta["started"].startswith("2026-10-01")
         assert meta["stats"]["objects"] == 3 and meta["stats"]["destroyed"] == 1 and meta["stats"]["takeoffs"] == 1
-        assert meta["axes"]["flip_z"] is True
+        assert meta["axes"]["flip_z"] is True and meta["geo"] == {"lat0": 48.0, "lon0": 44.0}
         t = pq.read_table(m.parent / "heat.parquet")
+        hints = json.loads(t.schema.metadata[b"heat3d"])
+        assert hints["geo"] == {"lat0": 48.0, "lon0": 44.0, "projection": "tangent-plane", "east": "x",
+                                "north": "z", "up": "y"}
         alpha = [r for r in t.to_pylist() if r["player"] == "Alpha"]
         # 0.01 deg of longitude east of the reference at 48 N is about 745 m; 0.02 deg of latitude 2224 m.
         assert alpha[0]["x"] == pytest.approx(745, abs=5) and alpha[0]["z"] == pytest.approx(2224, abs=5)

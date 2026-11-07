@@ -46,7 +46,9 @@ def test_a_session_streams_lines_and_ends_as_a_table(tmp_path):
     assert hints["columns"]["personId"] == "player"
     assert hints["columns"]["sessionId"] == "session"
     assert "event" in hints["columns"]["extra"]
+    assert "geo" not in hints  # a game world that is not on the earth: the footer as it always was
     meta = json.loads((s.folder / "meta.json").read_text(encoding="utf-8"))
+    assert "geo" not in meta
     assert meta["stats"] == {"kills": 5, "best_lap": 88.0}
     assert meta["events"]["position"] == 1 and meta["positions"] == 3
     assert meta["axes"]["units"] == "inches"
@@ -239,6 +241,34 @@ def test_a_killed_watcher_s_session_is_finished_on_the_next_start(tmp_path):
     assert meta["ended"] and meta["recovered"] and meta["stats"]["kills"] == 4
     assert (s.folder / "heat.parquet").exists()
     assert recover(tmp_path) == []  # once only
+
+
+GEO_HINT = {"lat0": 42.0, "lon0": -115.5, "projection": "tangent-plane", "east": "x", "north": "z", "up": "y"}
+
+
+def test_a_session_on_the_earth_says_where_in_meta_and_footer(tmp_path):
+    from heat3d_watch.session import geo_hint, recover, write_table
+
+    s = Session.open(tmp_path, "Some Sim", "some-sim", geo={"lat0": 42.0, "lon0": -115.5})
+    s.position(1, 2, 3, player="me")
+    t = pq.read_table(s.close())
+    assert json.loads(t.schema.metadata[b"heat3d"])["geo"] == GEO_HINT
+    assert json.loads((s.folder / "meta.json").read_text(encoding="utf-8"))["geo"] == {"lat0": 42.0, "lon0": -115.5}
+    # Rebuilt without it, the table is as before; with it, the same entry.
+    write_table(s.folder, s.axes, s.game)
+    assert "geo" not in json.loads(pq.read_table(s.folder / "heat.parquet").schema.metadata[b"heat3d"])
+    write_table(s.folder, s.axes, s.game, geo={"lat0": 42, "lon0": -115.5})
+    assert json.loads(pq.read_table(s.folder / "heat.parquet").schema.metadata[b"heat3d"])["geo"] == GEO_HINT
+    for bad in (None, {}, {"lat0": 1.0}, {"lat0": "x", "lon0": 1.0}, {"lat0": float("nan"), "lon0": 1.0}):
+        assert geo_hint(bad) is None
+    # A session a killed watcher left keeps its place when it is finished.
+    k = Session.open(tmp_path, "Some Sim", "some-sim", geo={"lat0": 42.0, "lon0": -115.5})
+    k.position(1, 2, 3, player="me")
+    k._file.close()
+    k._file = None
+    (done,) = recover(tmp_path)
+    assert done.geo == {"lat0": 42.0, "lon0": -115.5} and "geo" not in done.meta
+    assert json.loads(pq.read_table(k.folder / "heat.parquet").schema.metadata[b"heat3d"])["geo"] == GEO_HINT
 
 
 def test_a_best_is_the_lowest_for_times_and_places_the_highest_for_the_rest(tmp_path, capsys):

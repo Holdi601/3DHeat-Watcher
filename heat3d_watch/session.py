@@ -78,6 +78,10 @@ class Session:
     meta: dict[str, Any] = field(default_factory=dict)
     counts: dict[str, int] = field(default_factory=dict)
     positions: int = 0
+    #: Where on the earth the rows are, for sessions that have a place there: {"lat0": .., "lon0": ..},
+    #: the origin of the flat map x/y/z are in (x east, y altitude, z north, metres; see `Tangent`).
+    #: Said in meta.json and in the table's footer, so the viewer can lay the real world under the rows.
+    geo: dict[str, float] | None = None
     _mono: float = field(default_factory=time.monotonic)
     _file: Any = None
     _lock: threading.Lock = field(default_factory=threading.Lock)
@@ -216,6 +220,8 @@ class Session:
             "stats": self.stats,
             **self.meta,
         }
+        if self.geo:
+            doc["geo"] = self.geo
         (self.folder / "meta.json").write_text(json.dumps(doc, indent=2, ensure_ascii=False), encoding="utf-8")
 
     def close(self) -> Path | None:
@@ -230,7 +236,7 @@ class Session:
         if not self.counts:
             return None
         try:
-            return write_table(self.folder, self.axes, self.game)
+            return write_table(self.folder, self.axes, self.game, geo=self.geo)
         except ImportError:
             # pyarrow missing: the lines are the record, the table can be made later.
             return None
@@ -254,7 +260,33 @@ def read_rows(folder: Path) -> list[dict[str, Any]]:
     return rows
 
 
-def write_table(folder: Path, axes: Axes, game: str) -> Path | None:
+def geo_hint(geo: dict[str, Any] | None) -> dict[str, Any] | None:
+    """
+    The footer's `geo` entry for a session placed on the earth, or None.
+
+    `lat0`/`lon0` are the flat map's origin (degrees); `east`, `north` and `up`
+    name the columns holding metres east and north of it and the altitude above
+    sea level - x, z and y, as `Tangent.local` gives them.
+    """
+    if not geo:
+        return None
+    try:
+        lat0, lon0 = float(geo["lat0"]), float(geo["lon0"])
+    except (KeyError, TypeError, ValueError):
+        return None
+    if not (math.isfinite(lat0) and math.isfinite(lon0)):
+        return None
+    hint: dict[str, Any] = {"lat0": lat0, "lon0": lon0, "projection": "tangent-plane", "east": "x", "north": "z", "up": "y"}
+    # DCS tables keep the sim's own metres too (x north, y up, z east in the
+    # theatre's transverse Mercator projection): the viewer can place those
+    # on the earth as well, by the theatre's name.
+    dcs = geo.get("dcs")
+    if isinstance(dcs, dict) and isinstance(dcs.get("theatre"), str) and dcs["theatre"]:
+        hint["dcs"] = {"theatre": dcs["theatre"], "x": "dcs_x", "y": "dcs_y", "z": "dcs_z"}
+    return hint
+
+
+def write_table(folder: Path, axes: Axes, game: str, geo: dict[str, Any] | None = None) -> Path | None:
     """`events.jsonl` as `heat.parquet`, with the viewer's reading instructions in the footer."""
     import pyarrow as pa
     import pyarrow.parquet as pq
@@ -298,6 +330,9 @@ def write_table(folder: Path, axes: Axes, game: str) -> Path | None:
             "extra": ["event", *[c for c in extra]],
         },
     }
+    place = geo_hint(geo)
+    if place:
+        hints["geo"] = place
     meta = dict(table.schema.metadata or {})
     meta[b"heat3d"] = json.dumps(hints).encode("utf-8")
     table = table.replace_schema_metadata(meta)
@@ -331,7 +366,7 @@ def recover(data: Path) -> list[Session]:
         except (KeyError, ValueError):
             started = folder.stat().st_mtime
         known = {"format", "version", "watcher", "game", "adapter", "source", "multiplayer", "started", "ended",
-                 "seconds", "axes", "events", "positions", "stats"}
+                 "seconds", "axes", "events", "positions", "stats", "geo"}
         s = Session(
             game=meta.get("game", folder.parent.name),
             adapter=meta.get("adapter", ""),
@@ -342,6 +377,7 @@ def recover(data: Path) -> list[Session]:
             started=started,
             stats=dict(meta.get("stats") or {}),
             meta={k: v for k, v in meta.items() if k not in known},
+            geo=meta.get("geo") if isinstance(meta.get("geo"), dict) else None,
         )
         for r in rows:
             e = str(r.get("event", ""))
@@ -353,7 +389,7 @@ def recover(data: Path) -> list[Session]:
         s.meta["recovered"] = True
         s.write_meta()
         try:
-            write_table(folder, axes, s.game)
+            write_table(folder, axes, s.game, geo=s.geo)
         except ImportError:
             pass
         out.append(s)

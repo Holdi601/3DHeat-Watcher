@@ -85,7 +85,7 @@ one game's problem does not stop the others.
 | `settings` | the `Settings` ([Installing and running](installing-and-running#settings)) |
 | `data` | the data folder |
 | `pid`, `exe` | the game's process id and executable path, when the adapter was started for a running game; the install folder is next to `exe` |
-| `open(adapter, *, game=None, when=None, axes=..., source=..., multiplayer=..., meta=...)` | a new `Session`. `game` overrides the adapter's game name (for adapters covering many games); `when` sets the start for sessions that describe the past; `axes`, `source` and `multiplayer` default to the adapter's; `meta` is a dictionary written into `meta.json` |
+| `open(adapter, *, game=None, when=None, axes=..., source=..., multiplayer=..., meta=..., geo=None)` | a new `Session`. `game` overrides the adapter's game name (for adapters covering many games); `when` sets the start for sessions that describe the past; `axes`, `source` and `multiplayer` default to the adapter's; `meta` is a dictionary written into `meta.json`; `geo` (`{"lat0": .., "lon0": ..}`, or set `session.geo` later) places a flat-map session on the earth, in `meta.json` and the table's footer |
 | `close(session)` | end a session: the table, `meta.json`, its line in `watcher.sqlite`. A session with no events is deleted. Accepts `None`. Returns the table's path or `None`. |
 
 A `Session` records:
@@ -118,7 +118,9 @@ Conventions that the rest of the system relies on:
   for vehicles.
 - **Positions stay in the game's own world coordinates and units**, described by `axes`. Do not
   convert them to another frame unless the game gives no usable world frame (the flight sims put
-  latitude and longitude into a flat map around the first fix). `axes.scale` is the viewer's unit
+  latitude and longitude into a flat map, `Tangent`, around the first fix - DCS around its theatre's
+  fixed origin - and pass `geo=tangent.geo()` to `open`, so the footer says where on the earth the
+  map is). `axes.scale` is the viewer's unit
   scale - it multiplies every position by it - and stays 1, so the rows line up with a level exported
   from the same game in the same units; say the unit in `axes.units`.
 - **Statistic keys** are lower case with underscores, and carry their unit where one applies
@@ -136,7 +138,7 @@ Conventions that the rest of the system relies on:
 | `SharedView.open(name)` | `simracing_shm` | a game's named shared memory, read-only, never created |
 | `ReplayAdapter` (`patterns`, `folders(ctx)`, `convert(path, ctx)`) | `replays` | a watched replay folder: files converted once they stop growing, in a worker thread; the first look only notes what is there, and `convert_existing(ctx, folder=None)` - the [`replays`](commands#replays) command - converts those on request |
 | `load_state`, `save_state` | `platform` | remembering what an always-on adapter has seen, in `<data>\state\<id>.json` |
-| `FlightLog`, `Tangent` | `xplane` | flight bookkeeping (takeoffs, landings, crashes, distance) and the flat map around the first fix |
+| `FlightLog`, `Tangent` | `xplane` | flight bookkeeping (takeoffs, landings, crashes, distance) and the flat map around the first fix (`Tangent.geo()` is the session's `geo`) |
 | `backup_once(path)` | `gsi`, `racing` | the `<file>.heat3d-backup` rule |
 | Steam's files | `_steam` | binary and text KeyValues, the Steam folder from the registry |
 

@@ -40,7 +40,8 @@ INDICATED and GROUND VELOCITY (knots), G FORCE (gforce), SIM ON GROUND (bool).
 System events: SimStart, SimStop, Crashed, FlightLoaded.
 
 Positions go into the same flat map as X-Plane's (x east, y altitude, z north
-in metres from the sitting's first fix).
+in metres from the sitting's first fix); that fix is the session's `geo`, in
+meta.json and the table's footer.
 """
 
 from __future__ import annotations
@@ -375,7 +376,7 @@ class MsfsAdapter(Adapter):
                 self._close(ctx)
         if self._session is None:
             self._tangent = Tangent(lat, lon)
-            self._session = ctx.open(self, meta={"origin": self._tangent.meta()})
+            self._session = ctx.open(self, meta={"origin": self._tangent.meta()}, geo=self._tangent.geo())
             self._log = FlightLog(self._session)
         assert self._tangent is not None and self._log is not None
         if self._new_flight and self._log.live:

@@ -10,7 +10,9 @@ from dataclasses import replace
 import pytest
 
 from heat3d_watch.adapters.base import Context
-from heat3d_watch.adapters.dcs import ADAPTERS, BACKUP, HOOK_NAME, MARK, hook_lua, parse_line
+import pyarrow.parquet as pq
+
+from heat3d_watch.adapters.dcs import ADAPTERS, BACKUP, HOOK_NAME, MARK, THEATRES, hook_lua, parse_line, theatre_origin
 from heat3d_watch.config import Settings
 from heat3d_watch.session import read_rows
 
@@ -58,8 +60,10 @@ def test_lines_parse():
 
 
 def _p(t, x, y, z, **kw):
-    fields = dict(t=f"{t:.3f}", x=f"{x:.2f}", y=f"{y:.2f}", z=f"{z:.2f}", lat="42.1", lon="41.7", alt=f"{y:.2f}",
-                  hdg="1.5", pitch="0.1", bank="0", ias="150", agl="900", g="1.2", type="F-16C_50")
+    """A `p` line; latitude follows DCS's x (north) at about 111 km a degree, from 42.1 N 41.7 E."""
+    lat = 42.1 + (x + 281000) / 111_000
+    fields = dict(t=f"{t:.3f}", x=f"{x:.2f}", y=f"{y:.2f}", z=f"{z:.2f}", lat=f"{lat:.7f}", lon="41.7",
+                  alt=f"{y:.2f}", hdg="1.5", pitch="0.1", bank="0", ias="150", agl="900", g="1.2", type="F-16C_50")
     fields.update(kw)
     return "p;" + ";".join(f"{k}={v}" for k, v in fields.items())
 
@@ -101,20 +105,74 @@ def test_a_mission_over_udp(tmp_path):
     ]
     kill = next(r for r in rows if r["event"] == "kill")
     assert kill["victim_type"] == "Su-27" and kill["weapon"] == "AIM-120C" and kill["player"] == "me"
-    assert kill["x"] == pytest.approx(-280930)  # where the shooter was
+    pos = [r for r in rows if r["event"] == "position"]
+    assert pos[5]["dcs_x"] == -280930 and (kill["x"], kill["z"]) == (pos[5]["x"], pos[5]["z"])  # where the shooter was
     takeoff = next(r for r in rows if r["event"] == "takeoff")
     assert takeoff["airfield"] == "Some Field" and takeoff["session"] == "life-1"
-    pos = [r for r in rows if r["event"] == "position"]
-    assert len(pos) == 7 and pos[-1]["session"] == "life-2" and pos[-1]["z"] == 500000
+    assert len(pos) == 7 and pos[-1]["session"] == "life-2"
+    assert (pos[-1]["dcs_x"], pos[-1]["dcs_y"], pos[-1]["dcs_z"]) == (-100000, 20, 500000)  # DCS's own metres kept
     assert pos[0]["lat"] == 42.1 and pos[0]["aircraft"] == "F-16C_50"
+    # A theatre the table does not know: the map's origin is the first fix (42.1 N 41.7 E) rounded.
+    assert pos[0]["z"] == pytest.approx(0.1 * 111_100, rel=0.01) and pos[0]["x"] < -20_000
     meta = json.loads((folder / "meta.json").read_text(encoding="utf-8"))
     assert meta["map"] == "Testland" and meta["pilot"] == "Pilot" and meta["multiplayer"] is False
-    assert meta["axes"] == {"up": "y", "flip_x": False, "flip_y": False, "flip_z": False, "scale": 1.0,
-                            "units": "metres (DCS world: x north, y up, z east)"}
+    assert meta["axes"] == {"up": "y", "flip_x": False, "flip_y": False, "flip_z": True, "scale": 1.0,
+                            "units": "metres (east, altitude, north from the theatre's origin)"}
+    assert meta["geo"] == {"lat0": 42.0, "lon0": 42.0, "dcs": {"theatre": "Testland"}}
+    assert meta["origin"] == {"lat": 42.0, "lon": 42.0}
     st = meta["stats"]
     assert st["kills"] == 1 and st["shot_down"] == 1 and st["deaths"] == 1 and st["ejections"] == 1
-    assert st["takeoffs"] == 1 and st["lives"] == 2 and st["max_g"] == 3 and st["bad_packets"] == 2
+    assert st["takeoffs"] == 1 and st["lives"] == 2 and st["max_g"] == 3 and st["bad_packets"] == 1
+    assert st["fixes_without_latlon"] == 1  # "p;t=1;x=;y=;z=": nowhere to put it
     assert st["max_altitude_m"] == 50
+
+
+def test_positions_are_metres_from_the_theatre_s_origin(tmp_path):
+    a = replace(ADAPTERS[0])
+    ctx = Context(Settings(data=str(tmp_path)), tmp_path)
+    a.line(ctx, "start;mission=M;map=Caucasus;me=1;name=P;mp=0")
+    folder = a._session.folder
+    a.line(ctx, "p;t=1;x=-281000.5;y=1000;z=647000.25;lat=42;lon=42;alt=1000;type=Su-25T")
+    a.line(ctx, "p;t=2;x=-170000;y=1000;z=647000;lat=43;lon=42;alt=1000;type=Su-25T")  # one degree north
+    a.line(ctx, "p;t=3;x=-170000;y=1000;z=647000;type=Su-25T")  # no LatLongAlt: cannot be placed
+    a.line(ctx, "stop;t=4")
+    pos = [r for r in read_rows(folder) if r["event"] == "position"]
+    assert len(pos) == 2
+    assert pos[0]["x"] == pytest.approx(0, abs=1e-6) and pos[0]["z"] == pytest.approx(0, abs=1e-6)
+    assert pos[0]["y"] == 1000
+    assert (pos[0]["dcs_x"], pos[0]["dcs_y"], pos[0]["dcs_z"]) == (-281000.5, 1000, 647000.25)
+    assert pos[1]["x"] == pytest.approx(0, abs=1) and pos[1]["z"] == pytest.approx(111_100, rel=0.005)
+    meta = json.loads((folder / "meta.json").read_text(encoding="utf-8"))
+    assert meta["geo"] == {"lat0": 42.0, "lon0": 42.0, "dcs": {"theatre": "Caucasus"}}
+    assert meta["stats"]["fixes_without_latlon"] == 1
+    t = pq.read_table(folder / "heat.parquet")
+    hints = json.loads(t.schema.metadata[b"heat3d"])
+    assert hints["geo"] == {"lat0": 42.0, "lon0": 42.0, "projection": "tangent-plane", "east": "x", "north": "z",
+                            "up": "y", "dcs": {"theatre": "Caucasus", "x": "dcs_x", "y": "dcs_y", "z": "dcs_z"}}
+    assert hints["axes"] == {"up": "y", "flipX": False, "flipY": False, "flipZ": True, "scale": 1.0}
+    assert {"dcs_x", "dcs_y", "dcs_z", "lat", "lon", "alt"} <= set(t.column_names)
+
+
+def test_an_unknown_theatre_takes_the_first_fix_rounded_halves_up(tmp_path):
+    # Halves go up, as the viewer rounds: 34.5 -> 35 and -117.5 -> -117 (Python's round() would give 34 and -118).
+    assert theatre_origin("Somewhere", 34.5, -117.5) == (35.0, -117.0)
+    assert theatre_origin("", 41.49, 41.51) == (41.0, 42.0)
+    assert theatre_origin("Nevada", 34.5, -117.5) == THEATRES["Nevada"] == (36.0, -115.0)
+    a = replace(ADAPTERS[0])
+    ctx = Context(Settings(data=str(tmp_path)), tmp_path)
+    a.line(ctx, "start;mission=M;map=Somewhere;me=1;name=P;mp=0")
+    folder = a._session.folder
+    a.line(ctx, "p;t=1;x=0;y=500;z=0;lat=34.5;lon=-117.5;alt=500")
+    a.line(ctx, "p;t=2;x=0;y=500;z=0;lat=36.4;lon=-115.6;alt=500")  # later fixes do not move the origin
+    a.line(ctx, "stop;t=3")
+    meta = json.loads((folder / "meta.json").read_text(encoding="utf-8"))
+    assert meta["geo"] == {"lat0": 35.0, "lon0": -117.0, "dcs": {"theatre": "Somewhere"}}
+    # Without a start line (the watcher came up mid-mission) the theatre is unknown: the same rule.
+    a.line(ctx, "p;t=9;x=0;y=500;z=0;lat=51.2;lon=1.6;alt=500")
+    folder = a._session.folder
+    a.stop(ctx)
+    meta = json.loads((folder / "meta.json").read_text(encoding="utf-8"))
+    assert meta["geo"] == {"lat0": 51.0, "lon0": 2.0}
 
 
 def test_a_server_that_forbids_export_leaves_a_session_saying_so(tmp_path):
@@ -135,6 +193,7 @@ def test_a_server_that_forbids_export_leaves_a_session_saying_so(tmp_path):
     assert [r.get("player") for r in rows[2:]] == ["player-3", "me"]
     meta = json.loads((folder / "meta.json").read_text(encoding="utf-8"))
     assert meta["multiplayer"] is True and meta["stats"]["export_blocked"] == 1 and "no_export" in meta
+    assert "geo" not in meta  # no position, no place on the earth
 
 
 def test_the_hook_runs_under_lua_5_1():

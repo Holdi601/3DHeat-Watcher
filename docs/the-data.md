@@ -123,6 +123,19 @@ Rocket League - because a level exported from the game is in those same units, s
 the CS2 converter's own tables say the same. `units` in `meta.json` says what one unit is. Each game's
 page lists its values under "Positions and axes".
 
+The flight sims (DCS World, Microsoft Flight Simulator, X-Plane, IL-2's Tacview recordings) put their
+rows on the earth, and their footer says where, so the viewer can lay the real world under them:
+
+```json
+"geo": {"lat0": 42.0, "lon0": 42.0, "projection": "tangent-plane", "east": "x", "north": "z", "up": "y"}
+```
+
+`lat0`/`lon0` (degrees) are the origin of the flat map the rows are in; `east`, `north` and `up` name
+the columns holding metres east and north of it and the altitude above sea level. The origin is the
+first fix for X-Plane and MSFS, the recording's reference point for IL-2, and the theatre's fixed origin
+for DCS (the first fix rounded to whole degrees on a theatre the watcher does not know). A table without
+a place on the earth has no `geo` key, and everything else in the footer is the same either way.
+
 `heat.parquet` can always be rebuilt from `events.jsonl` with
 `python -m heat3d_watch table <session folder>` (see [Commands](commands.md#table)). This is useful when
 `pyarrow` was missing while the session was recorded.
@@ -154,7 +167,8 @@ those writes, so a crash can lose at most the last half minute of them.
 ```
 
 A session whose source names the player (see [The player's own rows](#the-players-own-rows)) also has
-`"player"`: the name the player's own rows carry.
+`"player"`: the name the player's own rows carry. A session on the earth (the flight sims) also has
+`"geo": {"lat0": .., "lon0": ..}`, the origin its footer's `geo` repeats.
 
 - `started` / `ended`: local time to the second; `ended` is `null` while the session runs.
 - `events`: how many times each event happened, most frequent first. `positions` is the number of rows

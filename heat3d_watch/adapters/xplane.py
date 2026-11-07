@@ -32,7 +32,9 @@ X-Plane 12 accepts these only with Settings > Network > "Accept incoming
 connections" on. Positions go into a flat map around the sitting's first fix
 (`Tangent`): x east, z north in metres, y the altitude above sea level - so a
 level flight stays level however far it goes, which a true tangent plane would
-bend down with the earth.
+bend down with the earth. The map's origin is the session's `geo`: meta.json
+and the table's footer carry it, so the viewer can lay the real world under
+the flight.
 
 This module also holds what the other flight sims share: the flat map, the
 flight bookkeeping (takeoffs, landings, crashes, distance), the UDP socket and
@@ -107,6 +109,10 @@ class Tangent:
 
     def meta(self) -> dict[str, float]:
         return {"lat": self.lat, "lon": self.lon}
+
+    def geo(self) -> dict[str, float]:
+        """The session's `geo`: this map's origin, which the table's footer hands the viewer."""
+        return {"lat0": self.lat, "lon0": self.lon}
 
 
 def ground_distance(a: tuple[float, float], b: tuple[float, float]) -> float:
@@ -431,11 +437,11 @@ class XPlaneAdapter(Adapter):
         self._new_flight = False
         if self._session is None:
             self._tangent = Tangent(lat, lon)
-            self._session = ctx.open(self, meta={"origin": self._tangent.meta()})
+            self._session = ctx.open(self, meta={"origin": self._tangent.meta()}, geo=self._tangent.geo())
             self._log = FlightLog(self._session)
         assert self._tangent is not None and self._log is not None
         x, y, z = self._tangent.local(lat, lon, alt)
-        src = self._rpos if self._rpos is not None and now - self._rpos_at < 1.0 else {}
+        src =self._rpos if self._rpos is not None and now - self._rpos_at < 1.0 else {}
         on_ground = v.get("on_ground")
         crashed = v.get("crashed")
         self._log.fix(

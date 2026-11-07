@@ -5,7 +5,7 @@ Adapter `dcs` - kind [`telemetry`](sources-and-rules) - runs while `DCS.exe` is 
 
 ## What is recorded
 
-- own position at 10 Hz in DCS world metres (x north, y up, z east), lat/lon/alt as columns
+- own position at 10 Hz as metres east/up/north of the theatre's origin (from latitude/longitude/altitude); lat/lon/alt and DCS's own world metres (dcs_x north, dcs_y up, dcs_z east) as columns
 - attitude, indicated airspeed, AGL, g, aircraft type
 - takeoffs and landings with the airfield; crashes, ejections, pilot deaths
 - kills and being shot down with both unit types and the weapon; other game events as given
@@ -46,7 +46,19 @@ stop;t=..                                       the mission ended
 `p` is LoGetSelfData: Position x/y/z - DCS's own world metres, x north, y up,
 z east - plus LatLongAlt (degrees, m), Heading/Pitch/Bank (radians), with
 LoGetIndicatedAirSpeed (m/s), LoGetAltitudeAboveGroundLevel (m) and
-LoGetAccelerationUnits().y (g). onGameEvent's arguments, as DCS_ControlAPI
+LoGetAccelerationUnits().y (g).
+
+Positions go into the same flat map as the other flight sims' (`Tangent`: x
+east, y altitude above sea level, z north, metres) from LatLongAlt, around the
+theatre's fixed origin (`THEATRES`, from the `map` of the start line), so every
+mission on one theatre shares one map, and one the viewer can lay the real
+world under. A theatre not in the table takes the first fix's latitude and
+longitude rounded to whole degrees. DCS's own x/y/z are kept as `dcs_x`,
+`dcs_y`, `dcs_z`; a fix without LatLongAlt cannot be placed and is only
+counted (`fixes_without_latlon`). The origin is the session's `geo`, in
+meta.json and the table's footer.
+
+onGameEvent's arguments, as DCS_ControlAPI
 gives them: takeoff/landing (playerID, unit_missionID, airdromeName),
 crash/eject/pilot_death (playerID, unit_missionID), kill (killerPlayerID,
 killerUnitType, killerSide, victimPlayerID, victimUnitType, victimSide,
@@ -62,8 +74,8 @@ false); then there are no positions, only events, and the session says so.
 |---|---|
 | Positions recorded | yes |
 | Up axis | `y` |
-| Units | metres (DCS world: x north, y up, z east) |
-| Mirrored for the viewer | none |
+| Units | metres (east, altitude, north from the theatre's origin) |
+| Mirrored for the viewer | `z` |
 | Unit scale (`scale`: the viewer multiplies positions by it) | 1 |
 
 These go into each session's `meta.json` (`axes`) and, when the session has positions, into `heat.parquet`'s footer, so the 3DHeat viewer turns and scales the rows by itself - see [The data](the-data).
@@ -78,7 +90,7 @@ These go into each session's `meta.json` (`axes`) and, when the session has posi
 
 Statistic keys this adapter's code sets by name (each session's `stats` in `meta.json` and the `stats` table of `watcher.sqlite`):
 
-`airborne_time`, `bad_packets`, `crashes`, `deaths`, `distance_km`, `ejections`, `export_blocked`, `flight_time`, `kills`, `max_altitude_m`, `max_g`, `shot_down`, `{event}s`
+`airborne_time`, `bad_packets`, `crashes`, `deaths`, `distance_km`, `ejections`, `export_blocked`, `fixes_without_latlon`, `flight_time`, `kills`, `max_altitude_m`, `max_g`, `shot_down`, `{event}s`
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
 

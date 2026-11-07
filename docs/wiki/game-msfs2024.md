@@ -65,7 +65,8 @@ INDICATED and GROUND VELOCITY (knots), G FORCE (gforce), SIM ON GROUND (bool).
 System events: SimStart, SimStop, Crashed, FlightLoaded.
 
 Positions go into the same flat map as X-Plane's (x east, y altitude, z north
-in metres from the sitting's first fix).
+in metres from the sitting's first fix); that fix is the session's `geo`, in
+meta.json and the table's footer.
 
 The same module also serves: [Microsoft Flight Simulator 2020 (telemetry)](game-msfs2020).
 

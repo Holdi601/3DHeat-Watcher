@@ -11,6 +11,7 @@ import json
 import struct
 from dataclasses import replace
 
+import pyarrow.parquet as pq
 import pytest
 
 from heat3d_watch.adapters.base import Context
@@ -131,7 +132,12 @@ def test_a_flight_from_simconnect_messages(tmp_path):
     st = meta["stats"]
     assert st["takeoffs"] == 1 and st["landings"] == 1 and st["crashes"] == 1 and st["flights"] == 2
     assert st["max_g"] == pytest.approx(2.4) and st["bad_packets"] == 1
-    assert meta["origin"] == {"lat": 47.0, "lon": 8.0}
+    assert meta["origin"] == {"lat": 47.0, "lon": 8.0} and meta["geo"] == {"lat0": 47.0, "lon0": 8.0}
+    # The footer says where on the earth the flat map is, for the viewer's backdrop.
+    hints = json.loads(pq.read_table(folder / "heat.parquet").schema.metadata[b"heat3d"])
+    assert hints["geo"] == {"lat0": 47.0, "lon0": 8.0, "projection": "tangent-plane", "east": "x", "north": "z",
+                            "up": "y"}
+    assert hints["axes"]["flipZ"] is True
 
 
 def test_the_dll_is_looked_for_in_the_sim_and_its_sdk(tmp_path, monkeypatch):

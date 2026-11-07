@@ -20,7 +20,19 @@ and Tacview (42674) keep working beside it. The lines (fields split by ';'):
 `p` is LoGetSelfData: Position x/y/z - DCS's own world metres, x north, y up,
 z east - plus LatLongAlt (degrees, m), Heading/Pitch/Bank (radians), with
 LoGetIndicatedAirSpeed (m/s), LoGetAltitudeAboveGroundLevel (m) and
-LoGetAccelerationUnits().y (g). onGameEvent's arguments, as DCS_ControlAPI
+LoGetAccelerationUnits().y (g).
+
+Positions go into the same flat map as the other flight sims' (`Tangent`: x
+east, y altitude above sea level, z north, metres) from LatLongAlt, around the
+theatre's fixed origin (`THEATRES`, from the `map` of the start line), so every
+mission on one theatre shares one map, and one the viewer can lay the real
+world under. A theatre not in the table takes the first fix's latitude and
+longitude rounded to whole degrees. DCS's own x/y/z are kept as `dcs_x`,
+`dcs_y`, `dcs_z`; a fix without LatLongAlt cannot be placed and is only
+counted (`fixes_without_latlon`). The origin is the session's `geo`, in
+meta.json and the table's footer.
+
+onGameEvent's arguments, as DCS_ControlAPI
 gives them: takeoff/landing (playerID, unit_missionID, airdromeName),
 crash/eject/pilot_death (playerID, unit_missionID), kill (killerPlayerID,
 killerUnitType, killerSide, victimPlayerID, victimUnitType, victimSide,
@@ -37,13 +49,13 @@ import logging
 import math
 import os
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
-from ..session import Axes, Session
+from ..session import Session
 from .base import Adapter, Context
-from .xplane import FlightLog, drain, udp_socket
+from .xplane import TANGENT_AXES, FlightLog, Tangent, drain, udp_socket
 
 log = logging.getLogger("heat3d_watch")
 
@@ -164,6 +176,37 @@ end
 """
 
 
+#: Each theatre's fixed origin (lat0, lon0 in whole degrees), by DCS's own name for it
+#: (mission.theatre, the `map` of the start line). The names are DCS's theatre names as
+#: best known; a name not here falls back to the first fix rounded to whole degrees.
+#: The table mirrors the viewer's theatre origins (src/world/theatres.ts), so a DCS
+#: table and a theatre backdrop share one tangent plane: change both together.
+THEATRES: dict[str, tuple[float, float]] = {
+    "Caucasus": (42.0, 42.0),
+    "Nevada": (36.0, -115.0),
+    "Normandy": (49.0, 0.0),
+    "TheChannel": (51.0, 2.0),
+    "Syria": (34.0, 36.0),
+    "PersianGulf": (26.0, 56.0),
+    "MarianaIslands": (13.0, 145.0),
+    "MarianaIslandsWWII": (13.0, 145.0),
+    "Falklands": (-52.0, -58.0),
+    "SinaiMap": (30.0, 33.0),
+    "Afghanistan": (35.0, 69.0),
+    "Kola": (69.0, 33.0),
+    "GermanyCW": (51.0, 10.0),
+    "Iraq": (33.0, 44.0),
+}
+
+
+def theatre_origin(theatre: str, lat: float, lon: float) -> tuple[float, float]:
+    """The flat map's origin: the theatre's own, else the fix rounded to whole degrees (halves up, like the viewer)."""
+    known = THEATRES.get(theatre or "")
+    if known is not None:
+        return known
+    return float(math.floor(lat + 0.5)), float(math.floor(lon + 0.5))
+
+
 #: onGameEvent names whose first argument is the player they happened to.
 PLAYER_EVENTS = ("takeoff", "landing", "crash", "eject", "pilot_death", "self_kill", "change_slot", "friendly_fire",
                  "connect", "disconnect")
@@ -206,6 +249,9 @@ class DcsAdapter(Adapter):
     _sock: Any = None
     _session: Session | None = None
     _log: FlightLog | None = None
+    _tangent: Tangent | None = None
+    #: The theatre the start line named, for the session's origin.
+    _map: str = ""
     _me: str = ""
     _mp: bool = False
     _dead: bool = False
@@ -279,6 +325,8 @@ class DcsAdapter(Adapter):
         mp = meta.pop("mp", self._mp)
         self._session = ctx.open(self, multiplayer=bool(mp), meta={k: v for k, v in meta.items() if v})
         self._log = FlightLog(self._session, word="life", plural="lives")
+        self._tangent = None
+        self._map = ""
         self._dead = False
         self._blocked = False
         return self._session
@@ -287,7 +335,7 @@ class DcsAdapter(Adapter):
         if self._log is not None:
             self._log.end()
         ctx.close(self._session)
-        self._session, self._log = None, None
+        self._session, self._log, self._tangent = None, None, None
 
     def line(self, ctx: Context, line: str) -> None:
         kind, f = parse_line(line)
@@ -299,6 +347,7 @@ class DcsAdapter(Adapter):
             self._me = f.get("me", "")
             self._mp = f.get("mp") == "1"
             s = self._open(ctx, map=f.get("map"), mission=f.get("mission"), pilot=f.get("name"), mp=self._mp)
+            self._map = f.get("map", "")
             s.event("mission_start", player="me", mission=f.get("mission") or None, map=f.get("map") or None)
         elif kind == "stop":
             if self._session is not None:
@@ -317,20 +366,39 @@ class DcsAdapter(Adapter):
         else:
             raise ValueError(f"unknown line {kind!r}")
 
+    def _place(self, s: Session, lat: float, lon: float) -> Tangent:
+        """The session's flat map, decided at its first fix: the theatre's origin, else the fix rounded."""
+        if self._tangent is None:
+            self._tangent = Tangent(*theatre_origin(self._map, lat, lon))
+            s.geo = self._tangent.geo()
+            if self._map:
+                # The sim's own metres are in this theatre's projection: said
+                # so the viewer can place the dcs_x/dcs_z columns as well.
+                s.geo["dcs"] = {"theatre": self._map}
+            s.meta["origin"] = self._tangent.meta()
+            try:
+                s.write_meta()  # said at once: a watcher killed mid-mission still leaves it for recover()
+            except OSError:
+                pass
+        return self._tangent
+
     def _position(self, ctx: Context, f: dict[str, str]) -> None:
-        x, y, z = number(f, "x"), number(f, "y"), number(f, "z")
-        if x is None or y is None or z is None:
-            raise ValueError("position without x/y/z")
+        if self._session is None:
+            self._open(ctx)
+        assert self._session is not None and self._log is not None
+        lat, lon, alt = number(f, "lat"), number(f, "lon"), number(f, "alt")
+        if lat is None or lon is None or alt is None or not (-90.0 <= lat <= 90.0 and -180.0 <= lon <= 180.0):
+            # Without LatLongAlt there is no place on the map for it: counted, not drawn.
+            self._session.stat("fixes_without_latlon", 1, "add")
+            return
         now = time.monotonic()
         gap = now - self._seen
         self._seen = now
-        if self._session is None:
-            self._open(ctx)
-        assert self._log is not None
         if self._dead:
             if gap < self.respawn_gap:
                 return  # the wreck, or the view after death: not a new life yet
             self._dead = False
+        x, y, z = self._place(self._session, lat, lon).local(lat, lon, alt)
         if not self._log.live:
             self._log.begin((x, y, z), event="spawn", aircraft=f.get("type") or None)
         self._log.fix(
@@ -338,9 +406,12 @@ class DcsAdapter(Adapter):
             y,
             z,
             g=number(f, "g"),
-            lat=number(f, "lat"),
-            lon=number(f, "lon"),
-            alt=number(f, "alt"),
+            dcs_x=number(f, "x"),
+            dcs_y=number(f, "y"),
+            dcs_z=number(f, "z"),
+            lat=lat,
+            lon=lon,
+            alt=alt,
             heading=number(f, "hdg"),
             pitch=number(f, "pitch"),
             bank=number(f, "bank"),
@@ -427,7 +498,8 @@ ADAPTERS = [
             f"UDP lines to 127.0.0.1:{PORT}"
         ),
         records=(
-            "own position at 10 Hz in DCS world metres (x north, y up, z east), lat/lon/alt as columns",
+            "own position at 10 Hz as metres east/up/north of the theatre's origin (from latitude/longitude/"
+            "altitude); lat/lon/alt and DCS's own world metres (dcs_x north, dcs_y up, dcs_z east) as columns",
             "attitude, indicated airspeed, AGL, g, aircraft type",
             "takeoffs and landings with the airfield; crashes, ejections, pilot deaths",
             "kills and being shot down with both unit types and the weapon; other game events as given",
@@ -435,7 +507,7 @@ ADAPTERS = [
         ),
         enable=f"python -m heat3d_watch setup dcs --apply (adds Scripts\\Hooks\\{HOOK_NAME}), then restart DCS",
         interval=0.1,
-        axes=Axes(up="y", units="metres (DCS world: x north, y up, z east)"),
+        axes=replace(TANGENT_AXES, units="metres (east, altitude, north from the theatre's origin)"),
         verified=(
             "line format tested with synthetic datagrams; the Lua hook is untested inside DCS "
             "(written from the DCS hook/export API, not run)"

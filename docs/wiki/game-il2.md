@@ -64,7 +64,9 @@ IL-2 Sturmovik: Great Battles - the game's telemetry UDP output, and its own Tac
    ("Event=Destroyed\|id\|text"). T = Lon\|Lat\|Alt[\|U\|V] or
    Lon\|Lat\|Alt\|Roll\|Pitch\|Yaw[\|U\|V\|Heading], longitude and latitude relative to
    the reference, empty fields unchanged. Positions go into a flat map around
-   the reference point: x east, y altitude, z north, metres.
+   the reference point: x east, y altitude, z north, metres. The reference
+   point is the session's `geo`, carried in meta.json and the table's footer,
+   so the viewer can lay the real world under the tracks.
 
 The same module also serves: [IL-2 Sturmovik: Great Battles (replay)](game-il2-tacview).
 
