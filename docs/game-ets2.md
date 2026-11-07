@@ -1,7 +1,7 @@
 ---
 title: "Euro Truck Simulator 2 (telemetry)"
 parent: Games
-nav_order: 18
+nav_order: 19
 ---
 
 # Euro Truck Simulator 2 (telemetry)

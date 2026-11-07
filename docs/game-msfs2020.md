@@ -1,7 +1,7 @@
 ---
 title: "Microsoft Flight Simulator 2020 (telemetry)"
 parent: Games
-nav_order: 30
+nav_order: 31
 ---
 
 # Microsoft Flight Simulator 2020 (telemetry)

@@ -1,7 +1,7 @@
 ---
 title: "Minecraft (log)"
 parent: Games
-nav_order: 32
+nav_order: 33
 ---
 
 # Minecraft (log)

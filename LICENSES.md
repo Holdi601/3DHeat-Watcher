@@ -24,6 +24,9 @@ source is what counts, not this file.
 | pyarrow | Apache-2.0 | Writing Parquet |
 | numpy | BSD-3-Clause | |
 | pytest | MIT | Development only |
+| gem-dota | MIT | Optional: Dota 2 replays (`requirements-optional.txt`); github.com/whanyu1212/gem-dota |
+| pandas, protobuf, protoc-wheel-0, python-snappy, zstandard | BSD-3-Clause | Optional: what gem-dota brings |
+| cramjam, rich | MIT | Optional: what gem-dota brings |
 
 Everything else is the standard library. Each game's interface was written from
 its published description - Valve's game-state integration, Riot's Live Client
@@ -34,6 +37,11 @@ documents, Tacview's ACMI format, Frontier's journal manual, the osu! wiki's
 replay format, and the file layouts of Steam and the NVIDIA App as they are on
 disk. No code was taken from GPL or unlicensed projects; where such a project
 was consulted, only facts about a format were.
+
+Dota 2 replays are decoded by gem-dota, used as a library and not copied; the
+watcher's own part reads the entities gem rebuilds (positions, health, which hero
+a player's controller is assigned) and writes the table. OpenDota's public API
+is asked only for a match's replay server and salt.
 
 The DCS hook (`heat3d-watch.lua`) and the CS2/Dota 2 game-state configuration
 files the watcher writes on `setup --apply` are its own, MIT like the rest.

@@ -1,7 +1,7 @@
 ---
 title: "Steam statistics (platform)"
 parent: Games
-nav_order: 41
+nav_order: 43
 ---
 
 # Steam statistics (platform)

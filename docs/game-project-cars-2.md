@@ -1,7 +1,7 @@
 ---
 title: "Project CARS 2 (telemetry)"
 parent: Games
-nav_order: 36
+nav_order: 37
 ---
 
 # Project CARS 2 (telemetry)

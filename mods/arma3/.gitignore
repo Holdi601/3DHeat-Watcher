@@ -1,0 +1,7 @@
+# Built output: never committed.
+@heat3d/
+extension/*.dll
+extension/*.so
+extension/*.obj
+extension/*.lib
+extension/*.exp

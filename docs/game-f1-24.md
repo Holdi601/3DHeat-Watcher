@@ -1,7 +1,7 @@
 ---
 title: "EA SPORTS F1 24 (telemetry)"
 parent: Games
-nav_order: 14
+nav_order: 15
 ---
 
 # EA SPORTS F1 24 (telemetry)

@@ -1,7 +1,7 @@
 ---
 title: "Elite Dangerous (log)"
 parent: Games
-nav_order: 17
+nav_order: 18
 ---
 
 # Elite Dangerous (log)

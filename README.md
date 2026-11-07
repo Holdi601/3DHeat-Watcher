@@ -17,6 +17,11 @@ python -m heat3d_watch run            # watch; leave it running
 python -m heat3d_watch stats          # totals per game
 python -m heat3d_watch stats --csv out   # sessions, events and stats as CSV files
 python -m heat3d_watch replays cs2-demos # convert the demos already on disk (new ones are converted by `run`)
+python -m heat3d_watch replays warthunder-replays [folder]  # War Thunder replays, through the external converter (see below)
+python -m heat3d_watch replays wot-replays [folder]   # World of Tanks replays, through the external converter (see below)
+python -m heat3d_watch replays wows-replays [folder]  # World of Warships replays, likewise
+python -m heat3d_watch replays dota-replays [folder]  # Dota 2 replays (needs `pip install gem-dota`)
+python -m heat3d_watch dota-replay <match id> --convert  # fetch a public Dota 2 match's replay from Valve and convert it
 ```
 
 Everything goes to `%LOCALAPPDATA%\3DHeat\Watcher` (set `HEAT3D_WATCH_HOME`, or
@@ -50,10 +55,48 @@ Everything goes to `%LOCALAPPDATA%\3DHeat\Watcher` (set `HEAT3D_WATCH_HOME`, or
 - **Nothing protected is broken open.** Where a replay protects its game stream
   against cheating (League of Legends, VALORANT), only what it carries in the
   open is read - the end-of-game score, the event timeline. Replays encrypted
-  with a key (Fortnite, World of Tanks) are declined.
+  with a key are not read by the watcher: Fortnite's are declined, and World
+  of Tanks' and World of Warships' are left to separate converters a player
+  installs by choice (below).
 - **Switching a source on is your decision.** `setup` says which file it would
   change and how; only `setup --apply` changes it, and the original is kept as
   `<file>.heat3d-backup`.
+
+**War Thunder replays** (`.wrpl`) are read by a separate converter, not by the
+watcher: `exporters/ext/warthunder-replay` in 3DHeat, which installs the
+`heat3d-wt-replay` command (`pip install -e <3DHeat>/exporters/ext/warthunder-replay`).
+The format is undocumented and Gaijin's EULA forbids reverse engineering the
+game, so it is kept apart: without it the watcher runs as before and says once
+that it is missing. With it, each new replay in `<War Thunder>/Replays` becomes
+a session with every aircraft's track, the kills and hits where they happened,
+and who was who where the replay says so. What it reads and does not read is in
+its own README.
+
+**World of Tanks and World of Warships replays** (`.wotreplay`, `.wowsreplay`)
+are read the same way, by a converter of each outside the watcher:
+`exporters/ext/wot-replay` (`heat3d-wot-replay`) and `exporters/ext/wows-replay`
+(`heat3d-wows-replay`), each installed with `pip install -e` on its folder.
+Wargaming's licence forbids reverse engineering and "unauthorized software ...
+that interacts with a Product", and the replays are enciphered, so these too
+are kept apart. With them, each new replay in the game's `replays` folder
+becomes a session with every tank's or ship's position while the recording
+player's client knew of it - its own team throughout, enemies while spotted -
+and the kills where they happened. Their READMEs say what they read, on which
+game versions, and what they do not.
+
+**Dota 2 replays** (`.dem`) are read inside the watcher, through gem
+(github.com/whanyu1212/gem-dota, MIT, `pip install gem-dota`): Valve's replays
+are plain Source 2 demos, kept public for every match for a few weeks, and read
+by OpenDota and others for a decade. Each replay in `<Dota>/game/dota/replays`
+becomes a session with every hero's track 7.5 times a second (position, height,
+health, level), kills and deaths where they happened, towers, barracks, Roshan
+and Tormentors where they fell, and every ward where it was planted, as
+`dota/<match>.parquet` and `<match>.match.json`. `dota-replay <match id>`
+downloads a public match's replay by its id (the cluster and salt come from
+OpenDota; Valve answers 404 once a replay has expired). A half-hour match takes
+about a minute and 400 MB to convert, in a process of its own. Not read: creeps,
+couriers and illusions; what the fog of war hid from whom; items and abilities
+over time.
 
 The watcher updates itself while no game is running and starts again - never
 in the middle of a game; `config --set auto_update=false` turns that off.

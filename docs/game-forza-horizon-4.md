@@ -1,7 +1,7 @@
 ---
 title: "Forza Horizon 4 (telemetry)"
 parent: Games
-nav_order: 20
+nav_order: 21
 ---
 
 # Forza Horizon 4 (telemetry)

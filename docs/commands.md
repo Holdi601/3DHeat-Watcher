@@ -21,6 +21,7 @@ python -m heat3d_watch <command> [options]
 | [`stats`](#stats) | totals per game, or the tables as CSV |
 | [`table`](#table) | rebuild a session's `heat.parquet` from its `events.jsonl` |
 | [`replays`](#replays) | convert the replays already on disk |
+| [`dota-replay`](#dota-replay) | download a public Dota 2 match's replay by its id |
 | [`update`](#update) | update to the newest release |
 | [`config`](#config) | show or change the settings |
 
@@ -195,6 +196,10 @@ convert it again. A replay that fails to convert is logged and skipped.
 | `lol-replays` | League of Legends replays (`*.rofl`) |
 | `osu-replays` | osu! replays (`*.osr`) |
 | `valorant-replays` | VALORANT replays (`*.vrf`) |
+| `warthunder-replays` | War Thunder replays (`*.wrpl`), through the external converter `heat3d-wt-replay` (exporters/ext/warthunder-replay) |
+| `wot-replays` | World of Tanks replays (`*.wotreplay`), through the external converter `heat3d-wot-replay` (exporters/ext/wot-replay) |
+| `wows-replays` | World of Warships replays (`*.wowsreplay`), through the external converter `heat3d-wows-replay` (exporters/ext/wows-replay) |
+| `dota-replays` | Dota 2 replays (`*.dem`), through gem (`pip install gem-dota`) |
 
 ```text
 osu-replays: converted 12 replay(s); `sessions --game` lists them
@@ -204,6 +209,29 @@ An id that is not one of these prints `no replay adapter '<id>'` with the list a
 so does a `folder` that does not exist. An adapter that cannot run here (3DHeat CS2 not installed)
 prints why and exits with code 1. IL-2's Tacview tracks are not in the list: that adapter converts every
 finished track it finds by itself.
+
+## dota-replay
+
+```bash
+python -m heat3d_watch dota-replay <match id> [<match id> ...] [-o FOLDER] [--convert] [-v]
+```
+
+Downloads the replay of a public Dota 2 match from Valve's replay servers. The server and the replay's
+salt come from OpenDota's record of the match (`api.opendota.com/api/matches/<id>`, no key needed), the
+file from `replay<cluster>.valve.net/570/<id>_<salt>.dem.bz2`; it is unpacked as it arrives (Valve
+serves both bzip2 and Zstandard under that name) and saved as `<match id>.dem`. Without `-o` it goes
+to Dota's own replays folder when Dota 2 is installed - where a running watcher converts it - and to
+`<data>/replays/dota` otherwise. A file already there is kept. `--convert` converts the downloaded
+replays at once, as `replays dota-replays` would, and notes them as seen.
+
+```text
+match 9000000000: C:\Program Files (x86)\Steam\steamapps\common\dota 2 beta\game\dota\replays\9000000000.dem
+```
+
+Valve keeps replays for a few weeks; an older match prints `Valve no longer has the replay of match
+<id>` and exits with code 1. A match OpenDota has not seen yet has no salt: the message says to ask
+OpenDota for it (`curl -X POST https://api.opendota.com/api/request/<id>`) and try again a few
+minutes later. Private lobbies and matches with a hidden profile are not on the replay servers at all.
 
 ## update
 

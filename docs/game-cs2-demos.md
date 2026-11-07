@@ -52,7 +52,73 @@ for the player whose Steam account is signed in on this machine (from Steam's
 `loginusers.vdf`) under its plain names - kills, deaths, assists, ADR, KAST,
 headshot percentage, opening kills, clutches - and the score and rounds.
 
-The same module also serves: [osu! (replay)](game-osu-replays.md).
+#### Dota 2
+
+Dota 2 saves the replays a player downloads (a match's details, or Watch >
+Replays) to `<Dota>/game/dota/replays/<match id>.dem`; Valve keeps every public
+match's replay on its servers for a few weeks, and `python -m heat3d_watch
+dota-replay <match id>` fetches one by its id through OpenDota. Each is read with
+gem (github.com/whanyu1212/gem-dota, MIT, `pip install gem-dota`) in a process
+of its own (`heat3d_watch/decoders/dota_replay.py`): every hero's position,
+height, health and level 7.5 times a second while alive, kills and deaths where
+they happened, towers, barracks, Roshan and Tormentors where they fell, and
+every observer and sentry ward where it was planted - into
+`dota/<match>.parquet` and `<match>.match.json` in the session folder. Positions
+are Dota's world units, the same the game-state integration reports. The
+signed-in player's scoreboard line becomes the session's statistics: kills,
+deaths, assists, last hits, denies, net worth, GPM, XPM, hero damage, wards,
+and whether the match was won. Not read: creeps, couriers, summons and
+illusions; who could see whom through the fog of war; items and abilities over
+time. A new Dota patch can change the replay's entities before gem follows; a
+replay gem cannot read to the end is converted as far as it goes and marked
+`incomplete` in its summary.
+
+#### War Thunder
+
+War Thunder saves a replay of each battle to `<War Thunder>/Replays/*.wrpl`
+when replay saving is on in its options. The watcher does not read them
+itself: an external converter does (3DHeat War Thunder replay converter,
+`exporters/ext/warthunder-replay`, command `heat3d-wt-replay`), kept apart so
+that a problem with it touches nothing else. When the command is on PATH, or
+the package is installed or beside the watcher, each new replay is run through
+it into the session folder as `<map>/<match>.parquet` and `<match>.match.json`;
+when it is not, the watcher says once how to install it and leaves the folder
+alone. What the converter reads, and what it does not, is in its README. The
+replay's author's line of the results - kills, ground kills, deaths, assists,
+score, captures - becomes the session's statistics.
+
+#### World of Tanks and World of Warships
+
+Both save a replay of each battle to `<game>/replays/` when recording is on
+(`*.wotreplay`, `*.wowsreplay`); the installs are found through the Wargaming
+Game Center's list, `C:/Games/World_of_Tanks*` / `World_of_Warships*`, and
+Steam. As with War Thunder, the watcher does not read the files itself: an
+external converter of each does (`exporters/ext/wot-replay`, command
+`heat3d-wot-replay`; `exporters/ext/wows-replay`, command
+`heat3d-wows-replay`), kept apart so that a problem with Wargaming's terms
+touches only that converter. Found on PATH, installed, or beside the watcher,
+it turns each new replay into `<map>/<match>.parquet` and `<match>.match.json`
+in the session folder; missing, the watcher says once how to install it. The
+recording player's line - vehicle or ship, kills, damage (World of Tanks),
+whether they survived, and the result (World of Tanks) - becomes the
+session's statistics. What each converter reads, and what it does not, is in
+its README.
+
+#### Squad
+
+Squad's dedicated servers record a demo of a match when an admin with the
+`demos` permission runs AdminDemoRec &lt;name> (and AdminDemoStop), into
+`<server>/SquadGame/Saved/Demos/<name>.replay` - an Unreal Engine network
+replay holding what the server replicated, every player's movement included.
+The watcher does not read them itself: an external reader does (3DHeat Squad
+demo reader, `exporters/ext/squad-demo`, command `heat3d-squad-demo`), kept
+apart so that a problem with it touches nothing else. It is run on each new
+demo in the folders a local server writes to, or in a folder the settings add
+for demos copied off a rented server, into the session folder as
+`<map>/<match>.parquet` and `<match>.match.json`. The layer, the map, the
+number of players and the match length become the session's statistics.
+
+The same module also serves: [Dota 2 (replay)](game-dota-replays.md), [osu! (replay)](game-osu-replays.md), [Squad (replay)](game-squad-demos.md), [War Thunder (replay)](game-warthunder-replays.md), [World of Tanks (replay)](game-wot-replays.md), [World of Warships (replay)](game-wows-replays.md).
 
 ## Positions and axes
 

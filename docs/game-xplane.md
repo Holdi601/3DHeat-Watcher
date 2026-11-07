@@ -1,7 +1,7 @@
 ---
 title: "X-Plane (telemetry)"
 parent: Games
-nav_order: 45
+nav_order: 50
 ---
 
 # X-Plane (telemetry)

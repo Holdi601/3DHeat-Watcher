@@ -1,7 +1,7 @@
 ---
 title: "Dota 2 (gsi)"
 parent: Games
-nav_order: 12
+nav_order: 13
 ---
 
 # Dota 2 (gsi)

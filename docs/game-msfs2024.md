@@ -1,7 +1,7 @@
 ---
 title: "Microsoft Flight Simulator 2024 (telemetry)"
 parent: Games
-nav_order: 31
+nav_order: 32
 ---
 
 # Microsoft Flight Simulator 2024 (telemetry)

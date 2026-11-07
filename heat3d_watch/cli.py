@@ -9,6 +9,7 @@
     stats      totals per game; --game for one, --csv DIR to write the tables out
     table      rebuild a session's heat.parquet from its events.jsonl
     replays    convert the replays already on disk for one adapter (or a folder of them)
+    dota-replay  download a public Dota 2 match's replay by its id (--convert to convert it now)
     update     update the tools to the newest release (--check to only ask)
     config     show the settings, or change them (--set key=value ...)
 """
@@ -242,6 +243,59 @@ def cmd_replays(args: argparse.Namespace, s: Settings) -> int:
     return 0
 
 
+def cmd_dota_replay(args: argparse.Namespace, s: Settings) -> int:
+    """
+    A public match's replay from Valve, by match id, through OpenDota's record of
+    it: into the Dota client's replays folder when Dota 2 is installed (where a
+    running watcher converts it), else `<data>/replays/dota`, or `--out`.
+    """
+    from .adapters.replays import dota_replay_folders
+    from .decoders.dota_replay import fetch_replay
+
+    if args.out:
+        folder = Path(args.out)
+    else:
+        folders = dota_replay_folders()
+        folder = folders[0] if folders else s.data_dir / "replays" / "dota"
+    _logging(s, args.verbose)
+    adapter = load().get("dota-replays")
+    if args.convert:
+        missing = adapter.missing() if adapter else "no dota-replays adapter"
+        if missing:
+            print(f"dota-replays: {missing}", file=sys.stderr)
+            return 1
+    paths = []
+    for match_id in args.match:
+        try:
+            path = fetch_replay(match_id, folder)
+        except (LookupError, ValueError, OSError) as e:
+            print(f"match {match_id}: {e}", file=sys.stderr)
+            return 1
+        print(f"match {match_id}: {path}")
+        paths.append(path)
+    if args.convert:
+        import json
+
+        ctx = Context(s, s.data_dir)
+        state = adapter._state_path(ctx)
+        try:
+            seen = json.loads(state.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            seen = {}
+        if not state.exists():
+            # The folder watch's first look, taken now, as `replays` does: what is there counts as noted.
+            for f in adapter._files(ctx):
+                seen[str(f)] = [f.stat().st_size, f.stat().st_mtime]
+        for path in paths:
+            adapter.convert(path, ctx)
+            st = path.stat()
+            seen[str(path)] = [st.st_size, st.st_mtime]  # so the folder watch does not convert it again
+        state.parent.mkdir(parents=True, exist_ok=True)
+        state.write_text(json.dumps(seen), encoding="utf-8")
+        print(f"dota-replays: converted {len(paths)} replay(s); `sessions --game \"Dota 2\"` lists them")
+    return 0
+
+
 def cmd_update(args: argparse.Namespace, s: Settings) -> int:
     import heat3d_update.__main__ as up
 
@@ -304,6 +358,11 @@ def main(argv: list[str] | None = None) -> int:
     rp.add_argument("adapter", help="a replay adapter's id from `games` (cs2-demos, lol-replays, ...)")
     rp.add_argument("folder", nargs="?", help="convert the replays in this folder instead of the game's own")
     rp.add_argument("-v", "--verbose", action="store_true")
+    dr = sub.add_parser("dota-replay", help="download a public Dota 2 match's replay")
+    dr.add_argument("match", type=int, nargs="+", help="match ids (from the client, OpenDota or Dotabuff)")
+    dr.add_argument("-o", "--out", help="the folder to save to (default: Dota's own replays folder)")
+    dr.add_argument("--convert", action="store_true", help="convert the folder's replays now")
+    dr.add_argument("-v", "--verbose", action="store_true")
     u = sub.add_parser("update", help="update to the newest release")
     u.add_argument("--check", action="store_true")
     c = sub.add_parser("config", help="show or change the settings")
@@ -334,6 +393,7 @@ def main(argv: list[str] | None = None) -> int:
         "stats": cmd_stats,
         "table": cmd_table,
         "replays": cmd_replays,
+        "dota-replay": cmd_dota_replay,
         "update": cmd_update,
         "config": cmd_config,
     }[args.command]

@@ -1,0 +1,22 @@
+GameProject {
+ ID "Heat3DRecorder"
+ GUID "5D09A24C49D7FF18"
+ TITLE "3DHeat Recorder"
+ Dependencies {
+  "58D0FB3206B6F859"
+ }
+ Configurations {
+  GameProjectConfig PC {
+  }
+  GameProjectConfig XBOX_ONE {
+  }
+  GameProjectConfig XBOX_SERIES {
+  }
+  GameProjectConfig PS4 {
+  }
+  GameProjectConfig PS5 {
+  }
+  GameProjectConfig HEADLESS {
+  }
+ }
+}

@@ -1,7 +1,7 @@
 ---
 title: "EVE Online (log)"
 parent: Games
-nav_order: 19
+nav_order: 20
 ---
 
 # EVE Online (log)

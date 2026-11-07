@@ -1,7 +1,7 @@
 ---
 title: "EA SPORTS WRC (telemetry)"
 parent: Games
-nav_order: 16
+nav_order: 17
 ---
 
 # EA SPORTS WRC (telemetry)

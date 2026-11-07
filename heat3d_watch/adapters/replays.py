@@ -26,6 +26,72 @@ and match tabs read. The match's scoreboard becomes the session's statistics:
 for the player whose Steam account is signed in on this machine (from Steam's
 `loginusers.vdf`) under its plain names - kills, deaths, assists, ADR, KAST,
 headshot percentage, opening kills, clutches - and the score and rounds.
+
+Dota 2
+------
+Dota 2 saves the replays a player downloads (a match's details, or Watch >
+Replays) to `<Dota>/game/dota/replays/<match id>.dem`; Valve keeps every public
+match's replay on its servers for a few weeks, and `python -m heat3d_watch
+dota-replay <match id>` fetches one by its id through OpenDota. Each is read with
+gem (github.com/whanyu1212/gem-dota, MIT, `pip install gem-dota`) in a process
+of its own (`heat3d_watch/decoders/dota_replay.py`): every hero's position,
+height, health and level 7.5 times a second while alive, kills and deaths where
+they happened, towers, barracks, Roshan and Tormentors where they fell, and
+every observer and sentry ward where it was planted - into
+`dota/<match>.parquet` and `<match>.match.json` in the session folder. Positions
+are Dota's world units, the same the game-state integration reports. The
+signed-in player's scoreboard line becomes the session's statistics: kills,
+deaths, assists, last hits, denies, net worth, GPM, XPM, hero damage, wards,
+and whether the match was won. Not read: creeps, couriers, summons and
+illusions; who could see whom through the fog of war; items and abilities over
+time. A new Dota patch can change the replay's entities before gem follows; a
+replay gem cannot read to the end is converted as far as it goes and marked
+`incomplete` in its summary.
+
+War Thunder
+-----------
+War Thunder saves a replay of each battle to `<War Thunder>/Replays/*.wrpl`
+when replay saving is on in its options. The watcher does not read them
+itself: an external converter does (3DHeat War Thunder replay converter,
+`exporters/ext/warthunder-replay`, command `heat3d-wt-replay`), kept apart so
+that a problem with it touches nothing else. When the command is on PATH, or
+the package is installed or beside the watcher, each new replay is run through
+it into the session folder as `<map>/<match>.parquet` and `<match>.match.json`;
+when it is not, the watcher says once how to install it and leaves the folder
+alone. What the converter reads, and what it does not, is in its README. The
+replay's author's line of the results - kills, ground kills, deaths, assists,
+score, captures - becomes the session's statistics.
+
+World of Tanks and World of Warships
+------------------------------------
+Both save a replay of each battle to `<game>/replays/` when recording is on
+(`*.wotreplay`, `*.wowsreplay`); the installs are found through the Wargaming
+Game Center's list, `C:/Games/World_of_Tanks*` / `World_of_Warships*`, and
+Steam. As with War Thunder, the watcher does not read the files itself: an
+external converter of each does (`exporters/ext/wot-replay`, command
+`heat3d-wot-replay`; `exporters/ext/wows-replay`, command
+`heat3d-wows-replay`), kept apart so that a problem with Wargaming's terms
+touches only that converter. Found on PATH, installed, or beside the watcher,
+it turns each new replay into `<map>/<match>.parquet` and `<match>.match.json`
+in the session folder; missing, the watcher says once how to install it. The
+recording player's line - vehicle or ship, kills, damage (World of Tanks),
+whether they survived, and the result (World of Tanks) - becomes the
+session's statistics. What each converter reads, and what it does not, is in
+its README.
+
+Squad
+-----
+Squad's dedicated servers record a demo of a match when an admin with the
+`demos` permission runs AdminDemoRec <name> (and AdminDemoStop), into
+`<server>/SquadGame/Saved/Demos/<name>.replay` - an Unreal Engine network
+replay holding what the server replicated, every player's movement included.
+The watcher does not read them itself: an external reader does (3DHeat Squad
+demo reader, `exporters/ext/squad-demo`, command `heat3d-squad-demo`), kept
+apart so that a problem with it touches nothing else. It is run on each new
+demo in the folders a local server writes to, or in a folder the settings add
+for demos copied off a rented server, into the session folder as
+`<map>/<match>.parquet` and `<match>.match.json`. The layer, the map, the
+number of players and the match length become the session's statistics.
 """
 
 from __future__ import annotations
@@ -354,6 +420,92 @@ def count_events(session, table: Path) -> None:
         session.positions += len(events)
 
 
+def dota_replay_folders() -> list[Path]:
+    """`<Dota>/game/dota/replays` in every Steam library Dota 2 is installed in."""
+    out = []
+    for common in steam_libraries():
+        game = common / "dota 2 beta" / "game" / "dota"
+        if game.is_dir():
+            out.append(game / "replays")
+    return out
+
+
+@dataclass
+class DotaReplays(ReplayAdapter):
+    def folders(self, ctx: Context) -> list[Path]:
+        return dota_replay_folders() + super().folders(ctx)
+
+    def missing(self) -> str | None:
+        try:
+            import gem  # noqa: F401
+        except ImportError:
+            return "pip install gem-dota (the Dota 2 replay parser, MIT)"
+        return None
+
+    def convert(self, path: Path, ctx: Context) -> None:
+        session = ctx.open(self, when=path.stat().st_mtime, meta={"replay": str(path)})
+        try:
+            # A process of its own: a long match's parse takes several hundred megabytes, given back when it ends.
+            out = subprocess.run(
+                [sys.executable, "-m", "heat3d_watch.decoders.dota_replay", str(path), "-o", str(session.folder / "dota")],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=3600,
+                env={**os.environ, "HEAT3D_NO_UPDATE": "1", "PYTHONIOENCODING": "utf-8"},
+            )
+            session.meta["converter"] = (out.stdout + out.stderr).strip()[-2000:]
+            summaries = sorted((session.folder / "dota").glob("*.match.json"))
+            if out.returncode != 0 or not summaries:
+                session.event("replay_failed", file=path.name)
+                return
+            record_dota_match(session, json.loads(summaries[0].read_text(encoding="utf-8")), signed_in_steam_ids())
+            tables = sorted((session.folder / "dota").glob("*.parquet"))
+            if tables:
+                count_events(session, tables[0])
+        finally:
+            ctx.close(session)
+
+
+def record_dota_match(session, match: dict, me: set[str]) -> None:
+    """A Dota 2 match summary into the session: the result, and the signed-in player's line."""
+    session.meta["match"] = {k: match.get(k) for k in ("match", "winner", "score", "teams", "duration")}
+    if isinstance(match.get("duration"), (int, float)):
+        session.stat("duration", match["duration"])
+    for team, score in (match.get("score") or {}).items():
+        session.stat(f"score.{team}", score)
+    for p in match.get("players") or []:
+        if str(p.get("steamid")) not in me:
+            continue
+        session.meta["player"] = p.get("name")
+        session.stat("hero", str(p.get("heroName") or p.get("hero") or ""))
+        session.stat("team", str(p.get("team") or ""))
+        for key, name in (
+            ("kills", "kills"),
+            ("deaths", "deaths"),
+            ("assists", "assists"),
+            ("level", "level"),
+            ("lastHits", "last_hits"),
+            ("denies", "denies"),
+            ("netWorth", "net_worth"),
+            ("goldPerMin", "gpm"),
+            ("xpPerMin", "xpm"),
+            ("heroDamage", "hero_damage"),
+            ("towerDamage", "tower_damage"),
+            ("heroHealing", "hero_healing"),
+            ("observersPlaced", "observers_placed"),
+            ("sentriesPlaced", "sentries_placed"),
+            ("campsStacked", "camps_stacked"),
+        ):
+            value = p.get(key)
+            if isinstance(value, (int, float)) and not isinstance(value, bool):
+                session.stat(name, value)
+        if match.get("winner"):
+            session.stat("won", 1 if match["winner"] == p.get("team") else 0)
+
+
 #: Seconds from 0001-01-01 (the start of .NET's ticks) to the Unix epoch.
 _TICKS_TO_UNIX = 62135596800
 
@@ -477,6 +629,22 @@ ADAPTERS = [
         verified="the converter is tested on 165 real tournament demos; the folder watch and statistics by tests",
         multiplayer=True,
     ),
+    DotaReplays(
+        id="dota-replays",
+        game="Dota 2",
+        patterns=("*.dem",),
+        source="replays Dota 2 saves: <Dota>/game/dota/replays/<match id>.dem (downloaded in the client, or with `dota-replay <match id>`)",
+        records=(
+            "every hero's position, height, health and level, 7.5 times a second while alive",
+            "kills and deaths where they happened; towers, barracks, Roshan and Tormentors where they fell; wards where they were planted",
+            "the score and every player's line; the signed-in player's as statistics",
+        ),
+        enable="download a match's replay in Dota 2, or fetch a public one: `python -m heat3d_watch dota-replay <match id>`; needs `pip install gem-dota`",
+        # As the converter's table says in its footer, and the Dota game-state adapter: Source 2 world units.
+        axes=Axes(up="z", flip_y=True, units="Dota world units (Hammer units; the map is about 16400 across)"),
+        verified="checked on a public match's replay (patch 7.40, November 2026): kills and deaths per hero match the scoreboard; the table and statistics by tests on synthetic data",
+        multiplayer=True,
+    ),
     OsuReplays(
         id="osu-replays",
         game="osu!",
@@ -491,3 +659,498 @@ ADAPTERS = [
         multiplayer=True,
     ),
 ]
+
+
+# -- War Thunder: an external converter, run as a command -----------------------
+
+#: The command the War Thunder replay converter installs.
+WT_COMMAND = "heat3d-wt-replay"
+WT_INSTALL = (
+    "the War Thunder replay converter is not installed: "
+    "pip install -e <3DHeat>/exporters/ext/warthunder-replay (it installs the `heat3d-wt-replay` command)"
+)
+
+
+def wt_converter() -> list[str] | None:
+    """
+    How to run the War Thunder replay converter, an extension kept outside the
+    watcher (exporters/ext/warthunder-replay): its `heat3d-wt-replay` command
+    when it is on PATH, else `python -m heat3d_ext_warthunder` when the package
+    is installed, or found in `HEAT3D_WT_REPLAY` or beside the watcher
+    (`ext/warthunder-replay`). None when it is nowhere. Nothing of it is
+    imported here; it is only run.
+    """
+    import importlib.util
+    import shutil
+
+    found = shutil.which(WT_COMMAND)
+    if found:
+        return [found]
+    candidates = [Path(os.environ["HEAT3D_WT_REPLAY"])] if os.environ.get("HEAT3D_WT_REPLAY") else []
+    candidates += [ROOT.parent / "ext" / "warthunder-replay", ROOT.parent / "3DHeat-WarThunder-Replay"]
+    for c in candidates:
+        if (c / "heat3d_ext_warthunder" / "__init__.py").is_file():
+            return [sys.executable, "-m", "heat3d_ext_warthunder"]
+    if importlib.util.find_spec("heat3d_ext_warthunder") is not None:
+        return [sys.executable, "-m", "heat3d_ext_warthunder"]
+    return None
+
+
+def wt_folder() -> Path | None:
+    """The folder the converter runs in, when it is a source folder rather than installed."""
+    candidates = [Path(os.environ["HEAT3D_WT_REPLAY"])] if os.environ.get("HEAT3D_WT_REPLAY") else []
+    candidates += [ROOT.parent / "ext" / "warthunder-replay", ROOT.parent / "3DHeat-WarThunder-Replay"]
+    return next((c for c in candidates if (c / "heat3d_ext_warthunder" / "__init__.py").is_file()), None)
+
+
+def war_thunder_folders() -> list[Path]:
+    """Where War Thunder saves client replays: `<game>/Replays`, in Steam's libraries or the launcher's install."""
+    out = [common / "War Thunder" / "Replays" for common in steam_libraries()]
+    local = os.environ.get("LOCALAPPDATA")
+    if local:
+        out.append(Path(local) / "WarThunder" / "Replays")
+    return out
+
+
+@dataclass
+class WarThunderReplays(ReplayAdapter):
+    """
+    War Thunder's .wrpl replays, converted by the external converter
+    (exporters/ext/warthunder-replay, `heat3d-wt-replay`) into the session
+    folder as `<map>/<match>.parquet` and `.match.json`. The watcher only runs
+    the command: reading the replay format lives in the converter alone.
+    """
+
+    _said: bool = False
+
+    def folders(self, ctx: Context) -> list[Path]:
+        return war_thunder_folders() + super().folders(ctx)
+
+    def missing(self) -> str | None:
+        if wt_converter() is None:
+            if not self._said:
+                log.info("%s: %s", self.id, WT_INSTALL)
+                self._said = True
+            return WT_INSTALL
+        return None
+
+    def convert(self, path: Path, ctx: Context) -> None:
+        command = wt_converter()
+        if command is None:
+            log.warning("%s: %s", self.id, WT_INSTALL)
+            return
+        session = ctx.open(self, when=path.stat().st_mtime, meta={"replay": str(path)})
+        try:
+            out = subprocess.run(
+                [*command, str(path), "-o", str(session.folder)],
+                cwd=wt_folder(),
+                capture_output=True,
+                text=True,
+                timeout=3600,
+            )
+            session.meta["converter"] = (out.stdout + out.stderr).strip()[-2000:]
+            summaries = sorted(session.folder.glob("*/*.match.json"))
+            if out.returncode != 0 or not summaries:
+                session.event("replay_failed", file=path.name)
+                return
+            record_wt_match(session, json.loads(summaries[0].read_text(encoding="utf-8")))
+            tables = sorted(session.folder.glob("*/*.parquet"))
+            if tables:
+                count_events(session, tables[0])
+        finally:
+            ctx.close(session)
+
+
+def record_wt_match(session, match: dict) -> None:
+    """A War Thunder match summary into the session: the battle, and the replay's author's line."""
+    session.meta["match"] = {k: match.get(k) for k in ("match", "map", "mission", "battleClass", "teams")}
+    session.stat("map", str(match.get("map") or ""))
+    counts = match.get("counts") or {}
+    for key in ("aircraftUids", "groundUids", "aircraftSamples", "groundSamples"):
+        if isinstance(counts.get(key), (int, float)):
+            session.stat(key, counts[key])
+    author = str(match.get("authorUserId") or "")
+    for p in match.get("players") or []:
+        if not author or str(p.get("userId")) != author:
+            continue
+        session.meta["player"] = p.get("name")
+        for key, name in (("kills", "kills"), ("groundKills", "ground_kills"), ("deaths", "deaths"),
+                          ("assists", "assists"), ("score", "score"), ("captureZone", "captures")):
+            if isinstance(p.get(key), (int, float)):
+                session.stat(name, p[key])
+
+
+ADAPTERS.append(
+    WarThunderReplays(
+        id="warthunder-replays",
+        game="War Thunder",
+        patterns=("*.wrpl",),
+        source="replays War Thunder saves: <War Thunder>/Replays/*.wrpl (with replay saving on), converted by the "
+        "external converter `heat3d-wt-replay` (exporters/ext/warthunder-replay)",
+        records=(
+            "every aircraft's position and attitude about 4 times a second (as many as the replay holds)",
+            "ground units' positions from the replay's ground sync (in 2026 replays; not in 2025 ones)",
+            "who each unit was (player, vehicle id, team) where a kill or hit names it; kills, deaths and hits "
+            "where they happened; chat; the map",
+            "the replay author's kills, deaths, score and captures as statistics",
+        ),
+        enable="turn on saving replays in War Thunder's options and install the converter: "
+        "pip install -e <3DHeat>/exporters/ext/warthunder-replay",
+        # The converter's table: the game's metres, x east, y up, z north; z mirrored for the viewer.
+        axes=Axes(up="y", flip_z=True, units="metres (x east, y up, z north)"),
+        verified="the converter is checked on public replays from 2025 (an air battle: 30 aircraft, 4 per second, "
+        "kills and names agree with the results) and by tests on built replays; this hook by tests with a "
+        "stand-in command",
+        multiplayer=True,
+    )
+)
+
+
+# -- World of Tanks and World of Warships: external converters, run as commands --
+
+
+def wargaming_installs(exe: str, steam_name: str, prefix: str) -> list[Path]:
+    """
+    Where a Wargaming game is installed: what the Wargaming Game Center lists
+    (`%PROGRAMDATA%/Wargaming.net/GameCenter/preferences.xml`, its
+    `working_dir`s), the usual `C:/Games/<prefix>*`, and Steam's libraries.
+    Only folders with the game's `exe` in them count.
+    """
+    found: list[Path] = []
+    prefs = Path(os.environ.get("PROGRAMDATA", r"C:\ProgramData")) / "Wargaming.net" / "GameCenter" / "preferences.xml"
+    try:
+        text = prefs.read_text(encoding="utf-8", errors="replace")
+        found += [Path(p.strip()) for p in re.findall(r"<working_dir>([^<]+)</working_dir>", text)]
+    except OSError:
+        pass
+    games = Path(os.environ.get("SystemDrive", "C:") + os.sep) / "Games"
+    if games.is_dir():
+        found += sorted(games.glob(f"{prefix}*"))
+    found += [common / steam_name for common in steam_libraries()]
+    out, seen = [], set()
+    for f in found:
+        key = str(f).lower()
+        if key not in seen and (f / exe).is_file():
+            seen.add(key)
+            out.append(f)
+    return out
+
+
+@dataclass
+class WargamingReplays(ReplayAdapter):
+    """
+    World of Tanks' and World of Warships' replays, converted by an external
+    converter of each (exporters/ext/wot-replay, `heat3d-wot-replay`;
+    exporters/ext/wows-replay, `heat3d-wows-replay`) into the session folder as
+    `<map>/<match>.parquet` and `.match.json`. The watcher only runs the
+    command: reading the replay format lives in the converter alone, so a
+    problem with one touches nothing else.
+    """
+
+    #: The converter's command, its Python package, and its folder beside the watcher (`ext/<folder>`).
+    command: str = ""
+    module: str = ""
+    ext_folder: str = ""
+    #: An environment variable that may name the converter's source folder.
+    env: str = ""
+    #: The game's executable and Steam folder name, and the start of its folder under C:/Games.
+    game_exe: str = ""
+    steam_name: str = ""
+    games_prefix: str = ""
+    _said: bool = False
+
+    @property
+    def install(self) -> str:
+        return (f"the {self.game} replay converter is not installed: pip install -e "
+                f"<3DHeat>/exporters/ext/{self.ext_folder} (it installs the `{self.command}` command)")
+
+    def source_folder(self) -> Path | None:
+        """The converter's source folder, when it is one rather than installed: `env`, or beside the watcher."""
+        candidates = [Path(os.environ[self.env])] if self.env and os.environ.get(self.env) else []
+        candidates.append(ROOT.parent / "ext" / self.ext_folder)
+        return next((c for c in candidates if (c / self.module / "__init__.py").is_file()), None)
+
+    def converter(self) -> list[str] | None:
+        """
+        How to run the converter: its command when it is on PATH, else
+        `python -m <module>` when it is installed or its source folder is
+        found. None when it is nowhere. Nothing of it is imported here.
+        """
+        import importlib.util
+        import shutil
+
+        found = shutil.which(self.command)
+        if found:
+            return [found]
+        if self.source_folder() is not None or importlib.util.find_spec(self.module) is not None:
+            return [sys.executable, "-m", self.module]
+        return None
+
+    def folders(self, ctx: Context) -> list[Path]:
+        installs = wargaming_installs(self.game_exe, self.steam_name, self.games_prefix)
+        return [f / "replays" for f in installs] + super().folders(ctx)
+
+    def missing(self) -> str | None:
+        if self.converter() is None:
+            if not self._said:
+                log.info("%s: %s", self.id, self.install)
+                self._said = True
+            return self.install
+        return None
+
+    def convert(self, path: Path, ctx: Context) -> None:
+        command = self.converter()
+        if command is None:
+            log.warning("%s: %s", self.id, self.install)
+            return
+        session = ctx.open(self, when=path.stat().st_mtime, meta={"replay": str(path)})
+        try:
+            out = subprocess.run(
+                [*command, str(path), "-o", str(session.folder)],
+                cwd=self.source_folder(),
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=3600,
+                env={**os.environ, "PYTHONIOENCODING": "utf-8"},
+            )
+            session.meta["converter"] = (out.stdout + out.stderr).strip()[-2000:]
+            summaries = sorted(session.folder.glob("*/*.match.json"))
+            if out.returncode != 0 or not summaries:
+                session.event("replay_failed", file=path.name)
+                return
+            record_wargaming_match(session, json.loads(summaries[0].read_text(encoding="utf-8")))
+            tables = sorted(session.folder.glob("*/*.parquet"))
+            if tables:
+                count_events(session, tables[0])
+        finally:
+            ctx.close(session)
+
+
+def record_wargaming_match(session, match: dict) -> None:
+    """A World of Tanks or Warships match summary into the session: the battle, and the recording player's line."""
+    session.meta["match"] = {k: match.get(k) for k in ("match", "map", "mapName", "clientVersion", "recorded")}
+    session.stat("map", str(match.get("mapName") or match.get("map") or ""))
+    for key in ("duration", "hz"):
+        if isinstance(match.get(key), (int, float)):
+            session.stat(key, match[key])
+    for p in match.get("players") or []:
+        if not p.get("own"):
+            continue
+        session.meta["player"] = p.get("name")
+        session.stat("vehicle", str(match.get("vehicle") or p.get("vehicle") or ""))
+        for key, name in (("kills", "kills"), ("damageDealt", "damage")):
+            if isinstance(p.get(key), (int, float)) and not isinstance(p.get(key), bool):
+                session.stat(name, p[key])
+        if isinstance(p.get("survived"), bool):
+            session.stat("survived", 1 if p["survived"] else 0)
+        if match.get("winnerTeam") is not None and p.get("team") is not None:
+            session.stat("won", 1 if match["winnerTeam"] == p["team"] else 0)
+
+
+ADAPTERS += [
+    WargamingReplays(
+        id="wot-replays",
+        game="World of Tanks",
+        patterns=("*.wotreplay",),
+        command="heat3d-wot-replay",
+        module="heat3d_ext_wot",
+        ext_folder="wot-replay",
+        env="HEAT3D_WOT_REPLAY",
+        game_exe="WorldOfTanks.exe",
+        steam_name="World of Tanks",
+        games_prefix="World_of_Tanks",
+        source="replays World of Tanks saves: <World of Tanks>/replays/*.wotreplay (with battle recording on), "
+        "converted by the external converter `heat3d-wot-replay` (exporters/ext/wot-replay)",
+        records=(
+            "every vehicle's position and heading about 10 times a second while the recording client knew of it: "
+            "its own team throughout, an enemy while spotted",
+            "player, team and vehicle (nation:tank) of each; deaths where the victim fell and kills where the "
+            "killer stood, to about a second, from the results",
+            "the map; the recording player's kills, damage, survival and the result as statistics",
+        ),
+        enable="turn on battle recording in World of Tanks' settings (General > Record battles) and install the "
+        "converter: pip install -e <3DHeat>/exporters/ext/wot-replay",
+        axes=Axes(up="y", flip_z=True, units="metres (x east, y up, z north)"),
+        verified="the converter is checked on public replays of 1.12.0 (2021) and 2.4.1 (2026) and by tests on "
+        "built replays; this hook by tests with a stand-in command",
+        multiplayer=True,
+    ),
+    WargamingReplays(
+        id="wows-replays",
+        game="World of Warships",
+        patterns=("*.wowsreplay",),
+        command="heat3d-wows-replay",
+        module="heat3d_ext_wows",
+        ext_folder="wows-replay",
+        env="HEAT3D_WOWS_REPLAY",
+        game_exe="WorldOfWarships.exe",
+        steam_name="World of Warships",
+        games_prefix="World_of_Warships",
+        source="replays World of Warships saves: <World of Warships>/replays/*.wowsreplay (with replays on), "
+        "converted by the external converter `heat3d-wows-replay` (exporters/ext/wows-replay)",
+        records=(
+            "every ship's position and heading while the recording client saw it (about 6 to 7 times a second "
+            "while moving), the player's own ship throughout",
+            "player, ally or enemy, and ship (the recording player's by name, the others by the game's ship "
+            "number); ships sunk where they sank and their killers where they stood",
+            "the map; the recording player's ship, kills and survival as statistics",
+        ),
+        enable="turn on replay recording in World of Warships (`isReplayEnabled` in its preferences.xml, or "
+        "the game's own setting where it has one) and install the converter: "
+        "pip install -e <3DHeat>/exporters/ext/wows-replay",
+        axes=Axes(up="y", flip_z=True, units="World of Warships world units (x east, y up, z north; one is 15 m "
+                  "by hull geometry, 30 m by the game's ranges)"),
+        verified="the converter is checked on public replays of 0.9.6 (2020), 0.10.11, 15.9 and 15.10 (2026) "
+        "and by tests on built replays; this hook by tests with a stand-in command",
+        multiplayer=True,
+    ),
+]
+
+
+# -- Squad: server demos, read by an external converter run as a command --
+
+#: The command the Squad demo reader installs.
+SQUAD_COMMAND = "heat3d-squad-demo"
+SQUAD_INSTALL = (
+    "the Squad demo reader is not installed: "
+    "pip install -e <3DHeat>/exporters/ext/squad-demo (it installs the `heat3d-squad-demo` command)"
+)
+
+
+def _squad_sources() -> list[Path]:
+    candidates = [Path(os.environ["HEAT3D_SQUAD_DEMO"])] if os.environ.get("HEAT3D_SQUAD_DEMO") else []
+    return candidates + [ROOT.parent / "ext" / "squad-demo", ROOT.parent / "3DHeat-Squad-Demo"]
+
+
+def squad_converter() -> list[str] | None:
+    """
+    How to run the Squad demo reader, an extension kept outside the watcher
+    (exporters/ext/squad-demo): its `heat3d-squad-demo` command when it is on
+    PATH, else `python -m heat3d_ext_squad` when the package is installed, or
+    found in `HEAT3D_SQUAD_DEMO` or beside the watcher. None when it is
+    nowhere. Nothing of it is imported here; it is only run.
+    """
+    import importlib.util
+    import shutil
+
+    found = shutil.which(SQUAD_COMMAND)
+    if found:
+        return [found]
+    if squad_folder() is not None or importlib.util.find_spec("heat3d_ext_squad") is not None:
+        return [sys.executable, "-m", "heat3d_ext_squad"]
+    return None
+
+
+def squad_folder() -> Path | None:
+    """The folder the reader runs in, when it is a source folder rather than installed."""
+    return next((c for c in _squad_sources() if (c / "heat3d_ext_squad" / "__init__.py").is_file()), None)
+
+
+def squad_demo_folders() -> list[Path]:
+    """
+    Where Squad demos land on this machine: a dedicated server's
+    `SquadGame/Saved/Demos` (a local server installed through Steam, or one in
+    Steam's libraries), and the game client's own `Saved/Demos` for demos
+    recorded with RecordingStart. Demos copied off a rented server go in a
+    folder listed under `squad-demos` in the settings' `replay_folders`, or
+    are converted with `python -m heat3d_watch replays squad-demos <folder>`.
+    """
+    out = []
+    for common in steam_libraries():
+        for install in ("Squad Dedicated Server", "Squad"):
+            out.append(common / install / "SquadGame" / "Saved" / "Demos")
+    local = os.environ.get("LOCALAPPDATA")
+    if local:
+        out.append(Path(local) / "SquadGame" / "Saved" / "Demos")
+    return out
+
+
+@dataclass
+class SquadDemos(ReplayAdapter):
+    """
+    Squad server demos (`.replay`, recorded with the admin command
+    AdminDemoRec), converted by the external reader (exporters/ext/squad-demo,
+    `heat3d-squad-demo`) into the session folder as `<map>/<match>.parquet`
+    and `.match.json`. The watcher only runs the command: reading Unreal's
+    replay format lives in the reader alone.
+    """
+
+    _said: bool = False
+
+    def folders(self, ctx: Context) -> list[Path]:
+        return squad_demo_folders() + super().folders(ctx)
+
+    def missing(self) -> str | None:
+        if squad_converter() is None:
+            if not self._said:
+                log.info("%s: %s", self.id, SQUAD_INSTALL)
+                self._said = True
+            return SQUAD_INSTALL
+        return None
+
+    def convert(self, path: Path, ctx: Context) -> None:
+        command = squad_converter()
+        if command is None:
+            log.warning("%s: %s", self.id, SQUAD_INSTALL)
+            return
+        session = ctx.open(self, when=path.stat().st_mtime, meta={"replay": str(path)})
+        try:
+            out = subprocess.run(
+                [*command, str(path), "-o", str(session.folder)],
+                cwd=squad_folder(),
+                capture_output=True,
+                text=True,
+                timeout=3600,
+            )
+            session.meta["converter"] = (out.stdout + out.stderr).strip()[-2000:]
+            summaries = sorted(session.folder.glob("*/*.match.json"))
+            if out.returncode != 0 or not summaries:
+                session.event("replay_failed", file=path.name)
+                return
+            record_squad_match(session, json.loads(summaries[0].read_text(encoding="utf-8")))
+            tables = sorted(session.folder.glob("*/*.parquet"))
+            if tables:
+                count_events(session, tables[0])
+        finally:
+            ctx.close(session)
+
+
+def record_squad_match(session, match: dict) -> None:
+    """A Squad demo's summary into the session: the layer, the teams, and each player's line."""
+    session.meta["match"] = {k: match.get(k) for k in ("match", "map", "layer", "game_version", "teams")}
+    if match.get("recorded_unix"):
+        session.started = float(match["recorded_unix"])
+    session.stat("map", str(match.get("map") or ""))
+    session.stat("layer", str(match.get("layer") or ""))
+    players = [p for p in match.get("players") or [] if p.get("name")]
+    session.stat("players", len(players))
+    if isinstance(match.get("duration_s"), (int, float)):
+        session.stat("match_seconds", round(match["duration_s"], 1))
+
+
+ADAPTERS.append(
+    SquadDemos(
+        id="squad-demos",
+        game="Squad",
+        patterns=("*.replay",),
+        source="server demos Squad records with the admin command AdminDemoRec: "
+        "<server>/SquadGame/Saved/Demos/*.replay, read by the external reader `heat3d-squad-demo` "
+        "(exporters/ext/squad-demo)",
+        records=(
+            "every player's position, body yaw and speed each time the server replicates it (up to 8 times a "
+            "second), on foot and in ground vehicles",
+            "each player's name, team, faction and squad, following team changes",
+            "not: helicopters' movement, kills and deployables - see the reader's README",
+        ),
+        enable="record on the server: give the admin the `demos` permission in Admins.cfg, then AdminDemoRec "
+        "<name> and AdminDemoStop in the game's console; copy the demo here and install the reader: "
+        "pip install -e <3DHeat>/exporters/ext/squad-demo",
+        axes=Axes(up="z", units="Unreal units (centimetres)"),
+        verified="the reader is checked on public Squad v10.3.1 server demos (movement agrees with the velocity "
+        "it carries; every row's team matches its soldier's faction) and by tests on built demos; this hook by "
+        "tests with a stand-in command",
+        multiplayer=True,
+    )
+)

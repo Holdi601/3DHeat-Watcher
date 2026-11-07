@@ -1,7 +1,7 @@
 ---
 title: "IL-2 Sturmovik: Great Battles (telemetry)"
 parent: Games
-nav_order: 25
+nav_order: 26
 ---
 
 # IL-2 Sturmovik: Great Battles (telemetry)

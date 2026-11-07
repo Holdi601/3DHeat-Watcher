@@ -1,7 +1,7 @@
 ---
 title: "Path of Exile (log)"
 parent: Games
-nav_order: 35
+nav_order: 36
 ---
 
 # Path of Exile (log)
