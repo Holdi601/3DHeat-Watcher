@@ -7,6 +7,12 @@ switched on in the settings, and even then `safety.memory_allowed` decides per
 launch; this adapter adds the checks that need the process open: that the
 build is one the profile was written for, and that no anti-cheat module is
 loaded in it.
+
+Every read is kept besides the rows, in the session's raw sidecar
+(`heat.raw.parquet`, `type` `values`): each value the profile names, by its
+name as its own column - also the ones no event uses - and `unread` naming
+those the chain did not reach that time. Nothing beyond the profile's values
+is read for it: the raw sidecar keeps what was read, it never reads more.
 """
 
 from __future__ import annotations
@@ -23,6 +29,21 @@ from ..session import Axes, Session
 from .base import Adapter, Context
 
 log = logging.getLogger("heat3d_watch")
+
+#: Names the raw sidecar takes for itself: a profile value called so is kept as `value_<name>`.
+_TAKEN = frozenset({"type", "payload", "text", "used", "t", "ms", "time", "unread"})
+
+
+def raw_fields(now: dict[str, Any]) -> dict[str, Any]:
+    """One read's values as the raw sidecar's columns: each by its name, and `unread` for those not reached."""
+    out: dict[str, Any] = {}
+    for name, v in now.items():
+        if v is not None:
+            out[f"value_{name}" if name in _TAKEN else name] = list(v) if isinstance(v, tuple) else v
+    unread = [name for name, v in now.items() if v is None]
+    if unread:
+        out["unread"] = ",".join(unread)
+    return out
 
 
 @dataclass
@@ -65,6 +86,7 @@ class MemoryAdapter(Adapter):
                 # Between levels, in a menu, loading: the chain is not there yet.
                 now[name] = None
         pos = now.get("pos")
+        used = pos is not None
         if pos is not None:
             s.position(*pos, player="me")
         for rule in self.profile.events:  # type: ignore[union-attr]
@@ -79,6 +101,9 @@ class MemoryAdapter(Adapter):
                 at = pos if pos is not None else (None, None, None)
                 s.event(rule["event"], x=at[0], y=at[1], z=at[2], player="me", value=new)
                 s.stat(rule["event"], 1, "add")
+                used = True
+        # Every read whole: each value the profile names, the ones no row uses as well (docs/converters.md).
+        s.raw("values", used=used, **raw_fields(now))
         self._last = now
 
     def stop(self, ctx: Context) -> None:
@@ -104,6 +129,33 @@ def _profiles() -> list[Profile]:
     return out
 
 
+def completeness(p: Profile) -> dict:
+    """The converter rule's account of one profile (docs/converters.md)."""
+    rate = max(1.0, min(60.0, float(p.rate)))
+    # One item: about 90 bytes of head, and some 25 bytes per value as a named field.
+    mb = rate * 3600 * (90 + 25 * len(p.values)) / 1e6
+    return {
+        "read": (
+            "`pos` as the position rows; the values the profile's events watch, as those events (with the new "
+            "value) and their counts",
+            f"{len(p.values)} values, checked by the profile's author on the builds it lists; the game's build is "
+            "matched by size or SHA-256 before anything is read",
+        ),
+        "raw": (
+            "`values`: every read, each value the profile names as its own column (vectors as JSON lists) - "
+            "also those no row uses - and `unread` naming the values whose chain was not there that time (a menu, "
+            "a load); `used` is true when the read became a row or an event",
+        ),
+        "missing": (
+            "everything in the game's memory the profile does not name: the watcher reads only the profile's "
+            "values, read-only, single-player only, never near an anti-cheat (safety.py)",
+            "reads on a build the profile does not list: nothing is read then",
+        ),
+        "size": f"{rate:g} reads a second of about {90 + 25 * len(p.values)} bytes: about {mb:.1f} MB per hour "
+        "before compression, less with zstd",
+    }
+
+
 def _adapter(p: Profile) -> MemoryAdapter:
     axes = Axes(up=p.axes.get("up", "y"), units=p.axes.get("units", "game units"), scale=float(p.axes.get("scale", 1)))
     return MemoryAdapter(
@@ -118,6 +170,7 @@ def _adapter(p: Profile) -> MemoryAdapter:
         interval=1.0 / max(1.0, min(60.0, float(p.rate))),
         axes=axes,
         verified="by the profile's author, for the builds it lists",
+        completeness=completeness(p),
         profile=p,
     )
 

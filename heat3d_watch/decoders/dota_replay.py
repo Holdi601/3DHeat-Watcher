@@ -44,15 +44,26 @@ player's cursor. Every other unit (creeps, summons, illusions, couriers,
 wards, buildings, Roshan) is sampled once a second into a table of its own,
 `<match>.units.parquet`. The combat log's entries about a hero become rows
 too (damage taken and dealt, heals, abilities, items, purchases, runes, gold,
-experience, modifiers), and the whole log, every field, is in the summary,
-as columns. So is everything else gem extracts: the draft, chat, runes,
-couriers, smokes, neutral items, fights, visibility, per-player time series
-and logs, the gold and experience advantage.
+experience, modifiers), and the whole log, every field, is in
+`<match>.combatlog.parquet`. Everything else gem extracts is in the summary:
+the draft, chat, runes, couriers, smokes, neutral items, fights, visibility,
+per-player time series and logs, the gold and experience advantage. So are
+the replay's own records of the match, whole: its file header and info, and
+the end-of-match scoreboard and match metadata the game coordinator keeps
+(DOTA_UM_MatchDetails, DOTA_UM_MatchMetadata). The players' map pings and
+map drawings, and every order every player gave (move, attack, cast, buy,
+...) are rows of the table: an order at the point it names, else where the
+player's hero stood.
 
-Not read: what gem does not extract (projectiles, the minimap's pings,
-abilities' cooldowns over time beyond gem's snapshots), and units between
-their once-a-second samples. A replay gem cannot read to the end is
-converted as far as it goes and marked `incomplete` in the summary.
+Everything the replay holds besides is kept whole beside the table
+(`dota_keep`, the rule all 3DHeat converters follow): every frame and network
+message in `<match>.packets.parquet` with what its protobuf says, every
+entity property each time it changed in `<match>.entities.parquet`, every
+string table entry in `<match>.strings.parquet`; `selfCheck.completeness` in
+the summary counts each kind, and `selfCheck.crossCheck` holds the
+scoreboard read from the stream against the game's own record. A replay gem
+cannot read to the end is converted as far as it goes and marked
+`incomplete` in the summary.
 """
 
 from __future__ import annotations
@@ -259,6 +270,12 @@ class Replay:
     more: dict[str, Any] = field(default_factory=dict)
     #: The whole combat log, as columns (see `combat_columns`).
     combat_log: dict[str, list[Any]] = field(default_factory=dict)
+    #: The replay's own records of the match, decoded whole (see `DOCUMENT_KEYS`).
+    document: dict[str, Any] = field(default_factory=dict)
+    #: The self-check's `completeness` block (docs/converters.md), when the sidecars were kept.
+    completeness: dict[str, Any] = field(default_factory=dict)
+    #: The scoreboard read from the stream against the game's own end-of-match record.
+    cross_check: dict[str, Any] = field(default_factory=dict)
 
 
 def world(cell: float, offset: float) -> float:
@@ -459,36 +476,81 @@ class _Sampler:
                 self.roshan.append((tick, *pos))
 
 
-def _parse_with_sampler(path: Path, step: int) -> tuple[Any, _Sampler | None]:
+def _parse_with_sampler(path: Path, step: int, keep: Path | None = None) -> tuple[Any, _Sampler | None, Any]:
     """
     `gem.parse`, with our sampler on the same pass: gem builds its parser from
     `gem.parser.ReplayParser`, so for the call that name is a subclass that
     attaches the sampler. Should a later gem build its parser elsewhere, the
     sampler simply sees nothing and `read` falls back to gem's own
     once-a-second track.
+
+    With `keep` (a folder), the subclass also hands every frame, every
+    packet's messages and every string table entry to a `dota_keep.Keeper`,
+    which writes the sidecars there as the parse goes.
     """
     import gem
     import gem.parser as gp
+    import gem.state.string_table as gst
 
     holder: list[_Sampler] = []
+    keepers: list[Any] = []
     base = gp.ReplayParser
+    apply_items = gst._apply_items
 
     class Sampling(base):  # type: ignore[misc, valid-type]
         def __init__(self, source: Any) -> None:
             super().__init__(source)
             holder.append(_Sampler(self, step))
 
+    class Keeping(Sampling):
+        def __init__(self, source: Any) -> None:
+            from .dota_keep import Keeper
+
+            super().__init__(source)
+            keepers.append(Keeper(self, keep, path.stem))
+
+        def _dispatch_outer(self, msg_type: int, data: bytes) -> None:
+            keepers[0].outer(msg_type, data)
+            super()._dispatch_outer(msg_type, data)
+
+        def _dispatch_inner_packet(self, data: bytes) -> None:
+            keepers[0].inner(data)
+            super()._dispatch_inner_packet(data)
+
+        def _dispatch_inner(self, type_id: int, payload: bytes) -> None:
+            if type_id in (44, 45):
+                keepers[0].table_message()
+            super()._dispatch_inner(type_id, payload)
+
+    def applying(table: Any, items: Any) -> None:
+        items = list(items)
+        apply_items(table, items)
+        if keepers:
+            keepers[0].strings(table, items)
+
     with _PATCH:
-        gp.ReplayParser = Sampling
+        gp.ReplayParser = Keeping if keep is not None else Sampling
+        if keep is not None:
+            gst._apply_items = applying
         try:
             match = gem.parse(str(path))
+        except BaseException:
+            for k in keepers:
+                k.abandon()
+            raise
         finally:
             gp.ReplayParser = base
-    return match, holder[0] if holder else None
+            gst._apply_items = apply_items
+    return match, holder[0] if holder else None, keepers[0] if keepers else None
 
 
-def read(path: str | Path, hz: float = HZ) -> Replay:
-    """A replay file, read: heroes' tracks at `hz`, the match, and its events in place."""
+def read(path: str | Path, hz: float = HZ, keep: str | Path | None = None) -> Replay:
+    """
+    A replay file, read: heroes' tracks at `hz`, the match, and its events in
+    place. With `keep` (the output folder), everything else the replay holds
+    is kept beside them as it is read (`dota_keep`): `<match>.packets`,
+    `.entities` and `.strings.parquet`, counted in `Replay.completeness`.
+    """
     path = Path(path)
     with path.open("rb") as f:
         if f.read(8) != DEMO_MAGIC:
@@ -498,7 +560,7 @@ def read(path: str | Path, hz: float = HZ) -> Replay:
     except ImportError as e:
         raise Missing("pip install gem-dota (the Dota 2 replay parser, MIT)") from e
     step = max(1, round(TICK_RATE / hz))
-    match, sampler = _parse_with_sampler(path, step)
+    match, sampler, keeper = _parse_with_sampler(path, step, Path(keep) if keep is not None else None)
     clock = getattr(match, "game_clock", None)
 
     def at(tick: int) -> float:
@@ -529,6 +591,13 @@ def read(path: str | Path, hz: float = HZ) -> Replay:
     replay = Replay(match_id=int(match.match_id or _id_from_name(path)), players=players, samples=samples,
                     events=events, info=_info(match, path), hz=hz, units=units, more=_more(match, at))
     replay.combat_log = combat_columns(list(getattr(match, "combat_log", [])), at)
+    if keeper is not None:
+        replay.events += [Event(tick, round(at(tick), 3), event, slot, x, y, None, other, value, text)
+                          for tick, event, slot, x, y, other, value, text in keeper.events]
+        replay.events.sort(key=lambda e: (e.tick, e.event))
+        replay.document = {DOCUMENT_KEYS.get(k, k): v for k, v in keeper.document.items()}
+        replay.completeness = keeper.finish(at, str(replay.match_id))
+        replay.cross_check = cross_check(replay.players, replay.document.get("matchDetails"))
     return replay
 
 
@@ -548,6 +617,52 @@ def tracks(raw: list[tuple], at: Callable[[int], float], end: int | None = None)
             continue
         last[slot] = t
         out.append(Sample(tick, round(t, 3), slot, x, y, z, hp, mhp, lvl, rest[0] if rest else {}))
+    return out
+
+
+#: The replay's own records, decoded whole into the match document: frame or message -> key.
+DOCUMENT_KEYS = {
+    "DEM_FileHeader": "fileHeader",
+    "DEM_FileInfo": "fileInfo",
+    "DOTA_UM_MatchDetails": "matchDetails",
+    "DOTA_UM_MatchMetadata": "matchMetadata",
+}
+#: A Steam account's 64-bit id is its 32-bit one plus this.
+STEAM64 = 76561197960265728
+#: The scoreboard numbers compared: ours -> the end-of-match record's. Only those gem counts from the stream itself
+#: (the combat log, the entities): damage, healing, gold and net worth it takes from the record when there is one.
+CHECKED = {"kills": "kills", "deaths": "deaths", "assists": "assists", "lastHits": "last_hits", "denies": "denies",
+           "level": "level"}
+
+
+def cross_check(players: list[dict[str, Any]], details: dict[str, Any] | None) -> dict[str, Any]:
+    """
+    Every player's line as read from the stream (gem's count of the combat log
+    and the entities) against the game's own end-of-match record
+    (DOTA_UM_MatchDetails, the scoreboard the game coordinator keeps), matched
+    by Steam account: per number, how many players agree, and every
+    disagreement.
+    """
+    if not details:
+        return {}
+    theirs = {}
+    for p in details.get("players") or []:
+        if isinstance(p, dict) and p.get("account_id"):
+            theirs[str(int(p["account_id"]) + STEAM64)] = p
+    out: dict[str, Any] = {"against": "DOTA_UM_MatchDetails", "players": 0, "agree": {}, "differ": []}
+    for p in players:
+        q = theirs.get(str(p.get("steamid")))
+        if q is None:
+            continue
+        out["players"] += 1
+        for ours, key in CHECKED.items():
+            a, b = p.get(ours), q.get(key)
+            if not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
+                continue
+            if a == b:
+                out["agree"][ours] = out["agree"].get(ours, 0) + 1
+            else:
+                out["differ"].append({"slot": p.get("slot"), "field": ours, "stream": a, "record": b})
     return out
 
 
@@ -1047,7 +1162,7 @@ def summary(replay: Replay) -> dict[str, Any]:
     span = (replay.samples[-1].time - replay.samples[0].time) if replay.samples else 0.0
     return {
         "format": "heat3d-dota-match",
-        "version": 2,
+        "version": 3,
         "match": str(replay.match_id),
         "map": "dota",
         **replay.info,
@@ -1062,6 +1177,10 @@ def summary(replay: Replay) -> dict[str, Any]:
         # Everything else the parser extracted, as it has it (see `_more`); the combat log in a table of its own.
         "gem": replay.more,
         "combatLog": {"file": f"{replay.match_id}.combatlog.parquet", "rows": len(replay.combat_log.get("tick", []))},
+        # The replay's own records of the match, whole: its file header and info, the end-of-match scoreboard and the
+        # match's metadata as the game coordinator has them.
+        **replay.document,
+        "selfCheck": _self_check(replay),
         "conventions": {
             "coordinates": "Dota world units: x east, y north, z up; the playable map runs about -8200..8200",
             "time": "the game clock in seconds: negative before the horn, standing while paused",
@@ -1070,6 +1189,24 @@ def summary(replay: Replay) -> dict[str, Any]:
                       "a ward where it was planted",
         },
     }
+
+
+def _self_check(replay: Replay) -> dict[str, Any]:
+    """
+    The match document's `selfCheck`: the `completeness` of docs/converters.md
+    with the tables written beside the match (the units' and the combat log's),
+    and the scoreboard against the game's own record.
+    """
+    out: dict[str, Any] = {}
+    if replay.completeness:
+        c = dict(replay.completeness)
+        name = str(replay.match_id)
+        c["sidecars"] = [*c.get("sidecars", []), *([f"{name}.units.parquet"] if replay.units else []),
+                         *([f"{name}.combatlog.parquet"] if replay.combat_log.get("tick") else [])]
+        out["completeness"] = c
+    if replay.cross_check:
+        out["crossCheck"] = replay.cross_check
+    return out
 
 
 def _count(items: Any) -> dict[str, int]:
@@ -1099,15 +1236,15 @@ def write(replay: Replay, folder: str | Path) -> tuple[Path, Path]:
     if replay.combat_log.get("tick"):
         import pyarrow as pa
 
-        pq.write_table(pa.table(replay.combat_log), folder / f"{name}.combatlog.parquet", compression="snappy")
+        pq.write_table(pa.table(replay.combat_log), folder / f"{name}.combatlog.parquet", compression="zstd")
     # Compact: the parser's data runs to megabytes.
     doc.write_text(json.dumps(summary(replay), ensure_ascii=False, default=str, separators=(",", ":")), encoding="utf-8")
     return data, doc
 
 
 def convert(path: str | Path, folder: str | Path, hz: float = HZ) -> tuple[Path, Path]:
-    """One replay into `folder`: read, then written."""
-    return write(read(path, hz), folder)
+    """One replay into `folder`: read, with everything else it holds kept beside (`dota_keep`), then written."""
+    return write(read(path, hz, keep=folder), folder)
 
 
 def main(argv: list[str] | None = None) -> int:

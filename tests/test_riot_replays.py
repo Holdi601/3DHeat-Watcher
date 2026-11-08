@@ -161,8 +161,10 @@ def test_a_valorant_replay_gives_its_open_facts_and_timeline(tmp_path):
     assert [e["event"] for e in r["events"]] == ["round_start", "kill", "spike_planted", "round_start"]
     kill = r["events"][1]
     assert kill["words"] == [11, 22] and kill["seconds"] == pytest.approx(31.5)
-    with pytest.raises(ValueError, match="encrypted"):
-        read_vrf(vrf(encrypted=1))
+    # An encrypted replay is walked and kept whole, nothing read inside.
+    locked = read_vrf(vrf(encrypted=1))
+    assert locked["encrypted"] and locked["events"] == [] and locked["map"] is None
+    assert [x[0] for x in locked["sections"]] == ["info", "header", "event", "event", "event", "event", "replay_data"]
     a = next(x for x in ADAPTERS if x.id == "valorant-replays")
     replay = tmp_path / "match.vrf"
     replay.write_bytes(vrf())
@@ -170,3 +172,98 @@ def test_a_valorant_replay_gives_its_open_facts_and_timeline(tmp_path):
     a.convert(replay, Context(Settings(data=str(data)), data))
     meta = json.loads(next((data / "sessions").rglob("meta.json")).read_text(encoding="utf-8"))
     assert meta["stats"]["rounds"] == 2 and meta["stats"]["kills_in_match"] == 1 and meta["stats"]["map"] == "Ascent"
+
+
+def _raw(data):
+    folder = next((data / "sessions").rglob("meta.json")).parent
+    meta = json.loads((folder / "meta.json").read_text(encoding="utf-8"))
+    return meta, pq.read_table(folder / "heat.raw.parquet").to_pylist()
+
+
+def test_every_part_of_a_league_replay_is_kept_and_the_timeline_whole(tmp_path):
+    """The file's parts tile it; every timeline event and frame is a row and kept; the self-check loses nothing."""
+    import struct as st
+
+    # A ROFL1 with a chunk table of one keyframe and one chunk after its payload header, and their bytes.
+    meta = json.dumps({**META, "gameVersion": "14.9.580.2108"}).encode()
+    meta_off = 288
+    ph_off = meta_off + len(meta)
+    ph = st.pack("<QIIIIII", 7123456789, 1800000, 1, 1, 2, 3, 60000) + st.pack("<H", 4) + b"QUJD"
+    payload_off = ph_off + len(ph)
+    table = st.pack("<IBIII", 1, 2, 5, 0, 0) + st.pack("<IBIII", 1, 1, 3, 2, 5)
+    data = b"KEYFR" + b"CHK"
+    lengths = st.pack("<HIIIIII", 288, 0, meta_off, len(meta), ph_off, len(ph), payload_off)
+    buf = b"RIOT\x00\x00" + bytes(256) + lengths + meta + ph + table + data + b"??"
+    r = read_rofl(buf)
+    kinds = [x[0] for x in r["sections"]]
+    assert kinds == ["magic", "signature", "lengths", "metadata", "payload_header", "chunk_header", "chunk_header",
+                     "keyframe", "chunk", "unknown"]
+    assert r["payload"]["keyframe_interval"] == 60000 and r["payload"]["encryption_key"] == "QUJD"
+    assert r["chunks"] == [{"id": 1, "type": "keyframe", "length": 5, "next_chunk_id": 0, "offset": 0},
+                           {"id": 1, "type": "chunk", "length": 3, "next_chunk_id": 2, "offset": 5}]
+
+    a = next(x for x in ADAPTERS if x.id == "lol-replays")
+    timeline = {
+        "metadata": {"matchId": "EUW1_7123456789"},
+        "info": {
+            "participants": [{"participantId": 1, "puuid": "p1"}, {"participantId": 2, "puuid": "p2"}],
+            "frames": [
+                {"timestamp": 60000,
+                 "participantFrames": {"1": {"position": {"x": 500, "y": 700}, "level": 2, "totalGold": 600,
+                                             "championStats": {"armor": 30}},
+                                       "2": {"level": 1}},
+                 "events": [{"type": "WARD_PLACED", "timestamp": 30000, "creatorId": 2, "wardType": "YELLOW_TRINKET"},
+                            {"type": "BUILDING_KILL", "timestamp": 59000, "killerId": 1, "position": {"x": 900, "y": 1000},
+                             "assistingParticipantIds": [2]}]},
+            ],
+        },
+    }
+    a.opener = lambda request, timeout: _Response(json.dumps(timeline).encode())
+    replay = tmp_path / "EUW1-7123456789.rofl"
+    replay.write_bytes(buf)
+    data_dir = tmp_path / "data"
+    a.convert(replay, Context(Settings(data=str(data_dir), riot_api_key="RGAPI-test"), data_dir))
+    a.opener = None
+    meta, raw = _raw(data_dir)
+    c = meta["selfCheck"]["completeness"]
+    assert c["lost"] == 0
+    assert c["types"]["chunk"] == {"seen": 1, "decoded": 0, "partial": 0, "raw": 1, "lost": 0}
+    assert c["types"]["timeline BUILDING_KILL"]["partial"] == 1 and c["types"]["timeline participantFrame"]["seen"] == 2
+    parts = sorted((row for row in raw if row["offset"] is not None), key=lambda row: row["offset"])
+    assert b"".join(row["payload"] for row in parts) == buf
+    assert meta["rofl"]["payload"]["game_id"] == 7123456789 and meta["rofl"]["chunks"] == 2
+    # The rest of the timeline, and each event and frame, whole.
+    rest = json.loads(next(row for row in raw if row["type"] == "timeline")["text"])
+    assert rest["metadata"] == {"matchId": "EUW1_7123456789"} and rest["info"]["frames"] == [{"timestamp": 60000}]
+    t = pq.read_table(next((data_dir / "sessions").rglob("heat.parquet"))).to_pylist()
+    building = next(row for row in t if row["event"] == "building_kill")
+    assert (building["x"], building["z"], building["player"]) == (900.0, 1000.0, "Someone#EUW")
+    assert building["assistingParticipantIds"] == "[2]"
+    me = next(row for row in t if row["event"] == "position")
+    assert me["championStats.armor"] == 30 and me["gold"] == 600
+    results = [json.loads(line) for line in next((data_dir / "sessions").rglob("events.jsonl")).read_text(
+        encoding="utf-8").splitlines()]
+    ahri = next(e for e in results if e["event"] == "player_result" and e["champion"] == "Ahri")
+    assert ahri["CHAMPIONS_KILLED"] == 7 and ahri["TEAM_POSITION"] == "MIDDLE" and ahri["PUUID"] == "p1"
+    assert any(e["event"] == "ward_placed" and e["player"] == "Other#EUW" for e in results)
+
+
+def test_every_chunk_of_a_valorant_replay_is_kept(tmp_path):
+    buf = vrf() + b"\x09\x00\x00\x00\xff\x00\x00\x00cut"  # a chunk cut short at the end
+    r = read_vrf(buf)
+    assert [x[0] for x in r["sections"]] == ["info", "header", "event roundStarted", "event characterDeath",
+                                              "event spikePlanted", "event roundStarted", "replay_data", "trailing"]
+    assert r["info"]["network_version"] == 21 and r["info"]["name"] == "Valorant replay"
+    assert r["events"][1]["id"] == "ev-32500" and r["events"][1]["time_ms"] == 32500
+    a = next(x for x in ADAPTERS if x.id == "valorant-replays")
+    replay = tmp_path / "match.vrf"
+    replay.write_bytes(buf)
+    data = tmp_path / "data"
+    a.convert(replay, Context(Settings(data=str(data)), data))
+    meta, raw = _raw(data)
+    c = meta["selfCheck"]["completeness"]
+    assert c["lost"] == 0
+    assert c["types"]["replay_data"] == {"seen": 1, "decoded": 0, "partial": 0, "raw": 1, "lost": 0}
+    assert c["types"]["event characterDeath"]["partial"] == 1 and c["types"]["trailing"]["raw"] == 1
+    assert b"".join(row["payload"] for row in sorted(raw, key=lambda row: row["offset"])) == buf
+    assert meta["vrf"]["changelist"] == 999

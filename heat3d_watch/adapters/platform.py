@@ -68,6 +68,15 @@ NVIDIA highlights and clips (`nvidia-highlights`)
 
 Each adapter keeps what it has already seen in `<data>\\state\\<id>.json`, so a
 restart records nothing twice.
+
+Each session also keeps what its rows came from, whole (3DHeat's converter
+rule, docs/converters.md in the viewer's repository), in `heat.raw.parquet`:
+the stats file's and its schema's bytes and the game's localconfig block
+(steam-stats; a stats file the decoder cannot read gets a session holding only
+its bytes), the timeline file's header and every entry as JSON
+(steam-timeline), each clip's gallery index entry, the game's highlight
+definitions and every GfeSDK log line, the ones that are not highlight
+requests too (nvidia-highlights).
 """
 
 from __future__ import annotations
@@ -198,6 +207,7 @@ class SteamStats(Adapter):
         # Playtime first: a game's stats file and its playtime usually change together,
         # when the game closes, and belong in the same session.
         play_now: dict[str, dict[str, int]] = {}
+        blocks: dict[str, dict[str, Any]] = {}  # the game's whole localconfig block, kept raw with its playtime
         for account in _steam.accounts(st.root):
             path = st.root / "userdata" / account / "config" / "localconfig.vdf"
             try:
@@ -208,9 +218,11 @@ class SteamStats(Adapter):
                 continue
             lc_seen[account] = mtime
             dirty = True
-            for appid, row in _steam.playtimes(st.root, account).items():
+            apps = _steam.local_apps(st.root, account)
+            for appid, row in _steam.playtimes(st.root, account, apps).items():
                 key = f"{account}_{appid}"
                 play_now[key] = row
+                blocks[key] = apps.get(appid) or {}
                 if play_seen.get(key) != row:
                     old = play_seen.get(key)
                     play_seen[key] = row
@@ -240,14 +252,20 @@ class SteamStats(Adapter):
                 continue
             dirty = True
             schema = st.schema(appid)
+            data: bytes | None = None
             try:
-                stats, unlocked = _steam.user_stats(_steam.parse_binary_kv(f.read_bytes()), schema)
+                data = f.read_bytes()
+                stats, unlocked = _steam.user_stats(_steam.parse_binary_kv(data), schema)
             except (OSError, ValueError) as e:
                 # Mid-write or damaged: remember the time so it is not retried every poll;
                 # the next write gives it a new one.
                 log.warning("%s: could not read %s: %s", self.id, f.name, e)
                 games.setdefault(key, {})["mtime"] = mtime
                 state["bad_files"] = int(state.get("bad_files", 0)) + 1
+                if data is not None:
+                    # Read, but not understood (cut short, or a layout the decoder does not know):
+                    # its bytes are kept whole in a session of their own, for a later decoder.
+                    changed.setdefault(key, {}).update(unreadable=data, mtime=mtime)
                 continue
             old_stats = (seen or {}).get("stats", {})
             old_ach = (seen or {}).get("achievements", {})
@@ -261,10 +279,13 @@ class SteamStats(Adapter):
             if seen is None or diff or new_ach:
                 c = changed.setdefault(key, {})
                 c.update(stats=stats, unlocked=unlocked, new_ach=new_ach, diff=diff if seen else {},
-                         mtime=mtime, snapshot=seen is None)
+                         mtime=mtime, snapshot=seen is None, file=data)
                 if key in play_now or key in play_seen:
                     c.setdefault("playtime", ({}, play_now.get(key) or play_seen.get(key)))
 
+        for key, c in changed.items():
+            if "playtime" in c and key in blocks:
+                c["localconfig"] = blocks[key]
         for key, c in sorted(changed.items()):
             try:
                 self._record(ctx, st, key, c)
@@ -280,6 +301,23 @@ class SteamStats(Adapter):
         when = float(c.get("mtime") or time.time())
         s = ctx.open(self, game=st.app_name(appid), when=_unique_when(ctx, self.id, when))
         s.meta.update({"steam_appid": int(appid)})
+        # What the rows come from, whole: the stats file, the schema that names its keys, the localconfig block.
+        stats_file = c.get("file") if "stats" in c else c.get("unreadable")
+        if stats_file is not None:
+            s.raw("UserGameStats", stats_file, used="stats" in c, t=0.0, ms=when * 1000,
+                  file=f"UserGameStats_{key}.bin")
+            try:
+                schema_file: bytes | None = (st.stats_dir / f"UserGameStatsSchema_{appid}.bin").read_bytes()
+            except OSError:
+                schema_file = None
+            if schema_file is not None:
+                s.raw("UserGameStatsSchema", schema_file, used=schema is not None and "stats" in c, t=0.0,
+                      ms=when * 1000, file=f"UserGameStatsSchema_{appid}.bin")
+        if "unreadable" in c:
+            s.meta["unreadable"] = f"UserGameStats_{key}.bin"
+        if c.get("localconfig") is not None:
+            s.raw("localconfig_app", text=json.dumps(c["localconfig"], ensure_ascii=False), used=True, t=0.0,
+                  ms=when * 1000, appid=int(appid))
         stats: dict[str, float] = c.get("stats") or {}
         unlocked: dict[str, int] = c.get("unlocked") or {}
         new_ach: dict[str, int] = c.get("new_ach") or {}
@@ -421,6 +459,8 @@ class SteamTimeline(Adapter):
         self._steam: _steam.Steam | None = None
         self._state: dict[str, Any] = {}
         self._open: dict[str, Session] = {}
+        #: The timeline file's header (all but its entries) as last kept, per file.
+        self._headers: dict[str, str] = {}
 
     def steam(self) -> _steam.Steam | None:
         if self._steam is None:
@@ -504,6 +544,11 @@ class SteamTimeline(Adapter):
                 s.event("session_start", t=_num(doc.get("starttime")) / 1000, ms=recorded * 1000, player="me")
                 info["started"] = True
         if s is not None:
+            # The file's own fields (daterecorded, starttime, endtime, any other), kept whole when they change.
+            header = json.dumps({k: v for k, v in doc.items() if k != "entries"}, ensure_ascii=False)
+            if self._headers.get(key) != header:
+                self._headers[key] = header
+                s.raw("timeline", text=header, used=True, t=0.0, ms=recorded * 1000, file=path.name)
             schema = self.steam().schema(appid) if self.steam() else None
             # Game phases (a match, a mission) bound the events in them: their id goes in
             # the session column, so the viewer can split a sitting into its matches.
@@ -529,6 +574,10 @@ class SteamTimeline(Adapter):
                 elif e.get("type") == "event":
                     s.stat("timeline_events", 1, "add")
                 s.event(name, t=t_ms / 1000, ms=recorded * 1000 + t_ms, player="me", **attrs)
+                # The entry whole, under Steam's own type: nested fields (a phase's tag icons and
+                # priorities, anything a later Steam adds) are only here.
+                s.raw(str(e.get("type") or "entry"), text=json.dumps(e, ensure_ascii=False), used=True,
+                      t=t_ms / 1000, ms=recorded * 1000 + t_ms)
                 info["ids"].append(_entry_key(e))
             if ended:
                 end_ms = _num(doc.get("endtime"))
@@ -542,6 +591,7 @@ class SteamTimeline(Adapter):
 
     def _finish(self, ctx: Context, key: str, ended: float) -> None:
         s = self._open.pop(key, None)
+        self._headers.pop(key, None)
         if s is not None:
             _close_at(ctx, s, ended)
 
@@ -549,6 +599,7 @@ class SteamTimeline(Adapter):
         for key in list(self._open):
             s = self._open.pop(key)
             ctx.close(s)
+        self._headers.clear()
         save_state(ctx, self.id, self._state)
 
 
@@ -760,6 +811,8 @@ class NvidiaHighlights(Adapter):
         self._seen: set[str] = set()
         self._pending: dict[str, tuple[int, float]] = {}
         self._defs: dict[str, dict[str, Any]] = {}
+        #: (session folder, shortName) whose highlight definitions are in that session's raw feed already.
+        self._defs_kept: set[tuple[str, str]] = set()
 
     # -- where things are ---------------------------------------------------------------
 
@@ -803,7 +856,10 @@ class NvidiaHighlights(Adapter):
     # -- what the games registered ------------------------------------------------------
 
     def definitions(self) -> dict[str, dict[str, Any]]:
-        """shortName -> {"profile", "exe", "highlights": {id: display name}} from Highlights\\*\\config.json."""
+        """
+        shortName -> {"profile", "exe", "highlights": {id: display name}, "text": the file as written}
+        from Highlights\\*\\config.json.
+        """
         out: dict[str, dict[str, Any]] = {}
         o = self.overlay_dir()
         if not o:
@@ -814,7 +870,8 @@ class NvidiaHighlights(Adapter):
             return out
         for cfg in configs:
             try:
-                doc = json.loads(cfg.read_text(encoding="utf-8-sig"))
+                text = cfg.read_text(encoding="utf-8-sig")
+                doc = json.loads(text)
             except (OSError, ValueError):
                 continue
             if not isinstance(doc, dict):
@@ -828,8 +885,16 @@ class NvidiaHighlights(Adapter):
                 "profile": str(doc.get("profileName") or ""),
                 "exe": str(doc.get("drsName") or ""),
                 "highlights": names,
+                "text": text,
             }
         return out
+
+    def _keep_definitions(self, s: Session, hit: tuple[str, dict[str, Any]] | None) -> None:
+        """The game's highlight definitions, whole, once per session: what its highlight ids mean."""
+        if not hit or (str(s.folder), hit[0]) in self._defs_kept:
+            return
+        self._defs_kept.add((str(s.folder), hit[0]))
+        s.raw("highlights_config", text=hit[1]["text"], used=True, t=0.0, short_name=hit[0])
 
     def _definition_for(self, *names: str) -> tuple[str, dict[str, Any]] | None:
         for short, d in self._defs.items():
@@ -1003,6 +1068,19 @@ class NvidiaHighlights(Adapter):
             exe=u.get("drsName") or None,
             **extra,
         )
+        # What the row came from, whole: the gallery index's entry, or for a clip it does not list the file's facts.
+        t = max(0.0, ms / 1000 - s.started)
+        if u:
+            s.raw("UGC", text=json.dumps(u, ensure_ascii=False), used=True, t=t, ms=ms)
+        else:
+            try:
+                fs = path.stat()
+                size, mtime = fs.st_size, fs.st_mtime
+            except OSError:
+                size = mtime = None
+            s.raw("clip_file", used=True, t=t, ms=ms, path=str(path), size=size, mtime=mtime,
+                  folder_game=it.get("folder_game"), temp=bool(it.get("temp")))
+        self._keep_definitions(s, hit)
         s.stat("clips" if media == "video" else "screenshots", 1, "add")
         if duration and media == "video":
             s.stat("clip_seconds", round(duration, 3), "add")
@@ -1035,6 +1113,7 @@ class NvidiaHighlights(Adapter):
     # -- GfeSDK logs: the game asking for a highlight, even when no clip is kept ----------
 
     _LOG_LINE = re.compile(r"^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?)\[\w\].*?Posted Request (HL\w+)\[")
+    _LOG_TIME = re.compile(r"^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?)")
     #: Requests that configure rather than mark a moment.
     _LOG_SKIP = {"HLConfigure", "HLGetConfig", "HLGetUserSettings", "HLSetDefaultLocale"}
 
@@ -1072,24 +1151,40 @@ class NvidiaHighlights(Adapter):
             offsets[key] = off + cut
             changed = True
             exe = key.rsplit("_", 1)[0]
+            hit = self._definition_for(exe, exe + ".exe")
+            game = hit[1]["profile"] if hit and hit[1]["profile"] else exe
+            # A line without a time of its own belongs where the line before it was.
+            last_ms: float | None = None
             for raw in chunk[:cut].decode("utf-8", "replace").splitlines():
+                stamp = self._LOG_TIME.match(raw)
+                ms, timed = last_ms, False
+                if stamp:
+                    try:
+                        ms, timed = datetime.fromisoformat(stamp.group(1)).timestamp() * 1000, True
+                    except ValueError:
+                        pass
+                if ms is None:
+                    try:
+                        ms = p.stat().st_mtime * 1000
+                    except OSError:
+                        ms = time.time() * 1000
+                last_ms = ms
                 m = self._LOG_LINE.match(raw)
-                if not m or m.group(2) in self._LOG_SKIP:
-                    continue
-                try:
-                    ms = datetime.fromisoformat(m.group(1)).timestamp() * 1000
-                except ValueError:
-                    continue
-                hit = self._definition_for(exe, exe + ".exe")
-                game = hit[1]["profile"] if hit and hit[1]["profile"] else exe
-                pos = position_at(ctx.data, game, ms, within_ms=self.within_ms, skip_adapter=self.id)
+                request = timed and m is not None and m.group(2) not in self._LOG_SKIP
+                pos = None
+                if request:
+                    pos = position_at(ctx.data, game, ms, within_ms=self.within_ms, skip_adapter=self.id)
                 s = self._session(ctx, game, ms, pos)
-                extra = {}
-                if pos:
-                    extra = dict(x=pos["x"], y=pos["y"], z=pos["z"], session=pos.get("session") or pos["folder"],
-                                 position_from=pos["folder"])
-                s.event("highlight_request", t=max(0.0, ms / 1000 - s.started), ms=ms, player="me",
-                        game=game, request=m.group(2), **extra)
+                self._keep_definitions(s, hit)
+                if request:
+                    extra = {}
+                    if pos:
+                        extra = dict(x=pos["x"], y=pos["y"], z=pos["z"], session=pos.get("session") or pos["folder"],
+                                     position_from=pos["folder"])
+                    s.event("highlight_request", t=max(0.0, ms / 1000 - s.started), ms=ms, player="me",
+                            game=game, request=m.group(2), **extra)
+                # Every line whole, the ones that only configure (HLConfigure, ...) and say other things too.
+                s.raw("gfesdk_log", text=raw, used=request, t=max(0.0, ms / 1000 - s.started), ms=ms, log=key)
         return changed
 
 
@@ -1114,6 +1209,33 @@ ADAPTERS = [
         enable="",
         verified="decoded all real stats files and schemas on this machine (local test); "
         "change detection tested on files built in the binary KeyValues format",
+        completeness={
+            "read": (
+                "every stat of the stats file by its API name (int, float, avgrate), every achievement bit with "
+                "its unlock time, named and described by the schema",
+                "changes against the last read (old, new, difference), new unlocks; playtime, two-week playtime and "
+                "last played from localconfig.vdf",
+            ),
+            "raw": (
+                "`UserGameStats`: the stats file's bytes, whole, each time it is recorded (the `crc`, "
+                "`PendingChanges`, achievement bits the schema no longer defines and any key the decoder skips "
+                "are in it)",
+                "`UserGameStatsSchema`: the schema file's bytes beside it, so the stats can be decoded from the "
+                "session alone (every stat's and achievement's names in every language, icons, flags)",
+                "`localconfig_app`: the game's whole block of localconfig.vdf as JSON (cloud sync state, launch "
+                "options, badges and every other key Steam keeps per game) when its playtime is recorded",
+                "a stats file the decoder cannot read (cut mid-write, or a new layout): its bytes and the schema "
+                "in a session without rows (`used` false; `unreadable` in meta.json)",
+            ),
+            "missing": (
+                "the rest of localconfig.vdf (friends, chat, Steam settings): not the game's, and private",
+                "stat values between two writes: Steam rewrites the file when the game stores its stats, "
+                "usually when it closes",
+                "global achievement percentages and other players' stats: they are on Steam's servers, not here",
+            ),
+            "size": "a few KB per recorded sitting, plus the schema (up to a few hundred KB for a game with many "
+            "achievements) - well under 1 MB per hour of play; zstd shrinks the schema's text by half or more",
+        },
     ),
     SteamTimeline(
         id="steam-timeline",
@@ -1134,6 +1256,27 @@ ADAPTERS = [
         enable="Steam > Settings > Game Recording: record in background or on demand (Steam writes timelines then)",
         verified="tested on the real timeline files on this machine (local test): achievement, gamemode, error, "
         "and one game's own event, state_description and phase entries; the file format itself is undocumented",
+        completeness={
+            "read": (
+                "every entry once, as a row at its time: its type, every plain field (title, description, icon, "
+                "priority, duration, possible_clip, achievement name, mode, ...), a phase's tags by group, the "
+                "achievement's display name from the stats schema; the file's start and end",
+            ),
+            "raw": (
+                "every entry whole as JSON under Steam's own `type` (`gamemode`, `achievement`, `event`, "
+                "`state_description`, `phase`, `error`, any other): nested fields - a tag's icon and priority, "
+                "anything a later Steam adds - are only here",
+                "`timeline`: the file's own fields (daterecorded, starttime, endtime, any other), when the session "
+                "opens and again when they change",
+            ),
+            "missing": (
+                "the recording itself (video): Steam keeps it in its own folders; the session refers to the "
+                "timeline file by name",
+                "a read of a file Steam is writing that cannot be parsed even with its end closed: counted (`bad` "
+                "in the adapter's state) and read again at the next change, where its entries are taken",
+            ),
+            "size": "a few hundred entries of 100-300 bytes per hour of play: well under 1 MB per hour",
+        },
     ),
     NvidiaHighlights(
         id="nvidia-highlights",
@@ -1153,5 +1296,32 @@ ADAPTERS = [
         enable="NVIDIA App: Instant Replay or Highlights switched on, clips saved by hotkey or by the game",
         verified="tested on the real gallery index, settings, highlight definitions and clips on this machine "
         "(local test); GfeSDK highlight request lines and highlight ids in clips untested - none occur here",
+        completeness={
+            "read": (
+                "each new clip and screenshot: game, file, kind, media, length (index, else the MP4 header), the "
+                "moment from the file name, the highlight id and name where the game registered them, and the "
+                "player's place then from another adapter's recording",
+                "GfeSDK highlight requests (every `Posted Request HL...` but configuration calls) with their time",
+            ),
+            "raw": (
+                "`UGC`: the clip's whole entry of the gallery index UGCTracker.json, every field NVIDIA writes",
+                "`clip_file`: for a clip the index does not list, the file's path, size, time and folder",
+                "`highlights_config`: the game's `Highlights\\<game>\\config.json` as written (significance, tags, "
+                "names in every locale), once per session",
+                "`gfesdk_log`: every line of the GfeSDK logs read after the first run, `used` true for the "
+                "highlight requests and false for the rest (configuration, video settings, the SDK's own messages)",
+            ),
+            "missing": (
+                "the clips and screenshots themselves: video and images stay where NVIDIA saved them; the rows "
+                "name the file",
+                "what was there before the adapter's first run: taken as already seen, so years of clips do not "
+                "turn into sessions at once (`baseline`; False records them)",
+                "UGCTracker.json's `apps` and `info` and GallerySettings.json: the app's settings, not moments of "
+                "play; the capture folder they name is used",
+                "positions, rounds, opponents: the GfeSDK has no field for them",
+            ),
+            "size": "about 1 KB per clip and a few KB of definitions and log lines per game launch: well under "
+            "1 MB per hour",
+        },
     ),
 ]

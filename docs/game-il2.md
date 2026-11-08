@@ -12,8 +12,9 @@ Adapter `il2` - kind [`telemetry`](sources-and-rules.md) - runs while `Il-2.exe`
 
 - sorties: the aircraft taken (spawn) and when the output stops (session_end) - no world position: the game does not send one
 - bombs and rockets released (mass), hits and damage taken, explosions, gunfire bursts - positions local to the aircraft
-- equivalent airspeed, AGL, vertical speed, g, engine RPM once a second
+- equivalent airspeed, AGL, vertical speed, g, engine RPM once a second, with every other indicator the packet carries (manifold pressure, engine shake, gear state and pressure, AoA, sideslip, acceleration x/y/z, cockpit shake, flaps, air brakes)
 - sorties, rounds fired, bombs, rockets, hits taken, highest speed, highest g, flight time; server title and pilot name online
+- every telemetry packet kept whole in heat.raw.parquet
 
 ## Where it comes from
 
@@ -49,7 +50,10 @@ IL-2 Sturmovik: Great Battles - the game's telemetry UDP output, and its own Tac
    LGEARS_PRESS, 6 EAS (m/s), 7 AOA (rad), 8 ACCELERATION (xyz incl. gravity),
    9 COCKPIT_SHAKE, 10 AGL (m), 11 FLAPS, 12 AIR_BRAKES, 13 AOS (rad), 14
    VERTICAL_SPEED (m/s). Events (2-byte packed): 0 SET_FOCUS (STRING: length
-   byte + ASCII), 1-3 SETUP_ENG/GUN/LGEAR, 4 DROP_BOMB and 5 ROCKET_LAUNCH
+   byte + ASCII), 1 SETUP_ENG {short index, short id, float pos[3], float
+   max_rpm}, 2 SETUP_GUN {short index, float pos[3], float projectile mass,
+   float muzzle velocity}, 3 SETUP_LGEAR {short index, short id, float
+   pos[3]}, 4 DROP_BOMB and 5 ROCKET_LAUNCH
    {float pos[3], float mass, WORD flags}, 6 HIT and 7 DAMAGE {float pos[3],
    float force[3]}, 8 EXPLOSION {float pos[3], float radius}, 9 GUN_FIRE {BYTE
    gun}, 10 SRV_ADDR, 11 SRV_TITLE, 12 SRS_ADDR (STRING), 13 CLIENT_DAT {long
@@ -100,6 +104,29 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 `bad_packets`, `bombs_dropped`, `damage_taken`, `explosions`, `flight_time`, `hits_taken`, `max_agl_m`, `max_eas_kmh`, `max_g`, `ordnance_kg`, `rockets_fired`, `rounds_fired`, `sorties`
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
+
+## Completeness
+
+The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the source holds is read or kept, never dropped. Besides the rows, every packet, page, line or reply the adapter receives is kept whole in the session's `heat.raw.parquet` (columns `time`, `ms`, `type`, `used`, `payload`, `text`, then any field kept by name; `used` marks what also became rows), and `meta.json`'s `selfCheck.completeness` counts each `type` - `lost` is 0.
+
+**Read**
+
+- SET_FOCUS (the aircraft taken: a sortie), DROP_BOMB and ROCKET_LAUNCH (mass, local position), HIT and DAMAGE (local position, force), EXPLOSION (local position, radius), GUN_FIRE (rounds per poll) as rows
+- SETUP_ENG (index, id, local position, maximum RPM), SETUP_GUN (index, local position, projectile mass, muzzle velocity) and SETUP_LGEAR (index, id, local position) as rows: the aircraft's engines, guns and gear legs as the sortie begins
+- SRV_TITLE, SRV_ADDR, SRS_ADDR and CLIENT_DAT (pilot name) into meta.json; CTRL_DAT's coalition as the sortie's team
+- all fifteen indicators of the spec on the once-a-second `state` row (one value as a number, one per engine, gear leg or axis as a list); highest speed, g and AGL from every packet
+
+**Kept raw**
+
+- every datagram whole as `payload`, under its Packet_ID: `0x54000101` for telemetry (used when it made a row or a meta.json entry), any other id as itself, a datagram too short for one as `short`
+- what only the raw sidecar holds: the indicators between the once-a-second rows (the game sends them at 50 Hz / decimation), a SETUP event shorter than the spec's layout, event ids the spec does not list
+
+**Not available**
+
+- a world position: the telemetry output has none (event positions are local to the aircraft); the il2-tacview adapter reads positions from the game's own Tacview recordings
+- other aircraft and players: the output describes only the player's own aircraft
+
+**Size**: about 8 MB an hour at setup's 10 Hz (decimation 5; a packet is about 160 bytes plus its frame), 40 MB at the game's full 50 Hz, before zstd; zstd shrinks the repetitive floats to a fraction
 
 ## Verified
 

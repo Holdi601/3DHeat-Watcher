@@ -24,6 +24,13 @@ Rows carry the same columns in every game:
 plus whatever else a game reports, by name. Rows without a position - a kill
 feed line, a level-up, a stat - stay in `events.jsonl` and count in the
 statistics; the table holds the rows that can be drawn.
+
+Beside the rows, `raw()` keeps what the source sent, whole: every packet,
+line or memory read, including the fields no adapter uses yet, framed into
+`raw.bin` as it arrives and written out as `heat.raw.parquet` when the session
+ends (3DHeat's converter rule: everything the source holds is read or kept,
+docs/converters.md in the viewer's repository). meta.json's
+`selfCheck.completeness` counts them per type.
 """
 
 from __future__ import annotations
@@ -31,6 +38,7 @@ from __future__ import annotations
 import json
 import math
 import re
+import struct
 import threading
 import time
 from dataclasses import dataclass, field
@@ -40,6 +48,15 @@ from typing import Any
 
 #: Columns every table has, in this order.
 BASE_COLUMNS = ("time", "ms", "event", "x", "y", "z", "player", "team", "session")
+
+#: The converter rule every 3DHeat tool follows, linked from the self-check.
+RULE = "https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md"
+#: The raw feed while the session runs, and the sidecar it becomes.
+RAW_LOG = "raw.bin"
+RAW_TABLE = "heat.raw.parquet"
+#: Columns every raw sidecar has, in this order.
+RAW_COLUMNS = ("time", "ms", "type", "used", "payload", "text")
+_FRAME = struct.Struct("<II")
 
 
 @dataclass
@@ -82,8 +99,11 @@ class Session:
     #: the origin of the flat map x/y/z are in (x east, y altitude, z north, metres; see `Tangent`).
     #: Said in meta.json and in the table's footer, so the viewer can lay the real world under the rows.
     geo: dict[str, float] | None = None
+    #: The raw feed per type: [items seen, items also turned into rows] (see `raw`).
+    raw_counts: dict[str, list[int]] = field(default_factory=dict)
     _mono: float = field(default_factory=time.monotonic)
     _file: Any = None
+    _raw: Any = None
     _lock: threading.Lock = field(default_factory=threading.Lock)
     #: When meta.json was last written; it is kept current while the session runs.
     _flushed: float = 0.0
@@ -167,6 +187,56 @@ class Session:
         """Where someone is now: an event named "position"."""
         self.event("position", x=x, y=y, z=z, **kw)
 
+    def raw(
+        self,
+        type: str,
+        payload: bytes | bytearray | memoryview | None = None,
+        *,
+        text: str | None = None,
+        used: bool = False,
+        t: float | None = None,
+        ms: float | None = None,
+        **fields: Any,
+    ) -> None:
+        """
+        Keep one thing the source sent, whole: a packet's bytes (`payload`), a
+        line or a JSON object as it came (`text`), or a read's fields by name
+        (`fields`, each its own column). `type` is the source's own word for
+        it (a packet id, a line's kind); `used` says the adapter also turned
+        it into rows. Nothing is thinned: every item given is kept, so a later
+        decoder needs only `heat.raw.parquet`.
+        """
+        head: dict[str, Any] = {
+            "time": round(self.now() if t is None else float(t), 4),
+            "ms": int(ms if ms is not None else time.time() * 1000),
+            "type": str(type),
+            "used": bool(used),
+        }
+        if text is not None:
+            head["text"] = str(text)
+        for k, v in fields.items():
+            if v is None or k in RAW_COLUMNS:
+                continue
+            if isinstance(v, float) and not math.isfinite(v):
+                v = str(v)
+            elif isinstance(v, (bytes, bytearray, memoryview)):
+                v = bytes(v).hex()
+            head[k] = v
+        h = json.dumps(head, ensure_ascii=False, separators=(",", ":"), default=str).encode("utf-8")
+        body = bytes(payload) if payload is not None else b""
+        with self._lock:
+            if self._file is None:
+                return
+            if self._raw is None:
+                self._raw = (self.folder / RAW_LOG).open("ab")
+            self._raw.write(_FRAME.pack(len(h), len(body)))
+            self._raw.write(h)
+            self._raw.write(body)
+            c = self.raw_counts.setdefault(head["type"], [0, 0])
+            c[0] += 1
+            c[1] += int(bool(used))
+        self._flush()
+
     def stat(self, key: str, value: float | str, how: str = "set") -> None:
         """A number for the statistics: `set` it, `add` to it, keep the `max` or `min`."""
         with self._lock:
@@ -194,6 +264,9 @@ class Session:
             return
         self._flushed = now
         try:
+            with self._lock:
+                if self._raw is not None:
+                    self._raw.flush()
             self.write_meta()
         except OSError:
             pass
@@ -222,6 +295,8 @@ class Session:
         }
         if self.geo:
             doc["geo"] = self.geo
+        if self.raw_counts:
+            doc["selfCheck"] = {**(doc.get("selfCheck") or {}), "completeness": completeness(self.raw_counts)}
         (self.folder / "meta.json").write_text(json.dumps(doc, indent=2, ensure_ascii=False), encoding="utf-8")
 
     def close(self) -> Path | None:
@@ -231,15 +306,126 @@ class Session:
                 return None
             self._file.close()
             self._file = None
+            if self._raw is not None:
+                self._raw.close()
+                self._raw = None
         self.ended = time.time()
         self.write_meta()
-        if not self.counts:
+        if not self.counts and not self.raw_counts:
             return None
         try:
-            return write_table(self.folder, self.axes, self.game, geo=self.geo)
+            write_raw_table(self.folder)
+            return write_table(self.folder, self.axes, self.game, geo=self.geo) if self.counts else None
         except ImportError:
-            # pyarrow missing: the lines are the record, the table can be made later.
+            # pyarrow missing: the lines and raw.bin are the record, the tables can be made later.
             return None
+
+
+def completeness(raw_counts: dict[str, list[int]]) -> dict[str, Any]:
+    """
+    The self-check of docs/converters.md for a live feed: every item the
+    source sent is kept whole in the raw sidecar, so none is lost; `partial`
+    counts the ones an adapter also turned into rows, `raw` the ones kept only.
+    """
+    types = {
+        k: {"seen": n, "decoded": 0, "partial": used, "raw": n - used, "lost": 0}
+        for k, (n, used) in sorted(raw_counts.items())
+    }
+    return {"rule": RULE, "sidecars": [RAW_TABLE], "types": types, "lost": 0}
+
+
+def read_raw(folder: Path):
+    """The raw feed's items as (head, payload), in order; a frame cut short by a crash ends it."""
+    path = folder / RAW_LOG
+    if not path.exists():
+        return
+    with path.open("rb") as f:
+        while True:
+            frame = f.read(_FRAME.size)
+            if len(frame) < _FRAME.size:
+                return
+            nh, nb = _FRAME.unpack(frame)
+            h = f.read(nh)
+            body = f.read(nb)
+            if len(h) < nh or len(body) < nb:
+                return
+            try:
+                head = json.loads(h)
+            except ValueError:
+                return
+            yield head, body
+
+
+def write_raw_table(folder: Path, batch: int = 50_000, batch_bytes: int = 64 << 20) -> Path | None:
+    """
+    `raw.bin` as `heat.raw.parquet` (zstd): `time`, `ms`, `type`, `used`,
+    `payload` (the bytes), `text`, then every field an adapter gave by name,
+    numbers as float64 and the rest as text. raw.bin is removed once the
+    table is written. Two passes, so a long session's feed is never in
+    memory at once: a row group is written every `batch` items or
+    `batch_bytes` of payload and text, whichever comes first (a shared
+    memory page of 40 KB at 10 Hz fills 64 MB in under three minutes).
+    """
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+
+    if not (folder / RAW_LOG).exists():
+        return None
+    extra: dict[str, bool] = {}  # name -> every value numeric
+    for head, _ in read_raw(folder):
+        for k, v in head.items():
+            if k in RAW_COLUMNS:
+                continue
+            num = isinstance(v, (int, float)) and not isinstance(v, bool)
+            extra[k] = extra.get(k, True) and num
+    dict_str = pa.dictionary(pa.int32(), pa.string())
+    schema = pa.schema(
+        [("time", pa.float64()), ("ms", pa.int64()), ("type", dict_str), ("used", pa.bool_()),
+         ("payload", pa.binary()), ("text", pa.string())]
+        + [(k, pa.float64() if num else dict_str) for k, num in extra.items()],
+        metadata={b"heat3d": json.dumps({"version": 1, "kind": "heat3d-raw", "rule": RULE}).encode("utf-8")},
+    )
+    out = folder / RAW_TABLE
+    tmp = folder / (RAW_TABLE + ".tmp")
+    names = schema.names
+
+    def arrays(cols: dict[str, list]) -> list:
+        out = []
+        for f in schema:
+            vals = cols[f.name]
+            if pa.types.is_dictionary(f.type):
+                out.append(pa.array(vals, pa.string()).dictionary_encode().cast(f.type))
+            elif pa.types.is_floating(f.type) and f.name not in ("time",):
+                out.append(pa.array([None if v is None else float(v) for v in vals], f.type))
+            else:
+                out.append(pa.array(vals, f.type))
+        return out
+
+    with pq.ParquetWriter(tmp, schema, compression="zstd") as writer:
+        cols: dict[str, list] = {k: [] for k in names}
+        n = size = 0
+        for head, body in read_raw(folder):
+            for k in names:
+                if k == "payload":
+                    cols[k].append(body)
+                elif k in ("time", "ms", "type", "used", "text"):
+                    cols[k].append(head.get(k))
+                else:
+                    v = head.get(k)
+                    if v is not None and not extra[k] and not isinstance(v, str):
+                        v = json.dumps(v, ensure_ascii=False)
+                    cols[k].append(v)
+            n += 1
+            size += len(body) + len(head.get("text") or "")
+            if n >= batch or size >= batch_bytes:
+                writer.write_table(pa.Table.from_arrays(arrays(cols), schema=schema))
+                cols = {k: [] for k in names}
+                n = size = 0
+        if cols["time"]:
+            writer.write_table(pa.Table.from_arrays(arrays(cols), schema=schema))
+    tmp.replace(out)
+    (folder / RAW_LOG).unlink(missing_ok=True)
+    return out
 
 
 def read_rows(folder: Path) -> list[dict[str, Any]]:
@@ -357,7 +543,7 @@ def recover(data: Path) -> list[Session]:
             continue
         folder = meta_path.parent
         rows = read_rows(folder)
-        if not rows:
+        if not rows and not (folder / RAW_LOG).exists():
             continue
         a = meta.get("axes") or {}
         axes = Axes(**{k: v for k, v in a.items() if k in Axes.__dataclass_fields__})
@@ -366,7 +552,7 @@ def recover(data: Path) -> list[Session]:
         except (KeyError, ValueError):
             started = folder.stat().st_mtime
         known = {"format", "version", "watcher", "game", "adapter", "source", "multiplayer", "started", "ended",
-                 "seconds", "axes", "events", "positions", "stats", "geo"}
+                 "seconds", "axes", "events", "positions", "stats", "geo", "selfCheck"}
         s = Session(
             game=meta.get("game", folder.parent.name),
             adapter=meta.get("adapter", ""),
@@ -384,13 +570,22 @@ def recover(data: Path) -> list[Session]:
             s.counts[e] = s.counts.get(e, 0) + 1
             if "x" in r:
                 s.positions += 1
-        last_ms = max((r.get("ms") or 0) for r in rows)
+        last_ms = max((r.get("ms") or 0 for r in rows), default=0)
+        for head, _ in read_raw(folder):
+            c = s.raw_counts.setdefault(str(head.get("type", "")), [0, 0])
+            c[0] += 1
+            c[1] += int(bool(head.get("used")))
+            last_ms = max(last_ms, head.get("ms") or 0)
         s.ended = last_ms / 1000.0 if last_ms else folder.stat().st_mtime
         s.meta["recovered"] = True
         s.write_meta()
         try:
-            write_table(folder, axes, s.game, geo=s.geo)
-        except ImportError:
+            write_raw_table(folder)
+            if rows:
+                write_table(folder, axes, s.game, geo=s.geo)
+        except (ImportError, OSError):
             pass
-        out.append(s)
+        if rows:
+            # Only a session with rows has statistics; one with only a raw feed is finished, not counted.
+            out.append(s)
     return out

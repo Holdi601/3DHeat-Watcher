@@ -243,6 +243,46 @@ def test_a_killed_watcher_s_session_is_finished_on_the_next_start(tmp_path):
     assert recover(tmp_path) == []  # once only
 
 
+
+def test_everything_the_source_sent_is_kept_whole_in_the_raw_sidecar(tmp_path):
+    """docs/converters.md: every packet, line or read is kept, counted per type, and nothing is lost."""
+    s = Session.open(tmp_path, "Some Game", "some-game")
+    s.raw("packet 1", b"\x00\x01\xff", used=True)
+    s.raw("packet 1", b"\x02", used=True)
+    s.raw("packet 9", b"\x09" * 300)
+    s.raw("log", text="SOMETHING nobody reads yet")
+    s.raw("shm", speed=12.5, gear=3, name="car", flags=[1, 2])
+    s.position(1, 2, 3, player="me")
+    assert s.close() is not None
+    assert not (s.folder / "raw.bin").exists()
+    t = pq.read_table(s.folder / "heat.raw.parquet").to_pydict()
+    assert t["type"] == ["packet 1", "packet 1", "packet 9", "log", "shm"]
+    assert t["payload"][:3] == [b"\x00\x01\xff", b"\x02", b"\x09" * 300]
+    assert t["text"][3] == "SOMETHING nobody reads yet"
+    assert t["used"] == [True, True, False, False, False]
+    assert t["speed"][4] == 12.5 and t["gear"][4] == 3 and t["name"][4] == "car" and t["flags"][4] == "[1, 2]"
+    c = json.loads((s.folder / "meta.json").read_text(encoding="utf-8"))["selfCheck"]["completeness"]
+    assert c["lost"] == 0 and c["sidecars"] == ["heat.raw.parquet"]
+    assert c["types"]["packet 1"] == {"seen": 2, "decoded": 0, "partial": 2, "raw": 0, "lost": 0}
+    assert c["types"]["packet 9"]["raw"] == 1
+
+
+def test_a_killed_watcher_s_raw_feed_becomes_its_sidecar_on_the_next_start(tmp_path):
+    from heat3d_watch.session import recover
+
+    s = Session.open(tmp_path, "Some Game", "some-game")
+    s.position(1, 2, 3, player="me")
+    s.raw("packet 1", b"abc")
+    s._flush(every=0)
+    s._file.close()  # killed: no close()
+    s._file = None
+    s._raw.close()
+    s._raw = None
+    assert [f.id for f in recover(tmp_path)] == [s.id]
+    assert pq.read_table(s.folder / "heat.raw.parquet").column("payload").to_pylist() == [b"abc"]
+    meta = json.loads((s.folder / "meta.json").read_text(encoding="utf-8"))
+    assert meta["selfCheck"]["completeness"]["types"]["packet 1"]["seen"] == 1
+
 GEO_HINT = {"lat0": 42.0, "lon0": -115.5, "projection": "tangent-plane", "east": "x", "north": "z", "up": "y"}
 
 

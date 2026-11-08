@@ -17,6 +17,10 @@ Hearthstone, Star Citizen, EVE Online). The rules every one of them needs:
   followed from its first line once the old one has been read to the end; a file
   replaced or cut short in place is read again from the start.
 * **Whole lines only.** A line the game is still writing waits for its newline.
+* **A few megabytes at a time.** `iter_lines` reads at most `chunk` bytes per
+  step, so a log of hundreds of megabytes (a late start into a long Hearthstone
+  or Star Citizen sitting) is never in memory whole; every line still comes,
+  in order, before it returns.
 
 Text is UTF-8 unless the file starts with a UTF-16 byte order mark (EVE's logs
 have been both over the years).
@@ -29,10 +33,12 @@ import re
 import sys
 import time
 from pathlib import Path
-from typing import IO, Callable, Iterable
+from typing import IO, Callable, Iterable, Iterator
 
 #: A file created this many seconds before the game's process counts as made by it.
 SLACK = 10.0
+#: Bytes read from a log per step.
+CHUNK = 4 << 20
 
 
 def open_shared(path: Path) -> IO[bytes]:
@@ -107,6 +113,7 @@ class Follower:
         since: float,
         stamp: Callable[[str], float | None] | None = None,
         backfill: int = 2 << 20,
+        chunk: int = CHUNK,
     ):
         #: Which file is the one being written now.
         self.find = find
@@ -115,29 +122,47 @@ class Follower:
         #: A line's own time, for the lines written before the watcher saw the game.
         self.stamp = stamp
         self.backfill = backfill
+        self.chunk = max(1, int(chunk))
         self.path: Path | None = None
         self.pos = 0
         self.ident: tuple | None = None
         self.utf16 = False
+        #: The last read stopped at `chunk` with more of the file waiting.
+        self._more = False
 
     # ------------------------------------------------------------------ public
 
     def lines(self) -> list[str]:
         """Every complete line written since the last call."""
-        out: list[str] = []
+        return list(self.iter_lines())
+
+    def iter_lines(self) -> Iterator[str]:
+        """
+        The same lines one at a time, read `chunk` bytes per step: a long log
+        is never held whole. Read it to the end - lines of a step not taken
+        are not given again.
+        """
         try:
             current = self.find()
         except OSError:
             current = None
         if current is not None and current != self.path:
             if self.path is not None:
-                out += self._read()  # the rest of the old file first
-            out += self._begin(current)
+                yield from self._read_all()  # the rest of the old file first
+            yield from self._begin(current)
         if self.path is not None:
-            out += self._read()
-        return out
+            yield from self._read_all()
 
     # ----------------------------------------------------------------- reading
+
+    def _read_all(self, partial_first: bool = False) -> Iterator[str]:
+        while True:
+            lines = self._read(partial_first)
+            more = self._more
+            partial_first = False
+            yield from lines
+            if not more:
+                return
 
     def _begin(self, path: Path) -> list[str]:
         self.path, self.pos, self.ident, self.utf16 = path, 0, None, False
@@ -158,7 +183,7 @@ class Follower:
         if self.utf16 and start % 2:
             start += 1
         self.pos = max(start, 2 if self.utf16 else 0)
-        lines = self._read(partial_first=start > 0)
+        lines = self._read_all(partial_first=start > 0)  # at most `backfill` bytes
         keep: list[str] = []
         taking = False
         for line in lines:
@@ -186,6 +211,7 @@ class Follower:
         return (st.st_ino, st.st_dev, round(created(st), 3))
 
     def _read(self, partial_first: bool = False) -> list[str]:
+        self._more = False
         path = self.path
         if path is None:
             return []
@@ -201,13 +227,23 @@ class Follower:
             self._sniff()
         if st.st_size <= self.pos:
             return []
+        nl = b"\n\x00" if self.utf16 else b"\n"
+        avail = st.st_size - self.pos + (1 << 16)  # and what the game wrote since the stat
+        cap = min(avail, self.chunk)
         try:
             with open_shared(path) as f:
                 f.seek(self.pos)
-                data = f.read(st.st_size - self.pos + (1 << 16))
+                data = f.read(cap)
+                while len(data) >= cap and cap < avail and self._last_newline(data, nl) < 0:
+                    # One line longer than a step: read on to its end.
+                    extra = f.read(self.chunk)
+                    if not extra:
+                        break
+                    data += extra
+                    cap += len(extra)
         except OSError:
             return []
-        nl = b"\n\x00" if self.utf16 else b"\n"
+        self._more = len(data) >= cap and cap < avail
         end = self._last_newline(data, nl)
         if end < 0:
             return []

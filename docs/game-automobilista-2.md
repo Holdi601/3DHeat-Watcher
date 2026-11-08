@@ -14,6 +14,7 @@ Adapter `automobilista-2` - kind [`telemetry`](sources-and-rules.md) - runs whil
 - session start with the track the game names; laps per car with lap time; finishes; own pit stops
 - teleports (back to the pits, a restart): `teleport` where the car was, `spawn` where it is now
 - own laps, best lap, race position, distance, top speed
+- the game's whole shared memory page in `heat.raw.parquet`, each time it changes
 
 ## Where it comes from
 
@@ -75,6 +76,12 @@ odd while the game writes. The offsets were worked out from two
 independent copies of the header (the game's own copy is not installed
 here), which agree.
 
+Both pages are kept whole besides (docs/converters.md, "Live sources"): the
+whole mapping, each read whose bytes differ from the copy kept last, in the
+session's raw sidecar under `type` `r3e` or `pcars2` - every driver slot and
+every field of the struct, also the ones not read here, so a later decoder
+needs only the sidecar.
+
 The same module also serves: [Project CARS 2 (telemetry)](game-project-cars-2.md), [RaceRoom Racing Experience (telemetry)](game-raceroom.md).
 
 ## Positions and axes
@@ -102,6 +109,28 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 `best_lap`, `distance_km`, `finishes`, `incidents`, `laps`, `pit_stops`, `race_position`, `top_speed_kmh`
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
+
+## Completeness
+
+The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the source holds is read or kept, never dropped. Besides the rows, every packet, page, line or reply the adapter receives is kept whole in the session's `heat.raw.parquet` (columns `time`, `ms`, `type`, `used`, `payload`, `text`, then any field kept by name; `used` marks what also became rows), and `meta.json`'s `selfCheck.completeness` counts each `type` - `lost` is 0.
+
+**Read**
+
+- per participant (up to 64): active, name, world position, race position, laps completed; its last lap time, race state and speed
+- the player's car (mViewedParticipantIndex), game and session state, track location and variation, best and last lap, speed, brake, throttle, gear; mSequenceNumber to skip a copy caught mid-write
+- offsets from two independent copies of SMS's SharedMemory.h that agree, checked on a page built from them in the tests; not yet against the game
+
+**Kept raw**
+
+- `pcars2`: the whole $pcars2$ mapping - the struct runs on well past the 11,312 bytes read here - each read whose bytes differ from the copy kept last: every participant's orientation, sector times, car and class names, pit modes and flags, the player's physics, tyres, suspension, damage, weather and everything later Automobilista 2 versions appended
+- `used` is true for a page read into rows; false for one in the menus, paused, in a replay, of another layout, or caught mid-write (`torn` 1); `unchanged_reads` in meta.json counts the reads that were byte for byte the copy kept before
+
+**Not available**
+
+- other participants' inputs and physics: the page gives only the viewed car's
+- everything while the game's shared memory option is off (Automobilista 2 writes nothing then)
+
+**Size**: the mapping is about 20 to 30 KB (by the game's version), up to 10 times a second while driving: roughly 0.7 to 1.1 GB per hour before compression; zstd shrinks the empty participant slots and the unchanging names to a fraction (not yet measured on a real session)
 
 ## Verified
 

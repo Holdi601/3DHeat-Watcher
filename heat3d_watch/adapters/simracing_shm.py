@@ -46,6 +46,12 @@ Automobilista 2 / Project CARS 2 - `$pcars2$`
     odd while the game writes. The offsets were worked out from two
     independent copies of the header (the game's own copy is not installed
     here), which agree.
+
+Both pages are kept whole besides (docs/converters.md, "Live sources"): the
+whole mapping, each read whose bytes differ from the copy kept last, in the
+session's raw sidecar under `type` `r3e` or `pcars2` - every driver slot and
+every field of the struct, also the ones not read here, so a later decoder
+needs only the sidecar.
 """
 
 from __future__ import annotations
@@ -185,7 +191,7 @@ def _num(v: float) -> float | None:
 # Imported here, below the view: `racing` uses the view, and this uses `racing`.
 from ..session import Axes  # noqa: E402
 from .base import Adapter, Context  # noqa: E402
-from .racing import Driving  # noqa: E402
+from .racing import Driving, Pages  # noqa: E402
 
 
 @dataclass
@@ -194,6 +200,8 @@ class ShmRaceAdapter(Adapter):
 
     tagname: str = ""
     hz: float = 10.0
+    #: The raw sidecar's `type` for this game's page.
+    PAGE = "page"
 
     def missing(self) -> str | None:
         if sys.platform != "win32":
@@ -202,6 +210,7 @@ class ShmRaceAdapter(Adapter):
 
     def start(self, ctx: Context) -> None:
         self._drive = Driving(self, ctx, hz=self.hz)
+        self._pages = Pages()
         self._view: SharedView | None = None
         self._tried = 0.0
         self._laps: dict[str, int] = {}
@@ -211,7 +220,11 @@ class ShmRaceAdapter(Adapter):
         self._session: str | None = None
         self._runs = 0
 
-    def snapshot(self, view: SharedView) -> Snapshot | None:  # pragma: no cover - per game
+    def page(self, view: SharedView) -> tuple[bytes, bool]:
+        """The whole mapping, and whether the copy is good (not caught mid-write)."""
+        return view.read(), True
+
+    def snapshot(self, raw: bytes) -> Snapshot | None:  # pragma: no cover - per game
         raise NotImplementedError
 
     def poll(self, ctx: Context) -> None:
@@ -223,12 +236,17 @@ class ShmRaceAdapter(Adapter):
             self._view = SharedView.open(self.tagname)
             if self._view is None:
                 return
+        raw, good = b"", False
         try:
-            snap = self.snapshot(self._view)
+            raw, good = self.page(self._view)
+            snap = self.snapshot(raw) if good else None
         except Exception:  # noqa: BLE001
+            snap = None
             self._drive.count("bad_reads")
-            return
-        if snap is None or not snap.live:
+        live = snap is not None and snap.live
+        # The whole page, read or not: menus, replays, a copy caught mid-write (`torn`) - each time it changed.
+        self._pages.keep(self._drive, self.PAGE, raw, used=live, **({} if good else {"torn": 1}))
+        if not live:
             return
         try:
             self.step(snap)
@@ -291,6 +309,7 @@ class ShmRaceAdapter(Adapter):
         if self._view is not None:
             self._view.close()
             self._view = None
+        self._pages.close(self._drive)
         self._drive.close()
 
 
@@ -305,8 +324,9 @@ R3E_SESSIONS = {0: "practice", 1: "qualify", 2: "race", 3: "warmup"}
 
 @dataclass
 class RaceRoomAdapter(ShmRaceAdapter):
-    def snapshot(self, view: SharedView) -> Snapshot | None:
-        raw = view.read(0, R3E_SIZE + 4096)
+    PAGE = "r3e"
+
+    def snapshot(self, raw: bytes) -> Snapshot | None:
         if len(raw) < 64:
             return None
         major, _minor, drivers_at, driver_size = struct.unpack_from("<4i", raw, 0)
@@ -356,6 +376,7 @@ class RaceRoomAdapter(ShmRaceAdapter):
 
 # ------------------------------------------------------------------ Automobilista 2 / Project CARS 2
 
+#: Bytes the decoding below needs; the whole mapping is kept raw.
 PC2_READ = 11312
 PC2_PARTICIPANTS = 28
 PC2_PARTICIPANT = 100
@@ -367,16 +388,23 @@ PC2_SESSIONS = {1: "practice", 2: "test", 3: "qualify", 4: "formation lap", 5: "
 
 @dataclass
 class PCars2Adapter(ShmRaceAdapter):
-    def snapshot(self, view: SharedView) -> Snapshot | None:
+    PAGE = "pcars2"
+
+    def page(self, view: SharedView) -> tuple[bytes, bool]:
+        """The whole mapping (the struct runs on well past what is read here), copied while the game was not writing."""
+        raw = b""
         for _ in range(4):
-            raw = view.read(0, PC2_READ)
+            raw = view.read()
             if len(raw) < PC2_READ:
-                return None
+                return raw, True  # not this layout: `snapshot` says so
             seq = struct.unpack_from("<I", raw, PC2_SEQUENCE)[0]
             # Odd while the game writes; a copy is good when it was even and has not moved since.
             if seq % 2 == 0 and struct.unpack_from("<I", view.read(PC2_SEQUENCE, 4), 0)[0] == seq:
-                break
-        else:
+                return raw, True
+        return raw, False
+
+    def snapshot(self, raw: bytes) -> Snapshot | None:
+        if len(raw) < PC2_READ:
             return None
         _version, _build, game_state, session_state = struct.unpack_from("<4I", raw, 0)
         if game_state != PC2_PLAYING:
@@ -425,11 +453,74 @@ _RECORDS = (
     "session start with the track the game names; laps per car with lap time; finishes; own pit stops",
     "teleports (back to the pits, a restart): `teleport` where the car was, `spawn` where it is now",
     "own laps, best lap, race position, distance, top speed",
+    "the game's whole shared memory page in `heat.raw.parquet`, each time it changes",
 )
 _PC2_VERIFIED = (
     "tested on a page built in the test; offsets from two independent copies of SharedMemory.h that agree, "
     "not from the copy the game ships (not installed here); untested against the game"
 )
+_PAGES_RAW = (
+    "`used` is true for a page read into rows; false for one in the menus, paused, in a replay, of another "
+    "layout, or caught mid-write (`torn` 1); `unchanged_reads` in meta.json counts the reads that were byte "
+    "for byte the copy kept before"
+)
+_R3E_COMPLETENESS = {
+    "read": (
+        "per driver slot (by the header's own offset and size): name, slot, finish status, place, world position, "
+        "completed laps, current lap time, pit lane, speed",
+        "the player's own fields, only when the page is the r3e.h 3.6 layout: track and layout names, session "
+        "type, race position, best and previous lap, incident points, gear, throttle, brake, the player's slot",
+        "offsets worked out from Sector3's r3e.h 3.6 and checked on a page built from it in the tests; not yet "
+        "against the game",
+    ),
+    "raw": (
+        "`r3e`: the whole $R3E mapping, each read whose bytes differ from the copy kept last - every field of "
+        "r3e.h: the player's physics (orientation, velocities, accelerations, g-forces), engine, fuel, tyres, "
+        "brakes, damage, flags, pit menu, sector times, every driver slot's whole driver data (class, model, "
+        "team, sector times, gaps, penalties, tyres)",
+        _PAGES_RAW,
+    ),
+    "missing": (
+        "other drivers' inputs and physics: the page gives only the player's own",
+        "other cars' exact lap times: a slot has only its running lap time, so a lap is the last running time "
+        "seen (to about 0.1 s)",
+        "the player's own fields on a layout other than 3.6: kept raw, not read, until checked",
+    ),
+    "size": (
+        f"the page is {R3E_SIZE // 1000} KB (r3e.h 3.6; the mapping is rounded up to whole 4 KB pages), up to 10 "
+        "times a second while driving: about 1.6 GB per hour before compression; empty driver slots and "
+        "unchanging fields compress very well with zstd (not yet measured on a real session)"
+    ),
+}
+
+
+def _pc2_completeness(game: str) -> dict:
+    return {
+        "read": (
+            "per participant (up to 64): active, name, world position, race position, laps completed; its last "
+            "lap time, race state and speed",
+            "the player's car (mViewedParticipantIndex), game and session state, track location and variation, "
+            "best and last lap, speed, brake, throttle, gear; mSequenceNumber to skip a copy caught mid-write",
+            "offsets from two independent copies of SMS's SharedMemory.h that agree, checked on a page built from "
+            "them in the tests; not yet against the game",
+        ),
+        "raw": (
+            "`pcars2`: the whole $pcars2$ mapping - the struct runs on well past the 11,312 bytes read here - each "
+            "read whose bytes differ from the copy kept last: every participant's orientation, sector times, car "
+            "and class names, pit modes and flags, the player's physics, tyres, suspension, damage, weather and "
+            f"everything later {game} versions appended",
+            _PAGES_RAW,
+        ),
+        "missing": (
+            "other participants' inputs and physics: the page gives only the viewed car's",
+            f"everything while the game's shared memory option is off ({game} writes nothing then)",
+        ),
+        "size": (
+            "the mapping is about 20 to 30 KB (by the game's version), up to 10 times a second while driving: "
+            "roughly 0.7 to 1.1 GB per hour before compression; zstd shrinks the empty participant slots and the "
+            "unchanging names to a fraction (not yet measured on a real session)"
+        ),
+    }
 
 ADAPTERS = [
     RaceRoomAdapter(
@@ -447,6 +538,7 @@ ADAPTERS = [
             "tested on a page built in the test from r3e.h 3.6 (offsets worked out from the official header); "
             "untested against the game; other cars' lap times are the last running lap time seen (to about 0.1 s)"
         ),
+        completeness=_R3E_COMPLETENESS,
     ),
     PCars2Adapter(
         id="automobilista-2",
@@ -460,6 +552,7 @@ ADAPTERS = [
         enable='In the game: Options > System > Shared Memory: "Project CARS 2"',
         axes=Axes(up="y", units="metres"),
         verified=_PC2_VERIFIED,
+        completeness=_pc2_completeness("Automobilista 2"),
     ),
     PCars2Adapter(
         id="project-cars-2",
@@ -473,5 +566,6 @@ ADAPTERS = [
         enable='In the game: Options > System > Shared Memory: "Project CARS 2"',
         axes=Axes(up="y", units="metres"),
         verified=_PC2_VERIFIED,
+        completeness=_pc2_completeness("Project CARS 2"),
     ),
 ]

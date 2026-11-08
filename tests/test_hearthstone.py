@@ -93,6 +93,45 @@ def test_the_adapter_records_games_results_and_turns(tmp_path):
     assert sum(1 for r in rows if r["event"] == "turn") == 6
 
 
+def test_every_line_of_every_log_is_kept_whole_in_the_raw_sidecar(tmp_path):
+    import pyarrow.parquet as pq
+
+    install = tmp_path / "Hearthstone"
+    logs = install / "Logs" / "Hearthstone_2026_01_01_20_00_00"
+    logs.mkdir(parents=True)
+    data = tmp_path / "data"
+    ctx = Context(Settings(data=str(data)), data, exe=install / "Hearthstone.exe")
+    a = replace(hs.ADAPTERS[0])
+    a.start(ctx)
+    power = game(True, "00:00") + [
+        "D 00:00:59.1234567 GameState.DebugPrintOptions() - id=1",
+        "D 00:00:59.2234567 GameState.SendChoices() - id=1 ChoiceType=MULLIGAN",
+        "a line without the level and time",
+    ]
+    (logs / "Power.log").write_text("\n".join(power) + "\n", encoding="utf-8")
+    loading = ["D 00:00:00.1000000 LoadingScreen.OnSceneLoaded() - prevMode=HUB currMode=GAMEPLAY",
+               "I 00:00:00.2000000 Deck Contents Received:"]
+    (logs / "LoadingScreen.log").write_text("\n".join(loading) + "\n", encoding="utf-8")
+    a.poll(ctx)
+    a.stop(ctx)
+
+    [session] = list((data / "sessions").glob("*/*"))
+    raw = pq.read_table(session / "heat.raw.parquet").to_pydict()
+    kept = list(zip(raw["text"], raw["type"], raw["used"], raw["log"]))
+    assert [k[0] for k in kept if k[3] == "Power"] == power  # every line, in order, whole
+    assert [k[0] for k in kept if k[3] == "LoadingScreen"] == loading
+    by_text = {k[0]: k[1:] for k in kept}
+    assert by_text[power[9]] == ("PowerTaskList.DebugPrintPower", False, "Power")  # the repeat: kept, no row
+    assert by_text[power[11]] == ("GameState.DebugPrintPower", True, "Power")  # turn 3
+    assert by_text[power[-3]] == ("GameState.DebugPrintOptions", False, "Power")
+    assert by_text[power[-1]] == ("untimed", False, "Power")
+    assert by_text[loading[0]] == ("LoadingScreen.OnSceneLoaded", False, "LoadingScreen")
+    assert by_text[loading[1]] == ("untagged", False, "LoadingScreen")
+    check = json.loads((session / "meta.json").read_text(encoding="utf-8"))["selfCheck"]["completeness"]
+    assert check["lost"] == 0
+    assert check["types"]["GameState.SendChoices"] == {"seen": 1, "decoded": 0, "partial": 0, "raw": 1, "lost": 0}
+
+
 def test_the_ai_is_never_the_player():
     log = hs.PowerLog(lambda ts: None)
     log.entity_player = {2: 1, 3: 2}

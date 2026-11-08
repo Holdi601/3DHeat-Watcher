@@ -46,6 +46,16 @@ EA SPORTS WRC, DiRT Rally 2.0, Richard Burns Rally
 BeamNG.drive
     The `heat3d` protocol mod gamecapture ships (UDP 4460, Options > Other >
     Protocols > "others"); BeamNG's Z-up world turned to Y up as `beamng.py` does.
+
+Everything kept
+    The rows are a few a second; the games send far more. Every UDP packet that
+    arrives - in the menus, between laps, ones no decoder reads - is kept whole
+    in the session's `heat.raw.parquet` under its format (`dash-horizon`,
+    `session_update`, `extradata3`, `H3D1`, ...), and every shared memory page
+    (the whole mapping, not only the bytes decoded) each time it changes, under
+    its mapping's name (`acpmf_physics`, ...). `used` marks what also became
+    rows; `meta.json`'s `selfCheck.completeness` counts each kind (3DHeat's
+    converter rule).
 """
 
 from __future__ import annotations
@@ -316,6 +326,15 @@ class Driving:
             self.session.meta.update({k: v for k, v in meta.items() if v not in (None, "")})
         return self.session
 
+    def raw(self, type: str, payload: bytes | None = None, *, used: bool = False, **fields: Any) -> None:
+        """
+        Keep one thing the game sent, whole (`Session.raw`): every packet or
+        page read goes here, whether or not it becomes a row. It opens the
+        session, so a game that only sits in its menus still leaves what it
+        sent (docs/converters.md, "Live sources").
+        """
+        self.open().raw(type, payload, used=used, **fields)
+
     def count(self, key: str, n: float = 1) -> None:
         """A tally that is kept even before the session opens (bad packets in a menu)."""
         if self.session is None:
@@ -437,6 +456,38 @@ class Driving:
         self.jumps = 0
 
 
+class Pages:
+    """
+    Shared memory kept whole: each page the adapter reads goes into the raw
+    sidecar every time its bytes differ from the last copy kept. A read that
+    is byte for byte the one before carries nothing new - the game has not
+    written since - and is counted (`unchanged_reads` in meta.json) instead
+    of stored again; the rows' times say when the page changed.
+    """
+
+    def __init__(self) -> None:
+        self.last: dict[str, bytes] = {}
+        self.unchanged: dict[str, int] = {}
+
+    def keep(self, drive: "Driving", kind: str, page: bytes, *, used: bool = False, **fields: Any) -> bool:
+        """Keep `page` under `kind` if it changed; returns whether it was kept."""
+        if not page:
+            return False
+        if self.last.get(kind) == page:
+            self.unchanged[kind] = self.unchanged.get(kind, 0) + 1
+            return False
+        self.last[kind] = page
+        drive.raw(kind, page, used=used, **fields)
+        return True
+
+    def close(self, drive: "Driving") -> None:
+        """Say in meta.json how many reads were unchanged, then forget the pages."""
+        if self.unchanged and drive.session is not None:
+            drive.session.meta["unchanged_reads"] = dict(self.unchanged)
+        self.last.clear()
+        self.unchanged.clear()
+
+
 # ------------------------------------------------------------------ Forza
 
 
@@ -492,13 +543,22 @@ class ForzaAdapter(Adapter):
 
     def feed(self, packet: bytes) -> None:
         """One packet. Separate from `poll` so tests can drive it without a socket."""
+        used = False
+        try:
+            used = self._feed(packet)
+        finally:
+            # Every packet, whole, whatever became of it.
+            self._drive.raw(forza.packet_kind(packet), packet, used=used)
+
+    def _feed(self, packet: bytes) -> bool:
+        """Returns whether the packet became part of the rows."""
         d = self._drive
         if len(packet) < forza.SLED_LENGTH + forza.DASH_BLOCK_LENGTH:
             if len(packet) == forza.SLED_LENGTH:
                 d.count("sled_packets")
             else:
                 d.count("bad_packets")
-            return
+            return False
         if self._layout is None:
             self._pending.append(packet)
             if len(self._pending) > 600:
@@ -506,15 +566,15 @@ class ForzaAdapter(Adapter):
             try:
                 self._layout = forza.detect_layout(self._pending)
             except forza.LayoutUndetermined:
-                return
+                return False
             self._pending.clear()
         frame = _forza_frame(packet, self._layout)
         if frame is None:
             d.count("bad_packets")
-            return
+            return False
         if not frame["isRaceOn"]:
             self._off()
-            return
+            return False
         x, y, z = frame["x"], frame["y"], frame["z"]
         if not self._on:
             self._on = True
@@ -524,7 +584,7 @@ class ForzaAdapter(Adapter):
             d.sample(x, y, z, speed=frame["speed"], force=True, session=str(self._stint), clock=frame["timestampMs"] / 1000.0)
             d.event("session_start", session=str(self._stint), car_ordinal=frame["carOrdinal"],
                     car_class=frame["carClass"], car_pi=frame["carPI"], drivetrain=frame["drivetrain"])
-            return
+            return True
         d.sample(
             x, y, z,
             speed=frame["speed"],
@@ -534,6 +594,12 @@ class ForzaAdapter(Adapter):
             throttle=frame["throttle"],
             brake=frame["brake"],
             lap=frame["lapNumber"],
+            # The car's attitude (radians, as Data Out sends them), the engine and the wheel.
+            yaw=frame["yaw"],
+            pitch=frame["pitch"],
+            roll=frame["roll"],
+            rpm=frame["rpm"],
+            steer=frame["steer"],
         )
         position = frame["racePosition"]
         if frame["lapNumber"] != self._lap:
@@ -547,6 +613,7 @@ class ForzaAdapter(Adapter):
             d.event("finish", session=str(self._stint), race_position=self._race_position)
             d.open().stat("races", 1, "add")
         self._race_position = position
+        return True
 
     def _off(self) -> None:
         if self._on:
@@ -581,6 +648,31 @@ _FORZA_COMMON = dict(
     verified=(
         "decoding is gamecapture's lap recorder's (tested on packets built from the Data Out layout); the adapter tested on "
         "synthetic packets and on real FH Companion lap trajectories replayed as packets; untested against the game itself"
+    ),
+    completeness=dict(
+        read=(
+            "rows at 10 Hz: position, speed, gear, throttle, brake, lap, yaw/pitch/roll (rad), rpm, steer (-1..1); "
+            "session_start with the car's ordinal, class, PI and drivetrain; laps with the game's lap time; race position",
+        ),
+        raw=(
+            "every packet that reaches the port, whole, at the game's rate (one per simulation tick), under its format: "
+            "`dash-horizon` (324 bytes, Forza Horizon), `dash` (311, Motorsport 7), `dash-fm2023` (331, Forza Motorsport "
+            "2023: tyre wear and track id), `sled` (232, no position), `<n>-byte` for anything else - including menu "
+            "packets (isRaceOn 0), the packets held until the dash layout is proven, and the ~13 bytes of the Horizon "
+            "packet no published layout names",
+            "the Sled block's every wheel channel (slip ratio, slip angle, combined slip, suspension, wheel speed, rumble, "
+            "puddle), accelerations, angular velocity, power, torque, boost, fuel, tyre temperatures, clutch, handbrake, "
+            "driving line, AI brake difference: all in the packets, decoded by `decoders/fulllap.decode_full` from them",
+        ),
+        missing=(
+            "other cars: Data Out describes the player's car only",
+            "the track or route name: Forza Horizon never sends one; Motorsport 2023 sends only a track number",
+            "packets while another app (FH Companion) holds UDP 5300: the watcher leaves the port to it",
+        ),
+        size=(
+            "about 85 MB an hour before compression (60 packets a second of 324 bytes plus a 70-byte item header); "
+            "consecutive packets differ little, so zstd keeps a fraction of it"
+        ),
     ),
 )
 
@@ -630,6 +722,7 @@ class KunosAdapter(Adapter):
 
         self._view = SharedView
         self._drive = Driving(self, ctx, hz=self.hz)
+        self._pages = Pages()
         self._physics = self._graphics = self._static = None
         self._tried = 0.0
         self._last_packet: int | None = None
@@ -669,26 +762,45 @@ class KunosAdapter(Adapter):
         except Exception:  # noqa: BLE001
             self._drive.count("bad_reads")
 
+    def _kind(self, view: Any) -> str:
+        """A page's `type` in the raw sidecar: its mapping's name, `acpmf_physics` and so on."""
+        return view.name.rsplit("\\", 1)[-1]
+
     def _step(self) -> None:
-        size = kunos.PHYSICS_SIZE if self._physics.size >= kunos.PHYSICS_SIZE else kunos.PHYSICS_AC1_SIZE
-        page = self._physics.read(0, size)
+        # Each page whole - the mapping as the game made it, not only the bytes decoded - kept
+        # every time it changes; the physics page marked used when it became a row.
+        whole = self._physics.read()
+        used = False
+        try:
+            used = self._drive_from(whole)
+        finally:
+            self._pages.keep(self._drive, self._kind(self._physics), whole, used=used)
+            if self._graphics is not None:
+                self._pages.keep(self._drive, self._kind(self._graphics), self._graphics.read(), used=used)
+            if self._static is not None:
+                self._pages.keep(self._drive, self._kind(self._static), self._static.read())
+
+    def _drive_from(self, whole: bytes) -> bool:
+        """The physics page (and the graphics page beside it) as rows; returns whether it made any."""
+        size = kunos.PHYSICS_SIZE if len(whole) >= kunos.PHYSICS_SIZE else kunos.PHYSICS_AC1_SIZE
+        page = whole[:size]
         if len(page) < kunos.PHYSICS_AC1_SIZE:
-            return
+            return False
         packet = struct.unpack_from("<i", page, 0)[0]
         g = self._graphics.read(0, kunos.GRAPHICS_SIZE) if self._graphics is not None else b""
         status = struct.unpack_from("<i", g, G_STATUS)[0] if len(g) >= kunos.GRAPHICS_SIZE else AC_LIVE
         if packet == self._last_packet or packet == 0:
-            return
+            return False
         self._last_packet = packet
         if status != AC_LIVE:
             # A replay, a pause, the menus: not driving.
             self._end_live()
-            return
+            return False
         clock = time.perf_counter() - self._clock0
         frame = kunos.frame_from(kunos.decode_physics(page), clock, self.flavour)
         if frame is None:
             self._end_live()
-            return
+            return False
         d = self._drive
         x, y, z = frame["x"], frame["y"], frame["z"]
         if not self._live:
@@ -707,6 +819,12 @@ class KunosAdapter(Adapter):
             gear=frame["gear"],
             throttle=frame["throttle"],
             brake=frame["brake"],
+            # The car's heading, pitch and roll (radians, as the page has them), the engine, the wheel as sent.
+            yaw=frame["yaw"],
+            pitch=frame["pitch"],
+            roll=frame["roll"],
+            rpm=frame["rpm"],
+            steer=frame["steerAngle"],
         )
         slim = {"time": clock, "x": x, "y": y, "z": z, "speed": frame["speed"]}
         if isinstance(self._splitter, kunos.CounterSplitter):
@@ -720,6 +838,7 @@ class KunosAdapter(Adapter):
             done = self._splitter.feed(slim)
         for lap in done:
             self._closed(lap)
+        return True
 
     def _closed(self, lap: Any, *, stopped: bool = True) -> None:
         """A lap or run the splitter closed; `stopped`: by the car standing still, not by the drive ending."""
@@ -749,6 +868,7 @@ class KunosAdapter(Adapter):
             if v is not None:
                 v.close()
         self._physics = self._graphics = self._static = None
+        self._pages.close(self._drive)
         self._drive.close()
 
 
@@ -763,6 +883,36 @@ def _kunos_records(laps: str) -> tuple[str, ...]:
 
 
 _KUNOS_AXES = Axes(up="y", units="metres")
+
+
+def _kunos_completeness(pages: str, missing: tuple[str, ...] = ()) -> dict:
+    return dict(
+        read=(
+            "rows at 10 Hz from the physics page: position (mean of the tyre contact points), speed, gear, throttle, "
+            "brake, yaw/pitch/roll (rad), rpm, steer (as the page has it); session start with the track and car from "
+            "the static page; laps, race position",
+        ),
+        raw=(
+            f"each page whole - the full mapping region, not only the bytes decoded - every time its bytes change, at "
+            f"the watcher's 10 Hz read: {pages}; a reread that is byte for byte the last one is counted in meta.json's "
+            "`unchanged_reads`, not stored again",
+            "everything decoded only for lap files (`decoders/kunos.py`: per wheel slip, load, pressure, temperatures, "
+            "camber, suspension, contact points, brake temperatures, slip ratio and angle; world and local velocity, "
+            "angular velocity, aids) is in those pages",
+        ),
+        missing=(
+            "other cars' positions: the pages describe the player's car only (ACC's graphics page has car ids and "
+            "coordinates for others in some versions - kept in the raw page, not decoded)",
+            "physics ticks between the watcher's reads: the game rewrites the page at its physics rate (up to 333 Hz) "
+            "and the watcher reads 10 times a second",
+            *missing,
+        ),
+        size=(
+            "about 150-300 MB an hour before compression (a 4 KB region per page at up to 10 changes a second); the "
+            "pages are mostly zeros and zstd keeps a small fraction"
+        ),
+    )
+
 _KUNOS_VERIFIED = (
     "decoding is gamecapture's lap recorder's (tested on synthetic pages); the adapter tested on shared memory built in the "
     "test from the documented layout; untested against the game"
@@ -779,6 +929,7 @@ KUNOS = [
         enable="",
         axes=_KUNOS_AXES,
         verified=_KUNOS_VERIFIED,
+        completeness=_kunos_completeness("`acpmf_physics`, `acpmf_graphics`, `acpmf_static`"),
     ),
     KunosAdapter(
         id="assetto-corsa-competizione",
@@ -790,6 +941,7 @@ KUNOS = [
         enable="",
         axes=_KUNOS_AXES,
         verified=_KUNOS_VERIFIED,
+        completeness=_kunos_completeness("`acpmf_physics`, `acpmf_graphics`, `acpmf_static`"),
     ),
     KunosAdapter(
         id="assetto-corsa-evo",
@@ -801,6 +953,10 @@ KUNOS = [
         enable="",
         axes=_KUNOS_AXES,
         verified=_KUNOS_VERIFIED + "; the executable name is from player reports",
+        completeness=_kunos_completeness(
+            "`acevo_pmf_physics`, `acevo_pmf_static`",
+            ("a lap counter or the game's lap time: AC EVO's pages as read have no graphics page; laps are split by position",),
+        ),
     ),
     KunosAdapter(
         id="assetto-corsa-rally",
@@ -813,6 +969,10 @@ KUNOS = [
         enable="",
         axes=_KUNOS_AXES,
         verified=_KUNOS_VERIFIED + "; the executable name is unconfirmed",
+        completeness=_kunos_completeness(
+            "`acpmf_physics`, `acpmf_static`",
+            ("a stage clock or the game's stage time: AC Rally publishes no graphics page; stages end where the car stops",),
+        ),
     ),
 ]
 
@@ -883,16 +1043,25 @@ class RallyAdapter(Adapter):
         return frame, raw["race_time"], finished, None, None
 
     def feed(self, packet: bytes) -> None:
+        used = False
+        try:
+            used = self._feed(packet)
+        finally:
+            # Every packet, whole, whatever became of it.
+            self._drive.raw(rally.packet_kind(self.flavour, packet), packet, used=used)
+
+    def _feed(self, packet: bytes) -> bool:
+        """Returns whether the packet became part of the rows."""
         d = self._drive
         decoded = self._decode(packet)
         if decoded is None:
             d.count("bad_packets")
-            return
+            return False
         frame, clock, finished, seconds, speed = decoded
         x, y, z = frame["x"], frame["y"], frame["z"]
         if not all(math.isfinite(v) for v in (x, y, z, clock)):
             d.count("bad_packets")
-            return
+            return False
         if speed is None:
             # Over the game's own stage clock, from one packet to the next.
             last, self._last = self._last, (x, y, z, clock)
@@ -907,14 +1076,14 @@ class RallyAdapter(Adapter):
             # The clock went back before the finish, too early for the run to be kept.
             d.event("restart", session=str(current.number))
         if self._splitter.current is None:
-            return
+            return False
         if self._splitter.number != before:
             self._stage = self._splitter.number
             d.open()
             d.sample(x, y, z, speed=speed, force=True, session=str(self._stage), clock=clock)
             d.event("session_start", session=str(self._stage))
         if self._splitter.current.complete:
-            return
+            return False
         d.sample(
             x, y, z,
             speed=speed,
@@ -924,7 +1093,12 @@ class RallyAdapter(Adapter):
             throttle=frame.get("throttle"),
             brake=frame.get("brake"),
             stage_distance=frame.get("stageDistance"),
+            # Heading from the car's forward vector (WRC, DiRT; radians), the engine, the wheel.
+            yaw=frame.get("yaw"),
+            rpm=frame.get("rpm"),
+            steer=frame.get("steer"),
         )
+        return True
 
     def _closed(self, run: Any) -> None:
         d = self._drive
@@ -1015,6 +1189,18 @@ _RALLY_VERIFIED = (
     "packets built in the test, sent over UDP; untested against the game"
 )
 
+
+def _rally_completeness(kinds: str, decoded: str, missing: tuple[str, ...], size: str) -> dict:
+    return dict(
+        read=(
+            "rows at 10 Hz: position, speed, gear, throttle, brake, stage distance, yaw, rpm, steer; stage start, "
+            "finish with the stage time, restarts",
+        ),
+        raw=(f"every packet that reaches the port, whole, at the game's rate, under its format: {kinds}", decoded),
+        missing=("other cars: the games send the player's car only", *missing),
+        size=size,
+    )
+
 RALLY = [
     RallyAdapter(
         id="ea-wrc",
@@ -1027,6 +1213,16 @@ RALLY = [
         enable="`python -m heat3d_watch setup ea-wrc --apply` switches the session_update packet on in config.json (backed up first)",
         axes=Axes(up="y", units="metres"),
         verified=_RALLY_VERIFIED,
+        completeness=_rally_completeness(
+            "`session_update` (the default `wrc` structure, 237 bytes), `wrc <n>-byte` for any other packet the config sends",
+            "in the packet beyond the rows: world velocity and acceleration, the car's axes, per wheel hub position and "
+            "speed, contact patch speed, brake temperature, clutch, handbrake, the game clock; 22 bytes (offsets 16-36 and 40) no "
+            "published channel list names",
+            ("the other structures and packets the telemetry config can define (session_start, session_end, pause): "
+             "only `session_update` is switched on by `setup`; any other packet sent to the port is kept",),
+            "about 65 MB an hour at 60 packets a second (237 bytes plus a 70-byte item header; the config's -1 rate "
+            "sends one a frame, so more at a higher frame rate); zstd keeps a fraction",
+        ),
     ),
     RallyAdapter(
         id="dirt-rally-2",
@@ -1039,6 +1235,14 @@ RALLY = [
         enable="`python -m heat3d_watch setup dirt-rally-2 --apply` sets <udp enabled=\"true\" extradata=\"3\"> (backed up first)",
         axes=Axes(up="y", units="metres"),
         verified=_RALLY_VERIFIED,
+        completeness=_rally_completeness(
+            "`extradata3` (66 floats, 264 bytes), `extradata3-64` (DiRT Rally's 64), `<n>-byte` otherwise",
+            "in the packet beyond the rows: all 66 floats - world velocity, side and forward vectors, per wheel suspension "
+            "position and speed, contact patch speed and brake temperature, g forces, laps, stage length; the floats "
+            "without a settled name are in lap files as `float<i>`",
+            ("a handbrake channel: the packet has none",),
+            "about 70 MB an hour at 60 packets a second (264 bytes plus a 70-byte item header); zstd keeps a fraction",
+        ),
     ),
     RallyAdapter(
         id="richard-burns-rally",
@@ -1052,6 +1256,14 @@ RALLY = [
         enable="RSF/NGP: in RichardBurnsRally.ini, section [NGP], set udpTelemetry=1 and the endpoint to 127.0.0.1:6776",
         axes=Axes(up="y", units="metres; up axis decided from the drive (RBR does not document its axes)"),
         verified=_RALLY_VERIFIED,
+        completeness=_rally_completeness(
+            "`telemetry` (NGP's 664-byte TelemetryData), `rbr <n>-byte` otherwise",
+            "in the packet beyond the rows: attitude, the car's own velocities and accelerations, per wheel spring "
+            "deflection and force, the stage's progress and distance to the end; the rest of the 664 bytes (engine, tyre "
+            "and brake blocks per wheel) is decoded nowhere yet",
+            ("its speed unit and axes: not documented - speed is taken from the positions, up from the drive",),
+            "about 160 MB an hour at 60 packets a second (664 bytes plus a 70-byte item header); zstd keeps a fraction",
+        ),
     ),
 ]
 
@@ -1086,11 +1298,21 @@ class BeamNGAdapter(Adapter):
                 self._drive.count("bad_packets")
 
     def feed(self, packet: bytes) -> None:
+        used = False
+        try:
+            used = self._feed(packet)
+        finally:
+            # Every packet, whole: the mod's `H3D1` packets, and anything else that reached the port.
+            kind = "H3D1" if packet[:4] == beamng.MAGIC and len(packet) >= beamng.LENGTH else f"{len(packet)}-byte"
+            self._drive.raw(kind, packet, used=used)
+
+    def _feed(self, packet: bytes) -> bool:
+        """Returns whether the packet became part of the rows."""
         d = self._drive
         raw = beamng.decode(packet)
         if raw is None:
             d.count("bad_packets")
-            return
+            return False
         frame = beamng.frame_from(raw)
         x, y, z = frame["x"], frame["y"], frame["z"]
         if frame["time"] < self._last_time - 0.5:
@@ -1110,10 +1332,12 @@ class BeamNGAdapter(Adapter):
             d.event("session_start", session="1")
         self._last_time = frame["time"]
         d.sample(x, y, z, speed=frame["speed"], clock=frame["time"], session=str(self._runs), gear=frame["gear"],
-                 throttle=frame["throttle"], brake=frame["brake"])
+                 throttle=frame["throttle"], brake=frame["brake"], yaw=frame["yaw"], rpm=frame["rpm"],
+                 steer=frame["steer"])
         slim = {"time": frame["time"], "x": x, "y": y, "z": z, "speed": frame["speed"]}
         for lap in self._splitter.feed(slim):
             self._closed(lap)
+        return True
 
     def _closed(self, lap: Any) -> None:
         seconds = lap.seconds if lap.seconds is not None else lap.frames[-1]["time"] - lap.frames[0]["time"]
@@ -1156,6 +1380,19 @@ BEAMNG = [
         enable="`python -m heat3d_watch setup beamng --apply` installs the mod; then Options > Other > Protocols > \"others\"",
         axes=Axes(up="y", units="metres (BeamNG's Z-up world turned about X, as the lap recorder does)"),
         verified="decoding is gamecapture's lap recorder's (tested on packets built from the mod's struct); adapter tested on such packets; the mod is untested in the game",
+        completeness=dict(
+            read=("rows at 10 Hz: position, speed, gear, throttle, brake, yaw, rpm, steer; drive start, resets, laps",),
+            raw=(
+                "every packet that reaches the port, whole, at the mod's 100 Hz: `H3D1` (the mod's 160-byte struct: clock, "
+                "position, velocity, the car's axes, yaw rate, nine inputs, per wheel surface speed, rotation, load and "
+                "ground material), `<n>-byte` for anything else",
+            ),
+            missing=(
+                "what the mod does not send: BeamNG has no fixed telemetry packet, so the channels are the ones the "
+                "heat3d mod chose (other vehicles, damage, the map's name are not in it)",
+            ),
+            size="about 80 MB an hour before compression (100 packets a second of 160 bytes plus a 70-byte item header)",
+        ),
     ),
 ]
 

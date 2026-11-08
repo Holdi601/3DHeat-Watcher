@@ -31,13 +31,23 @@ done, race position, incidents - plus laps, incidents, pit stops and the
 chequered flag, and at the end the `.ibt` files written during the sitting as
 `telemetry_file` events, for the viewer to open.
 
+Beside the rows the whole memory map is kept, in the session's raw sidecar
+(`heat.raw.parquet`): the header's fixed part (`header`, each time it
+changes), the variable headers (`var_headers`, whole, and as JSON in `text`,
+each time the layout changes), the session info YAML (`session_info`, its
+text each time `sessionInfoUpdate` moves) and the newest telemetry line
+(`telemetry`, every variable of it, each read that finds a new tick). The var
+headers and a line are all a later decoder needs to read any variable.
+
 Source: the iRacing SDK (irsdk_defines.h, "iRacing SDK" forum documentation);
 kutu/pyirsdk (MIT) for confirmation of the offsets.
 """
 
 from __future__ import annotations
 
+import json
 import logging
+import math
 import re
 import struct
 import sys
@@ -48,7 +58,7 @@ from typing import Any
 
 from ..session import Axes
 from .base import Adapter, Context
-from .racing import KMH, Driving, documents
+from .racing import KMH, Driving, Pages, documents
 
 log = logging.getLogger("heat3d_watch")
 
@@ -71,7 +81,12 @@ WANTED = (
     "Lap", "LapCompleted", "LapDistPct", "LapDist", "LapLastLapTime", "LapBestLapTime",
     "Speed", "Gear", "Throttle", "Brake", "RPM", "OnPitRoad", "PlayerTrackSurface",
     "PlayerCarPosition", "PlayerCarClassPosition", "PlayerCarMyIncidentCount",
+    "SteeringWheelAngle", "Yaw", "YawNorth", "Pitch", "Roll", "FuelLevel", "LatAccel", "LongAccel",
 )
+#: Variables put on the driving rows under their own name, when the sim says the unit expected.
+ANGLES = {"SteeringWheelAngle": "steering_angle", "Yaw": "yaw", "YawNorth": "yaw_north", "Pitch": "pitch",
+          "Roll": "roll"}
+MEASURES = {"FuelLevel": ("fuel_l", "l"), "LatAccel": ("lat_accel", "m/s^2"), "LongAccel": ("lon_accel", "m/s^2")}
 
 
 @dataclass
@@ -81,6 +96,8 @@ class Var:
     offset: int
     count: int
     unit: str
+    desc: str = ""
+    count_as_time: bool = False
 
 
 def parse_header(raw: bytes) -> dict:
@@ -94,10 +111,20 @@ def parse_header(raw: bytes) -> dict:
 def parse_vars(raw: bytes, count: int) -> dict[str, Var]:
     out = {}
     for i in range(count):
-        t, off, n, _time, name, _desc, unit = VAR_HEADER.unpack_from(raw, i * VAR_HEADER.size)
+        t, off, n, as_time, name, desc, unit = VAR_HEADER.unpack_from(raw, i * VAR_HEADER.size)
         key = name.split(b"\x00", 1)[0].decode("latin-1")
-        out[key] = Var(key, t, off, n, unit.split(b"\x00", 1)[0].decode("latin-1"))
+        out[key] = Var(key, t, off, n, unit.split(b"\x00", 1)[0].decode("latin-1"),
+                       desc.split(b"\x00", 1)[0].decode("latin-1"), bool(as_time))
     return out
+
+
+def vars_text(variables: dict[str, Var]) -> str:
+    """The variable headers as JSON, one entry per variable in the sim's order: enough to read any line."""
+    return json.dumps(
+        [{"name": v.name, "type": v.type, "offset": v.offset, "count": v.count, "count_as_time": v.count_as_time,
+          "unit": v.unit, "desc": v.desc} for v in variables.values()],
+        ensure_ascii=False,
+    )
 
 
 def value(line: bytes, var: Var) -> Any:
@@ -152,29 +179,40 @@ class Irsdk:
         self._layout: tuple[int, int] | None = None
         self.info_update = -1
         self.info: dict = {}
+        #: The bytes last read, for the raw sidecar: the header, the newest line.
+        self.head_raw = b""
+        self.line = b""
+        #: Set when they were read again (the layout or the session info changed); the adapter keeps and clears them.
+        self.new_vars: bytes | None = None
+        self.new_info: bytes | None = None
 
     def header(self) -> dict:
-        return parse_header(self.view.read(0, VAR_BUF + 16 * MAX_BUFS))
+        self.head_raw = self.view.read(0, VAR_BUF + 16 * MAX_BUFS)
+        return parse_header(self.head_raw)
 
     def connected(self, head: dict) -> bool:
         return bool(head["status"] & STATUS_CONNECTED) and head["num_buf"] > 0 and head["buf_len"] > 0
 
     def read(self, head: dict) -> tuple[int, dict[str, Any]] | None:
-        """(tick, the wanted values) from the newest complete line."""
+        """(tick, the wanted values) from the newest complete line; the whole line stays in `line`."""
         layout = (head["num_vars"], head["var_header_offset"])
         if layout != self._layout:
-            self.vars = parse_vars(self.view.read(head["var_header_offset"], head["num_vars"] * VAR_HEADER.size), head["num_vars"])
+            block = self.view.read(head["var_header_offset"], head["num_vars"] * VAR_HEADER.size)
+            self.vars = parse_vars(block, head["num_vars"])
             self._layout = layout
+            self.new_vars = block
         if head["info_update"] != self.info_update and head["info_len"] > 0:
             text = self.view.read(head["info_offset"], head["info_len"]).split(b"\x00", 1)[0]
             self.info = session_yaml(text.decode("cp1252", errors="replace"))
             self.info_update = head["info_update"]
+            self.new_info = text
         n = max(1, min(head["num_buf"], MAX_BUFS))
         for _ in range(3):
             tick, offset = max(head["bufs"][:n])
             line = self.view.read(offset, head["buf_len"])
             again = parse_header(self.view.read(0, VAR_BUF + 16 * MAX_BUFS))
             if (tick, offset) in again["bufs"][:n]:
+                self.line = line
                 return tick, {name: value(line, self.vars[name]) for name in WANTED if name in self.vars}
             head = again  # the sim wrote over it while it was copied
         return None
@@ -198,6 +236,7 @@ class IRacingAdapter(Adapter):
 
     def start(self, ctx: Context) -> None:
         self._drive = Driving(self, ctx)
+        self._pages = Pages()
         self._sdk: Irsdk | None = None
         self._tried = 0.0
         self._last_tick: int | None = None
@@ -234,26 +273,59 @@ class IRacingAdapter(Adapter):
     def poll(self, ctx: Context) -> None:
         if not self._open():
             return
+        d, sdk = self._drive, self._sdk
         try:
-            head = self._sdk.header()
-            if not self._sdk.connected(head):
+            head = sdk.header()
+            # The header whole each time it changes: status, session info update, layout, the lines' ticks.
+            self._pages.keep(d, "header", sdk.head_raw)
+            if not sdk.connected(head):
                 self._prev = {}
                 return
-            got = self._sdk.read(head)
+            got = sdk.read(head)
         except Exception:  # noqa: BLE001
-            self._drive.count("bad_reads")
+            d.count("bad_reads")
             return
+        self._keep_context()
         if got is None:
-            self._drive.count("torn_reads")
+            d.count("torn_reads")
             return
         tick, v = got
         if tick == self._last_tick:
             return
         self._last_tick = tick
+        # The whole line, every variable in it - the rows below take a few.
+        d.raw("telemetry", sdk.line, used=not v.get("IsReplayPlaying"), tick=tick)
         try:
             self.step(v)
         except Exception:  # noqa: BLE001
-            self._drive.count("bad_reads")
+            d.count("bad_reads")
+
+    def _keep_context(self) -> None:
+        """What a later decoder needs to read the lines: the variable headers, and the session info."""
+        d, sdk = self._drive, self._sdk
+        if sdk.new_vars is not None:
+            d.raw("var_headers", sdk.new_vars, text=vars_text(sdk.vars), num_vars=len(sdk.vars))
+            sdk.new_vars = None
+        if sdk.new_info is not None:
+            text = sdk.new_info.decode("cp1252", errors="replace")
+            # The bytes as well only where cp1252 could not say them all.
+            d.raw("session_info", sdk.new_info if "�" in text else None, text=text, used=True,
+                  update=sdk.info_update)
+            sdk.new_info = None
+
+    def _extra(self, v: dict[str, Any]) -> dict[str, Any]:
+        """Orientation, steering, fuel and accelerations, each only when the sim's unit is the one expected."""
+        out: dict[str, Any] = {}
+        known = self._sdk.vars if self._sdk else {}
+        for name, col in ANGLES.items():
+            x, var = v.get(name), known.get(name)
+            if isinstance(x, float) and math.isfinite(x) and var is not None and var.unit == "rad":
+                out[col] = round(math.degrees(x), 2)
+        for name, (col, unit) in MEASURES.items():
+            x, var = v.get(name), known.get(name)
+            if isinstance(x, float) and math.isfinite(x) and var is not None and var.unit == unit:
+                out[col] = round(x, 3)
+        return out
 
     def step(self, v: dict[str, Any]) -> None:
         """One new line of live data."""
@@ -334,7 +406,7 @@ class IRacingAdapter(Adapter):
                 lap=v.get("Lap"), lap_dist_pct=_r(v.get("LapDistPct"), 4), lap_dist=_r(v.get("LapDist"), 1),
                 race_position=position or None, class_position=v.get("PlayerCarClassPosition") or None,
                 incidents=incidents, track_surface=v.get("PlayerTrackSurface"), on_pit_road=1 if pit else 0,
-                game_time=_r(t),
+                game_time=_r(t), **self._extra(v),
             )
         self._prev = dict(v)
 
@@ -347,6 +419,7 @@ class IRacingAdapter(Adapter):
         if self._sdk is not None:
             self._sdk.view.close()
             self._sdk = None
+        self._pages.close(self._drive)
         self._drive.close()
 
 
@@ -369,9 +442,51 @@ ADAPTERS = [
             "their points, chequered flag, finish",
             "the .ibt telemetry files written during the sitting (latitude, longitude, altitude - the viewer reads them)",
             "laps, best lap, incidents, race position, pit stops, distance, top speed",
+            "the whole shared memory in `heat.raw.parquet`: header, variable headers, session info, every telemetry "
+            "line read",
         ),
         enable="Nothing for the live data. For positions: log telemetry in the car (Alt+L) or set irsdkLog=1 in app.ini",
         axes=Axes(up="y", units="no positions live; the .ibt files carry latitude/longitude/altitude"),
         verified="tested on a shared-memory block built in the test from the irsdk layout; untested against the sim",
+        completeness={
+            "read": (
+                "from the newest telemetry line: session time, number, state and id, on track, replay, lap, laps "
+                "completed, share and metres of the lap, last and best lap, speed, gear, throttle, brake, RPM, pit "
+                "road, track surface, race and class position, own incident count (the `driving` rows at 5 Hz and "
+                "the events)",
+                "now also on the `driving` rows: `steering_angle`, `yaw`, `yaw_north`, `pitch`, `roll` (degrees, "
+                "from the sim's radians - only when the variable header gives the unit as rad), `fuel_l` (unit l), "
+                "`lat_accel` and `lon_accel` (unit m/s^2)",
+                "from the session info YAML: the player's car index, track and configuration, session types, each "
+                "driver's name, car, team and number (session_start rows, meta.json)",
+                "checked against a block built from irsdk_defines.h in the tests; not yet against the sim",
+            ),
+            "raw": (
+                "`telemetry`: the newest line whole, every variable the sim publishes (the CarIdx arrays of every "
+                "car, tyres, suspension, the high-rate `_ST` arrays where the sim has them ...), each read that "
+                "finds a new tick; `tick` the sim's tick count; `used` is false while a replay plays",
+                "`var_headers`: the variable headers whole (144 bytes each) and, in `text`, as JSON (name, type, "
+                "offset, count, unit, description), each time the layout changes - enough to read every variable "
+                "of every kept line",
+                "`session_info`: the YAML text whole each time its update counter moves (weekend, sessions and "
+                "results, drivers, car setup, radio, camera lists), `update` the counter",
+                "`header`: the 112-byte irsdk header whole each time it changes (version, status, tick rate, "
+                "offsets, the lines' ticks)",
+            ),
+            "missing": (
+                "a world position live: the shared memory has none; latitude, longitude and altitude are only in "
+                "the .ibt files (logging on), which the viewer reads - the watcher names those written during the "
+                "sitting",
+                "the ticks between two reads: the sim writes 60 lines a second into 3 or 4 slots and the watcher "
+                "reads 10 times a second, so most ticks are overwritten before they could be read; the .ibt file "
+                "has every tick when logging is on",
+            ),
+            "size": (
+                "a telemetry line is a few KB (about 5 to 10 KB with every car's arrays), kept up to 10 times a "
+                "second, plus the header (112 bytes) as often and the session info YAML (tens of KB) when it "
+                "changes: about 0.2 to 0.4 GB per hour on track before compression; zstd brings it to a fraction "
+                "(not yet measured on a real session)"
+            ),
+        },
     )
 ]

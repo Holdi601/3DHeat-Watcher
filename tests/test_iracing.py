@@ -13,6 +13,7 @@ import struct
 import sys
 import time
 
+import pyarrow.parquet as pq
 import pytest
 
 from heat3d_watch.adapters import iracing
@@ -32,6 +33,8 @@ VARS = [
     ("Speed", 4, 1, "m/s"), ("Gear", 2, 1, ""), ("Throttle", 4, 1, "%"), ("Brake", 4, 1, "%"), ("RPM", 4, 1, "revs/min"),
     ("OnPitRoad", 1, 1, ""), ("PlayerTrackSurface", 2, 1, ""), ("PlayerCarPosition", 2, 1, ""),
     ("PlayerCarClassPosition", 2, 1, ""), ("PlayerCarMyIncidentCount", 2, 1, ""),
+    ("Yaw", 4, 1, "rad"), ("SteeringWheelAngle", 4, 1, "rad"), ("FuelLevel", 4, 1, "l"),
+    ("Pitch", 4, 1, "deg"),  # not the unit the adapter expects: left in the raw line, not on the rows
 ]
 YAML = """---
 WeekendInfo:
@@ -130,11 +133,14 @@ def test_a_race_its_laps_incidents_pit_stop_and_finish(tmp_path):
                 "Speed": 50.0 if on else 0.0, "Gear": 4, "Throttle": 1.0, "Brake": 0.0, "RPM": 7000.0,
                 "OnPitRoad": 30 <= k < 35, "PlayerTrackSurface": 3, "PlayerCarPosition": 3,
                 "PlayerCarClassPosition": 2, "PlayerCarMyIncidentCount": 2 if k >= 25 else 0,
+                "Yaw": 0.5, "SteeringWheelAngle": -0.25, "FuelLevel": 42.5, "Pitch": 0.1,
             }
             sim.write(v)
             a.poll(ctx)
             a.poll(ctx)  # the same tick again: nothing new
             time.sleep(0.01)
+        sim.write({**v, "IsReplayPlaying": True})  # a replay: no rows, but its line is kept
+        a.poll(ctx)
         (folder / "a.ibt").write_bytes(b"IBT" * 10)
         a.stop(ctx)
     finally:
@@ -164,6 +170,28 @@ def test_a_race_its_laps_incidents_pit_stop_and_finish(tmp_path):
     assert s["pit_stops"] == 1 and s["top_speed_kmh"] == 180.0
     assert s["distance_km"] == pytest.approx(57 * 5.0 / 1000, rel=0.05)
     assert not (session / "heat.parquet").exists()
+    # Orientation, steering and fuel on the rows, by the units the variable headers give.
+    assert driving[0]["yaw"] == 28.65 and driving[0]["steering_angle"] == -14.32 and driving[0]["fuel_l"] == 42.5
+    assert "pitch" not in driving[0]
+
+    # The whole shared memory in the raw sidecar: every line read, the variable headers, the session info.
+    t = pq.read_table(session / "heat.raw.parquet").to_pydict()
+    kinds = t["type"]
+    lines = [i for i, k in enumerate(kinds) if k == "telemetry"]
+    assert len(lines) == 61 and [t["tick"][i] for i in lines] == list(range(1, 62))
+    assert [t["used"][i] for i in lines] == [True] * 60 + [False]  # the replay's line: kept, not used
+    assert all(len(t["payload"][i]) == sim.buf_len for i in lines)
+    (vh,) = [i for i, k in enumerate(kinds) if k == "var_headers"]
+    assert len(t["payload"][vh]) == 144 * len(VARS) and not t["used"][vh]
+    described = json.loads(t["text"][vh])
+    assert [d["name"] for d in described] == [n for n, *_ in VARS]
+    assert described[[n for n, *_ in VARS].index("CarIdxLapDistPct")]["count"] == 64
+    (si,) = [i for i, k in enumerate(kinds) if k == "session_info"]
+    assert t["text"][si] == YAML and t["used"][si] and t["update"][si] == 1
+    assert kinds[0] == "header" and len(t["payload"][0]) == 112
+    c = meta["selfCheck"]["completeness"]
+    assert c["lost"] == 0 and c["types"]["telemetry"] == {"seen": 61, "decoded": 0, "partial": 60, "raw": 1, "lost": 0}
+    assert meta["unchanged_reads"]["header"] >= 60  # the second look at each tick found nothing new
 
 
 def test_the_session_info_yaml_is_read_without_a_yaml_library():

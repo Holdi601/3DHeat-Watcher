@@ -25,6 +25,14 @@ The player's own side is the one whose starting hand has its cards named
 (the opponent's are hidden), else the side that is not the AI (account 0) or
 "UNKNOWN HUMAN PLAYER". Lines carry only the time of day; the date is today's.
 No positions.
+
+Every line of Power.log is kept whole in the session's raw sidecar (3DHeat's
+converter rule), the `PowerTaskList` repeats, options, choices and entity
+updates included: `type` is the method that wrote it (`GameState.DebugPrintPower`,
+`PowerTaskList.DebugPrintPower`, `GameState.DebugPrintOptions`, ...). Any other
+log the game writes beside it - `LoadingScreen.log`, `Decks.log`, `Zone.log`,
+`Arena.log`, ..., each there when log.config asks for it (deck trackers often
+do) - is followed the same way and kept with its name in `log`.
 """
 
 from __future__ import annotations
@@ -48,6 +56,8 @@ _CREATING = re.compile(r"FULL_ENTITY - Creating ID=\d+ CardID=(\S*)")
 _TAG = re.compile(r"^\s*tag=(\w+) value=(\S+)")
 _CHANGE = re.compile(r"TAG_CHANGE Entity=(.+?) tag=(\w+) value=(\S+)")
 _ENTITY_ID = re.compile(r"\bid=(\d+)\b")
+#: Any line of the game's logs: level, time of day, and the method that wrote it where there is one.
+_ANY = re.compile(r"^[DIWE] (\d{1,2}:\d{2}:\d{2}(?:\.\d+)?) (?:([\w.`<>]+)\(\))?")
 
 #: Sections of log.config this adapter needs, as Hearthstone's own logger reads them.
 CONFIG = {"Power": {"LogLevel": "1", "FilePrinting": "true", "ConsolePrinting": "false", "ScreenPrinting": "false",
@@ -68,6 +78,14 @@ def clock_time(clock: str, now: float | None = None) -> float:
     if ts > now + 60:
         ts = (day - timedelta(days=1)).timestamp() + (float("0." + frac) if frac else 0.0)
     return ts
+
+
+def line_kind(text: str) -> tuple[str, str | None]:
+    """A log line's kind in the game's words (the method that wrote it), and its time of day where it has one."""
+    m = _ANY.match(text)
+    if not m:
+        return "untimed", None
+    return (m.group(2) or "untagged"), m.group(1)
 
 
 def merge_config(text: str) -> tuple[str, list[str]]:
@@ -97,12 +115,14 @@ def merge_config(text: str) -> tuple[str, list[str]]:
 
 
 class PowerLog:
-    """Power.log lines into a session: one game after another, who won, how many turns."""
+    """Power.log lines into a session: one game after another, who won, how many turns; every line kept whole."""
 
-    def __init__(self, session_for, clock=clock_time):
+    def __init__(self, session_for, clock=clock_time, log: str = "Power"):
         self.session_for = session_for
         self.clock = clock
+        self.log = log
         self.games = 0
+        self.used = False
         self.reset()
 
     def reset(self) -> None:
@@ -117,6 +137,15 @@ class PowerLog:
         self.in_game = False
 
     def line(self, text: str) -> None:
+        if not text.strip():
+            return
+        self.used = False
+        try:
+            self._line(text)
+        finally:
+            keep(self.session_for, self.clock, self.log, text, self.used)
+
+    def _line(self, text: str) -> None:
         m = _LINE.match(text)
         if not m:
             return
@@ -193,6 +222,7 @@ class PowerLog:
     def _event(self, ts: float, name: str, **kw) -> Session:
         s = self.session_for(ts)
         s.event(name, t=ts - s.started, ms=ts * 1000, session=f"game-{self.games}", **kw)
+        self.used = True
         return s
 
     def _end(self, ts: float, *, complete: bool) -> None:
@@ -224,6 +254,33 @@ class PowerLog:
         s.stat("longest_game_turns", self.turn, "max")
 
 
+def keep(session_for, clock, log: str, text: str, used: bool = False) -> None:
+    """One line of the game's logs whole in the raw sidecar (docs/converters.md, "Live sources")."""
+    kind, at = line_kind(text)
+    ts = None
+    if at is not None:
+        try:
+            ts = clock(at)
+        except ValueError:
+            ts = None
+    s = session_for(ts)
+    when = ts or time.time()
+    s.raw(kind, text=text, used=used, t=when - s.started, ms=when * 1000, log=log)
+
+
+class OtherLog:
+    """A log beside Power.log (LoadingScreen, Decks, Zone, ...): every line kept whole, nothing made of it yet."""
+
+    def __init__(self, session_for, log: str, clock=clock_time):
+        self.session_for = session_for
+        self.log = log
+        self.clock = clock
+
+    def line(self, text: str) -> None:
+        if text.strip():
+            keep(self.session_for, self.clock, self.log, text)
+
+
 def install_candidates(exe: Path | None) -> list[Path]:
     if exe is not None:
         return [exe.parent]
@@ -243,6 +300,13 @@ class HearthstoneAdapter(Adapter):
     _session: Session | None = field(default=None, repr=False)
     _follow: Follower | None = field(default=None, repr=False)
     _log: PowerLog | None = field(default=None, repr=False)
+    #: The other logs by file name: their follower and their reader.
+    _others: dict[str, tuple[Follower, OtherLog]] = field(default_factory=dict, repr=False)
+    #: The newest file of each log name, looked for every few seconds.
+    _latest: dict[str, Path] = field(default_factory=dict, repr=False)
+    _roots: list[Path] = field(default_factory=list, repr=False)
+    _since: float = field(default=0.0, repr=False)
+    _next_scan: float = field(default=0.0, repr=False)
 
     def config_file(self) -> Path:
         return Path(self.config) if self.config else config_path()
@@ -271,41 +335,63 @@ class HearthstoneAdapter(Adapter):
 
     def start(self, ctx: Context) -> None:
         self._session = None
-        roots = [Path(self.install)] if self.install else install_candidates(ctx.exe)
+        self._roots = [Path(self.install)] if self.install else install_candidates(ctx.exe)
+        self._others = {}
+        self._latest = {}
+        self._next_scan = 0.0
+        self._since = game_started(ctx.pid)
+        self._log = PowerLog(self._session_for(ctx))
+        # The log has no dates to tell this sitting's lines by; it is new at each launch, read whole then.
+        self._follow = Follower(lambda: self._latest.get("Power.log"), self._since)
 
-        def find() -> Path | None:
-            files: list[Path] = []
-            for r in roots:
-                logs = r / "Logs"
-                files += [p for p in (logs / "Power.log",) if p.exists()]
-                files += list(logs.glob("*/Power.log"))
-            return newest(files)
-
+    def _session_for(self, ctx: Context):
         def session_for(ts: float | None) -> Session:
             if self._session is None:
                 self._session = ctx.open(self, when=ts if ts and abs(time.time() - ts) < 86400 else None)
             return self._session
 
-        self._log = PowerLog(session_for)
-        # The log has no dates to tell this sitting's lines by; it is new at each launch, read whole then.
-        self._follow = Follower(find, game_started(ctx.pid))
+        return session_for
+
+    def _scan(self, ctx: Context) -> None:
+        """The newest file of each log name (Logs\\*.log, Logs\\<launch>\\*.log); a new name gets its follower."""
+        found: dict[str, list[Path]] = {}
+        for r in self._roots:
+            logs = r / "Logs"
+            try:
+                for p in [*logs.glob("*.log"), *logs.glob("*/*.log")]:
+                    found.setdefault(p.name, []).append(p)
+            except OSError:
+                continue
+        self._latest = {name: p for name, files in found.items() if (p := newest(files)) is not None}
+        for name in self._latest:
+            if name != "Power.log" and name not in self._others:
+                follower = Follower(lambda n=name: self._latest.get(n), self._since)
+                self._others[name] = (follower, OtherLog(self._session_for(ctx), Path(name).stem))
 
     def poll(self, ctx: Context) -> None:
         if self._follow is None or self._log is None:
             return
-        for line in self._follow.lines():
+        if time.monotonic() >= self._next_scan:
+            self._next_scan = time.monotonic() + 2.0
+            self._scan(ctx)
+        for line in self._follow.iter_lines():
             try:
                 self._log.line(line)
             except (ValueError, IndexError):
                 if self._session is not None:
                     self._session.stat("bad_lines", 1, "add")
+        for follower, log in self._others.values():
+            for line in follower.iter_lines():
+                log.line(line)
 
     def stop(self, ctx: Context) -> None:
+        self._next_scan = 0.0  # a log started since the last look still counts
         self.poll(ctx)
         ctx.close(self._session)
         self._session = None
         self._follow = None
         self._log = None
+        self._others = {}
 
 
 ADAPTERS = [
@@ -316,10 +402,12 @@ ADAPTERS = [
         exes=("Hearthstone.exe",),
         multiplayer=True,
         source=r"<install>\Logs\Power.log (or Logs\Hearthstone_*\Power.log), written once "
-        r"%LOCALAPPDATA%\Blizzard\Hearthstone\log.config has a [Power] section",
+        r"%LOCALAPPDATA%\Blizzard\Hearthstone\log.config has a [Power] section, and every other *.log the game "
+        r"writes there",
         records=(
             "game start and end, with the result (won, lost, tied), turns and the opponent's name",
             "each turn",
+            "every line of Power.log and the other logs whole in heat.raw.parquet",
             "games, wins, losses, ties, turns, longest game",
         ),
         enable=r"`python -m heat3d_watch setup hearthstone --apply` adds [Power] logging to "
@@ -327,5 +415,34 @@ ADAPTERS = [
         interval=0.5,
         axes=Axes(units="no positions recorded"),
         verified="tested on synthetic Power.log lines in the game's format; untested against the game",
+        completeness={
+            "read": (
+                "`CREATE_GAME`, the players (entity, player id, account; account 0 is the AI) and their names "
+                "(`DebugPrintGame`)",
+                "whose side is the player's, from the named cards of the starting hand",
+                "`TAG_CHANGE` of TURN, PLAYSTATE (won, lost, tied) and STATE COMPLETE: turns, result, opponent",
+            ),
+            "raw": (
+                "every Power.log line whole, `type` = the method that wrote it (`GameState.DebugPrintPower`, "
+                "`PowerTaskList.DebugPrintPower`, `GameState.DebugPrintGame`, `GameState.DebugPrintOptions`, "
+                "`GameState.SendChoices`, `GameState.DebugPrintEntityChoices`, `PowerProcessor.DoTaskListForCard`, "
+                "...), `log` `Power`, `used` where it became a row: every card played, drawn and revealed, every "
+                "tag change, attack, option and choice is here, not yet in rows",
+                "every line of the other logs in the same folder (`LoadingScreen`, `Decks`, `Zone`, `Arena`, "
+                "`Achievements`, `FullScreenFX`, ... - whatever log.config switches on), same `type`s, with the "
+                "log's name in `log`",
+                "a line without the level and time of day as `untimed`, one without a method as `untagged`",
+            ),
+            "missing": (
+                "positions: a card game has none",
+                "the opponent's hidden cards: the log names a card only once it is revealed",
+                "logs log.config does not switch on: `setup` asks only for [Power]; the other logs come when "
+                "another tool (a deck tracker) has switched them on",
+                "earlier launches' logs: each launch writes a new folder; those older than this run of the game "
+                "are not read again",
+            ),
+            "size": "Power.log with Verbose is about 1-5 MB per game, 10-40 MB per hour of play; the other logs "
+            "add little; zstd in heat.raw.parquet makes it roughly a tenth or less (the lines repeat a lot)",
+        },
     )
 ]

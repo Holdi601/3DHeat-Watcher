@@ -44,8 +44,9 @@ is; its methods do the work.
 | `interval` | `0.1` | seconds between polls |
 | `axes` | `Axes()` | the world's up axis, mirrored axes, the viewer's unit scale (keep 1) and a note on the units |
 | `verified` | `""` | what has been checked, honestly (see below) |
+| `completeness` | `{}` | the source's account under 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): `read` (what becomes rows), `raw` (what is kept whole, under which `type`), `missing` (what the source does not give, and why), `size` (how big the raw feed gets an hour). The game page's "Completeness" section is written from it |
 
-`source`, `records`, `enable` and `verified` are documentation, not decoration. `games` prints them,
+`source`, `records`, `enable`, `verified` and `completeness` are documentation, not decoration. `games` prints them,
 `games --markdown` makes the table in [All games in one table](watcher.md), and the game pages are
 generated from them. Write them so they say exactly what the code does.
 
@@ -90,7 +91,7 @@ one game's problem does not stop the others.
 | `data` | the data folder |
 | `pid`, `exe` | the game's process id and executable path, when the adapter was started for a running game; the install folder is next to `exe` |
 | `open(adapter, *, game=None, when=None, axes=..., source=..., multiplayer=..., meta=..., geo=None)` | a new `Session`. `game` overrides the adapter's game name (for adapters covering many games); `when` sets the start for sessions that describe the past; `axes`, `source` and `multiplayer` default to the adapter's; `meta` is a dictionary written into `meta.json`; `geo` (`{"lat0": .., "lon0": ..}`, or set `session.geo` later) places a flat-map session on the earth, in `meta.json` and the table's footer |
-| `close(session)` | end a session: the table, `meta.json`, its line in `watcher.sqlite`. A session with no events is deleted. Accepts `None`. Returns the table's path or `None`. |
+| `close(session)` | end a session: the table, `heat.raw.parquet`, `meta.json`, its line in `watcher.sqlite`. A session with neither events nor raw items is deleted; one with only raw items is kept (no table, no line in the database). Accepts `None`. Returns the table's path or `None`. |
 
 A `Session` records:
 
@@ -98,12 +99,29 @@ A `Session` records:
 |---|---|
 | `event(name, *, t=None, ms=None, x=None, y=None, z=None, player=None, team=None, session=None, **attrs)` | one row. `t` defaults to seconds since the session began, `ms` to now. A position counts only when `x`, `y` and `z` are all given and finite. `None` attributes are left out. |
 | `position(x, y, z, **kw)` | an event named `position` |
+| `raw(type, payload=None, *, text=None, used=False, t=None, ms=None, **fields)` | keep one thing the source sent, whole: a packet's or page's bytes (`payload`), a line or a JSON reply as it came (`text`), or a read's values by name (`fields`, each its own column). `type` is the source's own word for it (a packet id, a mapping's name, a journal event, an endpoint); `used` says it also became rows. Framed into `raw.bin` the moment it is called, written out as `heat.raw.parquet` (zstd) when the session closes or is recovered, and counted per `type` in `meta.json`'s `selfCheck.completeness` |
 | `stat(key, value, how="set")` | a statistic: `set` it, `add` to it, keep the `max` or the `min` |
 | `now()` | seconds since the session began |
 | `meta` | a dictionary written into `meta.json` |
 | `started`, `ended`, `folder`, `id`, `counts`, `positions` | when, where, and what was recorded so far |
 
-`event` and `stat` are thread-safe and can be called from a worker thread.
+`event`, `stat` and `raw` are thread-safe and can be called from a worker thread.
+
+**Every adapter keeps everything its source sends.** The rows are what the viewer draws; they are
+not the record. Every packet that reaches a port, every shared memory page read (the whole mapping,
+each time it changes), every line of a log or export script (the ones the adapter ignores too), every
+JSON reply or posted document goes to `session.raw(...)` as it arrives, whether or not it becomes a
+row - and nothing is thinned below the rate the adapter reads at. An item that arrives before a session
+is open opens one (a session with only raw items is kept), or is held until one opens; it is never
+dropped. Fields that are cheap to decode and certain in meaning also go onto the rows. This is 3DHeat's
+[converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): a live feed is gone
+the moment it is sent, so what an adapter does not keep is lost for good, and what it keeps whole can be
+decoded the day someone understands it. The size is the price; zstd and dictionary encoding keep it
+down, not leaving things out. Each adapter's test sends something it does not use and checks it comes
+back whole from `heat.raw.parquet`, and that `selfCheck.completeness.lost` is 0. `racing.Driving.raw`
+does the same for the racing adapters (and opens the session), and `racing.Pages` keeps shared memory
+pages whenever their bytes change, counting the rereads that found nothing new in `meta.json`'s
+`unchanged_reads`.
 
 Conventions that the rest of the system relies on:
 

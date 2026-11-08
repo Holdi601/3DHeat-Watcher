@@ -17,6 +17,13 @@ and the JSON behind it, while it runs - in every mode, multiplayer included:
     /hudmsg?lastEvt=N&lastDmg=M   {"events": [...], "damage": [...]} newer than the ids given, each
                       {"id", "msg", "sender", "enemy", "mode", "time"}; damage lines read like
                       "Name (Vehicle) shot down Name (Vehicle)"
+    /gamechat?lastId=N  the chat newer than the id given, [{"id", "msg", "sender", "enemy", "mode", "time"}]
+    /mission.json    the battle's objectives and their status
+    /map.img         the map's picture the page draws the objects on
+
+Every reply is kept whole in the session's raw sidecar under its endpoint
+(map_info, map_obj, state, indicators, hudmsg, gamechat, mission, map_img);
+between battles the replies go to a session of their own.
 
 A map position becomes metres with the extent: u = min_x + x * (max_x - min_x)
 east, v = max_y - y * (max_y - min_y) north (the picture's y runs down). Rows are
@@ -90,6 +97,22 @@ def side(color: str | None, own: str | None) -> str:
     if max(g, b) - r > 40:
         return "friendly"
     return "neutral"
+
+
+def endpoint(path: str) -> str:
+    """A web map path as the raw sidecar's `type`: "/map_obj.json" -> "map_obj", "/hudmsg?lastEvt=3" -> "hudmsg"."""
+    name = path.split("?", 1)[0].strip("/")
+    if name.endswith(".json"):
+        name = name[: -len(".json")]
+    return name.replace(".", "_") or "root"
+
+
+def _number(v: Any) -> float | None:
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        return None
+    return f if math.isfinite(f) else None
 
 
 def heading(dx: Any, dy: Any) -> float | None:
@@ -229,25 +252,68 @@ class WarThunder(Adapter):
     _sortie: int = 0
     _distance: float = 0.0
     _bad: int = 0
+    #: The last chat line id seen (/gamechat answers only newer ones).
+    _last_chat: int | None = None
+    #: The map picture is asked for once per battle.
+    _map_img: bool = False
+    #: This poll's replies, kept whole for the raw sidecar (see `_flush`).
+    _got: list[dict[str, Any]] = field(default_factory=list)
+    #: Between battles, the session the replies go to.
+    _idle: Session | None = None
 
     def missing(self) -> str | None:
         if (urlparse(self.url).hostname or "") not in ("127.0.0.1", "localhost"):
             return f"the web map is local: {self.url} is not 127.0.0.1"
         return None
 
-    def get(self, path: str) -> Any:
+    def fetch(self, path: str, timeout: float = 0.3) -> bytes | None:
+        """One reply's bytes from the game's web map, or None (not running, not there, too slow)."""
         if self.missing():
             return None
         try:
-            with urllib.request.urlopen(self.url.rstrip("/") + path, timeout=0.3) as r:
-                body = r.read()
+            with urllib.request.urlopen(self.url.rstrip("/") + path, timeout=timeout) as r:
+                return r.read()
         except (urllib.error.URLError, OSError, ValueError):
             return None
+
+    def get(self, path: str) -> Any:
+        """
+        One JSON reply, parsed. The reply is also kept whole for the raw sidecar (written at the end of
+        the poll, `_flush`), under its endpoint's name: map_info, map_obj, state, indicators, hudmsg, ...
+        """
+        body = self.fetch(path)
+        if body is None:
+            return None
+        text = body.decode("utf-8", errors="replace")
+        self._got.append({"type": endpoint(path), "text": text, "used": False, "ms": int(time.time() * 1000)})
         try:
-            return json.loads(body.decode("utf-8", errors="replace"))
+            return json.loads(text)
         except ValueError:
             self._bad += 1
             return None
+
+    def _use(self, kind: str) -> None:
+        """The latest reply of this endpoint went into rows or meta.json."""
+        for e in reversed(self._got):
+            if e["type"] == kind:
+                e["used"] = True
+                return
+
+    def _flush(self, ctx: Context) -> None:
+        """
+        This poll's replies into the raw sidecar: the battle's session, or between battles (hangar, menus,
+        loading) a session of their own, which holds nothing but them.
+        """
+        if not self._got:
+            return
+        s = self._session
+        if s is None:
+            if self._idle is None:
+                self._idle = ctx.open(self, meta={"between_battles": True})
+            s = self._idle
+        for e in self._got:
+            s.raw(e["type"], e.get("payload"), text=e.get("text"), used=e["used"], ms=e["ms"])
+        self._got.clear()
 
     # -- lifecycle ---------------------------------------------------------------
 
@@ -257,9 +323,11 @@ class WarThunder(Adapter):
         self._map = None
         self._next_map = self._next_hud = self._next_ind = 0.0
         self._no_battle_since = None
-        self._last_evt = self._last_dmg = None
+        self._last_evt = self._last_dmg = self._last_chat = None
         self._army = self._vehicle = None
         self._bad = 0
+        self._got = []
+        self._idle = None
         self._new_battle()
 
     def _new_battle(self) -> None:
@@ -269,9 +337,13 @@ class WarThunder(Adapter):
         self._alive = False
         self._sortie = 0
         self._distance = 0.0
+        self._map_img = False
 
     def stop(self, ctx: Context) -> None:
+        self._flush(ctx)
         self._end(ctx)
+        ctx.close(self._idle)
+        self._idle = None
 
     def _end(self, ctx: Context) -> None:
         s = self._session
@@ -286,6 +358,12 @@ class WarThunder(Adapter):
         self._new_battle()
 
     def poll(self, ctx: Context) -> None:
+        try:
+            self._poll(ctx)
+        finally:
+            self._flush(ctx)
+
+    def _poll(self, ctx: Context) -> None:
         now = time.monotonic()
         wall = time.time()
         if now >= self._next_map or self._map is None:
@@ -297,32 +375,59 @@ class WarThunder(Adapter):
                     self._end(ctx)
                     self._map = None
             else:
+                self._use("map_info")
                 self._no_battle_since = None
                 if self._map is not None and info != self._map:
                     self._end(ctx)
                 self._map = info
+            if self._session is not None:
+                # The battle's objectives and their state: kept raw, once per map look.
+                self.get("/mission.json")
         if self._map is not None and now >= self._next_ind:
             self._next_ind = now + self.indicators_every
             ind = self.get("/indicators")
             if isinstance(ind, dict) and ind.get("valid"):
+                self._use("indicators")
                 self._army = str(ind.get("army") or "") or None
                 self._vehicle = str(ind.get("type") or "") or None
         if self._map is not None:
             objs = self.get("/map_obj.json")
             if isinstance(objs, list):
+                self._use("map_obj")
                 if self._session is None:
                     m = self._map
+                    # The replies between battles end with it: the battle has a session of its own.
+                    ctx.close(self._idle)
+                    self._idle = None
                     self._session = ctx.open(self, meta={"map_id": m.id, "map_min": [m.min_x, m.min_y],
                                                          "map_max": [m.max_x, m.max_y]})
                     self._no_battle_since = None
+                if not self._map_img:
+                    # The map's picture, once a battle: what the minimap draws, for the viewer to lay under the rows.
+                    self._map_img = True
+                    img = self.fetch("/map.img", timeout=3.0)
+                    if img:
+                        self._got.append({"type": "map_img", "payload": img, "used": False,
+                                          "ms": int(time.time() * 1000)})
                 has_own = any(isinstance(o, dict) and o.get("icon") == "Player" for o in objs)
                 state = self.get("/state") if has_own else None
+                if isinstance(state, dict) and state.get("valid"):
+                    self._use("state")
                 self._objects(self._session, objs, state if isinstance(state, dict) else {}, now, wall)
         if now >= self._next_hud:
             self._next_hud = now + self.hud_every
             self._hud(self._session, wall)
+            self._chat()
         if self._session is not None and self._bad:
             self._session.stat("bad_packets", self._bad)
+
+    def _chat(self) -> None:
+        """The game's chat, newer lines than the last seen: kept raw (lines from before the watcher too)."""
+        doc = self.get(f"/gamechat?lastId={self._last_chat or 0}")
+        if isinstance(doc, list):
+            ids = [e.get("id") for e in doc if isinstance(e, dict) and isinstance(e.get("id"), int)]
+            if ids:
+                self._last_chat = max([self._last_chat or 0, *ids])
 
     # -- the map -------------------------------------------------------------------
 
@@ -358,18 +463,20 @@ class WarThunder(Adapter):
             if kind in PLACES or kind.startswith("respawn_base"):
                 key = f"{kind}|{icon}|{round(u)}|{round(v)}"
                 if key not in self._places:
-                    s.event("map_object", ms=ms, x=u, y=0.0, z=v, player=f"{kind}", team=team, kind=kind, icon=icon)
+                    s.event("map_object", ms=ms, x=u, y=0.0, z=v, player=f"{kind}", team=team, kind=kind, icon=icon,
+                            color=o.get("color") or None)
                 elif self._places[key] != team:
                     s.event("zone_changed", ms=ms, x=u, y=0.0, z=v, player=f"{kind}", team=team, kind=kind,
-                            icon=icon, was=self._places[key])
+                            icon=icon, was=self._places[key], color=o.get("color") or None)
                 self._places[key] = team
                 continue
             movers.append((f"{kind}|{icon}", u, v))
-            rows.append({"team": team, "kind": kind, "icon": icon, "heading": heading(dx, dy)})
+            rows.append({"team": team, "kind": kind, "icon": icon, "heading": heading(dx, dy),
+                         "color": o.get("color") or None})
         ids = self._tracker.assign(movers, now)
         for (key, u, v), tid, r in zip(movers, ids, rows):
             s.position(u, 0.0, v, ms=ms, player=f"{r['kind']}-{tid}", team=r["team"], icon=r["icon"],
-                       heading=r["heading"])
+                       heading=r["heading"], color=r["color"])
         if not player_seen and self._alive and now - self._own_seen > self.vehicle_grace:
             self._left(s, wall)
 
@@ -395,8 +502,13 @@ class WarThunder(Adapter):
             self._distance += math.dist(self._own, (u, y, v))
             s.stat("distance_m", round(self._distance, 1))
         self._own = (u, y, v)
+        valid = bool(state.get("valid"))
         s.position(u, y, v, ms=ms, player="me", team="friendly", session=f"sortie {self._sortie}", heading=hdg,
-                   tas_kmh=tas, vehicle=self._vehicle)
+                   tas_kmh=tas, vehicle=self._vehicle,
+                   # /state's other flight values the web map names with their units; the rest of /state is raw.
+                   ias_kmh=_number(state.get("IAS, km/h")) if valid else None,
+                   mach=_number(state.get("M")) if valid else None,
+                   vy_ms=_number(state.get("Vy, m/s")) if valid else None)
         if alt is not None:
             s.stat("max_altitude_m", round(alt, 1), "max")
         if isinstance(tas, (int, float)):
@@ -432,6 +544,7 @@ class WarThunder(Adapter):
                 # Lines from before the watcher started, or said in the hangar, belong to no battle here.
                 if not first and s is not None:
                     self._message(s, key, e, wall)
+                    self._use("hudmsg")
             setattr(self, attr, last)
 
     def is_me(self, name: str) -> bool:
@@ -488,7 +601,7 @@ ADAPTERS = [
         exes=("aces.exe",),
         interval=0.5,
         source="the game's local web map, http://127.0.0.1:8111 (/map_info.json, /map_obj.json, /state, "
-        "/indicators, /hudmsg)",
+        "/indicators, /hudmsg, /gamechat, /mission.json, /map.img)",
         records=(
             "own position (map east/north in metres; height from /state in aircraft, else 0) twice a second, "
             "heading, speed",
@@ -498,10 +611,52 @@ ADAPTERS = [
             "kill and damage feed lines (who, vehicle, verb); the player's kills and deaths when your name is "
             "set (`config --set player_names.warthunder-webmap=<name>`)",
             "spawns, distance, top altitude, top true airspeed, vehicle; kills and deaths with your name set",
+            "every reply of the web map kept whole in heat.raw.parquet - the full /state and /indicators, the "
+            "chat, the battle's objectives and the map's picture included; between battles in a session of its own",
         ),
         enable="",
         axes=Axes(up="y", flip_z=True, units="metres (map east/north; height only for the own aircraft)"),
         verified="tested against a fake local server serving answers in the format of the game's web map; "
         "War Thunder is installed here but was not run",
+        completeness={
+            "read": (
+                "/map_info.json: the map's extent and grid (metres, the map id) into meta.json; an invalid one ends "
+                "the battle",
+                "/map_obj.json (twice a second): the own vehicle, other aircraft and ground units (tracked ids, side "
+                "from the colour, icon, heading, colour) and airfields, zones and bases as rows",
+                "/state (twice a second, in an aircraft): height, TAS, IAS, Mach and Vy on the own rows",
+                "/indicators (every 2 s): army and vehicle type",
+                "/hudmsg (once a second): kill and damage feed lines as kills, deaths, hits and feed rows; other "
+                "HUD events as rows",
+            ),
+            "raw": (
+                "every reply whole, `text` the JSON as the game sent it, under its endpoint: `map_info`, "
+                "`map_obj`, `state`, `indicators`, `hudmsg`, `gamechat`, `mission`; `map_img` the map picture's "
+                "bytes as `payload`, once a battle",
+                "what only the raw sidecar holds: every /state field beyond the five read (AoA, AoS, Ny, Wx, "
+                "throttle, RPM, fuel, ... - one aircraft's set differs from another's), every /indicators field "
+                "(the cockpit instruments of aircraft, the speed, gear, crew and stabiliser of tanks), the map "
+                "objects' other keys (color[], blink, icon_bg, airfield ends), hudmsg's sender, enemy and mode, "
+                "the chat (/gamechat, once a second), the battle's objectives and their status (/mission.json, "
+                "every 10 s in a battle), lines said before the watcher started",
+                "between battles (hangar, loading) the replies go to a session of their own, marked "
+                "`between_battles` in meta.json, which has no rows",
+            ),
+            "missing": (
+                "names, ids and heights of other players' vehicles: the web map has none (ids are given here by "
+                "following objects from poll to poll); the kill feed names players without positions",
+                "everything outside the web map: the game's replays are read by the warthunder replay converter, "
+                "and the game's memory is never read (an online game)",
+                "/map_obj.json faster than twice a second: the polling rate is kept low, so the game's own web "
+                "server is not loaded",
+            ),
+            "size": (
+                "about 50-120 MB an hour of JSON before zstd in a battle (map_obj 5-15 KB twice a second, state "
+                "about 1.5 KB twice a second, indicators every 2 s, the chat and HUD lines small) plus the map "
+                "picture once a battle (under 2 MB); 1-2 MB an hour between battles (the map look twice a "
+                "second, HUD and chat once, each a short reply); zstd reduces repeated "
+                "JSON well over tenfold"
+            ),
+        },
     ),
 ]

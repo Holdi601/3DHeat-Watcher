@@ -29,6 +29,14 @@ Locations are Unreal units (centimetres), Z up; the field is about 8200 x 10240
 with the goals at Y = +-5120. Cars' positions are not part of the API: what has
 a place is the ball where it was hit, scored or hit the crossbar.
 
+Every message is also kept whole (3DHeat's converter rule, docs/converters.md
+in the viewer's repository): `heat.raw.parquet`, `type` the message's Event
+name, `text` the object as it came off the stream. An UpdateState byte for byte
+the one before (a paused match, a menu) is kept once and counted in meta.json's
+`unchanged_replies`. Messages between matches wait in a backlog for the next
+match's session; what is left when the game closes gets a session of its own.
+Characters between objects that are not JSON are kept as "junk".
+
 Sources: https://www.rocketleague.com/en/developer/stats-api (the official page);
 field casing and the TCP framing confirmed against the rlstatsapi client
 (https://docs.rs/crate/rlstatsapi, MIT; read for facts only).
@@ -51,7 +59,7 @@ from typing import Any
 
 from ..session import Axes, Session
 from .base import Adapter, Context
-from .gsi import backup_once, steam_game
+from .gsi import Backlog, Repeats, backup_once, steam_game
 
 log = logging.getLogger("heat3d_watch")
 
@@ -61,20 +69,20 @@ TEAMS = {0: "blue", 1: "orange"}
 #: A message is a few kilobytes; a buffer far beyond that is not a stream of them.
 MAX_BUFFER = 4 << 20
 STATS = (("Goals", "goals"), ("Assists", "assists"), ("Saves", "saves"), ("Shots", "shots"),
-         ("Demos", "demos"), ("Touches", "touches"), ("Score", "score"))
+         ("Demos", "demos"), ("Touches", "touches"), ("CarTouches", "car_touches"), ("Score", "score"))
 
 
 def snake(name: str) -> str:
     return re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()
 
 
-def split_objects(buf: str) -> tuple[list[str], str, int]:
+def split_objects(buf: str, skipped: list[str] | None = None) -> tuple[list[str], str, int]:
     """
     Complete top-level JSON objects at the start of `buf`, what is left, and junk skipped.
 
     The stream has no separators, so an object ends where its braces close -
     counted outside strings. A message cut in half stays in the rest until the
-    other half arrives.
+    other half arrives. The junk characters themselves go into `skipped`, when given.
     """
     out: list[str] = []
     junk = 0
@@ -84,6 +92,8 @@ def split_objects(buf: str) -> tuple[list[str], str, int]:
         if c != "{":
             if not c.isspace() and c != "\x00":
                 junk += 1
+                if skipped is not None:
+                    skipped.append(c)
             i += 1
             continue
         depth, j, in_str, esc = 0, i, False, False
@@ -183,6 +193,8 @@ class RocketLeagueStats(Adapter):
     _teams: dict[int, int] = field(default_factory=dict)
     _ended: bool = False
     _bad: int = 0
+    _backlog: Backlog = field(default_factory=Backlog)
+    _repeats: Repeats = field(default_factory=Repeats)
 
     # -- where the game is -----------------------------------------------------
 
@@ -256,6 +268,8 @@ class RocketLeagueStats(Adapter):
             except ValueError:
                 self.port = DEFAULT_PORT
         self._next_try = 0.0
+        self._backlog = Backlog()
+        self._repeats = Repeats()
         self._reset_match()
 
     def _connect(self) -> None:
@@ -299,11 +313,14 @@ class RocketLeagueStats(Adapter):
                 self._drop()
                 break
             self._buf += self._decoder.decode(chunk)
-        objects, self._buf, junk = split_objects(self._buf)
+        skipped: list[str] = []
+        objects, self._buf, junk = split_objects(self._buf, skipped)
         if len(self._buf) > MAX_BUFFER:
+            skipped.append(self._buf)
             self._buf, junk = "", junk + 1
         if junk:
             self._bad += 1
+            self._keep(ctx, "junk", "".join(skipped))
         for text in objects:
             try:
                 msg = json.loads(text)
@@ -315,17 +332,45 @@ class RocketLeagueStats(Adapter):
                     raise ValueError("not a Stats API message")
             except (ValueError, AttributeError):
                 self._bad += 1
+                self._keep(ctx, "unreadable", text)
                 continue
+            # MatchDestroyed closes the match it belongs to: kept there, before the session ends.
+            early = name == "MatchDestroyed" and self._session is not None
+            if early:
+                self._keep(ctx, name, text, used=True)
             try:
                 self.handle(ctx, name, data or {})
+                used = self._session is not None
             except (TypeError, ValueError, AttributeError, KeyError):
                 self._bad += 1
+                used = False
+            if not early:
+                self._keep(ctx, name, text, used=used)
         if self._session is not None and self._bad:
             self._session.stat("bad_packets", self._bad)
+
+    def _keep(self, ctx: Context, kind: str, text: str, *, used: bool = False) -> None:
+        """One message, whole: into the match's raw feed, else the backlog for the next match."""
+        if kind == "UpdateState" and self._repeats.same(kind, text):
+            return
+        s = self._session
+        if s is not None:
+            s.raw(kind, text=text, used=used)
+            return
+        self._backlog.add(time.time(), kind, text=text)
+        if self._backlog.full:
+            self._flush_backlog(ctx)
+
+    def _flush_backlog(self, ctx: Context) -> None:
+        counts = dict(self._repeats.counts)
+        self._backlog.flush(ctx, self, **({"unchanged_replies": counts} if counts else {}))
+        self._repeats.counts.clear()
 
     def stop(self, ctx: Context) -> None:
         self._drop()
         self._end(ctx)
+        # Messages after the last match, or a game closed before any: a session of their own.
+        self._flush_backlog(ctx)
 
     # -- matches -------------------------------------------------------------------
 
@@ -341,6 +386,8 @@ class RocketLeagueStats(Adapter):
         self._reset_match()
         self._guid = guid or None
         self._session = ctx.open(self, meta={"match_guid": guid} if guid else {})
+        # What the game sent since the last match (menus, the lobby) leads into this one.
+        self._backlog.into(self._session)
         return self._session
 
     def _end(self, ctx: Context) -> None:
@@ -352,6 +399,8 @@ class RocketLeagueStats(Adapter):
                     session=self._guid, **{stat: p.get(key) for key, stat in STATS})
         if self._bad:
             s.stat("bad_packets", self._bad)
+        self._repeats.into(s)
+        self._repeats.reset()
         ctx.close(s)
         self._session = None
 
@@ -489,5 +538,39 @@ ADAPTERS = [
         axes=Axes(up="z", units="Unreal units (centimetres)"),
         verified="tested on messages in the documented format sent by a fake local server; "
         "untested against the game (not installed here)",
+        completeness={
+            "read": (
+                "BallHit (place, who, team, speeds before and after), GoalScored (impact place, scorer, assister, "
+                "speed, goal time), CrossbarHit (place, last touch, speed, force), StatfeedEvent (event, type, "
+                "main and secondary target), MatchEnded (winner, result), every other event's name as a row",
+                "from UpdateState: the arena, the camera's target outside replays (who `me` is), team scores, "
+                "every player's goals, assists, saves, shots, demos, touches, car touches and score (the own "
+                "as statistics, everyone's as `player_result` at the match's end); overtime from "
+                "ClockUpdatedSeconds",
+            ),
+            "raw": (
+                "every message whole as it came off the stream (`text`), under its own Event name: "
+                "`UpdateState` (every player's PrimaryId and Shortcut, the clock, the ball's speed and team, "
+                "team names and colours, replay and winner flags, and car state where the game sends it), "
+                "`BallHit`, `GoalScored` (with the ball's last touch), `CrossbarHit`, `StatfeedEvent`, "
+                "`MatchCreated`, `MatchInitialized`, `CountdownBegin`, `RoundStarted`, `GoalReplayStart`, "
+                "`GoalReplayWillEnd`, `GoalReplayEnd`, `MatchPaused`, `MatchUnpaused`, `MatchEnded`, `PodiumStart`, "
+                "`ReplayCreated`, `MatchDestroyed`, `ClockUpdatedSeconds` and any event a later build adds",
+                "an UpdateState byte for byte the one before (paused, menus) is kept once and counted "
+                "(`unchanged_replies` in meta.json)",
+                "messages between matches: at their own time before the next match's start; after the last "
+                "match, in a session of their own (`raw_only` in meta.json)",
+                "`unreadable`: an object that is not a Stats API message; `junk`: characters between objects",
+            ),
+            "missing": (
+                "car positions and car state while playing: the game sends them only to spectators",
+                "UpdateState between two sends: the game sends PacketSendRate a second (`setup` sets 30, the "
+                "game allows up to 120); the events are sent on the tick they happen",
+                "the WebSocket copy on WebPort (49124): the same messages as the TCP port, not read twice",
+            ),
+            "size": "an UpdateState is 1-3 KB for six players, 30 a second: about 100-300 MB per hour in "
+            "`raw.bin` while a match runs, a tenth or less in the zstd `heat.raw.parquet` (estimated from the "
+            "documented format, not measured on the game)",
+        },
     ),
 ]

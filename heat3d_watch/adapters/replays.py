@@ -38,19 +38,33 @@ of its own (`heat3d_watch/decoders/dota_replay.py`): every hero's position,
 height, health, level, facing, mana, experience, attributes and items 7.5
 times a second while alive, kills and deaths where they happened, towers,
 barracks, Roshan and Tormentors where they fell, every ward where it was
-planted and where it ended, and the combat log's entries about the heroes
+planted and where it ended, the combat log's entries about the heroes
 (damage, heals, abilities, items, purchases, runes, gold, experience,
-modifiers) - into `dota/<match>.parquet`; every other unit (creeps, summons,
-illusions, couriers, buildings) once a second into `<match>.units.parquet`;
-the whole combat log into `<match>.combatlog.parquet`; and the match, the
-chat, the draft and everything else the parser extracts into
-`<match>.match.json`, in the session folder. Positions are Dota's world
+modifiers), and every player's map pings, map drawings and orders - into
+`dota/<match>.parquet`; every other unit (creeps, summons, illusions,
+couriers, buildings) once a second into `<match>.units.parquet`; the whole
+combat log into `<match>.combatlog.parquet`; and the match, the chat, the
+draft, everything else the parser extracts and the game's own end-of-match
+record into `<match>.match.json`, in the session folder. Everything else
+the replay holds is kept whole beside them (3DHeat's converter rule):
+every frame and network message in `<match>.packets.parquet`, every entity
+property change in `<match>.entities.parquet`, every string table entry in
+`<match>.strings.parquet`, counted in the match document's
+`selfCheck.completeness`. Positions are Dota's world
 units, the same the game-state integration reports. The signed-in player's
 scoreboard line becomes the session's statistics: kills, deaths, assists,
 last hits, denies, net worth, GPM, XPM, hero damage, wards, and whether the
 match was won. A new Dota patch can change the replay's entities before gem
 follows; a replay gem cannot read to the end is converted as far as it goes
 and marked `incomplete` in its summary.
+
+osu!
+----
+osu! (stable) saves every play to `osu!/Data/r/*.osr` and exported ones to
+`osu!/Replays/`. The watcher reads them itself, to the format the osu! wiki
+publishes: the cursor's path and keys every frame, the score line, the life
+bar, the seed and the score id; the file is kept whole beside, part by part,
+in the session's `heat.raw.parquet`.
 
 War Thunder
 -----------
@@ -477,6 +491,9 @@ class DotaReplays(ReplayAdapter):
 def record_dota_match(session, match: dict, me: set[str]) -> None:
     """A Dota 2 match summary into the session: the result, and the signed-in player's line."""
     session.meta["match"] = {k: match.get(k) for k in ("match", "winner", "score", "teams", "duration")}
+    if match.get("selfCheck"):
+        # The converter's self-check (docs/converters.md in the viewer's repository), its sidecars in `dota/`.
+        session.meta["selfCheck"] = match["selfCheck"]
     if isinstance(match.get("duration"), (int, float)):
         session.stat("duration", match["duration"])
     for team, score in (match.get("score") or {}).items():
@@ -534,12 +551,38 @@ def _osr_string(buf: bytes, at: int) -> tuple[str, int]:
     return buf[at : at + length].decode("utf-8", errors="replace"), at + length
 
 
+#: osu!'s game modes, by the replay's mode byte.
+OSU_MODES = {0: "osu", 1: "taiko", 2: "catch", 3: "mania"}
+#: Mod bits, as the osu! wiki lists them (https://osu.ppy.sh/wiki/en/Client/File_formats/osr_(file_format)).
+OSU_MODS = (
+    "NoFail", "Easy", "TouchDevice", "Hidden", "HardRock", "SuddenDeath", "DoubleTime", "Relax", "HalfTime",
+    "Nightcore", "Flashlight", "Autoplay", "SpunOut", "Autopilot", "Perfect", "Key4", "Key5", "Key6", "Key7", "Key8",
+    "FadeIn", "Random", "Cinema", "TargetPractice", "Key9", "KeyCoop", "Key1", "Key3", "Key2", "ScoreV2", "Mirror",
+)  # fmt: skip
+#: The first version whose online score id is 8 bytes long (4 before).
+_OSR_LONG_SCORE_ID = 20140721
+#: The frame that carries the replay's random seed instead of a cursor position.
+_OSR_SEED = "-12345"
+
+
+def osu_mods(mods: int) -> list[str]:
+    """A replay's mod bits by name; a bit the wiki does not list as `bit<n>`."""
+    return [OSU_MODS[i] if i < len(OSU_MODS) else f"bit{i}" for i in range(32) if mods >> i & 1]
+
+
 def parse_osr(buf: bytes) -> dict:
     """
     An osu! replay (.osr), per the file format on the osu! wiki
     (https://osu.ppy.sh/wiki/en/Client/File_formats/osr_(file_format)):
     the header, and the cursor frames - milliseconds since the previous frame,
     x 0..512, y 0..384 on the playfield, and the keys held.
+
+    Everything else the file holds is read too: the beatmap's and the
+    replay's MD5, the life bar graph (milliseconds, life 0..1), the random
+    seed (the frame `-12345`), the online score id, Target Practice's
+    accuracy. `sections` names the file's parts by their byte ranges (the
+    header, the compressed frames, the score id, the mod data, and whatever
+    follows that the format does not describe), so each can be kept whole.
     """
     import lzma
     import struct as st
@@ -549,32 +592,66 @@ def parse_osr(buf: bytes) -> dict:
     at += 5
     beatmap, at = _osr_string(buf, at)
     player, at = _osr_string(buf, at)
-    _replay_hash, at = _osr_string(buf, at)
+    replay_hash, at = _osr_string(buf, at)
     n300, n100, n50, geki, katu, miss = st.unpack_from("<6h", buf, at)
     at += 12
     score, combo, perfect, mods = st.unpack_from("<ihBi", buf, at)
     at += 11
-    _life, at = _osr_string(buf, at)
+    life_text, at = _osr_string(buf, at)
     ticks, length = st.unpack_from("<qi", buf, at)
     at += 12
+    sections = [("header", 0, at)]
     data = lzma.decompress(buf[at : at + length]) if length > 0 else b""
+    sections.append(("replay_data", at, at + max(0, length)))
+    at += max(0, length)
     frames = []
+    seed = None
+    unread = 0
     t = 0
     for part in data.decode("ascii", errors="replace").split(","):
         fields = part.split("|")
         if len(fields) != 4:
+            unread += bool(part.strip())
             continue
         w, x, y, z = fields
-        if w == "-12345":
-            continue  # the RNG seed, not a frame
-        t += int(w)
-        frames.append((t, float(x), float(y), int(float(z))))
+        if w == _OSR_SEED:
+            seed = int(float(z))  # the RNG seed, not a frame
+            continue
+        try:
+            t += int(w)
+            frames.append((t, float(x), float(y), int(float(z))))
+        except ValueError:
+            unread += 1
+    score_id = None
+    size = 8 if version >= _OSR_LONG_SCORE_ID else 4
+    if at + size <= len(buf):
+        (score_id,) = st.unpack_from("<q" if size == 8 else "<i", buf, at)
+        sections.append(("score_id", at, at + size))
+        at += size
+    mod_info = None
+    if mods & (1 << 23) and at + 8 <= len(buf):
+        # Target Practice: the total accuracy of all hits.
+        (mod_info,) = st.unpack_from("<d", buf, at)
+        sections.append(("mod_info", at, at + 8))
+        at += 8
+    if at < len(buf):
+        sections.append(("trailing", at, len(buf)))
+    life = []
+    for pair in life_text.split(","):
+        # `ms|life` in the files the game writes; the wiki writes the pair as `u/v`.
+        ms, _, value = pair.partition("|" if "|" in pair else "/")
+        try:
+            life.append((int(ms), float(value)))
+        except ValueError:
+            pass
     hits = n300 + n100 + n50 + miss
     return {
         "mode": mode,
         "version": version,
+        # The beatmap's MD5 (the format names the beatmap only by its hash).
         "beatmap": beatmap,
         "player": player,
+        "replay_md5": replay_hash,
         "count_300": n300,
         "count_100": n100,
         "count_50": n50,
@@ -585,11 +662,24 @@ def parse_osr(buf: bytes) -> dict:
         "max_combo": combo,
         "perfect": perfect,
         "mods": mods,
+        "life_text": life_text,
+        "life": life,
         "played_at": ticks / 1e7 - _TICKS_TO_UNIX if ticks > 0 else None,
+        "ticks": ticks,
         # Standard mode's accuracy; the other modes weigh their judgements differently.
         "accuracy": (300 * n300 + 100 * n100 + 50 * n50) / (300 * hits) if mode == 0 and hits else None,
         "frames": frames,
+        "seed": seed,
+        "frames_unread": unread,
+        "score_id": score_id,
+        "mod_info": mod_info,
+        "sections": sections,
     }
+
+
+#: What of each part of an .osr goes into the rows and meta.json (the parts are kept whole besides).
+_OSR_HEADER = ("mode", "version", "beatmap", "player", "replay_md5", "count_300", "count_100", "count_50", "count_geki",
+               "count_katu", "misses", "score", "max_combo", "perfect", "mods", "life_text", "ticks")
 
 
 @dataclass
@@ -599,7 +689,8 @@ class OsuReplays(ReplayAdapter):
         return [base / "Data" / "r", base / "Replays"] + super().folders(ctx)
 
     def convert(self, path: Path, ctx: Context) -> None:
-        r = parse_osr(path.read_bytes())
+        buf = path.read_bytes()
+        r = parse_osr(buf)
         session = ctx.open(self, when=r["played_at"] or path.stat().st_mtime, meta={"replay": str(path)})
         try:
             play = r["beatmap"] or path.stem
@@ -608,11 +699,38 @@ class OsuReplays(ReplayAdapter):
             for i, (t, x, y, keys) in enumerate(frames):
                 event = "session_start" if i == 0 else "finish" if i == len(frames) - 1 else "position"
                 session.event(event, t=t / 1000.0, x=x, y=0.0, z=y, player=r["player"] or "me", session=play, keys=keys)
-            for key in ("score", "max_combo", "count_300", "count_100", "count_50", "misses", "mode", "mods"):
+            # The life bar, as the replay keeps it: a point every few seconds.
+            for ms, value in r["life"]:
+                session.event("life", t=ms / 1000.0, player=r["player"] or "me", session=play, life=value)
+            for key in ("score", "max_combo", "count_300", "count_100", "count_50", "count_geki", "count_katu", "misses",
+                        "mode", "mods"):
                 session.stat(key, r[key])
             if r["accuracy"] is not None:
                 session.stat("accuracy", round(r["accuracy"], 5))
             session.stat("full_combo", 1 if r["perfect"] else 0)
+            header = {k: r[k] for k in _OSR_HEADER}
+            session.meta["osu"] = {
+                **{k: v for k, v in header.items() if k != "life_text"},
+                "modeName": OSU_MODES.get(r["mode"], str(r["mode"])),
+                "modNames": osu_mods(r["mods"]),
+                "lifePoints": len(r["life"]),
+                "frames": len(frames),
+                "framesUnread": r["frames_unread"],
+                "seed": r["seed"],
+                "scoreId": r["score_id"],
+                "targetPracticeAccuracy": r["mod_info"],
+            }
+            # The file whole, part by part (docs/converters.md in the viewer's repository): what each part holds is
+            # also in the rows and meta.json above - all but whatever follows the parts the format describes.
+            read = {
+                "header": header,
+                "replay_data": {"frames": len(frames), "seed": r["seed"], "unread": r["frames_unread"]},
+                "score_id": {"score_id": r["score_id"]},
+                "mod_info": {"accuracy": r["mod_info"]},
+            }
+            for kind, start, end in r["sections"]:
+                text = json.dumps(read[kind], ensure_ascii=False) if kind in read else None
+                session.raw(kind, buf[start:end], text=text, used=kind in read, t=0.0, offset=start)
         finally:
             ctx.close(session)
 
@@ -642,13 +760,72 @@ ADAPTERS = [
         records=(
             "every hero's position, height, health and level, 7.5 times a second while alive",
             "kills and deaths where they happened; towers, barracks, Roshan and Tormentors where they fell; wards where they were planted",
+            "every player's map pings, map drawings and orders (move, attack, cast, buy, ...) where they pointed",
             "the score and every player's line; the signed-in player's as statistics",
+            "everything else the replay holds, kept whole beside the table: every frame and network message, every entity property change, every string table entry",
         ),
         enable="download a match's replay in Dota 2, or fetch a public one: `python -m heat3d_watch dota-replay <match id>`; needs `pip install gem-dota`",
         # As the converter's table says in its footer, and the Dota game-state adapter: Source 2 world units.
         axes=Axes(up="z", flip_y=True, units="Dota world units (Hammer units; the map is about 16400 across)"),
-        verified="checked on a public match's replay (patch 7.40, November 2026): kills and deaths per hero match the scoreboard; the table and statistics by tests on synthetic data",
+        verified="checked on a public match's replay (patch 7.40, November 2026): kills and deaths per hero match the scoreboard; "
+        "every frame and message in the packets sidecar is byte for byte the replay's and every one of the 553,048 re-serialises "
+        "exactly from its protobuf; the last kills, deaths, assists, level, last hits and denies in the entities sidecar match the "
+        "game's own end-of-match record (DOTA_UM_MatchDetails) for all ten players; after 90% of 59,898 move orders the hero is "
+        "closer to the point a second later; the table and statistics by tests on synthetic data",
         multiplayer=True,
+        completeness={
+            # The page's opening paragraph for this source, in place of the live adapters' (heat.raw.parquet).
+            "intro": "The converter follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/"
+            "converters.md): what the replay holds is read or kept, never dropped. Besides the table, everything else "
+            "the replay holds is kept whole in sidecars beside it in the session's `dota/` folder - "
+            "`<match>.packets.parquet`, `<match>.entities.parquet`, `<match>.strings.parquet` (columns `time`, `tick`, "
+            "`type`, `name`, `entity`, `decoded`, `payload`, as each applies) - and the match document's "
+            "(`<match>.match.json`) `selfCheck.completeness` counts each `type` - `lost` is 0.",
+            "read": (
+                "the table (`dota/<match>.parquet`): every hero's position, height, health, level, facing, mana, experience, "
+                "attributes, armour, speed, damage, items and the player's cursor 7.5 times a second; kills, deaths, objectives, "
+                "wards, the combat log's entries about heroes; map pings (`ping`, DOTA_UM_LocationPing), map drawings "
+                "(`map_line`, DOTA_UM_MapLine) and every unit order (`order`, DOTA_UM_SpectatorPlayerUnitOrders: `other` the "
+                "order type, `value` the ability or item id, `text` the target's class; at the ordered point, else at the hero)",
+                "`<match>.units.parquet`: every other unit once a second; `<match>.combatlog.parquet`: the whole combat log as "
+                "gem reads it, every field",
+                "the match document: everything gem extracts, and whole the replay's own records - `fileHeader` "
+                "(DEM_FileHeader), `fileInfo` (DEM_FileInfo: playback length, every player's name, hero, Steam id, team), "
+                "`matchDetails` (DOTA_UM_MatchDetails: the game coordinator's end-of-match scoreboard, every player's numbers, "
+                "items, damage by type, picks and bans) and `matchMetadata` (DOTA_UM_MatchMetadata)",
+                "`selfCheck.crossCheck`: kills, deaths, assists, level, last hits and denies as read from the stream against "
+                "`matchDetails`, per player",
+            ),
+            "raw": (
+                "`<match>.packets.parquet`: every frame that is not a packet (`type` `frame <n>`) and every network message "
+                "(`message <n>`, `name` Valve's), whole in `payload`, in file order (`seq`, `frame`), with `decoded` the "
+                "protobuf as JSON (a bytes field given as its length) - on the sample 553,048 rows of 52 message types, every "
+                "one decoded: svc_PacketEntities (the entity stream), DOTA_UM_SpectatorPlayerUnitOrders, UM_ParticleManager, "
+                "DOTA_UM_CombatLogDataHLTV, GE_SosStartSoundEvent, DOTA_UM_TE_* (projectiles, animations, blood), "
+                "DOTA_UM_OverheadEvent, DOTA_UM_UnitEvent, svc_UpdateStringTable, net_Tick, ...; the send tables, class list "
+                "and server info a later entity decoder needs are among them",
+                "`<match>.entities.parquet`: every entity's every property each time it changed (`type` the property, `name` "
+                "the class, `entity` its index; `value`, `vector` or `decoded`), its whole state when created, and each "
+                "creation, entering, leaving and deletion - on the sample 10.2 million rows, 379 classes, 12,598 property names",
+                "`<match>.strings.parquet`: every string table entry from every update and every full snapshot, the value "
+                "whole; `userinfo`, `ActiveModifiers` and `EconItems` decoded from their protobufs - on the sample 243,842 rows "
+                "of 20 tables",
+                "`selfCheck.completeness` in the match document counts frames and messages by Valve's name, combat log "
+                "entries (`combatlog <type>`), game events (`gameevent <name>`), string table entries (`stringtable <name>`) "
+                "and entity updates (`entity <class>`): on the sample 5,487,369 items of 478 types, 57 kept raw only (53 full "
+                "entity snapshots gem skips because it rebuilds from the deltas, 4 entries of two tables with values nothing "
+                "reads), lost 0",
+            ),
+            "missing": (
+                "voice: the replay has the voice setup but no voice data",
+                "names behind hashes and ids: sounds and particles are named by hashes of the game's files, abilities by "
+                "ids; the replay does not carry the names (items are named through gem's catalogue where it has them)",
+                "anything only the players' own clients knew (their camera, their screen) beyond what the server broadcast; "
+                "the cursor and every order are in",
+            ),
+            "size": "on a 70.3 MB replay of a 27-minute match: packets 58.4 MB, entities 40.3 MB, strings 5.3 MB, the table "
+            "5.8 MB, units 2.9 MB, combat log 0.8 MB, match document 8.1 MB; about a minute and a half in one process (gem's parse alone about 40 s)",
+        },
     ),
     OsuReplays(
         id="osu-replays",
@@ -657,11 +834,35 @@ ADAPTERS = [
         source="replays osu! (stable) saves: %LOCALAPPDATA%/osu!/Data/r/*.osr (every play) and osu!/Replays/*.osr (exported)",
         records=(
             "the cursor's path over the playfield (x 0..512, y 0..384) and the keys held, every frame",
-            "score, combo, 300s/100s/50s/misses, accuracy, mods, full combo",
+            "score, combo, 300s/100s/50s/gekis/katus/misses, accuracy, mods, full combo",
+            "the life bar over the play, the beatmap's and the replay's hashes, the random seed, the online score id",
         ),
         axes=Axes(up="y", flip_z=True, units="osu! pixels (playfield 512 x 384)"),
         verified="tested on replays built to the published .osr format; osu!lazer keeps replays in its own store and is not read",
         multiplayer=True,
+        completeness={
+            "read": (
+                "every frame: a row at its time (milliseconds summed), x and y on the playfield, `keys` the key bits "
+                "(mouse 1 and 2, keys 1 and 2, smoke); in mania x holds the keys held instead of a place",
+                "the header, every field: mode, version, the beatmap's MD5 (the file names the beatmap only by it), the "
+                "player, the replay's MD5, 300s, 100s, 50s, gekis, katus, misses, score, max combo, full combo, mods (by "
+                "name in meta.json `osu.modNames`), the play's time - as statistics and in meta.json `osu`",
+                "the life bar graph: a `life` row per point (time, life 0..1)",
+                "the frame `-12345`: the random seed (`osu.seed`); the online score id (`osu.scoreId`); with Target "
+                "Practice, its accuracy (`osu.targetPracticeAccuracy`)",
+            ),
+            "raw": (
+                "the file whole, part by part, in heat.raw.parquet (`offset` where each starts, so the parts are the "
+                "file): `header`, `replay_data` (the LZMA-compressed frames as stored), `score_id`, `mod_info`, and "
+                "`trailing` for whatever follows the parts the format describes (osu!lazer's exports add data there) - "
+                "kept, not read",
+            ),
+            "missing": (
+                "the beatmap itself (hit objects, timing): not in a replay; it is named only by its MD5",
+                "osu!lazer's own replays: kept in its database, not as files",
+            ),
+            "size": "the raw sidecar is about the replay's size (tens to hundreds of kilobytes)",
+        },
     ),
 ]
 

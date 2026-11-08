@@ -342,8 +342,10 @@ def _summary():
 def test_the_signed_in_players_line_becomes_the_statistics(tmp_path):
     stats, meta = {}, {}
     session = SimpleNamespace(meta=meta, stat=lambda k, v: stats.__setitem__(k, v))
-    record_dota_match(session, _summary(), {"76561190000000001"})
+    check = {"completeness": {"lost": 0, "types": {}}}
+    record_dota_match(session, {**_summary(), "selfCheck": check}, {"76561190000000001"})
     assert stats["kills"] == 1 and stats["deaths"] == 7 and stats["net_worth"] == 11781 and stats["gpm"] == 430
+    assert meta["selfCheck"] == check
     assert stats["hero"] == "Axe" and stats["won"] == 0 and stats["score.Dire"] == 28 and stats["duration"] == 1643
     assert meta["player"] == "Ann" and meta["match"]["winner"] == "Dire"
 
@@ -402,3 +404,231 @@ def test_dota_replay_command_downloads_where_asked(tmp_path, monkeypatch, capsys
     assert cli.main(["dota-replay", "42", "43", "-o", str(tmp_path)]) == 0
     assert got == [(42, tmp_path), (43, tmp_path)]
     assert "43.dem" in capsys.readouterr().out
+
+
+# ------------------------------------------------------------------ keeping everything (dota_keep)
+
+
+class _Bits:
+    """Writes a packet's messages as the demo has them: type (ubitvar), size (varint), bytes - least significant bit first."""
+
+    def __init__(self):
+        self.value, self.n = 0, 0
+
+    def write(self, v, bits):
+        self.value |= v << self.n
+        self.n += bits
+
+    def ubitvar(self, v):
+        if v < 16:
+            self.write(v, 6)
+        elif v < 256:
+            self.write((v & 15) | 0x10, 6)
+            self.write(v >> 4, 4)
+        elif v < 4096:
+            self.write((v & 15) | 0x20, 6)
+            self.write(v >> 4, 8)
+        else:
+            self.write((v & 15) | 0x30, 6)
+            self.write(v >> 4, 28)
+
+    def message(self, number, payload):
+        self.ubitvar(number)
+        size = len(payload)
+        while True:
+            b = size & 0x7F
+            size >>= 7
+            self.write(b | (0x80 if size else 0), 8)
+            if not size:
+                break
+        for b in payload:
+            self.write(b, 8)
+
+    def bytes(self):
+        return self.value.to_bytes((self.n + 7) // 8, "little")
+
+
+class _KeptEntity:
+    """An entity as gem hands it to `on_entity`: class with serializer, index, serial, its field state."""
+
+    def __init__(self, index, cls, values, updated=()):
+        self.index, self.serial, self.cls = index, 3, cls
+        self.values = values
+        self._field_state = SimpleNamespace(_updated_paths=list(updated), _get_compact=lambda p: values[p])
+
+    def to_map(self):
+        return {".".join(str(x) for x in p): v for p, v in self.values.items()}
+
+
+def _keeper_parser(entities):
+    hooks = []
+    schema = SimpleNamespace(name="dota_chase_hero", fields={"target1": (0, 4)})
+    return SimpleNamespace(
+        tick=0,
+        on_entity=hooks.append,
+        hooks=hooks,
+        game_event_manager=SimpleNamespace(get_schema=lambda i: schema if i == 7 else None),
+        entity_manager=SimpleNamespace(find=lambda i: entities.get(i)),
+    )
+
+
+def test_the_keeper_keeps_every_frame_message_entry_and_entity_and_counts_them(tmp_path):
+    pytest.importorskip("gem")
+    from gem.proto import demo_pb2 as demo
+    from gem.proto import dota_shared_enums_pb2 as shared
+    from gem.proto import dota_usermessages_pb2 as um
+    from gem.proto import gameevents_pb2 as ge
+    from gem.proto import netmessages_pb2 as net
+    from gem.proto import networkbasetypes_pb2 as nb
+    from gem.schema.sendtable import FIELD_MODEL_FIXED_ARRAY, FIELD_MODEL_SIMPLE
+
+    from heat3d_watch.decoders import dota_keep as k
+
+    field = lambda name, model=FIELD_MODEL_SIMPLE: SimpleNamespace(var_name=name, model=model, serializer=None)  # noqa: E731
+    hero_cls = SimpleNamespace(name="CDOTA_Unit_Hero_Axe",
+                               serializer=SimpleNamespace(fields=[field("m_iHealth"), field("m_hItems", FIELD_MODEL_FIXED_ARRAY),
+                                                                  field("m_angRotation"), field("m_iszName")]))
+    controller = _KeptEntity(3, SimpleNamespace(name="CDOTAPlayerController", serializer=None), {})
+    controller.get = lambda name: 4 if name == "m_nPlayerID" else None
+    parser = _keeper_parser({3: controller})
+    keeper = k.Keeper(parser, tmp_path, "42")
+    assert parser.hooks == [keeper._entity]
+
+    # The file's own frames: its header (into the document), an unknown command (whole, raw).
+    keeper.outer(1, demo.CDemoFileHeader(demo_file_stamp="PBDEMS2\0", server_name="s").SerializeToString())
+    keeper.outer(99, b"\x01\x02")
+    # A packet with a tick, a ping, an order, a combat log entry, two entity snapshots, a game event, an unknown
+    # message, and a ping that does not read.
+    parser.tick = 900
+    order = um.CDOTAUserMsg_SpectatorPlayerUnitOrders(entindex=3, order_type=1, units=[400], sequence_number=1)
+    order.position.x, order.position.y = 1000.0, -2000.0
+    ping = um.CDOTAUserMsg_LocationPing(player_id=6)
+    ping.location_ping.x, ping.location_ping.y = 1434, -3421
+    event = ge.CMsgSource1LegacyGameEvent(eventid=7)
+    event.keys.add(type=4, val_short=5)
+    messages = [
+        (4, nb.CNETMsg_Tick(tick=900).SerializeToString()),
+        (477, ping.SerializeToString()),
+        (547, order.SerializeToString()),
+        (554, shared.CMsgDOTACombatLogEntry(type=0, value=120).SerializeToString()),
+        (55, net.CSVCMsg_PacketEntities(legacy_is_delta=False, updated_entries=1, entity_data=b"\x00").SerializeToString()),
+        (55, net.CSVCMsg_PacketEntities(legacy_is_delta=False, updated_entries=1, entity_data=b"\x00").SerializeToString()),
+        (207, event.SerializeToString()),
+        (9999, b"\xde\xad"),
+        (477, b"\xff\xff\xff"),
+    ]
+    bits = _Bits()
+    for number, payload in messages:
+        bits.message(number, payload)
+    packet = demo.CDemoPacket(data=bits.bytes())
+    keeper.outer(7, packet.SerializeToString())
+    keeper.inner(packet.data)
+    # A string table update as gem applies it, and a full snapshot of the tables.
+    keeper.table_message()
+    table = SimpleNamespace(name="userinfo", flags=0, items={2: ("76561190000000001", b"")})
+    keeper.strings(table, [SimpleNamespace(index=2, key="", value=nb.CMsgPlayerInfo(name="Ann").SerializeToString())])
+    snap = demo.CDemoStringTables()
+    t = snap.tables.add(table_name="EntityNames", table_flags=0)
+    t.items.add(str="dota_goodguys_tower1_top")
+    t.items.add(str="unknown_value", data=b"\x07")
+    keeper.outer(13, demo.CDemoFullPacket(string_table=snap).SerializeToString())
+    # An entity created, changed twice, then gone.
+    hero = _KeptEntity(300, hero_cls, {(0,): 600, (1, 2): 0xFFFFFF, (2,): (0.0, 90.0, 0.0), (3,): "axe"})
+    keeper._entity(hero, 0x01 | 0x08)
+    hero.values[(0,)] = 550
+    hero._field_state._updated_paths = [(0,), (1, 2)]
+    keeper._entity(hero, 0x02)
+    keeper._entity(hero, 0x04 | 0x10)
+    keeper.outer(2, demo.CDemoFileInfo(playback_ticks=900).SerializeToString())
+
+    c = keeper.finish(lambda tick: tick / 30 - 10, "42")
+    assert c["lost"] == 0 and c["rule"] == k.RULE
+    assert c["sidecars"] == ["42.packets.parquet", "42.entities.parquet", "42.strings.parquet"]
+    types = c["types"]
+    assert all(v["lost"] == 0 and v["seen"] == v["decoded"] + v["partial"] + v["raw"] for v in types.values())
+    assert types["DEM_FileHeader"]["decoded"] == 1 and types["DEM_FileInfo"]["decoded"] == 1
+    assert types["frame 99"]["raw"] == 1 and types["message 9999"]["raw"] == 1
+    assert types["DOTA_UM_LocationPing"] == {"seen": 2, "decoded": 0, "partial": 1, "raw": 1, "lost": 0}
+    assert c["undecoded"] == {"DOTA_UM_LocationPing": 1}
+    # The first full entity snapshot is read, a later one only kept.
+    assert types["svc_PacketEntities"]["partial"] == 1 and types["svc_PacketEntities"]["raw"] == 1
+    assert types["combatlog DAMAGE"]["partial"] == 1 and types["gameevent dota_chase_hero"]["partial"] == 1
+    assert types["stringtable userinfo"]["partial"] == 1
+    assert types["stringtable EntityNames"]["partial"] == 2
+    assert types["entity CDOTA_Unit_Hero_Axe"] == {"seen": 3, "decoded": 0, "partial": 3, "raw": 0, "lost": 0}
+    assert keeper.document["DEM_FileHeader"]["server_name"] == "s"
+
+    # The table's rows: the ping where it was made, the order at its point, by the controller's player.
+    assert keeper.events == [(900, "ping", 6, 1434.0, -3421.0, "", None, ""),
+                             (900, "order", 4, 1000.0, -2000.0, "move_to_position", None, "")]
+
+    packets = pq.read_table(tmp_path / "42.packets.parquet")
+    assert packets.column_names[:2] == ["time", "tick"]
+    rows = packets.to_pylist()
+    assert [r["seq"] for r in rows] == sorted(r["seq"] for r in rows)
+    # Every message whole, unchanged, in its packet's order.
+    assert [(r["id"], r["payload"]) for r in rows if r["type"].startswith("message")] == messages
+    by = {r["name"]: r for r in rows}
+    assert json.loads(by["DOTA_UM_SpectatorPlayerUnitOrders"]["decoded"])["position"] == {"x": 1000.0, "y": -2000.0}
+    assert json.loads(by["GE_Source1LegacyGameEvent"]["decoded"])["values"] == {"target1": 5}
+    assert json.loads(by["svc_PacketEntities"]["decoded"])["entity_data"] == {"bytes": 1}
+    assert by["net_Tick"]["time"] == pytest.approx(20.0)
+
+    strings = pq.read_table(tmp_path / "42.strings.parquet").to_pylist()
+    user = next(r for r in strings if r["type"] == "userinfo")
+    assert user["name"] == "76561190000000001" and json.loads(user["decoded"]) == {"name": "Ann"}
+    assert [r["name"] for r in strings if r["type"] == "EntityNames"] == [None, "dota_goodguys_tower1_top", "unknown_value"]
+
+    entities = pq.read_table(tmp_path / "42.entities.parquet").to_pylist()
+    assert [r["type"] for r in entities] == ["created|entered", "0", "1.2", "2", "3", "m_iHealth", "m_hItems.0002",
+                                             "deleted|left"]
+    changed = entities[5]
+    assert (changed["entity"], changed["name"], changed["value"]) == (300, "CDOTA_Unit_Hero_Axe", 550.0)
+    assert entities[3]["vector"] == [0.0, 90.0, 0.0] and json.loads(entities[4]["decoded"]) == "axe"
+    assert json.loads(entities[0]["decoded"])["handle"] == (3 << 14) | 300
+    assert not list(tmp_path.glob("*.part"))
+
+
+def test_the_match_document_carries_the_self_check_and_the_games_own_record(tmp_path):
+    r = _replay()
+    r.players[0].update(level=12, lastHits=150)
+    r.combat_log = {"tick": [10], "log_type": ["DAMAGE"]}
+    r.completeness = {"rule": "x", "sidecars": ["42.packets.parquet"], "lost": 0,
+                      "types": {"net_Tick": {"seen": 3, "decoded": 0, "partial": 3, "raw": 0, "lost": 0}}}
+    r.document = {"matchDetails": {"players": [{"account_id": 76561190000000001 - d.STEAM64, "kills": 1, "deaths": 0,
+                                                "level": 13, "last_hits": 150}]}}
+    r.cross_check = d.cross_check(r.players, r.document["matchDetails"])
+    assert r.cross_check["players"] == 1 and r.cross_check["agree"] == {"kills": 1, "deaths": 1, "lastHits": 1}
+    assert r.cross_check["differ"] == [{"slot": 0, "field": "level", "stream": 12, "record": 13}]
+    _, doc = d.write(r, tmp_path)
+    summary = json.loads(doc.read_text(encoding="utf-8"))
+    c = summary["selfCheck"]["completeness"]
+    assert c["lost"] == 0 and c["sidecars"] == ["42.packets.parquet", "42.combatlog.parquet"]
+    assert summary["matchDetails"]["players"][0]["level"] == 13 and summary["version"] == 3
+    assert summary["selfCheck"]["crossCheck"]["against"] == "DOTA_UM_MatchDetails"
+
+
+def test_property_names_follow_gems_field_paths():
+    pytest.importorskip("gem")
+    from gem.schema.sendtable import (
+        FIELD_MODEL_FIXED_ARRAY,
+        FIELD_MODEL_FIXED_TABLE,
+        FIELD_MODEL_SIMPLE,
+        FIELD_MODEL_VARIABLE_TABLE,
+    )
+
+    from heat3d_watch.decoders.dota_keep import path_name
+
+    def f(name, model=FIELD_MODEL_SIMPLE, serializer=None):
+        return SimpleNamespace(var_name=name, model=model, serializer=serializer)
+
+    row = SimpleNamespace(fields=[f("m_iKills"), f("m_iDeaths")])
+    body = SimpleNamespace(fields=[f("m_cellX"), f("m_vecX")])
+    s = SimpleNamespace(fields=[f("m_iHealth"), f("m_hItems", FIELD_MODEL_FIXED_ARRAY),
+                                f("CBodyComponent", FIELD_MODEL_FIXED_TABLE, body),
+                                f("m_vecPlayerTeamData", FIELD_MODEL_VARIABLE_TABLE, row)])
+    assert path_name(s, (0,)) == "m_iHealth"
+    assert path_name(s, (1, 3)) == "m_hItems.0003"
+    assert path_name(s, (2, 1)) == "CBodyComponent.m_vecX"
+    assert path_name(s, (3,)) == "m_vecPlayerTeamData"
+    assert path_name(s, (3, 4, 1)) == "m_vecPlayerTeamData.0004.m_iDeaths"

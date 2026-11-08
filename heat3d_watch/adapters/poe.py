@@ -20,6 +20,12 @@ they are installed (it grows across launches). Lines look like
 
 The install folder is the running executable's; without one the Steam
 libraries and the standalone client's default folder are searched.
+
+Every line of this sitting is kept whole in the session's raw sidecar (3DHeat's
+converter rule), whether or not it means anything here: `type` is the level and
+logger in its brackets (`INFO Client`, `DEBUG Client`, `WARN Client`, ...), a
+stamped line without brackets is `untagged`, a line without a timestamp
+`untimed`.
 """
 
 from __future__ import annotations
@@ -36,12 +42,14 @@ from .base import Adapter, Context
 
 _LINE = re.compile(r"^(\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}) \d+ \S+ \[(\w+) [^\]]*\] ?(.*)$")
 _ENTERED = re.compile(r"^: You have entered (.+?)\.?$")
-_GENERATING = re.compile(r'^Generating level (\d+) area "([^"]+)"')
+_GENERATING = re.compile(r'^Generating level (\d+) area "([^"]+)"(?: with seed (\d+))?')
 _LEVEL = re.compile(r"^: (\S+) \(([^)]+)\) is now level (\d+)")
 _SLAIN = re.compile(r"^: (\S+) has been slain\.?$")
 _JOINED = re.compile(r"^: (\S+) has (joined|left) the area\.?$")
 _WHISPER = re.compile(r"^@(From|To) (?:<[^>]*> )?([^:]+): (.*)$")
 _TRADE = re.compile(r"^: Trade (accepted|cancelled)\.?$")
+#: A line's kind: the level and the logger in the brackets after the stamp, the hash and the counter.
+_KIND = re.compile(r"^\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} \d+ \S+ \[(\w+)(?: ([A-Za-z_]\w*))?[^\]]*\]")
 
 #: Words that make a whisper a trade request, as the trade site writes them.
 _BUY = re.compile(r"\b(would like to buy|wtb|i'd like to buy)\b", re.IGNORECASE)
@@ -54,6 +62,14 @@ def line_time(line: str) -> float | None:
         return time.mktime(time.strptime(line[:19], "%Y/%m/%d %H:%M:%S"))
     except ValueError:
         return None
+
+
+def line_kind(line: str) -> str:
+    """The kind of a Client.txt line, in the log's own words (see the module's notes)."""
+    m = _KIND.match(line)
+    if m:
+        return f"{m.group(1)} {m.group(2)}" if m.group(2) else m.group(1)
+    return "untimed" if line_time(line) is None else "untagged"
 
 
 def candidates(exe: Path | None) -> list[Path]:
@@ -74,16 +90,31 @@ def game_name(path: Path) -> str:
 
 
 class ClientLog:
-    """Client.txt lines into a session: zones, levels, deaths, whispers and trades."""
+    """Client.txt lines into a session: zones, levels, deaths, whispers and trades; every line kept whole."""
 
     def __init__(self, session_for):
         self.session_for = session_for
         self.me: str | None = None
         self.area_level: int | None = None
         self.area: str | None = None
+        self.seed: int | None = None
         self.zones: set[str] = set()
+        self.used = False
 
     def line(self, text: str) -> None:
+        if not text.strip():
+            return
+        self.used = False
+        try:
+            self._line(text)
+        finally:
+            # The line whole, whatever became of it (docs/converters.md, "Live sources").
+            ts = line_time(text)
+            s = self.session_for(ts)
+            when = ts or time.time()
+            s.raw(line_kind(text), text=text, used=self.used, t=when - s.started, ms=when * 1000)
+
+    def _line(self, text: str) -> None:
         m = _LINE.match(text)
         if not m:
             return
@@ -92,6 +123,7 @@ class ClientLog:
         msg = msg.strip()
         if (g := _GENERATING.match(msg)) is not None:
             self.area_level, self.area = int(g.group(1)), g.group(2)
+            self.seed = int(g.group(3)) if g.group(3) else None
             return
         s: Session | None = None
 
@@ -100,15 +132,16 @@ class ClientLog:
             s = self.session_for(ts)
             t = ts - s.started if ts else None
             s.event(name, t=t, ms=ts * 1000 if ts else None, **kw)
+            self.used = True
             return s
 
         if (g := _ENTERED.match(msg)) is not None:
             zone = g.group(1)
-            ev("zone", player=self.me or "me", zone=zone, area_level=self.area_level, area=self.area)
+            ev("zone", player=self.me or "me", zone=zone, area_level=self.area_level, area=self.area, seed=self.seed)
             self.zones.add(zone)
             s.stat("zones_entered", 1, "add")
             s.stat("zones_distinct", len(self.zones))
-            self.area_level = self.area = None
+            self.area_level = self.area = self.seed = None
         elif (g := _LEVEL.match(msg)) is not None:
             name, cls, lvl = g.group(1), g.group(2), int(g.group(3))
             self.me = self.me or name
@@ -165,7 +198,7 @@ class PoEAdapter(Adapter):
     def poll(self, ctx: Context) -> None:
         if self._follow is None or self._log is None:
             return
-        for line in self._follow.lines():
+        for line in self._follow.iter_lines():
             try:
                 self._log.line(line)
             except (ValueError, IndexError, OverflowError):
@@ -199,15 +232,43 @@ ADAPTERS = [
         source=r"<install>\logs\Client.txt of Path of Exile or Path of Exile 2 (followed; the install folder is "
         r"the running executable's)",
         records=(
-            "zones entered with area level",
+            "zones entered with area level, area id and its seed",
             "level-ups with class and level",
             "deaths (\"has been slain\")",
             "players joining and leaving the area, whispers in and out, trade requests, trades accepted",
+            "every Client.txt line of this sitting whole in heat.raw.parquet",
             "deaths, levels gained, highest level, zones entered, distinct zones, whispers, trade requests, trades",
         ),
         enable="",
         interval=0.5,
         axes=Axes(units="no positions recorded"),
         verified="tested on synthetic Client.txt lines in the game's format; untested against the game",
+        completeness={
+            "read": (
+                "`You have entered <zone>`, with the area level, area id and seed of the `Generating level` line "
+                "before it",
+                "`<name> (<class>) is now level <n>`, `<name> has been slain`, players joining and leaving the "
+                "area, whispers in and out (with whether they are a trade request), trades accepted and cancelled",
+            ),
+            "raw": (
+                "every line of this sitting whole, `type` = the level and logger in its brackets (`INFO Client`, "
+                "`DEBUG Client`, `WARN Client`, `CRIT Client`, ...), `used` where it became a row: global, trade, "
+                "party and guild chat, `Connecting to instance server`, AFK and DND notices, the answers to chat "
+                "commands such as `/played` and `/deaths`, the client's loading and engine lines - kept, not made "
+                "into rows yet",
+                "a stamped line without brackets (`***** LOG FILE OPENING *****`) as `untagged`, a line without "
+                "a timestamp as `untimed`",
+            ),
+            "missing": (
+                "positions: nothing in the log gives one",
+                "what another language's client writes: the lines are kept, but only the English messages are "
+                "made into rows",
+                "earlier launches' lines: Client.txt grows across launches; lines stamped before this run of the "
+                "game are left (they were kept when they were played)",
+                "kills, damage, loot and the passive tree: the game does not log them",
+            ),
+            "size": "Client.txt grows about 0.3-3 MB per hour (most from DEBUG lines while loading areas, more "
+            "with busy trade chat); zstd in heat.raw.parquet makes it roughly a tenth",
+        },
     )
 ]

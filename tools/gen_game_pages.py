@@ -323,6 +323,37 @@ def multiplayer_text(adapter) -> str:
     return "\n".join(lines)
 
 
+RULE = "https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md"
+
+
+def completeness_section(adapter) -> list[str]:
+    """The converter rule's three lists, from the adapter's `completeness`."""
+    c = getattr(adapter, "completeness", None) or {}
+    lines = [
+        "## Completeness",
+        "",
+        f"The watcher follows 3DHeat's [converter rule]({RULE}): what the source holds is read or kept, never "
+        "dropped. Besides the rows, every packet, page, line or reply the adapter receives is kept whole in the "
+        "session's `heat.raw.parquet` (columns `time`, `ms`, `type`, `used`, `payload`, `text`, then any field kept "
+        "by name; `used` marks what also became rows), and `meta.json`'s `selfCheck.completeness` counts each "
+        "`type` - `lost` is 0.",
+        "",
+    ]
+    if not c:
+        return lines + ["The adapter does not list its source's contents yet."]
+    for key, head in (("read", "Read"), ("raw", "Kept raw"), ("missing", "Not available")):
+        items = c.get(key) or ()
+        if isinstance(items, str):
+            items = (items,)
+        lines.append(f"**{head}**")
+        lines.append("")
+        lines += [f"- {inline(i)}" for i in items] or ["- nothing"]
+        lines.append("")
+    if c.get("size"):
+        lines += [f"**Size**: {inline(c['size'])}", ""]
+    return lines[:-1] if lines[-1] == "" else lines
+
+
 def game_page(adapter, module, nav: int, siblings: list) -> str:
     source = reachable_source(adapter, module)
     rel = module.__name__.replace(".", "/") + ".py"
@@ -412,6 +443,7 @@ def game_page(adapter, module, nav: int, siblings: list) -> str:
         ]
     else:
         parts.append("No statistic key is set by name in the code; \"What is recorded\" above says what is counted.")
+    parts += ["", *completeness_section(adapter)]
     parts += [
         "",
         "## Verified",
@@ -468,7 +500,11 @@ def overview(adapters: list, modules: dict[str, object]) -> str:
     )
 
 
-def main() -> int:
+def main(only: list[str] | None = None) -> int:
+    """
+    Every page and the overview; given adapter ids (`python tools/gen_game_pages.py dcs il2`),
+    only those pages, leaving every other page and the overview as they are.
+    """
     home = tempfile.mkdtemp(prefix="heat3d-docs-")
     # An empty data folder: the player's profiles and settings stay out of the pages.
     os.environ["HEAT3D_WATCH_HOME"] = home
@@ -493,11 +529,20 @@ def main() -> int:
             by_module.setdefault(modules[a.id].__name__, []).append(a)
         DOCS.mkdir(exist_ok=True)
         written = set()
+        unknown = sorted(set(only or ()) - {a.id for a in adapters})
+        if unknown:
+            print(f"no such adapter: {', '.join(unknown)}", file=sys.stderr)
+            return 1
         for nav, a in enumerate(adapters, 1):
+            if only and a.id not in only:
+                continue
             module = modules[a.id]
             path = DOCS / page_name(a)
             path.write_text(game_page(a, module, nav, by_module[module.__name__]), encoding="utf-8", newline="\n")
             written.add(path.name)
+        if only:
+            print(f"wrote {len(written)} game pages to {DOCS}")
+            return 0
         for old in DOCS.glob("game-*.md"):
             if old.name not in written:
                 old.unlink()
@@ -510,4 +555,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(main(sys.argv[1:] or None))

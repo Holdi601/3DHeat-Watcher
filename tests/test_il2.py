@@ -130,6 +130,71 @@ def test_sorties_over_udp(tmp_path):
     assert "geo" not in meta  # no world position, no place on the earth
 
 
+def test_every_packet_is_kept_in_the_raw_sidecar(tmp_path):
+    """Packets that made rows, packets that did not and junk all reach heat.raw.parquet whole."""
+    port = _free_port()
+    a = replace(ADAPTERS[0], port=port)
+    ctx = Context(Settings(data=str(tmp_path)), tmp_path)
+    a.start(ctx)
+    out = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    fly = [(0, [2400.0, 2300.0]), (1, [1.2, 1.1]), (6, [80.0]), (7, [0.05]), (8, [0.0, 9.80665, 0.0]), (11, [0.5])]
+    sent = [
+        b"\x07\x00",  # too short for a Packet_ID: kept as "short", before any session
+        packet(100, fly, [(0, string("Yak-1 ser.69")), (2, struct.pack("<h5f", 1, 0.5, 0.25, 2.0, 0.01, 850.0))]),
+        packet(101, fly, [(1, b"\x01\x02\x03")]),  # a SETUP_ENG shorter than its layout, no state row yet: raw only
+        struct.pack("<IHIB", 0x494C0100, 11, 0, 0) + b"\x00",  # another Packet_ID: raw only
+    ]
+    for p in sent:
+        out.sendto(p, ("127.0.0.1", port))
+        time.sleep(0.02)
+        a.poll(ctx)
+    folder = a._session.folder
+    a.stop(ctx)
+    gun = next(r for r in read_rows(folder) if r["event"] == "setup_gun")  # the spec's STEGunSetup, 2-byte packing
+    assert (gun["index"], gun["local_z"], gun["muzzle_velocity"], gun["session"]) == (1, 2.0, 850.0, "sortie-1")
+    assert not any(r["event"] == "setup_eng" for r in read_rows(folder))
+    state = next(r for r in read_rows(folder) if r["event"] == "state")
+    # Every indicator rides on the state row, by the spec's name.
+    assert state["eng_rpm"] == [2400.0, 2300.0] and state["eng_mp"] == [1.2, 1.1] and state["flaps"] == 0.5
+    assert state["aoa"] == pytest.approx(0.05) and state["acceleration"] == pytest.approx([0.0, 9.8067, 0.0])
+    t = pq.read_table(folder / "heat.raw.parquet").to_pylist()
+    assert [r["payload"] for r in t] == sent
+    assert [(r["type"], r["used"]) for r in t] == [("short", False), ("0x54000101", True), ("0x54000101", False),
+                                                   ("0x494c0100", False)]
+    check = json.loads((folder / "meta.json").read_text(encoding="utf-8"))["selfCheck"]["completeness"]
+    assert check["lost"] == 0 and check["types"]["0x54000101"] == {"seen": 2, "decoded": 0, "partial": 1, "raw": 1,
+                                                                   "lost": 0}
+
+
+def test_every_acmi_line_is_kept_in_the_raw_sidecar(tmp_path):
+    tracks = tmp_path / "game" / "data" / "Tracks"
+    tracks.mkdir(parents=True)
+    (tmp_path / "game" / "data" / "startup.cfg").write_text(CFG, encoding="utf-8")
+    f = tracks / "one.txt.acmi"
+    f.write_text(ACMI + "\n// a comment\n101,IAS=120.5,Fuel=0.4\n", encoding="utf-8")
+    old = time.time() - 120
+    os.utime(f, (old, old))
+    a = replace(ADAPTERS[1], folders=(str(tmp_path / "game"),), find=False, settle=30.0)
+    ctx = Context(Settings(data=str(tmp_path / "d")), tmp_path / "d")
+    for _ in range(2):
+        a.poll(ctx)
+    folder = next((tmp_path / "d" / "sessions").rglob("meta.json")).parent
+    t = pq.read_table(folder / "heat.raw.parquet").to_pylist()
+    lines = [line for line in acmi_text_lines(io.BytesIO(f.read_bytes()))]
+    assert [r["text"] for r in t] == [line for line in lines if line]
+    by_text = {r["text"]: r for r in t}
+    assert by_text["101,IAS=120.5,Fuel=0.4"]["used"] is False and by_text["101,IAS=120.5,Fuel=0.4"]["type"] == "object"
+    assert by_text["// a comment"]["type"] == "comment" and by_text["// a comment"]["used"] is False
+    spawn = by_text["101,T=0.01|0.02|300,Type=Air+FixedWing,Name=Yak-1,Pilot=Alpha,Coalition=Allies"]
+    assert spawn["used"] is True and spawn["type"] == "object"
+    assert by_text["#0.5"]["time"] == 0.5 and by_text["101,T=0.0101||310"]["used"] is False  # thinned out of the rows
+    assert by_text["-102"]["used"] is True and by_text["-102"]["type"] == "remove"
+    assert by_text["0,Event=Destroyed|102|"]["type"] == "event"
+    assert by_text["0,ReferenceLongitude=44"]["used"] is True and by_text["0,Comments=two \nlines"]["used"] is False
+    check = json.loads((folder / "meta.json").read_text(encoding="utf-8"))["selfCheck"]["completeness"]
+    assert check["lost"] == 0 and check["types"]["comment"]["raw"] == 1
+
+
 CFG = (
     "[KEY = graphics]\r\n\tfps_limit = 60\r\n[END]\r\n\r\n"
     "[KEY = telemetrydevice]\r\n\taddr = \"127.0.0.1:41994\"\r\n\tdecimation = 1\r\n\tenable = false\r\n\tport = 4322\r\n[END]\r\n\r\n"

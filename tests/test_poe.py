@@ -65,6 +65,37 @@ def test_the_adapter_records_zones_levels_deaths_and_trades(tmp_path):
     assert not (session / "heat.parquet").exists()  # nothing with a position
 
 
+def test_every_line_is_kept_whole_in_the_raw_sidecar(tmp_path):
+    import pyarrow.parquet as pq
+
+    install = tmp_path / "Path of Exile"
+    (install / "logs").mkdir(parents=True)
+    data = tmp_path / "data"
+    ctx = Context(Settings(data=str(data)), data, exe=install / "PathOfExile.exe")
+    a = replace(poe.ADAPTERS[0])
+    a.start(ctx)
+    t0 = time.time()
+    text = [f"{stamp(t0)} ***** LOG FILE OPENING *****", *lines(t0), "a line the game wrapped",
+            f"{stamp(t0 + 20)} 1234 cff94598 [INFO Client 4242] #Somebody: hello global"]
+    (install / "logs" / "Client.txt").write_text("\n".join(text) + "\n", encoding="utf-8")
+    a.poll(ctx)
+    a.stop(ctx)
+
+    [session] = list((data / "sessions").glob("*/*"))
+    raw = pq.read_table(session / "heat.raw.parquet").to_pydict()
+    assert raw["text"] == text  # every line, in order, whole
+    kinds = dict(zip(raw["text"], zip(raw["type"], raw["used"])))
+    assert kinds[text[0]] == ("untagged", False) and kinds[text[-2]] == ("untimed", False)
+    assert kinds[text[-1]] == ("INFO Client", False)  # global chat: kept, no row
+    assert kinds[text[1]] == ("INFO Client", True)  # entered a zone
+    assert kinds[text[2]] == ("DEBUG Client", False) and kinds[text[12]] == ("WARN Client", False)
+    check = json.loads((session / "meta.json").read_text(encoding="utf-8"))["selfCheck"]["completeness"]
+    assert check["lost"] == 0 and check["types"]["DEBUG Client"] == {"seen": 1, "decoded": 0, "partial": 0, "raw": 1,
+                                                                      "lost": 0}
+    zone = [r for r in read_rows(session) if r["event"] == "zone"]
+    assert zone[1]["seed"] == 12345 and zone[1]["area"] == "1_1_2" and "seed" not in zone[2]
+
+
 def test_the_log_of_earlier_launches_is_not_recorded_again(tmp_path, monkeypatch):
     install = tmp_path / "Path of Exile"
     (install / "logs").mkdir(parents=True)

@@ -64,6 +64,14 @@ Locations are Unreal units (centimetres), Z up; the field is about 8200 x 10240
 with the goals at Y = +-5120. Cars' positions are not part of the API: what has
 a place is the ball where it was hit, scored or hit the crossbar.
 
+Every message is also kept whole (3DHeat's converter rule, docs/converters.md
+in the viewer's repository): `heat.raw.parquet`, `type` the message's Event
+name, `text` the object as it came off the stream. An UpdateState byte for byte
+the one before (a paused match, a menu) is kept once and counted in meta.json's
+`unchanged_replies`. Messages between matches wait in a backlog for the next
+match's session; what is left when the game closes gets a session of its own.
+Characters between objects that are not JSON are kept as "junk".
+
 Sources: <https://www.rocketleague.com/en/developer/stats-api> (the official page);
 field casing and the TCP framing confirmed against the rlstatsapi client
 (<https://docs.rs/crate/rlstatsapi>, MIT; read for facts only).
@@ -93,6 +101,30 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 `bad_packets`, `demolished`, `other_goals`, `overtime`, `result`, `team_goals`
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
+
+## Completeness
+
+The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the source holds is read or kept, never dropped. Besides the rows, every packet, page, line or reply the adapter receives is kept whole in the session's `heat.raw.parquet` (columns `time`, `ms`, `type`, `used`, `payload`, `text`, then any field kept by name; `used` marks what also became rows), and `meta.json`'s `selfCheck.completeness` counts each `type` - `lost` is 0.
+
+**Read**
+
+- BallHit (place, who, team, speeds before and after), GoalScored (impact place, scorer, assister, speed, goal time), CrossbarHit (place, last touch, speed, force), StatfeedEvent (event, type, main and secondary target), MatchEnded (winner, result), every other event's name as a row
+- from UpdateState: the arena, the camera's target outside replays (who `me` is), team scores, every player's goals, assists, saves, shots, demos, touches, car touches and score (the own as statistics, everyone's as `player_result` at the match's end); overtime from ClockUpdatedSeconds
+
+**Kept raw**
+
+- every message whole as it came off the stream (`text`), under its own Event name: `UpdateState` (every player's PrimaryId and Shortcut, the clock, the ball's speed and team, team names and colours, replay and winner flags, and car state where the game sends it), `BallHit`, `GoalScored` (with the ball's last touch), `CrossbarHit`, `StatfeedEvent`, `MatchCreated`, `MatchInitialized`, `CountdownBegin`, `RoundStarted`, `GoalReplayStart`, `GoalReplayWillEnd`, `GoalReplayEnd`, `MatchPaused`, `MatchUnpaused`, `MatchEnded`, `PodiumStart`, `ReplayCreated`, `MatchDestroyed`, `ClockUpdatedSeconds` and any event a later build adds
+- an UpdateState byte for byte the one before (paused, menus) is kept once and counted (`unchanged_replies` in meta.json)
+- messages between matches: at their own time before the next match's start; after the last match, in a session of their own (`raw_only` in meta.json)
+- `unreadable`: an object that is not a Stats API message; `junk`: characters between objects
+
+**Not available**
+
+- car positions and car state while playing: the game sends them only to spectators
+- UpdateState between two sends: the game sends PacketSendRate a second (`setup` sets 30, the game allows up to 120); the events are sent on the tick they happen
+- the WebSocket copy on WebPort (49124): the same messages as the TCP port, not read twice
+
+**Size**: an UpdateState is 1-3 KB for six players, 30 a second: about 100-300 MB per hour in `raw.bin` while a match runs, a tenth or less in the zstd `heat.raw.parquet` (estimated from the documented format, not measured on the game)
 
 ## Verified
 

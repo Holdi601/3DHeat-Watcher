@@ -75,6 +75,7 @@ def test_raceroom_every_car_laps_finish_pit_and_incidents(tmp_path):
     mem = mmap.mmap(-1, R3E_SIZE, tagname=tag)
     ctx = context(tmp_path)
     a = shm.RaceRoomAdapter(id="r3e-test", game="RaceRoom", exes=("x.exe",), tagname=tag)
+    pages = []
     try:
         a.start(ctx)
         for k in range(40):
@@ -88,7 +89,9 @@ def test_raceroom_every_car_laps_finish_pit_and_incidents(tmp_path):
             ]
             mem[:] = r3e_page(cars=cars, best=80.5 if k >= 20 else -1.0, previous=80.5 if k >= 20 else -1.0,
                               incidents=4 if k >= 30 else 0, menus=1 if k >= 38 else 0)
+            pages.append(mem[:])
             a.poll(ctx)
+            a.poll(ctx)  # read again before the game wrote: nothing new to keep
             time.sleep(0.01)
         a.stop(ctx)
     finally:
@@ -108,6 +111,15 @@ def test_raceroom_every_car_laps_finish_pit_and_incidents(tmp_path):
     positions = [r for r in table if r["event"] == "position"]
     assert {r["player"] for r in positions} == {"Me Myself", "Other Driver"}
     assert max(r["x"] for r in positions if r["player"] == "Me Myself") <= 37 * 4.0  # nothing from the menus
+
+    # docs/converters.md: the whole page each time it changed - the menus' too, which became no rows.
+    raw = pq.read_table(folder / "heat.raw.parquet").to_pydict()
+    assert set(raw["type"]) == {"r3e"} and len(raw["payload"]) == 40
+    assert [p[:R3E_SIZE] for p in raw["payload"]] == pages and all(len(p) >= R3E_SIZE for p in raw["payload"])
+    assert raw["used"] == [True] * 38 + [False] * 2
+    assert meta["unchanged_reads"] == {"r3e": 40}
+    c = meta["selfCheck"]["completeness"]
+    assert c["lost"] == 0 and c["types"]["r3e"] == {"seen": 40, "decoded": 0, "partial": 38, "raw": 2, "lost": 0}
 
 
 # ------------------------------------------------------------------ AMS2 / PCARS2, SharedMemory.h
@@ -135,6 +147,7 @@ def pc2_page(*, cars, viewed=0, game_state=2, sequence=10, last=0.0, best=-1.0):
     struct.pack_into("<f", p, 6864, 1.0)
     struct.pack_into("<i", p, 6876, 5)
     struct.pack_into("<I", p, 7320, sequence)
+    p[15000:15004] = b"TAIL"  # a field past what the adapter reads
     return bytes(p)
 
 
@@ -173,3 +186,12 @@ def test_automobilista_reads_every_participant_and_waits_out_a_write(tmp_path):
     assert s["laps"] == 1 and s["best_lap"] == 70.25 and s["top_speed_kmh"] == pytest.approx(33.0 * 3.6)
     own = [r for r in read_rows(folder) if r["event"] == "position" and r.get("own_car") == 1]
     assert own and all(r["player"] == "Player" for r in own) and {r.get("gear") for r in own} == {5}
+
+    # The whole page kept, past the bytes read: the torn copy marked and unused, the menu pages unused.
+    raw = pq.read_table(folder / "heat.raw.parquet").to_pydict()
+    assert set(raw["type"]) == {"pcars2"} and all(len(p) >= PC2_SIZE for p in raw["payload"])
+    assert raw["payload"][0][15000:15004] == b"TAIL"  # beyond the 11,312 bytes the decoder needs
+    assert raw["used"] == [True] * 20 + [False] + [True] * 17 + [False] * 2
+    assert raw["torn"][20] == 1 and raw["torn"][19] is None
+    c = meta["selfCheck"]["completeness"]
+    assert c["lost"] == 0 and c["types"]["pcars2"]["raw"] == 3 and c["types"]["pcars2"]["partial"] == 37

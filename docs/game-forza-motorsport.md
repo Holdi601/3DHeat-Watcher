@@ -78,6 +78,17 @@ one the stage varies least along, decided when the session closes.
 The `heat3d` protocol mod gamecapture ships (UDP 4460, Options > Other >
 Protocols > "others"); BeamNG's Z-up world turned to Y up as `beamng.py` does.
 
+#### Everything kept
+
+The rows are a few a second; the games send far more. Every UDP packet that
+arrives - in the menus, between laps, ones no decoder reads - is kept whole
+in the session's `heat.raw.parquet` under its format (`dash-horizon`,
+`session_update`, `extradata3`, `H3D1`, ...), and every shared memory page
+(the whole mapping, not only the bytes decoded) each time it changes, under
+its mapping's name (`acpmf_physics`, ...). `used` marks what also became
+rows; `meta.json`'s `selfCheck.completeness` counts each kind (3DHeat's
+converter rule).
+
 The same module also serves: [Assetto Corsa (telemetry)](game-assetto-corsa.md), [Assetto Corsa Competizione (telemetry)](game-assetto-corsa-competizione.md), [Assetto Corsa EVO (telemetry)](game-assetto-corsa-evo.md), [Assetto Corsa Rally (telemetry)](game-assetto-corsa-rally.md), [BeamNG.drive (telemetry)](game-beamng.md), [DiRT Rally 2.0 (telemetry)](game-dirt-rally-2.md), [EA SPORTS WRC (telemetry)](game-ea-wrc.md), [Forza Horizon 4 (telemetry)](game-forza-horizon-4.md), [Forza Horizon 5 (telemetry)](game-forza-horizon-5.md), [Forza Horizon 6 (telemetry)](game-forza-horizon-6.md), [Richard Burns Rally (telemetry)](game-richard-burns-rally.md).
 
 ## Positions and axes
@@ -105,6 +116,27 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 `best_lap`, `distance_km`, `laps`, `races`, `top_speed_kmh`
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
+
+## Completeness
+
+The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the source holds is read or kept, never dropped. Besides the rows, every packet, page, line or reply the adapter receives is kept whole in the session's `heat.raw.parquet` (columns `time`, `ms`, `type`, `used`, `payload`, `text`, then any field kept by name; `used` marks what also became rows), and `meta.json`'s `selfCheck.completeness` counts each `type` - `lost` is 0.
+
+**Read**
+
+- rows at 10 Hz: position, speed, gear, throttle, brake, lap, yaw/pitch/roll (rad), rpm, steer (-1..1); session_start with the car's ordinal, class, PI and drivetrain; laps with the game's lap time; race position
+
+**Kept raw**
+
+- every packet that reaches the port, whole, at the game's rate (one per simulation tick), under its format: `dash-horizon` (324 bytes, Forza Horizon), `dash` (311, Motorsport 7), `dash-fm2023` (331, Forza Motorsport 2023: tyre wear and track id), `sled` (232, no position), `<n>-byte` for anything else - including menu packets (isRaceOn 0), the packets held until the dash layout is proven, and the ~13 bytes of the Horizon packet no published layout names
+- the Sled block's every wheel channel (slip ratio, slip angle, combined slip, suspension, wheel speed, rumble, puddle), accelerations, angular velocity, power, torque, boost, fuel, tyre temperatures, clutch, handbrake, driving line, AI brake difference: all in the packets, decoded by `decoders/fulllap.decode_full` from them
+
+**Not available**
+
+- other cars: Data Out describes the player's car only
+- the track or route name: Forza Horizon never sends one; Motorsport 2023 sends only a track number
+- packets while another app (FH Companion) holds UDP 5300: the watcher leaves the port to it
+
+**Size**: about 85 MB an hour before compression (60 packets a second of 324 bytes plus a 70-byte item header); consecutive packets differ little, so zstd keeps a fraction of it
 
 ## Verified
 

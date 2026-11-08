@@ -148,6 +148,48 @@ def test_rocketleague_match(tmp_path):
     assert (folders[0] / "heat.parquet").exists()
 
 
+def test_rocketleague_every_message_is_kept_whole_in_the_raw_sidecar(tmp_path):
+    """docs/converters.md: messages the adapter reads, ones it does not, repeats, and those between matches."""
+    import pyarrow.parquet as pq
+
+    lobby = {"Event": "SomethingInTheMenu", "Data": {"Hint": 1}}
+    up = update()
+    up["Data"]["Game"]["Ball"]["Spin"] = 7  # a field nothing reads
+    msgs = [lobby, *messages()[:2], up, up, {"Event": "BrandNewEvent", "Data": {"MatchGuid": GUID, "X": 1}},
+            *messages()[-3:], {"Event": "AfterTheMatch", "Data": {}}]
+    payload = "".join(json.dumps(m) for m in msgs).encode("utf-8")
+    game = FakeGame(payload)
+    data = tmp_path / "data"
+    ctx = Context(Settings(data=str(data)), data)
+    a = dataclasses.replace(rl.ADAPTERS[0], port=game.port)
+    a.start(ctx)
+    try:
+        t0 = time.monotonic()
+        while time.monotonic() - t0 < 10:
+            a.poll(ctx)
+            if game.done.is_set() and a._session is None and not a._buf and a._backlog.items:
+                break
+    finally:
+        a.stop(ctx)
+    metas = {p: json.loads((p / "meta.json").read_text(encoding="utf-8")) for p in (data / "sessions").glob("*/*")}
+    [match] = [p for p, m in metas.items() if not m.get("raw_only")]
+    [after] = [p for p, m in metas.items() if m.get("raw_only")]
+    t = pq.read_table(match / "heat.raw.parquet").to_pydict()
+    assert t["type"] == ["SomethingInTheMenu", "MatchCreated", "MatchInitialized", "UpdateState", "BrandNewEvent",
+                         "MatchEnded", "PodiumStart", "MatchDestroyed"]
+    assert t["used"] == [False, True, True, True, True, True, True, True]
+    assert t["time"][0] <= 0 and json.loads(t["text"][0]) == lobby
+    assert json.loads(t["text"][3])["Data"]["Game"]["Ball"]["Spin"] == 7
+    meta = metas[match]
+    assert meta["unchanged_replies"] == {"UpdateState": 1}
+    assert meta["selfCheck"]["completeness"]["lost"] == 0
+    assert meta["selfCheck"]["completeness"]["types"]["SomethingInTheMenu"]["raw"] == 1
+    assert meta["stats"]["car_touches"] == 1
+    t = pq.read_table(after / "heat.raw.parquet").to_pydict()
+    assert t["type"] == ["AfterTheMatch"] and t["used"] == [False]
+    assert metas[after]["selfCheck"]["completeness"]["lost"] == 0
+
+
 def test_rocketleague_no_game_is_quiet(tmp_path):
     with socket.socket() as s:
         s.bind(("127.0.0.1", 0))

@@ -14,6 +14,7 @@ Adapter `minecraft` - kind [`log`](sources-and-rules.md) - runs while `javaw.exe
 - spawn with position when a player logs in to the (integrated) server
 - joins, leaves, deaths with the death message, advancements, chat lines
 - deaths, advancements, chat messages; from the stats file: play time, distance, mob and player kills, jumps, damage, blocks mined, items crafted (this session's share)
+- every log line and every saved stats, advancements and player file whole in heat.raw.parquet
 
 ## Where it comes from
 
@@ -49,11 +50,21 @@ Where (`%APPDATA%\.minecraft\`):
   `Pos` [x, y, z] doubles, `Rotation` [yaw, pitch], `Dimension`
   ("minecraft:overworld"; an int 0/-1/1 before 1.16). NBT per
   <https://minecraft.wiki/w/NBT_format> - read here by a small reader of our own.
+* `saves\<world>\advancements\<uuid>.json` - the advancement screen's progress,
+  written on the same saves.
 
 Coordinates are blocks, one block a metre, y up; x east, z south - a right-
 handed frame, drawn as it is. Positions come only when the world saves, so a
 route is a few points per autosave, not a trail; the dimension is the
 `session`, so the Nether is not drawn over the Overworld.
+
+Everything read is kept whole in the session's raw sidecar (3DHeat's converter
+rule): every log line under its level (`INFO`, `WARN`, `ERROR`, ...; a line
+without the bracketed head, such as a stack trace, as `untagged`), and each
+saved file under its kind (`stats`, `advancements`, `playerdata`,
+`level.dat`) - JSON as text, NBT as its bytes. A stats file's numbers are only
+understood against what it said when the game started, so that first copy is
+kept too (`baseline`), the first time the file changes.
 
 ## Positions and axes
 
@@ -80,6 +91,34 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 `advancements`, `bad_files`, `bad_lines`, `chat_messages`, `deaths`, `joins`, `others_deaths`, `world`
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
+
+## Completeness
+
+The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the source holds is read or kept, never dropped. Besides the rows, every packet, page, line or reply the adapter receives is kept whole in the session's `heat.raw.parquet` (columns `time`, `ms`, `type`, `used`, `payload`, `text`, then any field kept by name; `used` marks what also became rows), and `meta.json`'s `selfCheck.completeness` counts each `type` - `lost` is 0.
+
+**Read**
+
+- latest.log: the player's name (`Setting user`), logins with position, joins, leaves, deaths with the death message, advancements, chat lines, the server stopping
+- stats/&lt;uuid>.json: play time, distance, mob and player kills, jumps, damage dealt and taken, blocks mined, items crafted - this sitting's share
+- playerdata/&lt;uuid>.dat and level.dat (NBT): position, dimension, yaw, pitch, health, XP level
+
+**Kept raw**
+
+- every latest.log line whole, `type` = its level (`INFO`, `WARN`, `ERROR`, `DEBUG`, `FATAL`) with the logger's thread in `thread`, `used` where it became a row; a line without the bracketed head (a stack trace, a mod's banner) as `untagged`
+- each stats/&lt;uuid>.json whole as text, `type` `stats` (`used`: its numbers are in the statistics), with its first copy from the game's start as `baseline`
+- each advancements/&lt;uuid>.json whole as text, `type` `advancements` (every criterion and when it was met; not made into rows yet)
+- each playerdata/&lt;uuid>.dat and level.dat whole as bytes (gzip NBT), `type` `playerdata` / `level.dat`, `used` where it gave a position: inventory, ender chest, effects, spawn point, game rules, world seed and time are only here
+- every saved file has `world` and `file` (its path under `saves`)
+
+**Not available**
+
+- a position trail: the game writes the player's position only when the world saves (every few minutes and on leaving)
+- positions on a server someone else hosts: its world files are on the server, not here; only the log is read then
+- the world itself (region .mca files, entities, data/\*.dat maps and raids): large, and the terrain, not the play
+- earlier sittings' logs (logs/\*.log.gz): kept when they were played
+- Bedrock Edition: it writes no such log or files
+
+**Size**: latest.log 0.1-2 MB per hour (more with mods); a stats file 5-50 KB and a player file 5-100 KB per autosave, level.dat 1-20 KB - about 1-5 MB per hour in all; zstd in heat.raw.parquet makes the text roughly a tenth (the NBT files are gzip already)
 
 ## Verified
 

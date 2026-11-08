@@ -8,6 +8,7 @@ import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
+import pyarrow.parquet as pq
 import pytest
 
 from heat3d_watch.adapters import Context
@@ -26,16 +27,31 @@ class FakeGame:
         self.indicators: dict = {"valid": False}
         self.events: list[dict] = []
         self.damage: list[dict] = []
+        #: Served only when set: the chat, the objectives, the map picture.
+        self.chat: list[dict] | None = None
+        self.mission: dict | None = None
+        self.img: bytes | None = None
         fake = self
 
         class Handler(BaseHTTPRequestHandler):
             def do_GET(self) -> None:  # noqa: N802
                 u = urlparse(self.path)
                 q = parse_qs(u.query)
+                if u.path == "/map.img" and fake.img is not None:
+                    self.send_response(200)
+                    self.send_header("Content-Length", str(len(fake.img)))
+                    self.end_headers()
+                    self.wfile.write(fake.img)
+                    return
                 if u.path == "/hudmsg":
                     evt, dmg = int(q.get("lastEvt", ["0"])[0] or 0), int(q.get("lastDmg", ["0"])[0] or 0)
                     doc = {"events": [e for e in fake.events if e["id"] > evt],
                            "damage": [e for e in fake.damage if e["id"] > dmg]}
+                elif u.path == "/gamechat" and fake.chat is not None:
+                    last = int(q.get("lastId", ["0"])[0] or 0)
+                    doc = [e for e in fake.chat if e["id"] > last]
+                elif u.path == "/mission.json" and fake.mission is not None:
+                    doc = fake.mission
                 else:
                     doc = {"/map_info.json": fake.map_info, "/map_obj.json": fake.map_obj, "/state": fake.state,
                            "/indicators": fake.indicators}.get(u.path)
@@ -112,7 +128,7 @@ def test_warthunder_battle(tmp_path):
         a.start(ctx)
         game.damage = [dmg(1, "Old (Yak-3) shot down Older (Bf 109 F-4)")]  # before the watcher: not this battle
         a.poll(ctx)
-        assert not (data / "sessions").exists()
+        assert a._session is None and a._idle is not None  # the hangar's replies: kept, in a session of their own
         game.map_info = {"grid_steps": [8192, 8192], "grid_zero": [-32768, 32768], "map_generation": 5, "hud_type": 0,
                          "map_max": [32768, 32768], "map_min": [-32768, -32768], "valid": True}
         game.indicators = {"valid": True, "army": "air", "type": "spitfire_example"}
@@ -141,8 +157,9 @@ def test_warthunder_battle(tmp_path):
         a.stop(ctx)
     finally:
         game.close()
-    folders = list((data / "sessions").glob("*/*"))
-    assert len(folders) == 1
+    folders = [f for f in (data / "sessions").glob("*/*") if (f / "heat.parquet").exists()]
+    assert len(folders) == 1  # one battle; before and after it, the replies between battles in sessions of their own
+    assert len(list((data / "sessions").glob("*/*"))) == 3
     rows = read_rows(folders[0])
     kinds = [r["event"] for r in rows]
     spawn = next(r for r in rows if r["event"] == "spawn")
@@ -184,5 +201,62 @@ def test_warthunder_hangar_only(tmp_path):
         a.stop(ctx)
     finally:
         game.close()
-    assert not (data / "sessions").exists()
+    # The hangar's replies are kept whole, in a session with no rows and no table.
+    folders = list((data / "sessions").glob("*/*"))
+    assert len(folders) == 1 and not (folders[0] / "heat.parquet").exists()
+    t = pq.read_table(folders[0] / "heat.raw.parquet").to_pylist()
+    assert [(r["type"], r["used"]) for r in t] == [("map_info", False), ("hudmsg", False)]
+    assert json.loads(t[0]["text"]) == {"valid": False}
+    assert json.loads((folders[0] / "meta.json").read_text(encoding="utf-8"))["between_battles"] is True
+    # Nothing answers: nothing is kept, no session.
+    other = tmp_path / "other"
+    a = dataclasses.replace(wt.ADAPTERS[0], url=game.url)
+    b = Context(Settings(data=str(other)), other)
+    a.start(b)
+    a.poll(b)
+    a.stop(b)
+    assert not (other / "sessions").exists()
     assert dataclasses.replace(wt.ADAPTERS[0], url="http://192.168.1.2:8111").missing()
+
+
+def test_every_reply_is_kept_in_the_raw_sidecar(tmp_path):
+    """Replies that made rows and replies nothing reads yet (chat, objectives, the map picture) all reach heat.raw.parquet."""
+    game = FakeGame()
+    data = tmp_path / "data"
+    ctx = Context(Settings(data=str(data)), data)
+    a = dataclasses.replace(wt.ADAPTERS[0], url=game.url, map_every=0, hud_every=0, indicators_every=0, gone_after=0)
+    game.map_info = {"grid_steps": [8192, 8192], "grid_zero": [-32768, 32768], "map_generation": 5, "hud_type": 0,
+                     "map_max": [32768, 32768], "map_min": [-32768, -32768], "valid": True}
+    game.indicators = {"valid": True, "army": "air", "type": "spitfire_example", "speed": 110.5, "compass": 87.0}
+    game.state = {"valid": True, "H, m": 1500, "TAS, km/h": 420, "IAS, km/h": 390, "M": 0.35, "Vy, m/s": 2.5,
+                  "AoA, deg": 3.1, "throttle 1, %": 100}
+    game.map_obj = [obj("aircraft", "Player", YELLOW, 0.5, 0.25), obj("aircraft", "Fighter", RED, 0.6, 0.5)]
+    game.chat = [{"id": 1, "msg": "gl hf", "sender": "Someone", "enemy": False, "mode": "All", "time": 5}]
+    game.mission = {"objectives": [{"primary": True, "status": "in_progress", "text": "Capture the zone"}],
+                    "status": "running"}
+    game.img = b"\x89PNG fake picture bytes"
+    try:
+        a.start(ctx)
+        a.poll(ctx)
+        a.poll(ctx)
+        folder = a._session.folder
+        a.stop(ctx)
+    finally:
+        game.close()
+    t = pq.read_table(folder / "heat.raw.parquet").to_pylist()
+    used = {}
+    for r in t:
+        used.setdefault(r["type"], set()).add(r["used"])
+    assert used == {"map_info": {True}, "indicators": {True}, "map_obj": {True}, "state": {True}, "map_img": {False},
+                    "hudmsg": {False}, "gamechat": {False}, "mission": {False}}
+    assert next(r for r in t if r["type"] == "map_img")["payload"] == game.img  # once a battle
+    assert sum(r["type"] == "map_img" for r in t) == 1
+    state = next(r for r in t if r["type"] == "state")
+    assert json.loads(state["text"])["AoA, deg"] == 3.1  # what the rows leave out is in the sidecar
+    assert json.loads(next(r for r in t if r["type"] == "gamechat")["text"])[0]["msg"] == "gl hf"
+    own = next(r for r in read_rows(folder) if r["event"] == "position" and r["player"] == "me")
+    assert (own["ias_kmh"], own["mach"], own["vy_ms"]) == (390, 0.35, 2.5)
+    foe = next(r for r in read_rows(folder) if r["event"] == "position" and r["player"] != "me")
+    assert foe["color"] == RED
+    check = json.loads((folder / "meta.json").read_text(encoding="utf-8"))["selfCheck"]["completeness"]
+    assert check["lost"] == 0 and check["types"]["gamechat"]["raw"] >= 1 and check["types"]["map_obj"]["partial"] == 2

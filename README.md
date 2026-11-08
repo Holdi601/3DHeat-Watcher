@@ -115,6 +115,8 @@ in the middle of a game; `config --set auto_update=false` turns that off.
 Which game is recorded how, and from where: [`docs/watcher.md`](docs/watcher.md)
 and the wiki.
 
+Every adapter and replay decoder keeps everything its source holds: what it reads goes into the table and `meta.json`, everything it sent stays whole beside it (`heat.raw.parquet` for live feeds, the replay sidecars for replays), counted in `selfCheck.completeness` - [Converters keep everything](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md); each game's page has a Completeness section.
+
 ---
 
 ## Part of 3DHeat

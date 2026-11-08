@@ -102,6 +102,15 @@ only by looking the time up in another adapter's recording of the same game
 Each adapter keeps what it has already seen in `<data>\state\<id>.json`, so a
 restart records nothing twice.
 
+Each session also keeps what its rows came from, whole (3DHeat's converter
+rule, docs/converters.md in the viewer's repository), in `heat.raw.parquet`:
+the stats file's and its schema's bytes and the game's localconfig block
+(steam-stats; a stats file the decoder cannot read gets a session holding only
+its bytes), the timeline file's header and every entry as JSON
+(steam-timeline), each clip's gallery index entry, the game's highlight
+definitions and every GfeSDK log line, the ones that are not highlight
+requests too (nvidia-highlights).
+
 The same module also serves: [Steam statistics (platform)](game-steam-stats.md), [Steam Timeline (platform)](game-steam-timeline.md).
 
 ## Positions and axes
@@ -129,6 +138,31 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 `clip_seconds`, `clips`, `placed`, `screenshots`
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
+
+## Completeness
+
+The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the source holds is read or kept, never dropped. Besides the rows, every packet, page, line or reply the adapter receives is kept whole in the session's `heat.raw.parquet` (columns `time`, `ms`, `type`, `used`, `payload`, `text`, then any field kept by name; `used` marks what also became rows), and `meta.json`'s `selfCheck.completeness` counts each `type` - `lost` is 0.
+
+**Read**
+
+- each new clip and screenshot: game, file, kind, media, length (index, else the MP4 header), the moment from the file name, the highlight id and name where the game registered them, and the player's place then from another adapter's recording
+- GfeSDK highlight requests (every `Posted Request HL...` but configuration calls) with their time
+
+**Kept raw**
+
+- `UGC`: the clip's whole entry of the gallery index UGCTracker.json, every field NVIDIA writes
+- `clip_file`: for a clip the index does not list, the file's path, size, time and folder
+- `highlights_config`: the game's `Highlights\<game>\config.json` as written (significance, tags, names in every locale), once per session
+- `gfesdk_log`: every line of the GfeSDK logs read after the first run, `used` true for the highlight requests and false for the rest (configuration, video settings, the SDK's own messages)
+
+**Not available**
+
+- the clips and screenshots themselves: video and images stay where NVIDIA saved them; the rows name the file
+- what was there before the adapter's first run: taken as already seen, so years of clips do not turn into sessions at once (`baseline`; False records them)
+- UGCTracker.json's `apps` and `info` and GallerySettings.json: the app's settings, not moments of play; the capture folder they name is used
+- positions, rounds, opponents: the GfeSDK has no field for them
+
+**Size**: about 1 KB per clip and a few KB of definitions and log lines per game launch: well under 1 MB per hour
 
 ## Verified
 

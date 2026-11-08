@@ -13,6 +13,7 @@ Adapter `starcitizen` - kind [`log`](sources-and-rules.md) - runs while `StarCit
 - deaths with victim, killer, weapon, damage type and zone (players and NPCs)
 - vehicles disabled and destroyed, with driver, cause and zone
 - quantum travel targets, solar system changes, spawns, respawns, incapacitations
+- every Game.log line whole in heat.raw.parquet
 - kills (player and NPC), deaths, suicides, vehicles destroyed and lost, quantum jumps
 
 ## Where it comes from
@@ -54,6 +55,12 @@ kill trackers read (e.g. <https://github.com/DimmaDont/all-slain>, MIT - facts
 only), and anything that does not match is skipped, not guessed. A vehicle's
 `pos` is zone-relative and kept only as text: no coordinates are drawn.
 
+Every line is kept whole in the session's raw sidecar (3DHeat's converter
+rule), matched or not: `type` is the line's tag in angle brackets (`Actor
+Death`, `Spawn Flow`, ...), else its first bracketed word (`Notice`,
+`CSessionManager::OnClientSpawned`), else `untagged`; a line without a
+timestamp is `untimed`.
+
 ## Positions and axes
 
 | | |
@@ -79,6 +86,30 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 `bad_lines`, `deaths`, `incapacitations`, `kills`, `npc_kills`, `player_kills`, `quantum_jumps`, `suicides`, `system_jumps`, `vehicles_destroyed`, `vehicles_lost`
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
+
+## Completeness
+
+The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the source holds is read or kept, never dropped. Besides the rows, every packet, page, line or reply the adapter receives is kept whole in the session's `heat.raw.parquet` (columns `time`, `ms`, `type`, `used`, `payload`, `text`, then any field kept by name; `used` marks what also became rows), and `meta.json`'s `selfCheck.completeness` counts each `type` - `lost` is 0.
+
+**Read**
+
+- `<Actor Death>`: victim, killer, weapon and its class, damage type, zone; NPC or player
+- `<Vehicle Destruction>`: vehicle, zone, zone-relative position as text, driver, cause, how, destroy level
+- `<Quantum Navtarget>` targets, `<Changing Solar System>`, `OnClientSpawned`, hospital respawns, incapacitations with their causes, `EndSession`
+- the player's handle from `<AccountLoginCharacterStatus_Character>` or the login line
+
+**Kept raw**
+
+- every Game.log line whole, `type` = its tag in angle brackets (`Actor Death`, `Vehicle Destruction`, `Spawn Flow`, `Jump Drive State Changed`, `SHUDEvent_OnNotification`, `RequestLocationInventory`, ...), else its first bracketed word (`Notice`, `CSessionManager::OnClientSpawned`, ...), else `untagged`; lines without a timestamp (the log's header, wrapped text) as `untimed`; `used` where the line became a row
+
+**Not available**
+
+- positions: the log gives none in a frame that can be drawn (a destroyed vehicle's `pos` is relative to a zone whose place is not logged)
+- anything from the game's process or network: Star Citizen runs Easy Anti-Cheat; only the log file is read
+- earlier launches' logs (`logbackups`): each launch's Game.log is kept when it is played
+- lines in a format a patch changes: kept raw, decoded again once the new form is known
+
+**Size**: Game.log grows about 5-15 MB per hour of play (more in busy areas and with errors); zstd in heat.raw.parquet makes it roughly a tenth
 
 ## Verified
 

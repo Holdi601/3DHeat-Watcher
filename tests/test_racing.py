@@ -551,3 +551,129 @@ def test_forza_on_real_fh_companion_laps_replayed_as_data_out(tmp_path):
         assert m["stats"]["top_speed_kmh"] == pytest.approx(float(max(speeds)) * 3.6, rel=0.01)
         assert not events(folder, "teleport")
         assert (folder / "heat.parquet").exists()
+
+
+# ------------------------------------------------------------------ everything kept (docs/converters.md)
+
+
+def raw_sidecar(folder: Path) -> tuple[dict, dict]:
+    """The raw sidecar's columns and meta.json's self-check."""
+    t = pq.read_table(folder / "heat.raw.parquet").to_pydict()
+    return t, meta(folder)["selfCheck"]["completeness"]
+
+
+def test_forza_keeps_every_packet_whole_even_the_menus_and_strangers(tmp_path):
+    ctx = context(tmp_path)
+    a = racing.ForzaAdapter(id="forza-test", game="Forza Horizon 6", port=free_port())
+    a.start(ctx)
+    a._drive.period = 0.0  # every sample a row
+    menu = forza_packet(pos=(0, 0, 0), vel=(0, 0, 0), race_on=False)
+    sled = b"\x01" * forza.SLED_LENGTH
+    driving = [forza_packet(pos=p, vel=v, stamp=i * 16) for i, (p, v) in enumerate(circle(50, 100.0, 30.0)[:20])]
+    stranger = b"\x07" * 17
+    for packet in (menu, sled, *driving, stranger):
+        a.feed(packet)
+    a.stop(ctx)
+    folder = only_session(ctx)
+    t, c = raw_sidecar(folder)
+    assert t["payload"] == [menu, sled, *driving, stranger]
+    assert t["type"] == ["dash-horizon", "sled", *["dash-horizon"] * 20, "17-byte"]
+    # The menu packet arrived before the layout was known; every driving packet became rows.
+    assert t["used"] == [False, False, *[True] * 20, False]
+    assert c["lost"] == 0 and c["types"]["sled"] == {"seen": 1, "decoded": 0, "partial": 0, "raw": 1, "lost": 0}
+    assert c["types"]["dash-horizon"]["partial"] == 20
+    rows = [r for r in read_rows(folder) if r["event"] == "position"]
+    assert rows and {"yaw", "pitch", "roll", "rpm", "steer"} <= set(rows[-1])
+
+
+def test_a_forza_that_only_sat_in_its_menus_still_leaves_what_it_sent(tmp_path):
+    ctx = context(tmp_path)
+    a = racing.ForzaAdapter(id="forza-test", game="Forza Horizon 6", port=free_port())
+    a.start(ctx)
+    menu = forza_packet(pos=(0, 0, 0), vel=(0, 0, 0), race_on=False)
+    for _ in range(5):
+        a.feed(menu)
+    a.stop(ctx)
+    folder = only_session(ctx)
+    assert not (folder / "heat.parquet").exists()
+    t, c = raw_sidecar(folder)
+    assert len(t["payload"]) == 5 and c["lost"] == 0 and c["types"]["dash-horizon"]["raw"] == 5
+
+
+@windows
+def test_kunos_keeps_each_page_whole_every_time_it_changes(tmp_path):
+    pages = Pages(f"acckeep{os.getpid()}")
+    ctx = context(tmp_path)
+    a = racing.KunosAdapter(id="acc-test", game="Assetto Corsa Competizione", flavour="acc", names=pages.names)
+    try:
+        a.start(ctx)
+        a._drive.period = 0.0  # every sample a row
+        for i, (p, v) in enumerate(circle(40, 100.0, 40.0)[:10]):
+            pages.write(p, 40.0)
+            a.poll(ctx)
+        a.poll(ctx)  # nothing new: counted, not kept again
+        pages.write((0.0, 0.0, 0.0), 0.0, status=0)  # the menus: kept, not a row
+        a.poll(ctx)
+        a.stop(ctx)
+    finally:
+        pages.close()
+    folder = only_session(ctx)
+    t, c = raw_sidecar(folder)
+    tag = f"heat3d_test_acckeep{os.getpid()}"
+    physics = [i for i, k in enumerate(t["type"]) if k == f"{tag}_physics"]
+    assert len(physics) == 11
+    # The whole mapping, not only the 800 bytes decoded; the last read's bytes as written.
+    assert all(len(t["payload"][i]) >= kunos.PHYSICS_SIZE for i in physics)
+    assert t["payload"][physics[-1]][: kunos.PHYSICS_SIZE] == menu_page()
+    assert [t["used"][i] for i in physics] == [True] * 10 + [False]
+    assert t["type"].count(f"{tag}_static") == 1  # never changed
+    assert c["lost"] == 0
+    assert meta(folder)["unchanged_reads"][f"{tag}_physics"] >= 1
+    rows = [r for r in read_rows(folder) if r["event"] == "position"]
+    assert rows and {"yaw", "rpm", "steer"} <= set(rows[-1])
+
+
+def menu_page() -> bytes:
+    """The menu page the test wrote last: packet 11, status 0 in the graphics page, no position."""
+    page = bytearray(kunos.PHYSICS_SIZE)
+    struct.pack_into("<i", page, 0, 11)
+    struct.pack_into("<f", page, 4, 0.8)
+    struct.pack_into("<i", page, 16, 4)
+    return bytes(page)
+
+
+def test_rally_keeps_every_packet_whole(tmp_path):
+    ctx = context(tmp_path)
+    a = racing.RallyAdapter(id="wrc-test", game="EA SPORTS WRC", flavour="wrc", port=free_port())
+    a.start(ctx)
+    a._drive.period = 0.0  # every sample a row
+    waiting = wrc_packet(pos=(0.0, 0.0, 0.0), speed=0.0, stage_time=0.0, distance=0.0)  # before the start
+    driving = [wrc_packet(pos=(0.0, 0.0, k * 2.0), speed=20.0, stage_time=k * 0.1, distance=k * 2.0)
+               for k in range(1, 30)]
+    other = b"\x05" * 64  # another structure the config might send
+    for packet in (waiting, *driving, other):
+        a.feed(packet)
+    a.stop(ctx)
+    folder = only_session(ctx)
+    t, c = raw_sidecar(folder)
+    assert t["payload"] == [waiting, *driving, other]
+    assert t["type"] == ["session_update"] * 30 + ["wrc 64-byte"]
+    assert t["used"] == [False] + [True] * 29 + [False]
+    assert c["lost"] == 0 and c["types"]["wrc 64-byte"]["raw"] == 1
+    rows = [r for r in read_rows(folder) if r["event"] == "position"]
+    assert rows and {"yaw", "rpm", "steer"} <= set(rows[-1])
+
+
+def test_beamng_keeps_every_packet_whole(tmp_path):
+    ctx = context(tmp_path)
+    a = racing.BeamNGAdapter(id="beamng-test", game="BeamNG.drive", port=free_port())
+    a.start(ctx)
+    packets = [beamng_packet(1.0 + k * 0.1, (0.0, -k * 2.0, 0.0), (0.0, -20.0, 0.0)) for k in range(10)]
+    for packet in (*packets, b"not beamng"):
+        a.feed(packet)
+    a.stop(ctx)
+    t, c = raw_sidecar(only_session(ctx))
+    assert t["payload"] == [*packets, b"not beamng"]
+    assert t["type"] == ["H3D1"] * 10 + ["10-byte"]
+    assert t["used"] == [True] * 10 + [False]
+    assert c["lost"] == 0

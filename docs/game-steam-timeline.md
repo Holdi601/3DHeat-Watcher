@@ -105,6 +105,15 @@ only by looking the time up in another adapter's recording of the same game
 Each adapter keeps what it has already seen in `<data>\state\<id>.json`, so a
 restart records nothing twice.
 
+Each session also keeps what its rows came from, whole (3DHeat's converter
+rule, docs/converters.md in the viewer's repository), in `heat.raw.parquet`:
+the stats file's and its schema's bytes and the game's localconfig block
+(steam-stats; a stats file the decoder cannot read gets a session holding only
+its bytes), the timeline file's header and every entry as JSON
+(steam-timeline), each clip's gallery index entry, the game's highlight
+definitions and every GfeSDK log line, the ones that are not highlight
+requests too (nvidia-highlights).
+
 The same module also serves: [NVIDIA highlights (platform)](game-nvidia-highlights.md), [Steam statistics (platform)](game-steam-stats.md).
 
 ## Positions and axes
@@ -132,6 +141,26 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 `achievements`, `game_mode_changes`, `phases`, `recorded_seconds`, `timeline_events`
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
+
+## Completeness
+
+The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the source holds is read or kept, never dropped. Besides the rows, every packet, page, line or reply the adapter receives is kept whole in the session's `heat.raw.parquet` (columns `time`, `ms`, `type`, `used`, `payload`, `text`, then any field kept by name; `used` marks what also became rows), and `meta.json`'s `selfCheck.completeness` counts each `type` - `lost` is 0.
+
+**Read**
+
+- every entry once, as a row at its time: its type, every plain field (title, description, icon, priority, duration, possible_clip, achievement name, mode, ...), a phase's tags by group, the achievement's display name from the stats schema; the file's start and end
+
+**Kept raw**
+
+- every entry whole as JSON under Steam's own `type` (`gamemode`, `achievement`, `event`, `state_description`, `phase`, `error`, any other): nested fields - a tag's icon and priority, anything a later Steam adds - are only here
+- `timeline`: the file's own fields (daterecorded, starttime, endtime, any other), when the session opens and again when they change
+
+**Not available**
+
+- the recording itself (video): Steam keeps it in its own folders; the session refers to the timeline file by name
+- a read of a file Steam is writing that cannot be parsed even with its end closed: counted (`bad` in the adapter's state) and read again at the next change, where its entries are taken
+
+**Size**: a few hundred entries of 100-300 bytes per hour of play: well under 1 MB per hour
 
 ## Verified
 

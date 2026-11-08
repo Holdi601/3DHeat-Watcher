@@ -53,10 +53,21 @@ def drive(a: gsi.GsiAdapter, ctx: Context, docs: list) -> None:
         a.stop(ctx)
 
 
+def meta_of(folder: Path) -> dict:
+    return json.loads((folder / "meta.json").read_text(encoding="utf-8"))
+
+
 def only_session(ctx: Context) -> Path:
-    folders = [p for p in (ctx.data / "sessions").glob("*/*") if p.is_dir()]
+    """The one match; documents posted after it (the menu) are in a raw-only session of their own."""
+    folders = [p for p in (ctx.data / "sessions").glob("*/*") if p.is_dir() and not meta_of(p).get("raw_only")]
     assert len(folders) == 1, folders
     return folders[0]
+
+
+def raw_table(folder: Path) -> dict:
+    import pyarrow.parquet as pq
+
+    return pq.read_table(folder / "heat.raw.parquet").to_pydict()
 
 
 # ----------------------------------------------------------------------------- CS2
@@ -137,6 +148,43 @@ def test_cs2_round_kill_death_and_result(tmp_path):
     assert meta["axes"]["up"] == "z" and meta["axes"]["flip_y"] is True
     assert meta["map"] == "de_example"
     assert (folder / "heat.parquet").exists()
+
+
+def test_cs2_every_document_is_kept_whole_in_the_raw_sidecar(tmp_path):
+    """docs/converters.md: what the adapter reads, what it does not, and menu posts before and after the match."""
+    ctx = context(tmp_path)
+    a = adapter("cs2-gsi", token="secret")
+    menu = {"provider": {"name": "Counter-Strike: Global Offensive", "appid": 730, "steamid": ME},
+            "player": {"steamid": ME, "activity": "menu"}, "auth": {"token": "secret"}}
+    live = cs2(rphase="live", player=me((150, 260, 10)))
+    live["map"]["round_wins"] = {"1": "ct_win_elimination"}  # nothing reads it: kept raw
+    live["something_new"] = {"a": 1}
+    drive(a, ctx, [
+        menu,
+        b"\xff not json",
+        cs2(rphase="freezetime", player=me((100, 200, 10))),
+        live,
+        cs2(phase="gameover", rphase="over", player=me((150, 260, 10)), round={"win_team": "T"}, t=1),
+        {**menu, "player": {"steamid": ME, "activity": "menu", "after": True}},
+    ])
+    folder = only_session(ctx)
+    t = raw_table(folder)
+    assert t["type"] == ["gsi", "gsi-unreadable", "gsi", "gsi", "gsi"]
+    assert t["used"] == [False, False, True, True, True]
+    assert t["time"][0] < 0 and t["time"][1] < 0  # posted in the menu, before the match began
+    assert t["payload"][1] == b"\xff not json" and t["length"][1] == len(b"\xff not json")
+    kept = json.loads(t["text"][3])
+    assert kept["map"]["round_wins"] == {"1": "ct_win_elimination"} and kept["something_new"] == {"a": 1}
+    assert kept["auth"] == {"token": ""} and not any("secret" in (x or "") for x in t["text"])
+    c = meta_of(folder)["selfCheck"]["completeness"]
+    assert c["lost"] == 0 and c["types"]["gsi"] == {"seen": 4, "decoded": 0, "partial": 3, "raw": 1, "lost": 0}
+    pos = next(r for r in read_rows(folder) if r["event"] == "position")
+    assert pos["weapon"] == "weapon_ak47" and pos["helmet"] == 1 and pos["equip_value"] == 200
+    # The menu after the match: a session of its own with only the raw feed.
+    [after] = [p for p in (ctx.data / "sessions").glob("*/*") if meta_of(p).get("raw_only")]
+    t = raw_table(after)
+    assert t["type"] == ["gsi"] and t["used"] == [False] and json.loads(t["text"][0])["player"]["after"] is True
+    assert read_rows(after) == [] and meta_of(after)["selfCheck"]["completeness"]["lost"] == 0
 
 
 def test_cs2_late_death_from_the_count(tmp_path):
@@ -296,6 +344,24 @@ def test_dota_hero_route_kills_buildings_roshan(tmp_path):
     assert st["level"] == 3 and st["last_hits"] == 10
     assert all(r["session"] == "7000000001" for r in rows if "x" in r)
     assert (folder / "heat.parquet").exists()
+
+
+def test_dota_unread_components_are_kept_whole(tmp_path):
+    ctx = context(tmp_path)
+    a = adapter("dota2-gsi", token="secret")
+    items = {"slot0": {"name": "item_example", "purchaser": 1, "can_cast": True}}
+    drive(a, ctx, [
+        dota(hero={**dhero(-6000, -6000), "mana": 300, "max_mana": 400}, player=dplayer(), items=items,
+             minimap={"o0": {"xpos": 10, "ypos": 20, "image": "minimap_example", "team": 2}}),
+    ])
+    folder = only_session(ctx)
+    t = raw_table(folder)
+    assert t["type"] == ["gsi"] and t["used"] == [True]
+    doc = json.loads(t["text"][0])
+    assert doc["items"] == items and doc["minimap"]["o0"]["image"] == "minimap_example"
+    assert meta_of(folder)["selfCheck"]["completeness"]["lost"] == 0
+    pos = next(r for r in read_rows(folder) if r["event"] == "position")
+    assert pos["mana"] == 300 and pos["max_mana"] == 400 and pos["max_health"] == 640
 
 
 def test_dota_setup_creates_folder(tmp_path):

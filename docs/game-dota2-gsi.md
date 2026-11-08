@@ -57,7 +57,19 @@ a player may see:
   (kills, deaths, assists, last_hits, denies, gold, gpm, xpm, team_name), `hero`
   (xpos/ypos in world units, level, alive, respawn_seconds), `buildings`
   (health per tower/barracks/ancient), `roshan`, `events` (roshan_killed,
-  aegis_picked_up, ...). There is no height: z is 0.
+  aegis_picked_up, ...). There is no height: z is 0. Also asked for, and kept
+  whole: `abilities`, `items`, `draft`, `wearables`, `minimap`, `couriers`,
+  `neutralitems`, `league` (the game sends what the player's own client has;
+  which of them hold anything while playing rather than spectating is untested).
+
+Every document is kept whole as well (3DHeat's converter rule,
+docs/converters.md in the viewer's repository): `heat.raw.parquet`, `type`
+"gsi", `text` the JSON as posted - only the cfg file's token blanked, it is the
+watcher's own secret, not game data. Documents posted while no match is open
+(menus, loading, between matches) wait in a `Backlog` and go into the next
+match's session, before its start; what is left when the game closes gets a
+session of its own that holds only them. Unreadable posts and posts with a
+wrong token are kept too ("gsi-unreadable", "gsi-bad-auth").
 
 Sources: <https://developer.valvesoftware.com/wiki/Counter-Strike:_Global_Offensive_Game_State_Integration>
 (the format CS2 kept), <https://github.com/antonpup/CounterStrike2GSI> and
@@ -90,6 +102,33 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 `bad_auth`, `bad_packets`, `dropped_packets`, `hero`, `level`, `result`, `roshan_kills_seen`
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
+
+## Completeness
+
+The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the source holds is read or kept, never dropped. Besides the rows, every packet, page, line or reply the adapter receives is kept whole in the session's `heat.raw.parquet` (columns `time`, `ms`, `type`, `used`, `payload`, `text`, then any field kept by name; `used` marks what also became rows), and `meta.json`'s `selfCheck.completeness` counts each `type` - `lost` is 0.
+
+**Read**
+
+- the own hero's position (x/y), alive, level, health, max health, mana, max mana; spawn, deaths with the respawn time, respawns
+- kills (the kill count growing); kills, deaths, assists, last hits, denies, gold, GPM, XPM, net worth, level and hero as statistics
+- buildings destroyed, Roshan down and back, every entry of `events` once, game states, the winner
+
+**Kept raw**
+
+- `gsi`: every document the game posts, whole, as posted (`text`), `used` true when it was read in a match - all fifteen components the cfg file asks for: provider, map (day/night, paused, ward cooldowns, scores), player (reliable and unreliable gold, streaks, kill list, commands issued, ...), hero (buffs, talents, Aghanim's, attributes), abilities, items, buildings, roshan, events, draft, wearables, minimap, couriers, neutralitems, league, and the game's `previously`/`added` diff
+- documents from menus, loading and between matches: kept the same way, at their own time before the next match's start; after the last match, in a session of their own (`raw_only` in meta.json)
+- `gsi-unreadable`: a post that is not a JSON object, its bytes as `payload` and `length`
+- `gsi-bad-auth`: a post with another token than the cfg file's
+
+**Not available**
+
+- height: the game sends x and y only
+- the other heroes while playing: the game sends the own hero, and every player's only to spectators (kept raw then, not drawn); several components (draft, minimap, couriers) carry only what the player's own client has - which, while playing, is untested (Dota 2 is not installed here)
+- states between posts: at most one every 0.1 s (`throttle`), every 10 s when nothing changes
+- the cfg file's token, blanked in each kept document: the watcher's own secret, not game data
+- posts beyond 10,000 waiting (the watcher stalled) are counted as `dropped_packets`, not kept; a post over 4 MB is kept as `gsi-unreadable` with its length but without its bytes
+
+**Size**: with every component a player's document is about 5-15 KB, posted up to 10 times a second (the clock changes every post): about 100-500 MB per hour in `raw.bin` while the match runs, roughly a tenth in the zstd `heat.raw.parquet`; a spectator's, with every player and the minimap, several times that (estimated from the published format, not measured on the game)
 
 ## Verified
 

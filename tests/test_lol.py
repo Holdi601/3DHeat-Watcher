@@ -137,6 +137,54 @@ def test_lol_match_events_and_stats(tmp_path):
     assert not (folders[0] / "heat.parquet").exists()
 
 
+def test_lol_every_answer_is_kept_whole_in_the_raw_sidecar(tmp_path):
+    """docs/converters.md: answers the adapter reads and parts it does not, the loading screen and the end screen."""
+    import pyarrow.parquet as pq
+
+    fake = FakeClient()
+    data = tmp_path / "data"
+    ctx = Context(Settings(data=str(data)), data)
+    a = dataclasses.replace(lol.ADAPTERS[0], url=fake.url, scoreboard_every=0)
+    try:
+        a.start(ctx)
+        a.poll(ctx)  # loading screen: 404
+        a.poll(ctx)  # the same 404 again: kept once, counted
+        assert not (data / "sessions").exists()
+        g = game(10.0)
+        g["allPlayers"][0]["items"] = [{"itemID": 1001, "slot": 0, "displayName": "Boots", "price": 300}]
+        fake.game = g
+        fake.events = [{"EventID": 0, "EventName": "GameStart", "EventTime": 0.05},
+                       {"EventID": 1, "EventName": "SomethingNew", "EventTime": 5.0, "NewField": "value",
+                        "Time": 3, "Nested": {"a": 1}}]
+        a.poll(ctx)
+        a.poll(ctx)  # nothing new: the event answer repeats
+        fake.events.append({"EventID": 2, "EventName": "GameEnd", "EventTime": 900.0, "Result": "Lose"})
+        a.poll(ctx)
+        fake.game = game(905.0)
+        a.poll(ctx)  # the end screen: answered, nothing read
+        a.stop(ctx)
+    finally:
+        fake.close()
+    [folder] = list((data / "sessions").glob("*/*"))
+    rows = read_rows(folder)
+    new = next(r for r in rows if r["event"] == "something_new")
+    assert new["new_field"] == "value" and new["game_time"] == 3 and "nested" not in new
+    t = pq.read_table(folder / "heat.raw.parquet").to_pydict()
+    assert t["type"][0] == "allgamedata" and t["status"][0] == 404 and t["used"][0] is False and t["time"][0] < 0
+    boards = [i for i, k in enumerate(t["type"]) if k == "allgamedata" and t["status"][i] is None]
+    first = json.loads(t["text"][boards[0]])
+    assert first["allPlayers"][0]["items"][0]["displayName"] == "Boots"  # nothing reads items: kept raw
+    assert [t["used"][i] for i in boards] == [True, True, False]  # the second poll's board was the first's
+    events = [i for i, k in enumerate(t["type"]) if k == "eventdata"]
+    assert t["used"][events[0]] is True
+    assert json.loads(t["text"][events[0]])["Events"][1]["Nested"] == {"a": 1}
+    meta = json.loads((folder / "meta.json").read_text(encoding="utf-8"))
+    assert meta["unchanged_replies"] == {"allgamedata": 2}
+    assert meta["stats"]["result"] == "loss"
+    c = meta["selfCheck"]["completeness"]
+    assert c["lost"] == 0 and c["types"]["allgamedata"]["partial"] == 2 and c["types"]["allgamedata"]["raw"] == 2
+
+
 def test_lol_never_asks_anywhere_but_localhost():
     a = dataclasses.replace(lol.ADAPTERS[0], url="https://example.com:2999")
     assert a.missing() and a.get("/liveclientdata/allgamedata") is None

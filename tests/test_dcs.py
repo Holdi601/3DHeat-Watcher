@@ -225,6 +225,62 @@ def test_the_hook_runs_under_lua_5_1():
     """)
     L.execute(hook_lua())
     L.execute("callbacks.onSimulationStart(); callbacks.onSimulationFrame(); callbacks.onGameEvent('crash', 1, 5)")
+    L.execute("callbacks.onSimulationPause(); callbacks.onChatMessage('hi;there', 'Someone')")
     kinds = [parse_line(t)[0] for t, _, _ in sent]
-    assert kinds == ["hello", "start", "p", "ev"] and all(p == 41993 for _, _, p in sent)
-    assert parse_line(sent[2][0])[1]["type"] == "A-10C" and parse_line(sent[1][0])[1]["mission"] == "M 1"
+    assert kinds == ["hello", "start", "mis", "p", "d", "ev", "cb", "cb"] and all(p == 41993 for _, _, p in sent)
+    assert parse_line(sent[3][0])[1]["type"] == "A-10C" and parse_line(sent[1][0])[1]["mission"] == "M 1"
+    assert parse_line(sent[0][0]) == ("hello", {"v": "2"})
+    # The once-a-second dump: LoGetSelfData whole, flattened; functions DCS lacks here just leave keys out.
+    d = parse_line(sent[4][0])[1]
+    assert d["self.Name"] == "A-10C" and d["self.LatLongAlt.Lat"] == "42.5" and d["self.Position.y"] == "100"
+    assert parse_line(sent[6][0])[1] == {"t": "0.000", "name": "onSimulationPause", "args": ""}
+    assert parse_line(sent[7][0])[1]["args"] == "hi there|Someone"
+
+
+def test_every_line_is_kept_in_the_raw_sidecar(tmp_path):
+    """Lines the adapter turns into rows and lines it does not (the dump, callbacks, garbage) all reach heat.raw.parquet."""
+    a = replace(ADAPTERS[0])
+    ctx = Context(Settings(data=str(tmp_path)), tmp_path)
+    lines = [
+        "hello;v=2",  # before any mission: opens the session the mission then joins
+        "cb;t=0;name=onMissionLoadBegin;args=",
+        "start;mission=M;map=Caucasus;me=1;name=P;mp=0;file=C:/m.miz;server=1",
+        "mis;t=0;date.Day=15;date.Month=6;date.Year=2011;start_time=28800;weather.season.temperature=20",
+        "p;t=1;x=-281000;y=1000;z=647000;lat=42;lon=42;alt=1000;type=Su-25T;tas=150.5;mach=0.45;aoa=0.05;air=1",
+        "d;t=1;self.Country=0;eng.RPM.left=85.1;pay.Stations.1.count=2",
+        "p;t=1.1;x=0;y=0;z=0",  # no LatLongAlt: kept, but no row
+        "cb;t=2;name=onChatMessage;args=hello|Someone",
+        "zz;t=3;what=nobody knows",
+        "stop;t=4",
+    ]
+    for line in lines[:-2]:
+        a.line(ctx, line)
+    folder = a._session.folder
+    with pytest.raises(ValueError):
+        a.line(ctx, lines[-2])
+    a.line(ctx, lines[-1])
+    assert a._session is None
+    rows = read_rows(folder)
+    assert [r["event"] for r in rows if r["event"] != "position"] == ["mission_start", "spawn", "mission_stop",
+                                                                      "session_end"]
+    pos = next(r for r in rows if r["event"] == "position")
+    assert (pos["tas"], pos["mach"], pos["aoa"], pos["in_air"]) == (150.5, 0.45, 0.05, 1)
+    meta = json.loads((folder / "meta.json").read_text(encoding="utf-8"))
+    assert meta["mission_date"] == "2011-06-15" and meta["mission_start_time"] == 28800 and meta["server"] is True
+    t = pq.read_table(folder / "heat.raw.parquet").to_pylist()
+    assert [r["text"] for r in t] == lines
+    assert [r["type"] for r in t] == ["hello", "cb", "start", "mis", "p", "d", "p", "cb", "zz", "stop"]
+    assert [r["used"] for r in t] == [False, False, True, True, True, False, False, False, False, True]
+    check = meta["selfCheck"]["completeness"]
+    assert check["lost"] == 0 and check["sidecars"] == ["heat.raw.parquet"]
+    assert check["types"]["p"] == {"seen": 2, "decoded": 0, "partial": 1, "raw": 1, "lost": 0}
+    assert check["types"]["d"]["raw"] == 1 and check["types"]["zz"]["seen"] == 1
+    # Garbage that is not a line kind at all is kept under "unknown".
+    a.line(ctx, "hello;v=2")
+    with pytest.raises(ValueError):
+        a.line(ctx, "this is not a line")
+    folder = a._session.folder
+    a.stop(ctx)
+    t = pq.read_table(folder / "heat.raw.parquet").to_pylist()
+    assert [(r["type"], r["used"]) for r in t] == [("hello", False), ("unknown", False)]
+    assert not (folder / "heat.parquet").exists()  # a session with only raw lines is kept, without a table

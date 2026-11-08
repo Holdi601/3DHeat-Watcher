@@ -28,6 +28,13 @@ https://developer.x-plane.com/datarefs/):
     sim/flightmodel2/misc/has_crashed                        1 crashed
     sim/time/total_flight_time_sec                           since the flight was reset
 
+and the rest of the flight at the same rate (true airspeed, vertical speed, AoA,
+sideslip, magnetic heading, Mach, axial and side g, rotation rates, flaps,
+speedbrake, throttle: `DATAREFS`), with the aircraft's slower state once a
+second (weights, gear handle, autopilot, engines, the sim's time, pause and
+speed, weather: `SLOW_DATAREFS`). Every datagram is also kept whole in the
+session's raw sidecar, and meta.json names the dataref behind each RREF index.
+
 X-Plane 12 accepts these only with Settings > Network > "Accept incoming
 connections" on. Positions go into a flat map around the sitting's first fix
 (`Tangent`): x east, z north in metres, y the altitude above sea level - so a
@@ -310,8 +317,49 @@ DATAREFS: tuple[tuple[int, str, str], ...] = (
     (11, "sim/flightmodel2/misc/has_crashed", "crashed"),
     (12, "sim/flightmodel/failures/onground_any", "on_ground"),
     (13, "sim/time/total_flight_time_sec", "flight_time"),
+    # The rest of the flight at the same rate (units as DataRefs.txt gives them), for the rows and the raw sidecar.
+    (14, "sim/flightmodel/position/true_airspeed", "tas"),  # m/s
+    (15, "sim/flightmodel/position/vh_ind", "vertical_speed"),  # m/s
+    (16, "sim/flightmodel/position/alpha", "aoa"),  # degrees
+    (17, "sim/flightmodel/position/beta", "sideslip"),  # degrees
+    (18, "sim/flightmodel/position/mag_psi", "magnetic_heading"),  # degrees
+    (19, "sim/flightmodel/misc/machno", "mach"),
+    (20, "sim/flightmodel/forces/g_axil", "g_axial"),  # g along the aircraft
+    (21, "sim/flightmodel/forces/g_side", "g_side"),  # g sideways
+    (22, "sim/flightmodel/position/P", "roll_rate"),  # deg/s
+    (23, "sim/flightmodel/position/Q", "pitch_rate"),  # deg/s
+    (24, "sim/flightmodel/position/R", "yaw_rate"),  # deg/s
+    (25, "sim/flightmodel/controls/flaprat", "flaps"),  # 0..1, actual deployment
+    (26, "sim/flightmodel/controls/sbrkrat", "speedbrake"),  # 0..1.5, actual deployment
+    (27, "sim/cockpit2/engine/actuators/throttle_ratio_all", "throttle"),  # 0..1, the handle
 )
-NAMES = {i: name for i, _, name in DATAREFS}
+#: Datarefs that change slowly, asked for once a second: (index, dataref, name). "[n]" is an array's element.
+SLOW_DATAREFS: tuple[tuple[int, str, str], ...] = (
+    (101, "sim/flightmodel/weight/m_total", "weight_kg"),
+    (102, "sim/flightmodel/weight/m_fuel_total", "fuel_kg"),
+    (103, "sim/flightmodel/weight/m_fixed", "payload_kg"),
+    (104, "sim/cockpit2/controls/gear_handle_down", "gear_down"),
+    (105, "sim/cockpit2/autopilot/servos_on", "autopilot"),
+    (106, "sim/time/zulu_time_sec", "zulu_time"),  # seconds since midnight
+    (107, "sim/time/local_date_days", "local_date_days"),  # days since 1 January
+    (108, "sim/time/local_time_sec", "local_time"),
+    (109, "sim/time/paused", "paused"),
+    (110, "sim/time/sim_speed", "sim_speed"),
+    (111, "sim/time/is_in_replay", "replay"),
+    (112, "sim/aircraft/engine/acf_num_engines", "engines"),
+    (113, "sim/cockpit2/engine/indicators/engine_speed_rpm[0]", "rpm_1"),
+    (114, "sim/cockpit2/engine/indicators/engine_speed_rpm[1]", "rpm_2"),
+    (115, "sim/cockpit2/engine/indicators/engine_speed_rpm[2]", "rpm_3"),
+    (116, "sim/cockpit2/engine/indicators/engine_speed_rpm[3]", "rpm_4"),
+    (117, "sim/cockpit2/engine/indicators/N1_percent[0]", "n1_1"),
+    (118, "sim/cockpit2/engine/indicators/N1_percent[1]", "n1_2"),
+    (119, "sim/weather/aircraft/temperature_ambient_deg_c", "oat_c"),  # X-Plane 12
+    (120, "sim/weather/region/sealevel_pressure_pas", "sea_level_pa"),  # X-Plane 12
+)
+SLOW_HZ = 1
+NAMES = {i: name for i, _, name in (*DATAREFS, *SLOW_DATAREFS)}
+#: The values that go onto every row as they are, by name (the first thirteen are placed by hand).
+ROW_VALUES = tuple(name for i, _, name in (*DATAREFS, *SLOW_DATAREFS) if i > 13)
 
 RPOS_FORMAT = "<dddffffffffff"
 RPOS_FIELDS = ("lon", "lat", "alt", "agl", "pitch", "heading", "roll", "vx", "vy", "vz", "p", "q", "r")
@@ -379,33 +427,59 @@ class XPlaneAdapter(Adapter):
         try:
             for index, path, _ in DATAREFS:
                 self._sock.sendto(rref_request(hz, index, path), target)
+            for index, path, _ in SLOW_DATAREFS:
+                self._sock.sendto(rref_request(min(hz, SLOW_HZ), index, path), target)
             self._sock.sendto(rpos_request(hz), target)
         except OSError as e:
             log.debug("xplane: request not sent: %s", e)
         self._asked = time.monotonic()
 
+    def _open(self, ctx: Context) -> Session:
+        """
+        A session, opened by the first answer: its flat map is placed at the first fix (`_step`). meta.json
+        says what each RREF index is, so the raw sidecar's RREF payloads can be read without this module.
+        """
+        rref = {str(i): {"dataref": path, "name": name, "hz": self.hz} for i, path, name in DATAREFS}
+        rref.update({str(i): {"dataref": path, "name": name, "hz": min(self.hz, SLOW_HZ)}
+                     for i, path, name in SLOW_DATAREFS})
+        self._session = ctx.open(self, meta={"requests": {"rref": rref, "rpos_hz": self.hz,
+                                                          "rpos_fields": list(RPOS_FIELDS)}})
+        self._log = FlightLog(self._session)
+        self._tangent = None
+        return self._session
+
+    def _keep(self, ctx: Context, packet: bytes, used: bool) -> None:
+        """Every datagram whole in the raw sidecar, under its four-letter header ("RREF", "RPOS")."""
+        head = packet[:4]
+        kind = head.decode("ascii") if len(head) == 4 and all(48 <= c < 123 for c in head) else "unknown"
+        (self._session or self._open(ctx)).raw(kind, packet, used=used)
+
     def poll(self, ctx: Context) -> None:
         now = time.monotonic()
         fresh = False
+        got: list[tuple[bytes, bool]] = []
         for packet, _ in drain(self._sock):
+            read = False
             try:
                 if packet[:4] == b"RREF":
                     for index, value in decode_rref(packet).items():
                         if index in NAMES:
                             self._values[NAMES[index]] = value
-                    fresh = True
+                    fresh = read = True
                 elif packet[:4] == b"RPOS":
                     self._rpos, self._rpos_at = decode_rpos(packet), now
-                    fresh = True
+                    fresh = read = True
             except (ValueError, struct.error):
-                if self._session is not None:
-                    self._session.stat("bad_packets", 1, "add")
+                (self._session or self._open(ctx)).stat("bad_packets", 1, "add")
+            got.append((packet, read))
         if fresh:
             self._heard = now
         elif now - self._heard > 3.0 and now - self._asked > 5.0:
             self._ask(self.hz)
-        if fresh:
-            self._step(ctx, now)
+        made = self._step(ctx, now) if fresh else False
+        for packet, read in got:
+            # `used`: the poll's answers made a row (in the menus, without a fix, they make none).
+            self._keep(ctx, packet, read and made)
 
     def _fix(self, now: float) -> tuple[float, float, float] | None:
         if self._rpos is not None and now - self._rpos_at < 1.0:
@@ -415,7 +489,8 @@ class XPlaneAdapter(Adapter):
             return v["lat"], v["lon"], v["alt"]
         return None
 
-    def _step(self, ctx: Context, now: float) -> None:
+    def _step(self, ctx: Context, now: float) -> bool:
+        """The latest values as a row; False when there is no fix to place one at."""
         v = self._values
         ft = v.get("flight_time")
         if ft is not None:
@@ -427,21 +502,27 @@ class XPlaneAdapter(Adapter):
             self._flight_time = ft
         fix = self._fix(now)
         if fix is None:
-            return
+            return False
         lat, lon, alt = fix
         if not (-90.0 <= lat <= 90.0 and -180.0 <= lon <= 180.0) or (lat == 0.0 and lon == 0.0):
-            return
+            return False
         if self._session is not None and self._tangent is not None and self._new_flight:
             if ground_distance((self._tangent.lat, self._tangent.lon), (lat, lon)) > self.new_map_km * 1000:
                 self._close(ctx)
         self._new_flight = False
-        if self._session is None:
+        s = self._session or self._open(ctx)
+        if self._tangent is None:
+            # The flat map is placed at the session's first fix, and said at once (meta.json, the table's footer).
             self._tangent = Tangent(lat, lon)
-            self._session = ctx.open(self, meta={"origin": self._tangent.meta()}, geo=self._tangent.geo())
-            self._log = FlightLog(self._session)
+            s.meta["origin"] = self._tangent.meta()
+            s.geo = self._tangent.geo()
+            try:
+                s.write_meta()
+            except OSError:
+                pass
         assert self._tangent is not None and self._log is not None
         x, y, z = self._tangent.local(lat, lon, alt)
-        src =self._rpos if self._rpos is not None and now - self._rpos_at < 1.0 else {}
+        src = self._rpos if self._rpos is not None and now - self._rpos_at < 1.0 else {}
         on_ground = v.get("on_ground")
         crashed = v.get("crashed")
         self._log.fix(
@@ -461,7 +542,16 @@ class XPlaneAdapter(Adapter):
             groundspeed=v.get("groundspeed"),
             agl=src.get("agl", v.get("agl")),
             flight_time=ft,
+            # RPOS's velocity (m/s, X-Plane's world axes: x east, y up, z south) and rotation rates (rad/s).
+            vel_east=src.get("vx"),
+            vel_up=src.get("vy"),
+            vel_south=src.get("vz"),
+            p_rad=src.get("p"),
+            q_rad=src.get("q"),
+            r_rad=src.get("r"),
+            **{name: v.get(name) for name in ROW_VALUES},
         )
+        return True
 
     def _close(self, ctx: Context) -> None:
         if self._log is not None:
@@ -488,9 +578,14 @@ ADAPTERS = [
         records=(
             "own position at 10 Hz (latitude/longitude/altitude as metres east/up/north of the first fix; "
             "lat/lon/alt kept as columns)",
-            "attitude, indicated airspeed, groundspeed, AGL, normal g, on-ground",
+            "attitude, indicated and true airspeed, groundspeed, Mach, vertical speed, AoA, sideslip, magnetic "
+            "heading, AGL, g (normal, axial, side), velocity and rotation rates, flaps, speedbrake, throttle, "
+            "on-ground",
+            "weights (total, fuel, payload), gear handle, autopilot, engine RPM and N1, sim time and date, pause, "
+            "sim speed, replay, outside temperature and sea-level pressure (X-Plane 12) once a second",
             "takeoffs, landings, crashes, flight resets (session_start/session_end per flight)",
             "flight time, airborne time, distance, highest altitude, highest g, landings",
+            "every answer X-Plane sends kept whole in heat.raw.parquet",
         ),
         enable="X-Plane 12: Settings > Network > Accept incoming connections (X-Plane 11 answers by default)",
         interval=0.1,
@@ -499,5 +594,37 @@ ADAPTERS = [
             "tested against a fake X-Plane answering RREF/RPOS per X-Plane 12's 'Exchanging Data with X-Plane'; "
             "dataref names checked against X-Plane 12's DataRefs.txt; untested against the running sim"
         ),
+        completeness={
+            "read": (
+                "RPOS (10 Hz): longitude, latitude, elevation, AGL, pitch, true heading, roll, velocity (east, up, "
+                "south) and rotation rates P/Q/R - all on the rows",
+                "RREF (10 Hz): the 27 datarefs of `DATAREFS` - position, attitude, IAS, groundspeed, TAS, vertical "
+                "speed, AoA, sideslip, magnetic heading, Mach, g normal/axial/side, rotation rates, flaps, "
+                "speedbrake, throttle, AGL, crashed, on-ground, flight time - on the rows",
+                "RREF (1 Hz): the 20 datarefs of `SLOW_DATAREFS` - weights, gear handle, autopilot servos, sim "
+                "time and date, pause, sim speed, replay, engine count, RPM of engines 1-4, N1 of engines 1-2, "
+                "outside air temperature, sea-level pressure - on the rows as last received",
+            ),
+            "raw": (
+                "every datagram whole as `payload`, under its four-letter header: `RREF` and `RPOS` (used when the "
+                "poll made a row; in the menus, without a fix, they make none), anything else X-Plane sends to "
+                "the watcher's port under its own header or `unknown`; meta.json's `requests` says which "
+                "dataref each RREF index is, so the payloads read without this module",
+            ),
+            "missing": (
+                "every other dataref (X-Plane has thousands): RREF sends only what is asked for, one subscription "
+                "each; the list asks for the flight, the aircraft's state and the sim's time - more cockpit "
+                "detail (radios, lights, every engine's gauges, failures) would multiply the requests",
+                "the aircraft's name and ICAO type: byte-array datarefs, which RREF sends one float per character",
+                "other aircraft (AI and multiplayer): sim/multiplayer/position datarefs not requested",
+                "the DATA output (Settings > Data Output): it sends to a fixed address chosen in the sim, not to "
+                "whoever asks; RREF and RPOS cover what the watcher reads",
+            ),
+            "size": (
+                "about 17 MB an hour before zstd (RREF and RPOS at 10 Hz, about 220 and 70 bytes plus a frame "
+                "each, the slow RREF once a second), if X-Plane sends each poll's values in one packet as it "
+                "does; zstd reduces the floats several times"
+            ),
+        },
     )
 ]

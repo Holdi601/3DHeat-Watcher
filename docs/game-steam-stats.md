@@ -102,6 +102,15 @@ only by looking the time up in another adapter's recording of the same game
 Each adapter keeps what it has already seen in `<data>\state\<id>.json`, so a
 restart records nothing twice.
 
+Each session also keeps what its rows came from, whole (3DHeat's converter
+rule, docs/converters.md in the viewer's repository), in `heat.raw.parquet`:
+the stats file's and its schema's bytes and the game's localconfig block
+(steam-stats; a stats file the decoder cannot read gets a session holding only
+its bytes), the timeline file's header and every entry as JSON
+(steam-timeline), each clip's gallery index entry, the game's highlight
+definitions and every GfeSDK log line, the ones that are not highlight
+requests too (nvidia-highlights).
+
 The same module also serves: [NVIDIA highlights (platform)](game-nvidia-highlights.md), [Steam Timeline (platform)](game-steam-timeline.md).
 
 ## Positions and axes
@@ -129,6 +138,30 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 `achievements_total`, `achievements_unlocked`, `last_played`, `playtime_2wks_minutes`, `playtime_minutes`
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
+
+## Completeness
+
+The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the source holds is read or kept, never dropped. Besides the rows, every packet, page, line or reply the adapter receives is kept whole in the session's `heat.raw.parquet` (columns `time`, `ms`, `type`, `used`, `payload`, `text`, then any field kept by name; `used` marks what also became rows), and `meta.json`'s `selfCheck.completeness` counts each `type` - `lost` is 0.
+
+**Read**
+
+- every stat of the stats file by its API name (int, float, avgrate), every achievement bit with its unlock time, named and described by the schema
+- changes against the last read (old, new, difference), new unlocks; playtime, two-week playtime and last played from localconfig.vdf
+
+**Kept raw**
+
+- `UserGameStats`: the stats file's bytes, whole, each time it is recorded (the `crc`, `PendingChanges`, achievement bits the schema no longer defines and any key the decoder skips are in it)
+- `UserGameStatsSchema`: the schema file's bytes beside it, so the stats can be decoded from the session alone (every stat's and achievement's names in every language, icons, flags)
+- `localconfig_app`: the game's whole block of localconfig.vdf as JSON (cloud sync state, launch options, badges and every other key Steam keeps per game) when its playtime is recorded
+- a stats file the decoder cannot read (cut mid-write, or a new layout): its bytes and the schema in a session without rows (`used` false; `unreadable` in meta.json)
+
+**Not available**
+
+- the rest of localconfig.vdf (friends, chat, Steam settings): not the game's, and private
+- stat values between two writes: Steam rewrites the file when the game stores its stats, usually when it closes
+- global achievement percentages and other players' stats: they are on Steam's servers, not here
+
+**Size**: a few KB per recorded sitting, plus the schema (up to a few hundred KB for a game with many achievements) - well under 1 MB per hour of play; zstd shrinks the schema's text by half or more
 
 ## Verified
 

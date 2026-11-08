@@ -14,6 +14,16 @@ Where: `%USERPROFILE%\\Saved Games\\Frontier Developments\\Elite Dangerous\\`
 * `Status.json` - rewritten whole whenever the ship's state changes: `Flags`,
   and near a planet `Latitude`, `Longitude` (degrees), `Altitude` (metres),
   `Heading`, `BodyName` and `PlanetRadius` (metres).
+* The other companion files, each rewritten whole when the matching journal
+  event is written: `Market.json`, `Outfitting.json`, `Shipyard.json`,
+  `NavRoute.json`, `Cargo.json`, `ModulesInfo.json`, `ShipLocker.json`,
+  `Backpack.json`, `FCMaterials.json`. Every `*.json` of the folder that the
+  game writes in this sitting is kept whole each time it changes (3DHeat's
+  converter rule: what the source holds is read or kept), under its file name.
+
+Every journal line is kept whole in the session's raw sidecar under its
+`event`, every companion file under its file name; a line that is not JSON
+under `unparsed`.
 
 Surface positions are put into a local tangent plane per body, in metres: the
 first fix on a body is its origin, x east, z north, y up (altitude), the same
@@ -40,11 +50,15 @@ from pathlib import Path
 from typing import Any, Callable
 
 from ..session import Axes, Session
-from ._logfollow import Follower, game_started, newest, read_shared
+from ._logfollow import SLACK, Follower, game_started, newest, read_shared
 from .base import Adapter, Context
 
 #: Status.json Flags bit 21: the game is giving latitude and longitude.
 HAS_LAT_LONG = 1 << 21
+
+#: Status.json fields the surface rows carry under their own names already, and those names.
+_STATUS_OWN = {"Latitude", "Longitude", "Altitude", "Heading", "BodyName", "PlanetRadius",
+               "s", "fix", "body", "lat", "lon", "alt", "heading"}
 
 #: Keyword names of Session.event that a journal field must not shadow.
 _RESERVED = {"t", "ms", "x", "y", "z", "player", "team", "session", "event", "time"}
@@ -151,12 +165,19 @@ class Journal:
             if not isinstance(entry, dict) or "event" not in entry:
                 raise ValueError("not a journal entry")
         except ValueError:
-            if self.started is not None:
-                self.session_for(self.started).stat("bad_lines", 1, "add")
+            # Not understood, still kept: the session opens for it like for any line.
+            ts = line_time(text)
+            s = self.session_for(ts or self.started or 0.0)
+            if self.started is None:
+                self.started = s.started
+            s.stat("bad_lines", 1, "add")
+            t, ms = self._when(s, ts)
+            s.raw("unparsed", text=text, t=t, ms=ms)
             return
-        self.entry(entry)
+        self.entry(entry, text)
 
-    def entry(self, e: dict) -> None:
+    def entry(self, e: dict, text: str | None = None) -> None:
+        """One journal entry: its row, what it means, and the line itself whole in the raw sidecar."""
         ts = parse_time(e.get("timestamp"))
         s = self.session_for(ts or 0.0)
         if self.started is None:
@@ -164,6 +185,8 @@ class Journal:
         ev = str(e["event"])
         t, ms = self._when(s, ts)
         s.event(ev, t=t, ms=ms, player=self.me, **attributes(e))
+        # The row has the plain fields; lists, objects and long texts are only whole here.
+        s.raw(ev, text=text if text is not None else json.dumps(e, ensure_ascii=False), used=True, t=t, ms=ms)
         try:
             self._meaning(s, ev, e, t, ms)
         except (TypeError, ValueError, KeyError):
@@ -177,35 +200,43 @@ class Journal:
             except OSError:
                 pass
 
-    def status(self, doc: dict) -> None:
-        """One Status.json snapshot: a surface fix when the game gives latitude and longitude."""
+    def status(self, doc: dict) -> bool:
+        """
+        One Status.json snapshot: a surface fix when the game gives latitude and
+        longitude, with the snapshot's other plain fields (Flags, Flags2, GuiFocus,
+        LegalState, Cargo, ...) under their own names. Whether it made a row.
+        """
         ts = parse_time(doc.get("timestamp"))
         flags = int(doc.get("Flags") or 0)
         body = doc.get("BodyName")
         has = bool(flags & HAS_LAT_LONG) and "Latitude" in doc and "Longitude" in doc
+        extra = {k: v for k, v in attributes(doc).items() if k not in _STATUS_OWN}
         if not has:
+            made = False
             if self.on_surface and self.last_fix is not None:
                 s = self.session_for(ts or 0.0)
                 t, ms = self._when(s, ts)
-                self._surface_row(s, "surface_end", self.on_surface, self.last_fix, t, ms)
+                self._surface_row(s, "surface_end", self.on_surface, self.last_fix, t, ms, **extra)
+                made = True
             self.on_surface = None
-            return
+            return made
         body = str(body or self.on_surface or "body")
         radius = doc.get("PlanetRadius")
         if isinstance(radius, (int, float)) and radius > 0:
             self.radii[body] = float(radius)
         fix = (float(doc["Latitude"]), float(doc["Longitude"]), float(doc.get("Altitude") or 0.0), doc.get("Heading"))
         if self.on_surface == body and self.last_fix is not None and fix[:3] == self.last_fix[:3]:
-            return
+            return False
         s = self.session_for(ts or 0.0)
         t, ms = self._when(s, ts)
         if self.on_surface != body:
             self.on_surface = body
             self.last_fix = fix
-            self._surface_row(s, "surface_start", body, fix, t, ms)
+            self._surface_row(s, "surface_start", body, fix, t, ms, **extra)
         self.last_fix = fix
-        self._surface_row(s, "surface", body, fix, t, ms)
+        self._surface_row(s, "surface", body, fix, t, ms, **extra)
         s.stat("surface_fixes", 1, "add")
+        return True
 
     # ---------------------------------------------------------------- meaning
 
@@ -311,7 +342,11 @@ class EliteAdapter(Adapter):
     _journal: Journal | None = field(default=None, repr=False)
     _follow: Follower | None = field(default=None, repr=False)
     _session: Session | None = field(default=None, repr=False)
-    _status_stamp: int = field(default=0, repr=False)
+    #: Companion file name -> the modification time last read (0: read it again).
+    _stamps: dict[str, int] = field(default_factory=dict, repr=False)
+    #: Companion files that did not parse, with the time they did not: twice the same is not a half-written file.
+    _bad: dict[str, int] = field(default_factory=dict, repr=False)
+    _since: float = field(default=0.0, repr=False)
 
     def where(self, ctx: Context | None = None) -> Path:
         if self.folder:
@@ -325,7 +360,9 @@ class EliteAdapter(Adapter):
     def start(self, ctx: Context) -> None:
         folder = self.where(ctx)
         self._session = None
-        self._status_stamp = 0
+        self._stamps = {}
+        self._bad = {}
+        self._since = game_started(ctx.pid)
 
         def session_for(ts: float) -> Session:
             if self._session is None:
@@ -334,37 +371,73 @@ class EliteAdapter(Adapter):
             return self._session
 
         self._journal = Journal(session_for)
-        self._follow = Follower(lambda: newest(folder.glob("Journal.*.log")), game_started(ctx.pid), line_time)
+        self._follow = Follower(lambda: newest(folder.glob("Journal.*.log")), self._since, line_time)
 
     def poll(self, ctx: Context) -> None:
         if self._follow is None or self._journal is None:
             return
-        for line in self._follow.lines():
+        for line in self._follow.iter_lines():
             self._journal.line(line)
-        status = self.where(ctx) / "Status.json"
         try:
-            stamp = status.stat().st_mtime_ns
+            files = sorted(self.where(ctx).glob("*.json"))
         except OSError:
             return
-        if stamp == self._status_stamp:
+        for path in files:
+            self._companion(path)
+
+    def _companion(self, path: Path) -> None:
+        """
+        Status.json or another companion file, when the game has rewritten it:
+        kept whole under its file name, and Status.json's surface fix read.
+        A file last written before this sitting is the last one's and left alone.
+        """
+        journal = self._journal
+        if journal is None:
             return
-        self._status_stamp = stamp
+        name = path.name
         try:
-            doc = json.loads(read_shared(status).decode("utf-8", errors="replace") or "{}")
-        except (OSError, ValueError):
-            self._status_stamp = 0  # caught mid-write: read it again next time
+            stamp = path.stat().st_mtime_ns
+        except OSError:
             return
-        if isinstance(doc, dict) and doc.get("event") == "Status":
+        if self._stamps.get(name) == stamp:
+            return
+        first = name not in self._stamps
+        self._stamps[name] = stamp
+        if first and stamp / 1e9 < self._since - SLACK:
+            return
+        try:
+            text = read_shared(path).decode("utf-8", errors="replace")
+        except OSError:
+            self._stamps[name] = 0
+            return
+        doc: Any = None
+        try:
+            doc = json.loads(text)
+        except ValueError:
+            if not text.strip() or self._bad.get(name) != stamp:
+                # Caught mid-write: read it again next time; the same file failing twice is kept as it is.
+                self._bad[name] = stamp
+                self._stamps[name] = 0
+                return
+        self._bad.pop(name, None)
+        ts = parse_time(doc.get("timestamp")) if isinstance(doc, dict) else None
+        ts = ts or stamp / 1e9
+        used = False
+        if name == "Status.json" and isinstance(doc, dict) and doc.get("event") == "Status":
             try:
-                self._journal.status(doc)
+                used = journal.status(doc)
             except (TypeError, ValueError):
-                if self._session is not None:
-                    self._session.stat("bad_lines", 1, "add")
+                journal.session_for(ts).stat("bad_lines", 1, "add")
+        s = journal.session_for(ts)
+        if journal.started is None:
+            journal.started = s.started
+        if doc is None:
+            s.stat("bad_lines", 1, "add")
+        s.raw(name, text=text, used=used, t=ts - s.started, ms=ts * 1000.0)
 
     def stop(self, ctx: Context) -> None:
         if self._follow is not None and self._journal is not None:
-            for line in self._follow.lines():
-                self._journal.line(line)
+            self.poll(ctx)  # the last lines, and the files written on leaving
         ctx.close(self._session)
         self._session = None
         self._journal = None
@@ -380,14 +453,18 @@ ADAPTERS = [
         multiplayer=True,
         source=(
             r"Player Journal %USERPROFILE%\Saved Games\Frontier Developments\Elite Dangerous\Journal.*.log "
-            r"(newest file, followed as it is written) and Status.json in the same folder"
+            r"(newest file, followed as it is written), Status.json and the other companion *.json files "
+            r"(Market, Outfitting, Shipyard, NavRoute, Cargo, ModulesInfo, ShipLocker, Backpack, FCMaterials) "
+            r"in the same folder"
         ),
         records=(
             "every journal event, under its journal name, with its plain fields",
             "galaxy position (StarPos, light years) on jumps, locations, spawns, deaths, docking, landing",
             "spawn on LoadGame/Resurrect, death on Died, docked/undocked, touchdown/liftoff, jump, session_end",
             "planet surface route from Status.json: latitude, longitude, altitude, heading, and metres in a "
-            "tangent plane per body (session = body name)",
+            "tangent plane per body (session = body name), with Status.json's other plain fields (Flags, Flags2, "
+            "GuiFocus, LegalState, ...)",
+            "every journal line and every companion file whole in heat.raw.parquet",
             "jumps, distance jumped, deaths, kills, credits earned, missions completed, bodies scanned, "
             "systems visited, dockings, landings",
         ),
@@ -401,5 +478,40 @@ ADAPTERS = [
         ),
         verified="parser replayed over 43 real journal files on this machine (event counts match the stats); "
         "Status.json surface fixes tested on synthetic snapshots only",
+        completeness={
+            "read": (
+                "every journal line as a row under its `event`, with its plain fields (the localised text where "
+                "the game gives one; texts longer than 300 characters cut in the row)",
+                "galaxy rows (StarPos) on FSDJump, CarrierJump, Location, LoadGame, Resurrect, Died, Docked, "
+                "Undocked, Touchdown, Liftoff, Shutdown; surface rows from Status.json and Touchdown/Liftoff",
+                "Status.json's plain fields (Flags, Flags2, GuiFocus, LegalState, Cargo, FireGroup, Oxygen, Health, "
+                "Temperature, Gravity, SelectedWeapon, ...) on the surface rows",
+                "the statistics: jumps, distance, deaths, kills, credits earned, missions, bodies scanned, systems "
+                "visited, dockings, landings",
+            ),
+            "raw": (
+                "every journal line whole, `type` = its `event` (FSDJump, Scan, Music, ReceiveText, ...), "
+                "`used` true: the lists and objects the rows leave out (StarPos, Factions, Rewards, Killers, "
+                "Materials, Modules, ...) are only here",
+                "a journal line that is not JSON, `type` `unparsed`",
+                "every companion file whole each time the game rewrites it, `type` = its file name: `Status.json` "
+                "(`used` when it made a surface row), `Market.json`, `Outfitting.json`, `Shipyard.json`, "
+                "`NavRoute.json`, `Cargo.json`, `ModulesInfo.json`, `ShipLocker.json`, `Backpack.json`, "
+                "`FCMaterials.json`, and any other `*.json` the game writes there",
+            ),
+            "missing": (
+                "position between jumps (inside a system, in supercruise or normal space): the game writes only "
+                "the system's StarPos and, near a planet, latitude, longitude and altitude",
+                "other ships' and players' positions: the journal is the commander's own account",
+                "speed, throttle and other flight telemetry: the game does not write them",
+                "journals and companion files of earlier sittings: kept when they were played (the follower "
+                "starts at the end of a file older than this run of the game)",
+                "Frontier's companion web API (cAPI): needs the player's Frontier sign-in; not a file the game "
+                "writes",
+            ),
+            "size": "about 1-5 MB of raw text per hour: the journal 0.2-2 MB, Status.json (under 1 KB, rewritten "
+            "up to every second) 1-2 MB, a market/outfitting/shipyard set 20-150 KB per station visited; zstd in "
+            "heat.raw.parquet makes it roughly a tenth",
+        },
     )
 ]

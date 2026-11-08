@@ -10,10 +10,11 @@ Adapter `poe` - kind [`log`](sources-and-rules.md) - runs while `PathOfExile.exe
 
 ## What is recorded
 
-- zones entered with area level
+- zones entered with area level, area id and its seed
 - level-ups with class and level
 - deaths ("has been slain")
 - players joining and leaving the area, whispers in and out, trade requests, trades accepted
+- every Client.txt line of this sitting whole in heat.raw.parquet
 - deaths, levels gained, highest level, zones entered, distinct zones, whispers, trade requests, trades
 
 ## Where it comes from
@@ -50,6 +51,12 @@ they are installed (it grows across launches). Lines look like
 The install folder is the running executable's; without one the Steam
 libraries and the standalone client's default folder are searched.
 
+Every line of this sitting is kept whole in the session's raw sidecar (3DHeat's
+converter rule), whether or not it means anything here: `type` is the level and
+logger in its brackets (`INFO Client`, `DEBUG Client`, `WARN Client`, ...), a
+stamped line without brackets is `untagged`, a line without a timestamp
+`untimed`.
+
 ## Positions and axes
 
 | | |
@@ -75,6 +82,29 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 `bad_lines`, `character_class`, `deaths`, `level`, `levels_gained`, `trade_requests_received`, `trade_requests_sent`, `trades`, `whispers`, `zones_distinct`, `zones_entered`
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
+
+## Completeness
+
+The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the source holds is read or kept, never dropped. Besides the rows, every packet, page, line or reply the adapter receives is kept whole in the session's `heat.raw.parquet` (columns `time`, `ms`, `type`, `used`, `payload`, `text`, then any field kept by name; `used` marks what also became rows), and `meta.json`'s `selfCheck.completeness` counts each `type` - `lost` is 0.
+
+**Read**
+
+- `You have entered <zone>`, with the area level, area id and seed of the `Generating level` line before it
+- `<name> (<class>) is now level <n>`, `<name> has been slain`, players joining and leaving the area, whispers in and out (with whether they are a trade request), trades accepted and cancelled
+
+**Kept raw**
+
+- every line of this sitting whole, `type` = the level and logger in its brackets (`INFO Client`, `DEBUG Client`, `WARN Client`, `CRIT Client`, ...), `used` where it became a row: global, trade, party and guild chat, `Connecting to instance server`, AFK and DND notices, the answers to chat commands such as `/played` and `/deaths`, the client's loading and engine lines - kept, not made into rows yet
+- a stamped line without brackets (`***** LOG FILE OPENING *****`) as `untagged`, a line without a timestamp as `untimed`
+
+**Not available**
+
+- positions: nothing in the log gives one
+- what another language's client writes: the lines are kept, but only the English messages are made into rows
+- earlier launches' lines: Client.txt grows across launches; lines stamped before this run of the game are left (they were kept when they were played)
+- kills, damage, loot and the passive tree: the game does not log them
+
+**Size**: Client.txt grows about 0.3-3 MB per hour (most from DEBUG lines while loading areas, more with busy trade chat); zstd in heat.raw.parquet makes it roughly a tenth
 
 ## Verified
 

@@ -31,7 +31,15 @@ What is read, by packet id:
                     number, name (48 bytes in 2023 and 2024, 32 in 2025; 58,
                     60 and 57 bytes per car)
     6 Car Telemetry CarTelemetryData[22], 60 bytes: speed km/h, throttle,
-                    steer, brake, clutch, gear, rpm ...
+                    steer, brake, clutch, gear, rpm, DRS ...
+
+Every packet is also kept whole, as it came, in the session's raw sidecar
+(`heat.raw.parquet`, `type` the packet's name - `motion`, `car_status` ... -
+with `format`, `packet_id`, `frame` and `session_uid`) - the ones read above and the ones
+nothing reads yet: 5 Car Setups, 7 Car Status, 8 Final Classification, 9 Lobby
+Info, 10 Car Damage, 11 Session History, 12 Tyre Sets, 13 Motion Ex, 14 Time
+Trial, 15 Lap Positions, any later id, and packets in a format this does not
+read. So a later decoder needs only the sidecar.
 
 Every car's position is in the Motion packet - online too, where the game
 itself hands it out (only fuel, ERS, damage and tyre-set data are held back
@@ -47,6 +55,7 @@ MacManley/f1-25-udp (MIT). Packets in tests are built from these layouts.
 from __future__ import annotations
 
 import logging
+import math
 import struct
 import time
 from dataclasses import dataclass
@@ -63,6 +72,12 @@ HEADER_SIZE = HEADER.size  # 29
 CARS = 22
 
 MOTION, SESSION, LAP_DATA, EVENT, PARTICIPANTS, CAR_TELEMETRY = 0, 1, 2, 3, 4, 6
+#: Every packet id of the 2023-2025 specifications, by the name kept in the raw sidecar's `type`.
+PACKETS = {
+    0: "motion", 1: "session", 2: "lap_data", 3: "event", 4: "participants", 5: "car_setups", 6: "car_telemetry",
+    7: "car_status", 8: "final_classification", 9: "lobby_info", 10: "car_damage", 11: "session_history",
+    12: "tyre_sets", 13: "motion_ex", 14: "time_trial", 15: "lap_positions",
+}
 
 CAR_MOTION = struct.Struct("<6f6h6f")  # 60
 CAR_TELEMETRY_DATA = struct.Struct("<HfffBbHBBH4H4B4BH4f4B")  # 60
@@ -133,12 +148,20 @@ def header(packet: bytes) -> dict | None:
     }
 
 
-def motion(packet: bytes) -> list[tuple[float, float, float, tuple[float, float, float]]]:
-    """Per car: world x, y, z (m) and the world velocity (m/s)."""
+def motion(packet: bytes) -> list[tuple[float, float, float, tuple[float, float, float], dict]]:
+    """
+    Per car: world x, y, z (m), the world velocity (m/s), and the rest of
+    CarMotionData: yaw, pitch and roll (the spec's radians, given here in
+    degrees) and the lateral, longitudinal and vertical g-force.
+    """
     out = []
     for i in range(CARS):
         v = CAR_MOTION.unpack_from(packet, HEADER_SIZE + i * CAR_MOTION.size)
-        out.append((v[0], v[1], v[2], (v[3], v[4], v[5])))
+        more = {
+            "yaw": math.degrees(v[15]), "pitch": math.degrees(v[16]), "roll": math.degrees(v[17]),
+            "g_lat": v[12], "g_lon": v[13], "g_vert": v[14],
+        }
+        out.append((v[0], v[1], v[2], (v[3], v[4], v[5]), more))
     return out
 
 
@@ -155,7 +178,8 @@ def car_telemetry(packet: bytes) -> list[dict]:
     out = []
     for i in range(CARS):
         v = CAR_TELEMETRY_DATA.unpack_from(packet, HEADER_SIZE + i * CAR_TELEMETRY_DATA.size)
-        out.append({"speed_kmh": v[0], "throttle": v[1], "steer": v[2], "brake": v[3], "gear": v[5], "rpm": v[6]})
+        out.append({"speed_kmh": v[0], "throttle": v[1], "steer": v[2], "brake": v[3], "clutch": v[4], "gear": v[5],
+                    "rpm": v[6], "drs": v[7]})
     return out
 
 
@@ -292,11 +316,22 @@ class F1Adapter(Adapter):
         h = header(packet)
         year = year_of(h["format"]) if h else None
         if h is None or year is None:
+            # Kept whole all the same: an older format's own layout, or a datagram too short for a header.
+            if h is None:
+                d.raw("short", packet)
+            else:
+                d.raw(f"format {h['format']}", packet, format=h["format"])
             d.count("unsupported_packets")
             return
         need = SIZES.get(h["id"], {}).get(year)
+        used = need is not None and len(packet) >= need
+        if used and h["id"] == EVENT:
+            used = packet[HEADER_SIZE : HEADER_SIZE + 4].decode("ascii", errors="replace") in EVENTS
+        # Every packet whole, the ones read below and the ones nothing reads yet (docs/converters.md).
+        d.raw(PACKETS.get(h["id"], f"packet {h['id']}"), packet, used=used, format=h["format"], packet_id=h["id"],
+              frame=h["frame"], session_uid=f"{h['session_uid']:016x}")
         if need is None:
-            return  # a packet this does not read: setups, status, damage, history ...
+            return  # a packet this does not read into rows: setups, status, damage, history ...
         if len(packet) < need:
             d.count("bad_packets")
             return
@@ -345,7 +380,7 @@ class F1Adapter(Adapter):
     def _motion(self, packet: bytes, h: dict) -> None:
         d = self._drive
         sid = self._sid()
-        for i, (x, y, z, v) in enumerate(motion(packet)):
+        for i, (x, y, z, v, more) in enumerate(motion(packet)):
             if x == 0 and y == 0 and z == 0:
                 continue
             status = self._result[i]
@@ -378,9 +413,13 @@ class F1Adapter(Adapter):
                 gear=t.get("gear"),
                 throttle=t.get("throttle"),
                 brake=t.get("brake"),
+                steer=t.get("steer"),
+                rpm=t.get("rpm"),
+                drs=t.get("drs"),
                 lap=self._lap_no[i],
                 race_position=self._laps[i].get("position"),
                 game_time=round(h["session_time"], 3),
+                **more,
             )
 
     def _lap_data(self, packet: bytes, year: int) -> None:
@@ -507,6 +546,51 @@ class F1Adapter(Adapter):
         return changes
 
 
+#: The converter rule's account of the feed (docs/converters.md); sizes from the specifications' packet sizes and rates.
+_COMPLETENESS = {
+    "read": (
+        "0 Motion: every car's world position and velocity, and now also yaw, pitch, roll (degrees, from the "
+        "spec's radians) and the lateral, longitudinal and vertical g-force, on each car's position rows",
+        "1 Session: track, session type, total laps, track length, online or not (meta.json `sessions`)",
+        "2 Lap Data: last lap time, lap number, race and grid position, pit stops, penalties, result status "
+        "(laps, finishes, retirements, statistics)",
+        "3 Event: every code but BUTN as its own row, with its details",
+        "4 Participants: driver names, teams, number of active cars (rows' `player` and `team`, meta.json `drivers`)",
+        "6 Car Telemetry: speed, gear, throttle, brake, and now also steer (-1..1), rpm and DRS, on each car's "
+        "position rows",
+        "checked against EA's published UDP specifications for the 2023, 2024 and 2025 formats (packet sizes "
+        "asserted in the tests); not yet against the game",
+    ),
+    "raw": (
+        "every packet whole in `heat.raw.parquet`, `payload` the datagram, `type` its id's name: `motion`, "
+        "`session`, `lap_data`, `event`, `participants`, `car_setups`, `car_telemetry`, `car_status`, "
+        "`final_classification`, `lobby_info`, `car_damage`, `session_history`, `tyre_sets`, `motion_ex`, "
+        "`time_trial`, `lap_positions` (`packet <n>` for an id the specifications do not list yet); columns "
+        "`format` (2023/2024/2025), `packet_id`, `frame`, `session_uid`",
+        "`used` is true for the packets read above (Motion, Session, Lap Data, Participants, Car Telemetry, "
+        "and Event codes other than BUTN); the rest - car setups, car status (fuel, ERS, tyre compound and age, "
+        "flags), final classification, lobby, car damage, session history (every lap and sector time per car), "
+        "tyre sets, motion ex (the own car's suspension, wheel speeds, local velocity, angular velocity and "
+        "acceleration), time trial, lap positions, BUTN button events - are kept for a later decoder",
+        "`format <year>`: a packet in a format before 2023 (another header layout), whole; `short`: a datagram "
+        "shorter than the 29-byte header, whole",
+    ),
+    "missing": (
+        "other players' fuel, ERS, damage and tyre sets online when their \"Your Telemetry\" is restricted: the "
+        "game sends zeros for them",
+        "packets sent while the watcher is not running, or while another app holds port 20777: UDP is not "
+        "stored by the game",
+    ),
+    "size": (
+        "at a send rate of 60 Hz every packet is about 0.38 MB/s (Motion, Lap Data, Car Telemetry, Car "
+        "Status and Motion Ex at 60 Hz, Session History and Tyre Sets at 20/s, Car Damage at 10/s, "
+        "Session and Car Setups at 2/s) plus about 0.03 MB/s of item headers: about 1.5 GB per hour of driving "
+        "before compression, about 0.55 GB at the default 20 Hz; zstd brings it to a fraction of that (empty "
+        "car slots and repeated values compress well; not yet measured on a real session)"
+    ),
+}
+
+
 def _f1(year: int, exe: str) -> F1Adapter:
     return F1Adapter(
         id=f"f1-{year}",
@@ -518,13 +602,15 @@ def _f1(year: int, exe: str) -> F1Adapter:
         source=f"UDP telemetry 127.0.0.1:20777 (Documents\\My Games\\F1 {year}\\hardwaresettings\\hardware_settings_config.xml)",
         records=(
             "every car's position (world XYZ, m) at 10 Hz, by driver name, team, own car marked (`own_car` 1, from the "
-            "player car index), with speed, gear, throttle, brake",
+            "player car index), with speed, gear, throttle, brake, steer, rpm, DRS, yaw, pitch, roll (degrees) and "
+            "g-forces",
             "laps per car with the lap time and race position; finishes and retirements",
             "the game's race events: session start and end, fastest lap, penalties, overtakes, collisions, "
             "safety car, red flag, start lights, chequered flag, winner, flashbacks (`teleport` where the car was, "
             "`spawn` where it went back to)",
             "track, session type, laps and drivers of each session",
             "own laps, best lap, race and grid position, pit stops, penalties, overtakes, collisions, distance, top speed",
+            "every packet the game sends, whole, in `heat.raw.parquet` - also the ones not read into rows",
         ),
         enable=(
             "In the game: Settings > Telemetry Settings > UDP Telemetry On, IP 127.0.0.1, port 20777 - or "
@@ -533,6 +619,7 @@ def _f1(year: int, exe: str) -> F1Adapter:
         ),
         axes=Axes(up="y", units="metres"),
         verified="tested on packets in the 2023, 2024 and 2025 formats built from EA's published specification, sent over UDP; untested against the game",
+        completeness=_COMPLETENESS,
     )
 
 

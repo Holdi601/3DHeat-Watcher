@@ -14,6 +14,7 @@ Adapter `iracing` - kind [`telemetry`](sources-and-rules.md) - runs while `iRaci
 - session start, getting in and out of the car, pit lane in and out, laps with lap time, incidents with their points, chequered flag, finish
 - the .ibt telemetry files written during the sitting (latitude, longitude, altitude - the viewer reads them)
 - laps, best lap, incidents, race position, pit stops, distance, top speed
+- the whole shared memory in `heat.raw.parquet`: header, variable headers, session info, every telemetry line read
 
 ## Where it comes from
 
@@ -59,6 +60,14 @@ done, race position, incidents - plus laps, incidents, pit stops and the
 chequered flag, and at the end the `.ibt` files written during the sitting as
 `telemetry_file` events, for the viewer to open.
 
+Beside the rows the whole memory map is kept, in the session's raw sidecar
+(`heat.raw.parquet`): the header's fixed part (`header`, each time it
+changes), the variable headers (`var_headers`, whole, and as JSON in `text`,
+each time the layout changes), the session info YAML (`session_info`, its
+text each time `sessionInfoUpdate` moves) and the newest telemetry line
+(`telemetry`, every variable of it, each read that finds a new tick). The var
+headers and a line are all a later decoder needs to read any variable.
+
 Source: the iRacing SDK (irsdk_defines.h, "iRacing SDK" forum documentation);
 kutu/pyirsdk (MIT) for confirmation of the offsets.
 
@@ -87,6 +96,31 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 `best_lap`, `distance_km`, `finishes`, `incidents`, `laps`, `pit_stops`, `race_position`, `sessions`, `top_speed_kmh`
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
+
+## Completeness
+
+The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the source holds is read or kept, never dropped. Besides the rows, every packet, page, line or reply the adapter receives is kept whole in the session's `heat.raw.parquet` (columns `time`, `ms`, `type`, `used`, `payload`, `text`, then any field kept by name; `used` marks what also became rows), and `meta.json`'s `selfCheck.completeness` counts each `type` - `lost` is 0.
+
+**Read**
+
+- from the newest telemetry line: session time, number, state and id, on track, replay, lap, laps completed, share and metres of the lap, last and best lap, speed, gear, throttle, brake, RPM, pit road, track surface, race and class position, own incident count (the `driving` rows at 5 Hz and the events)
+- now also on the `driving` rows: `steering_angle`, `yaw`, `yaw_north`, `pitch`, `roll` (degrees, from the sim's radians - only when the variable header gives the unit as rad), `fuel_l` (unit l), `lat_accel` and `lon_accel` (unit m/s^2)
+- from the session info YAML: the player's car index, track and configuration, session types, each driver's name, car, team and number (session_start rows, meta.json)
+- checked against a block built from irsdk_defines.h in the tests; not yet against the sim
+
+**Kept raw**
+
+- `telemetry`: the newest line whole, every variable the sim publishes (the CarIdx arrays of every car, tyres, suspension, the high-rate `_ST` arrays where the sim has them ...), each read that finds a new tick; `tick` the sim's tick count; `used` is false while a replay plays
+- `var_headers`: the variable headers whole (144 bytes each) and, in `text`, as JSON (name, type, offset, count, unit, description), each time the layout changes - enough to read every variable of every kept line
+- `session_info`: the YAML text whole each time its update counter moves (weekend, sessions and results, drivers, car setup, radio, camera lists), `update` the counter
+- `header`: the 112-byte irsdk header whole each time it changes (version, status, tick rate, offsets, the lines' ticks)
+
+**Not available**
+
+- a world position live: the shared memory has none; latitude, longitude and altitude are only in the .ibt files (logging on), which the viewer reads - the watcher names those written during the sitting
+- the ticks between two reads: the sim writes 60 lines a second into 3 or 4 slots and the watcher reads 10 times a second, so most ticks are overwritten before they could be read; the .ibt file has every tick when logging is on
+
+**Size**: a telemetry line is a few KB (about 5 to 10 KB with every car's arrays), kept up to 10 times a second, plus the header (112 bytes) as often and the session info YAML (tens of KB) when it changes: about 0.2 to 0.4 GB per hour on track before compression; zstd brings it to a fraction (not yet measured on a real session)
 
 ## Verified
 

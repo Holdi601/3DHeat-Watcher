@@ -36,6 +36,17 @@ def _ctx(tmp_path: Path) -> Context:
     return Context(s, s.data_dir)
 
 
+def _raw(folder: Path) -> dict:
+    """The session's raw sidecar (docs/converters.md), column -> values."""
+    import pyarrow.parquet as pq
+
+    return pq.read_table(folder / "heat.raw.parquet").to_pydict()
+
+
+def _completeness(folder: Path) -> dict:
+    return json.loads((folder / "meta.json").read_text(encoding="utf-8"))["selfCheck"]["completeness"]
+
+
 def _sessions(ctx: Context, adapter: str) -> list[Path]:
     out = []
     for meta in sorted((ctx.data / "sessions").glob("*/*/meta.json")):
@@ -182,6 +193,12 @@ def test_steam_stats_records_a_snapshot_then_only_changes(tmp_path):
     assert [r["event"] for r in rows] == ["stats_snapshot", "achievement"]
     assert rows[1]["name"] == "First!" and rows[1]["ms"] == 1700000000 * 1000 and rows[1]["description"] == "Do it once"
     assert json.loads((ctx.data / "state" / "steam-stats.json").read_text(encoding="utf-8"))["games"]
+    # What the rows came from, whole: the file (its crc and PendingChanges too), the schema, the localconfig block.
+    t = _raw(first)
+    assert t["type"] == ["UserGameStats", "UserGameStatsSchema", "localconfig_app"] and all(t["used"])
+    assert _steam.parse_binary_kv(t["payload"][0])["cache"]["crc"] == 123
+    assert json.loads(t["text"][2]) == {"LastPlayed": "1700000500", "Playtime": "125", "Playtime2wks": "30"}
+    assert _completeness(first)["lost"] == 0
 
     a.poll(ctx)  # nothing changed
     assert len(_sessions(ctx, "steam-stats")) == 1
@@ -229,17 +246,24 @@ def test_steam_stats_written_in_the_same_second_keep_their_own_sessions(tmp_path
     assert sorted(r[0] for r in con.execute("SELECT game FROM sessions")) == ["Other Test", "Spacewar Test"]
 
 
-def test_a_damaged_stats_file_is_skipped_until_it_changes(tmp_path):
+def test_a_damaged_stats_file_is_kept_whole_until_it_changes(tmp_path):
     root = _steam_root(tmp_path)
     p = root / "appcache" / "stats" / f"UserGameStats_{ACCOUNT}_{APPID}.bin"
     p.write_bytes(b"\x00cache\x00\x02crc")
     ctx = _ctx(tmp_path)
     a = SteamStats(id="steam-stats", game="Steam statistics", kind="platform", root=str(root))
     a.start(ctx)
-    assert _sessions(ctx, "steam-stats") == []
+    # Not understood, so no rows - but its bytes are kept for a later decoder, with the schema beside them.
+    [bad] = _sessions(ctx, "steam-stats")
+    assert read_rows(bad) == []
+    t = _raw(bad)
+    assert t["type"] == ["UserGameStats", "UserGameStatsSchema"] and t["used"] == [False, False]
+    assert t["payload"][0] == b"\x00cache\x00\x02crc" and _completeness(bad)["lost"] == 0
+    a.poll(ctx)
+    assert len(_sessions(ctx, "steam-stats")) == 1  # not again until it changes
     _write_user(root, _user(5, 1.0, 0, {}), time.time() - 30)
     a.poll(ctx)
-    [s] = _sessions(ctx, "steam-stats")
+    [s] = [s for s in _sessions(ctx, "steam-stats") if s != bad]
     assert read_rows(s)[0]["event"] == "stats_snapshot"
 
 
@@ -334,6 +358,14 @@ def test_steam_timeline_follows_a_file_until_it_ends(tmp_path):
     meta = json.loads((s / "meta.json").read_text(encoding="utf-8"))
     assert meta["seconds"] == 200.0 and meta["stats"]["recorded_seconds"] == 200.0
     assert meta["stats"]["achievements"] == 1 and meta["stats"]["phases"] == 1 and meta["stats"]["timeline_events"] == 3
+    # Every entry whole under Steam's own type, and the file's header as it was at the start and at the end.
+    t = _raw(s)
+    assert t["type"] == ["timeline", "gamemode", "gamemode", "phase", "state_description", "timeline", "event",
+                         "event", "event", "achievement"]
+    assert json.loads(t["text"][0]) == {"daterecorded": str(recorded), "starttime": "0"}
+    assert json.loads(t["text"][5])["endtime"] == "200000"
+    assert json.loads(t["text"][3])["tags"][0]["icon"] == "x"  # a tag's icon: in no row, kept here
+    assert all(t["used"]) and _completeness(s)["lost"] == 0
     a.stop(ctx)
 
     b = SteamTimeline(id="steam-timeline", game="Steam Timeline", kind="platform", root=str(root))
@@ -512,6 +544,13 @@ def test_nvidia_records_new_clips_placed_on_the_map(tmp_path):
     assert meta["stats"] == {"clips": 1, "clip_seconds": 20.0, "placed": 2, "screenshots": 1}
     assert meta["positions"] == 3
     assert (s / "heat.parquet").exists()
+    # The clips' facts, the game's highlight definitions, and every GfeSDK line - HLConfigure, not a moment, too.
+    t = _raw(s)
+    assert t["type"] == ["clip_file", "highlights_config", "clip_file", "gfesdk_log", "gfesdk_log"]
+    assert t["used"] == [True, True, True, True, False]
+    assert json.loads(t["text"][1])["highlights"]["kill"]["significance"] == 16
+    assert "HLConfigure" in t["text"][4] and t["log"][4] == "somegame_1234.log"
+    assert _completeness(s)["lost"] == 0 and _completeness(s)["types"]["gfesdk_log"]["raw"] == 1
 
     b = NvidiaHighlights(id="nvidia-highlights", game="NVIDIA highlights", kind="platform",
                          overlay=str(overlay), gfesdk=str(gfesdk))

@@ -11,7 +11,8 @@ Adapter `osu-replays` - kind [`replay`](sources-and-rules.md) - runs always on (
 ## What is recorded
 
 - the cursor's path over the playfield (x 0..512, y 0..384) and the keys held, every frame
-- score, combo, 300s/100s/50s/misses, accuracy, mods, full combo
+- score, combo, 300s/100s/50s/gekis/katus/misses, accuracy, mods, full combo
+- the life bar over the play, the beatmap's and the replay's hashes, the random seed, the online score id
 
 ## Where it comes from
 
@@ -62,19 +63,33 @@ of its own (`heat3d_watch/decoders/dota_replay.py`): every hero's position,
 height, health, level, facing, mana, experience, attributes and items 7.5
 times a second while alive, kills and deaths where they happened, towers,
 barracks, Roshan and Tormentors where they fell, every ward where it was
-planted and where it ended, and the combat log's entries about the heroes
+planted and where it ended, the combat log's entries about the heroes
 (damage, heals, abilities, items, purchases, runes, gold, experience,
-modifiers) - into `dota/<match>.parquet`; every other unit (creeps, summons,
-illusions, couriers, buildings) once a second into `<match>.units.parquet`;
-the whole combat log into `<match>.combatlog.parquet`; and the match, the
-chat, the draft and everything else the parser extracts into
-`<match>.match.json`, in the session folder. Positions are Dota's world
+modifiers), and every player's map pings, map drawings and orders - into
+`dota/<match>.parquet`; every other unit (creeps, summons, illusions,
+couriers, buildings) once a second into `<match>.units.parquet`; the whole
+combat log into `<match>.combatlog.parquet`; and the match, the chat, the
+draft, everything else the parser extracts and the game's own end-of-match
+record into `<match>.match.json`, in the session folder. Everything else
+the replay holds is kept whole beside them (3DHeat's converter rule):
+every frame and network message in `<match>.packets.parquet`, every entity
+property change in `<match>.entities.parquet`, every string table entry in
+`<match>.strings.parquet`, counted in the match document's
+`selfCheck.completeness`. Positions are Dota's world
 units, the same the game-state integration reports. The signed-in player's
 scoreboard line becomes the session's statistics: kills, deaths, assists,
 last hits, denies, net worth, GPM, XPM, hero damage, wards, and whether the
 match was won. A new Dota patch can change the replay's entities before gem
 follows; a replay gem cannot read to the end is converted as far as it goes
 and marked `incomplete` in its summary.
+
+#### osu!
+
+osu! (stable) saves every play to `osu!/Data/r/*.osr` and exported ones to
+`osu!/Replays/`. The watcher reads them itself, to the format the osu! wiki
+publishes: the cursor's path and keys every frame, the score line, the life
+bar, the seed and the score id; the file is kept whole beside, part by part,
+in the session's `heat.raw.parquet`.
 
 #### War Thunder
 
@@ -148,6 +163,28 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 `accuracy`, `full_combo`
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
+
+## Completeness
+
+The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the source holds is read or kept, never dropped. Besides the rows, every packet, page, line or reply the adapter receives is kept whole in the session's `heat.raw.parquet` (columns `time`, `ms`, `type`, `used`, `payload`, `text`, then any field kept by name; `used` marks what also became rows), and `meta.json`'s `selfCheck.completeness` counts each `type` - `lost` is 0.
+
+**Read**
+
+- every frame: a row at its time (milliseconds summed), x and y on the playfield, `keys` the key bits (mouse 1 and 2, keys 1 and 2, smoke); in mania x holds the keys held instead of a place
+- the header, every field: mode, version, the beatmap's MD5 (the file names the beatmap only by it), the player, the replay's MD5, 300s, 100s, 50s, gekis, katus, misses, score, max combo, full combo, mods (by name in meta.json `osu.modNames`), the play's time - as statistics and in meta.json `osu`
+- the life bar graph: a `life` row per point (time, life 0..1)
+- the frame `-12345`: the random seed (`osu.seed`); the online score id (`osu.scoreId`); with Target Practice, its accuracy (`osu.targetPracticeAccuracy`)
+
+**Kept raw**
+
+- the file whole, part by part, in heat.raw.parquet (`offset` where each starts, so the parts are the file): `header`, `replay_data` (the LZMA-compressed frames as stored), `score_id`, `mod_info`, and `trailing` for whatever follows the parts the format describes (osu!lazer's exports add data there) - kept, not read
+
+**Not available**
+
+- the beatmap itself (hit objects, timing): not in a replay; it is named only by its MD5
+- osu!lazer's own replays: kept in its database, not as files
+
+**Size**: the raw sidecar is about the replay's size (tens to hundreds of kilobytes)
 
 ## Verified
 

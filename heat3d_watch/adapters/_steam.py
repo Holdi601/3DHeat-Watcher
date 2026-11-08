@@ -225,13 +225,20 @@ def accounts(root: Path) -> list[str]:
         return []
 
 
-def playtimes(root: Path, account: str) -> dict[str, dict[str, int]]:
-    """appid -> {Playtime, Playtime2wks (minutes), LastPlayed (Unix seconds)} from localconfig.vdf."""
+def local_apps(root: Path, account: str) -> dict[str, dict[str, Any]]:
+    """appid -> that game's whole block of localconfig.vdf (Software/Valve/Steam/apps/<appid>), as parsed."""
     doc = read_text_kv(root / "userdata" / account / "config" / "localconfig.vdf")
     apps = kv_get(doc, "UserLocalConfigStore", "Software", "Valve", "Steam", "apps")
-    out: dict[str, dict[str, int]] = {}
     if not isinstance(apps, dict):
-        return out
+        return {}
+    return {k: v for k, v in apps.items() if isinstance(v, dict) and k.isdigit()}
+
+
+def playtimes(root: Path, account: str, apps: dict[str, dict[str, Any]] | None = None) -> dict[str, dict[str, int]]:
+    """appid -> {Playtime, Playtime2wks (minutes), LastPlayed (Unix seconds)} from localconfig.vdf."""
+    if apps is None:
+        apps = local_apps(root, account)
+    out: dict[str, dict[str, int]] = {}
     for appid, a in apps.items():
         if not isinstance(a, dict) or not appid.isdigit():
             continue

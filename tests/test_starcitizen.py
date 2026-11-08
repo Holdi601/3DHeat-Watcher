@@ -82,6 +82,42 @@ def test_the_adapter_records_kills_deaths_and_travel(tmp_path):
     assert all("x" not in r for r in rows)
 
 
+def test_every_line_is_kept_whole_in_the_raw_sidecar(tmp_path):
+    import pyarrow.parquet as pq
+
+    live = tmp_path / "StarCitizen" / "LIVE"
+    (live / "Bin64").mkdir(parents=True)
+    data = tmp_path / "data"
+    ctx = Context(Settings(data=str(data)), data, exe=live / "Bin64" / "StarCitizen.exe")
+    a = replace(sc.ADAPTERS[0])
+    a.start(ctx)
+    t0 = time.time()
+    extra = [
+        f"{stamp(t0 + 20)} [Notice] <Spawn Flow> CSCPlayerPUSpawningComponent::UnregisterFromExternalSystems: "
+        "Player 'Tester' [200000000001] lost reservation for spawnpoint Test [1] at location 2 [Team_Network][Spawning]",
+        f"{stamp(t0 + 21)} [Trace] some engine line",
+        f"{stamp(t0 + 22)} Player 'Tester' <local client>: something unexpected",
+        "    the rest of a line the game wrapped",
+    ]
+    text = ["Log started on Thu Jan  1 00:00:00 2026", *lines(t0), *extra]
+    (live / "Game.log").write_text("\n".join(text) + "\n", encoding="utf-8")
+    a.poll(ctx)
+    a.stop(ctx)
+
+    [session] = list((data / "sessions").glob("*/*"))
+    raw = pq.read_table(session / "heat.raw.parquet").to_pydict()
+    assert raw["text"] == text  # every line, in order, whole
+    kinds = dict(zip(raw["text"], zip(raw["type"], raw["used"])))
+    assert kinds[extra[0]] == ("Spawn Flow", False)
+    assert kinds[extra[1]] == ("Trace", False) and kinds[extra[2]] == ("untagged", False)
+    assert kinds[text[0]] == ("untimed", False) and kinds[extra[3]] == ("untimed", False)
+    assert [u for k, u in zip(raw["type"], raw["used"]) if k == "Actor Death"] == [True] * 4
+    assert kinds[text[2]] == ("CSessionManager::OnClientSpawned", True)
+    check = json.loads((session / "meta.json").read_text(encoding="utf-8"))["selfCheck"]["completeness"]
+    assert check["lost"] == 0 and check["types"]["Actor Death"]["partial"] == 4
+    assert check["types"]["Spawn Flow"] == {"seen": 1, "decoded": 0, "partial": 0, "raw": 1, "lost": 0}
+
+
 def test_kills_are_not_counted_before_the_player_is_known():
     rows = []
 
@@ -91,6 +127,9 @@ def test_kills_are_not_counted_before_the_player_is_known():
 
         def event(self, name, **kw):
             rows.append(name)
+
+        def raw(self, *a, **kw):
+            pass
 
         def stat(self, *a):
             raise AssertionError("no stat without knowing who is playing")

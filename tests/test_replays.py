@@ -125,7 +125,7 @@ def _osr_string(text: str) -> bytes:
     return b"\x0b" + bytes(out) + raw
 
 
-def _osr(frames: str, player: str = "someone") -> bytes:
+def _osr(frames: str, player: str = "someone", mods: int = 72) -> bytes:
     """An .osr built field by field to the layout on the osu! wiki."""
     import lzma
     import struct
@@ -138,7 +138,7 @@ def _osr(frames: str, player: str = "someone") -> bytes:
         + _osr_string(player)
         + _osr_string("r" * 32)
         + struct.pack("<6h", 90, 8, 2, 30, 4, 1)
-        + struct.pack("<ihBi", 1234567, 250, 0, 72)
+        + struct.pack("<ihBi", 1234567, 250, 0, mods)
         + _osr_string("0/1,1000/0.9")
         + struct.pack("<qi", ticks, len(data))
         + data
@@ -167,7 +167,7 @@ def test_an_osu_replay_becomes_a_session_with_its_path(tmp_path):
     ctx = Context(Settings(data=str(tmp_path / "data")), tmp_path / "data")
     a.convert(replay, ctx)
     meta = json.loads(next((tmp_path / "data" / "sessions").rglob("meta.json")).read_text(encoding="utf-8"))
-    assert meta["events"] == {"session_start": 1, "position": 1, "finish": 1}
+    assert meta["events"] == {"session_start": 1, "position": 1, "finish": 1, "life": 2}
     assert meta["stats"]["score"] == 1234567 and meta["stats"]["full_combo"] == 0
     import pyarrow.parquet as pq
 
@@ -175,6 +175,44 @@ def test_an_osu_replay_becomes_a_session_with_its_path(tmp_path):
     assert t.column("x").to_pylist() == [10.0, 30.0, 50.0]
     assert t.column("z").to_pylist() == [20.0, 40.0, 60.0]
     assert t.column("time").to_pylist() == [0.0, 0.016, 0.032]
+
+
+def test_everything_an_osu_replay_holds_is_read_or_kept(tmp_path):
+    """Every part of the file kept whole in heat.raw.parquet, the self-check with nothing lost - lazer's extra too."""
+    import struct
+
+    import pyarrow.parquet as pq
+
+    from heat3d_watch.adapters.replays import ADAPTERS, parse_osr
+
+    # Target Practice on (bit 23): its accuracy follows the score id; then bytes the format does not describe.
+    buf = _osr("0|10|20|0,16|30|40|1,-12345|0|0|4242,bad", mods=72 | 1 << 23) + struct.pack("<d", 0.97) + b"lazer"
+    r = parse_osr(buf)
+    assert (r["seed"], r["frames_unread"], r["score_id"], r["mod_info"]) == (4242, 1, 0, 0.97)
+    assert r["replay_md5"] == "r" * 32 and r["life"] == [(0, 1.0), (1000, 0.9)]
+    assert [s[0] for s in r["sections"]] == ["header", "replay_data", "score_id", "mod_info", "trailing"]
+    assert r["sections"][-1][1:] == (len(buf) - 5, len(buf)) and r["sections"][0][1] == 0
+    # The parts tile the file: nothing between or after them is left out.
+    assert all(a[2] == b[1] for a, b in zip(r["sections"], r["sections"][1:])) and r["sections"][-1][2] == len(buf)
+
+    a = next(x for x in ADAPTERS if x.id == "osu-replays")
+    replay = tmp_path / "play.osr"
+    replay.write_bytes(buf)
+    ctx = Context(Settings(data=str(tmp_path / "data")), tmp_path / "data")
+    a.convert(replay, ctx)
+    folder = next((tmp_path / "data" / "sessions").rglob("meta.json")).parent
+    meta = json.loads((folder / "meta.json").read_text(encoding="utf-8"))
+    c = meta["selfCheck"]["completeness"]
+    assert c["lost"] == 0 and c["sidecars"] == ["heat.raw.parquet"]
+    assert c["types"]["trailing"] == {"seen": 1, "decoded": 0, "partial": 0, "raw": 1, "lost": 0}
+    assert c["types"]["replay_data"]["partial"] == 1 and c["types"]["header"]["partial"] == 1
+    osu = meta["osu"]
+    assert osu["modNames"] == ["Hidden", "DoubleTime", "TargetPractice"] and osu["seed"] == 4242
+    assert osu["modeName"] == "osu" and osu["targetPracticeAccuracy"] == 0.97 and osu["replay_md5"] == "r" * 32
+    raw = pq.read_table(folder / "heat.raw.parquet").to_pylist()
+    # The parts, put back together, are the file.
+    assert b"".join(row["payload"] for row in sorted(raw, key=lambda row: row["offset"])) == buf
+    assert json.loads(next(row for row in raw if row["type"] == "header")["text"])["player"] == "someone"
 
 
 def test_the_replays_command_converts_what_is_already_on_disk_once(tmp_path, capsys):

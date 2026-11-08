@@ -146,6 +146,56 @@ def test_the_adapter_records_a_sitting(tmp_path):
     assert "jump" in t.column("event").to_pylist()
 
 
+def test_every_line_and_companion_file_is_kept_whole_in_the_raw_sidecar(tmp_path):
+    folder = tmp_path / "Elite Dangerous"
+    folder.mkdir()
+    old = folder / "NavRoute.json"  # the last sitting's: left alone
+    old.write_text('{ "timestamp":"2025-01-01T00:00:00Z", "event":"NavRoute", "Route":[] }', encoding="utf-8")
+    then = time.time() - 3600
+    os.utime(old, (then, then))
+    data = tmp_path / "data"
+    ctx = Context(Settings(data=str(data)), data)
+    a = replace(elite.ADAPTERS[0], folder=folder)
+    a.start(ctx)
+    t0 = time.time() - 30
+    journal = journal_lines(t0)
+    (folder / "Journal.2026-01-01T000000.01.log").write_text("\n".join(journal) + "\n", encoding="utf-8")
+    market = json.dumps({"timestamp": iso(t0 + 25), "event": "Market", "MarketID": 7, "StationName": "Test Station B",
+                         "Items": [{"id": 1, "Name": "$gold_name;", "BuyPrice": 9000, "Stock": 3}]})
+    (folder / "Market.json").write_text(market, encoding="utf-8")
+    write_status(folder, status(t0 + 20, 10.0, 20.0, 100.0, flags=1 << 3), 1)
+    a.poll(ctx)
+    (folder / "ModulesInfo.json").write_text('{ "timestamp":"', encoding="utf-8")  # caught mid-write
+    a.poll(ctx)
+    assert "ModulesInfo.json" not in a._session.raw_counts
+    (folder / "ModulesInfo.json").write_text('{ "timestamp":"2026-01-01T00:00:00Z", "event":"ModuleInfo", '
+                                             '"Modules":[] }', encoding="utf-8")
+    future = time.time() + 5
+    os.utime(folder / "ModulesInfo.json", (future, future))
+    a.stop(ctx)
+
+    [session] = list((data / "sessions").glob("*/*"))
+    raw = pq.read_table(session / "heat.raw.parquet").to_pydict()
+    kept = list(zip(raw["type"], raw["used"], raw["text"]))
+    assert ("unparsed", False, "{ this is not json") in kept
+    fsd = next(k for k in kept if k[0] == "FSDJump")
+    assert fsd[1] is True and json.loads(fsd[2])["StarPos"] == [3.0, 0.5, 4.0]  # the list the row leaves out
+    assert ("Market.json", False, market) in kept
+    assert [k[1] for k in kept if k[0] == "Status.json"] == [True]  # it made a surface row
+    assert [json.loads(k[2])["event"] for k in kept if k[0] == "ModulesInfo.json"] == ["ModuleInfo"]
+    assert "NavRoute.json" not in raw["type"]
+    # One raw item per journal line, all of them.
+    assert sum(1 for k in kept if k[0] not in ("Market.json", "Status.json", "ModulesInfo.json")) == len(journal)
+
+    meta = json.loads((session / "meta.json").read_text(encoding="utf-8"))
+    check = meta["selfCheck"]["completeness"]
+    assert check["lost"] == 0 and check["sidecars"] == ["heat.raw.parquet"]
+    assert check["types"]["Market.json"] == {"seen": 1, "decoded": 0, "partial": 0, "raw": 1, "lost": 0}
+    assert check["types"]["FSDJump"]["partial"] == 1
+    surface = next(r for r in read_rows(session) if r["event"] == "surface")
+    assert surface["Flags"] == elite.HAS_LAT_LONG | (1 << 3) and surface["lat"] == 10.0
+
+
 def test_lines_from_before_the_game_started_are_not_recorded_again(tmp_path, monkeypatch):
     folder = tmp_path / "ed"
     folder.mkdir()

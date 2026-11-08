@@ -69,6 +69,20 @@ def test_utf16_logs_are_read_line_by_line(tmp_path):
     assert f.lines() == ["drei"]
 
 
+def test_a_long_log_is_read_a_step_at_a_time_and_nothing_is_missed(tmp_path):
+    log = tmp_path / "Power.log"
+    body = [f"line {i:04d} " + "x" * (i % 7) for i in range(500)]
+    log.write_text("\n".join(body) + "\n" + "y" * 300 + "\nhalf", encoding="utf-8")
+    f = Follower(lambda: log, time.time() - 1, chunk=64)
+    steps = f.iter_lines()
+    first = next(steps)
+    assert first == body[0] and f.pos < 200  # one step read, not the whole file
+    assert [first, *steps] == body + ["y" * 300]  # a line longer than a step comes whole
+    with log.open("ab") as out:
+        out.write(b"-way\n")
+    assert f.lines() == ["half-way"]
+
+
 def test_the_file_is_not_held_open(tmp_path):
     log = tmp_path / "latest.log"
     log.write_bytes(b"x\n")

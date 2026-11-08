@@ -17,6 +17,7 @@ from heat3d_watch.adapters.xplane import (
     ADAPTERS,
     DATAREFS,
     RPOS_FORMAT,
+    SLOW_DATAREFS,
     Tangent,
     decode_rpos,
     decode_rref,
@@ -27,6 +28,9 @@ from heat3d_watch.adapters.xplane import (
 )
 from heat3d_watch.config import Settings
 from heat3d_watch.session import read_rows
+
+#: What the adapter sends X-Plane: an RREF per dataref, fast and slow, and one RPOS.
+REQUESTS = len(DATAREFS) + len(SLOW_DATAREFS) + 1
 
 
 def test_requests_are_laid_out_as_documented():
@@ -132,9 +136,10 @@ def test_a_flight_against_a_fake_xplane(tmp_path):
     a = replace(ADAPTERS[0], port=xp.port)
     ctx = Context(Settings(data=str(tmp_path)), tmp_path)
     a.start(ctx)
-    xp.take_requests(len(DATAREFS) + 1)
-    assert {p for _, p in xp.subs.values()} == {p for _, p, _ in DATAREFS}
-    assert all(f == 10 for f, _ in xp.subs.values()) and xp.rpos_hz == 10
+    xp.take_requests(REQUESTS)
+    assert {p for _, p in xp.subs.values()} == {p for _, p, _ in (*DATAREFS, *SLOW_DATAREFS)}
+    assert {f for f, p in xp.subs.values() if p in {q for _, q, _ in DATAREFS}} == {10} and xp.rpos_hz == 10
+    assert {f for f, p in xp.subs.values() if p in {q for _, q, _ in SLOW_DATAREFS}} == {1}
 
     lat, lon = 47.0, 8.0
     step = 0.0001  # about 11 m of latitude per fix: a takeoff run
@@ -153,7 +158,7 @@ def test_a_flight_against_a_fake_xplane(tmp_path):
     _poll_until(a, ctx, lambda: a._session.counts.get("session_start", 0) == 2)
     folder = a._session.folder
     a.stop(ctx)
-    xp.take_requests(len(DATAREFS) + 1)
+    xp.take_requests(REQUESTS)
     assert xp.subs == {} and xp.rpos_hz == 0  # unsubscribed on stop
 
     rows = read_rows(folder)
@@ -185,7 +190,7 @@ def test_a_jump_is_cut_and_a_far_new_flight_gets_its_own_map(tmp_path):
     a = replace(ADAPTERS[0], port=xp.port)
     ctx = Context(Settings(data=str(tmp_path)), tmp_path)
     a.start(ctx)
-    xp.take_requests(len(DATAREFS) + 1)
+    xp.take_requests(REQUESTS)
     xp.send(_state(47.0, 8.0, 400, ground=True, ft=5))
     _poll_until(a, ctx, lambda: a._session is not None and a._session.positions >= 2)
     xp.send(_state(47.5, 8.0, 400, ground=True, ft=6))  # 55 km in a blink
@@ -205,7 +210,7 @@ def test_bad_packets_are_counted_not_fatal(tmp_path):
     a = replace(ADAPTERS[0], port=xp.port)
     ctx = Context(Settings(data=str(tmp_path)), tmp_path)
     a.start(ctx)
-    xp.take_requests(len(DATAREFS) + 1)
+    xp.take_requests(REQUESTS)
     xp.send(_state(47.0, 8.0, 400, ground=True, ft=5))
     _poll_until(a, ctx, lambda: a._session is not None)
     xp.sock.sendto(b"RREF\0\1\2", xp.client)
@@ -221,5 +226,36 @@ def test_the_datarefs_exist_in_the_installed_xplane():
     if not found:
         pytest.skip("no X-Plane 12 installed through Steam here")
     names = {line.split("\t", 1)[0] for line in found[0].read_text(encoding="utf-8", errors="replace").splitlines()}
-    missing = [p for _, p, _ in DATAREFS if p not in names]
+    missing = [p for _, p, _ in (*DATAREFS, *SLOW_DATAREFS) if p.split("[", 1)[0] not in names]
     assert not missing
+
+
+def test_every_answer_is_kept_in_the_raw_sidecar(tmp_path):
+    """Answers that made rows, answers that could not (no fix yet) and packets nobody reads all reach heat.raw.parquet."""
+    xp = FakeXPlane()
+    a = replace(ADAPTERS[0], port=xp.port)
+    ctx = Context(Settings(data=str(tmp_path)), tmp_path)
+    a.start(ctx)
+    xp.take_requests(REQUESTS)
+    # The menus: an answer at 0/0 is no place on the earth, but the session opens to keep it.
+    xp.send(_state(0.0, 0.0, 0.0, ground=True, ft=0), rpos=False)
+    _poll_until(a, ctx, lambda: a._session is not None)
+    xp.sock.sendto(b"XYZW" + b"\x01\x02\x03", xp.client)
+    _poll_until(a, ctx, lambda: a._session.raw_counts.get("XYZW") is not None)
+    slow = {p: v for p, v in (("sim/flightmodel/weight/m_fuel_total", 850.0),
+                              ("sim/cockpit2/engine/indicators/engine_speed_rpm[0]", 2400.0))}
+    xp.send({**_state(47.0, 8.0, 400.0, ground=True, ft=5), "sim/flightmodel/position/true_airspeed": 60.0, **slow})
+    _poll_until(a, ctx, lambda: a._session.positions >= 1)
+    folder = a._session.folder
+    a.stop(ctx)
+    t = pq.read_table(folder / "heat.raw.parquet").to_pylist()
+    kinds = [(r["type"], r["used"]) for r in t]
+    assert kinds[:2] == [("RREF", False), ("XYZW", False)] and ("RREF", True) in kinds and ("RPOS", True) in kinds
+    assert t[1]["payload"] == b"XYZW\x01\x02\x03"
+    pos = next(r for r in read_rows(folder) if r["event"] == "position")
+    assert pos["tas"] == 60.0 and pos["fuel_kg"] == 850.0 and pos["rpm_1"] == 2400.0 and pos["vel_east"] == 0
+    meta = json.loads((folder / "meta.json").read_text(encoding="utf-8"))
+    assert meta["geo"] == {"lat0": 47.0, "lon0": 8.0}  # placed at the first fix, not at the menus' 0/0
+    assert meta["requests"]["rref"]["101"]["dataref"] == "sim/flightmodel/weight/m_total"
+    check = meta["selfCheck"]["completeness"]
+    assert check["lost"] == 0 and check["types"]["XYZW"] == {"seen": 1, "decoded": 0, "partial": 0, "raw": 1, "lost": 0}

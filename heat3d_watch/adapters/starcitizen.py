@@ -25,6 +25,12 @@ Imperium and changes between patches; the patterns follow the lines community
 kill trackers read (e.g. https://github.com/DimmaDont/all-slain, MIT - facts
 only), and anything that does not match is skipped, not guessed. A vehicle's
 `pos` is zone-relative and kept only as text: no coordinates are drawn.
+
+Every line is kept whole in the session's raw sidecar (3DHeat's converter
+rule), matched or not: `type` is the line's tag in angle brackets (`Actor
+Death`, `Spawn Flow`, ...), else its first bracketed word (`Notice`,
+`CSessionManager::OnClientSpawned`), else `untagged`; a line without a
+timestamp is `untimed`.
 """
 
 from __future__ import annotations
@@ -60,6 +66,8 @@ _RESPAWN = re.compile(r"Player '([\w-]+)' <(?:remote|local) client>: DoesLocatio
                       r"location \"(.*?)\"")
 _INCAP = re.compile(r"Logged an incap\.! nickname: ([\w-]+), causes: \[(.*)\]")
 _END = re.compile(r"<CDisciplineServiceExternal::EndSession> Ending session")
+#: A line's kind: after the timestamp, an optional [Level] and a <Tag>, or a first [word].
+_KIND = re.compile(r"^<[^>]*>\s*(?:\[([^\]]*)\]\s*)?(?:<([^>]*)>)?")
 
 #: Names of non-player characters: generated, with a long number on the end, or a known prefix.
 _NPC = re.compile(r"^(PU_|NPC_|AIModule|Kopion|Quasigrazer|Marok|Stalker)|_\d{6,}$")
@@ -77,6 +85,14 @@ def is_npc(name: str) -> bool:
     return bool(_NPC.search(name))
 
 
+def line_kind(line: str) -> str:
+    """The kind of a Game.log line, in the log's own words (see the module's notes)."""
+    m = _KIND.match(line) if _STAMP.match(line) else None
+    if not m:
+        return "untimed"
+    return (m.group(2) or m.group(1) or "untagged").strip() or "untagged"
+
+
 class GameLog:
     """Game.log lines into a session: deaths, kills, destroyed vehicles, quantum jumps."""
 
@@ -84,18 +100,30 @@ class GameLog:
         self.session_for = session_for
         self.me: str | None = None
         self.system: str | None = None
+        self.used = False
 
     def _who(self, name: str) -> str:
         return "me" if self.me and name == self.me else name
 
     def line(self, text: str) -> None:
-        ts = line_time(text)
-        if ts is None:
+        if not text.strip():
             return
+        ts = line_time(text)
+        self.used = False
+        try:
+            if ts is not None:
+                self._line(text, ts)
+        finally:
+            # The line whole, whatever became of it (docs/converters.md, "Live sources").
+            s = self.session_for(ts)
+            when = ts or time.time()
+            s.raw(line_kind(text), text=text, used=self.used, t=when - s.started, ms=when * 1000)
 
+    def _line(self, text: str, ts: float) -> None:
         def ev(name: str, **kw) -> Session:
             s = self.session_for(ts)
             s.event(name, t=ts - s.started, ms=ts * 1000, **kw)
+            self.used = True
             return s
 
         if (m := _CHARACTER.search(text) or _HANDLE.search(text)) is not None:
@@ -187,7 +215,7 @@ class StarCitizenAdapter(Adapter):
     def poll(self, ctx: Context) -> None:
         if self._follow is None or self._log is None:
             return
-        for line in self._follow.lines():
+        for line in self._follow.iter_lines():
             try:
                 self._log.line(line)
             except (ValueError, IndexError):
@@ -215,6 +243,7 @@ ADAPTERS = [
             "deaths with victim, killer, weapon, damage type and zone (players and NPCs)",
             "vehicles disabled and destroyed, with driver, cause and zone",
             "quantum travel targets, solar system changes, spawns, respawns, incapacitations",
+            "every Game.log line whole in heat.raw.parquet",
             "kills (player and NPC), deaths, suicides, vehicles destroyed and lost, quantum jumps",
         ),
         enable="",
@@ -222,5 +251,32 @@ ADAPTERS = [
         axes=Axes(units="no positions recorded"),
         verified="tested on synthetic Game.log lines in the format community trackers document; untested against "
         "the game",
+        completeness={
+            "read": (
+                "`<Actor Death>`: victim, killer, weapon and its class, damage type, zone; NPC or player",
+                "`<Vehicle Destruction>`: vehicle, zone, zone-relative position as text, driver, cause, how, "
+                "destroy level",
+                "`<Quantum Navtarget>` targets, `<Changing Solar System>`, `OnClientSpawned`, hospital respawns, "
+                "incapacitations with their causes, `EndSession`",
+                "the player's handle from `<AccountLoginCharacterStatus_Character>` or the login line",
+            ),
+            "raw": (
+                "every Game.log line whole, `type` = its tag in angle brackets (`Actor Death`, `Vehicle "
+                "Destruction`, `Spawn Flow`, `Jump Drive State Changed`, `SHUDEvent_OnNotification`, "
+                "`RequestLocationInventory`, ...), else its first bracketed word (`Notice`, "
+                "`CSessionManager::OnClientSpawned`, ...), else `untagged`; lines without a timestamp (the log's "
+                "header, wrapped text) as `untimed`; `used` where the line became a row",
+            ),
+            "missing": (
+                "positions: the log gives none in a frame that can be drawn (a destroyed vehicle's `pos` is "
+                "relative to a zone whose place is not logged)",
+                "anything from the game's process or network: Star Citizen runs Easy Anti-Cheat; only the log "
+                "file is read",
+                "earlier launches' logs (`logbackups`): each launch's Game.log is kept when it is played",
+                "lines in a format a patch changes: kept raw, decoded again once the new form is known",
+            ),
+            "size": "Game.log grows about 5-15 MB per hour of play (more in busy areas and with errors); zstd in "
+            "heat.raw.parquet makes it roughly a tenth",
+        },
     )
 ]

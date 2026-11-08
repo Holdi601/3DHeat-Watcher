@@ -26,7 +26,19 @@ a player may see:
   (kills, deaths, assists, last_hits, denies, gold, gpm, xpm, team_name), `hero`
   (xpos/ypos in world units, level, alive, respawn_seconds), `buildings`
   (health per tower/barracks/ancient), `roshan`, `events` (roshan_killed,
-  aegis_picked_up, ...). There is no height: z is 0.
+  aegis_picked_up, ...). There is no height: z is 0. Also asked for, and kept
+  whole: `abilities`, `items`, `draft`, `wearables`, `minimap`, `couriers`,
+  `neutralitems`, `league` (the game sends what the player's own client has;
+  which of them hold anything while playing rather than spectating is untested).
+
+Every document is kept whole as well (3DHeat's converter rule,
+docs/converters.md in the viewer's repository): `heat.raw.parquet`, `type`
+"gsi", `text` the JSON as posted - only the cfg file's token blanked, it is the
+watcher's own secret, not game data. Documents posted while no match is open
+(menus, loading, between matches) wait in a `Backlog` and go into the next
+match's session, before its start; what is left when the game closes gets a
+session of its own that holds only them. Unreadable posts and posts with a
+wrong token are kept too ("gsi-unreadable", "gsi-bad-auth").
 
 Sources: https://developer.valvesoftware.com/wiki/Counter-Strike:_Global_Offensive_Game_State_Integration
 (the format CS2 kept), https://github.com/antonpup/CounterStrike2GSI and
@@ -53,8 +65,12 @@ from .base import Adapter, Context
 
 log = logging.getLogger("heat3d_watch")
 
-#: A GSI document is a few kilobytes; anything far larger is not one.
-MAX_BODY = 1 << 20
+#: A GSI document is a few kilobytes (a spectator's with every player and the minimap some hundred);
+#: anything far larger is not one.
+MAX_BODY = 4 << 20
+
+#: The auth block's token in a document's text, blanked before the text is kept.
+AUTH_TOKEN = re.compile(r'("token"\s*:\s*)"(?:[^"\\]|\\.)*"')
 
 #: `"path"  "D:\\SteamLibrary"` lines of Valve's key-value files.
 LIBRARY_PATH = re.compile(r'"path"\s*"([^"]+)"')
@@ -141,6 +157,74 @@ def num(value: Any, default: float = 0) -> float:
         return default
 
 
+class Backlog:
+    """
+    What a live source sent while no session was open - a menu, a loading
+    screen, the time between two matches - kept whole until one opens: it goes
+    into that session's raw feed first, each item at its own wall-clock time
+    (`time` negative: before the session's start). What is still waiting when
+    the game closes, or more than `cap` bytes of it, gets a session of its
+    own that holds only the raw feed (`flush`). Nothing is thinned or dropped.
+    """
+
+    def __init__(self, cap: int = 8 << 20) -> None:
+        self.cap = cap
+        self.items: list[tuple[float, str, bytes | None, str | None, dict[str, Any]]] = []
+        self.size = 0
+
+    def add(self, when: float, type: str, payload: bytes | None = None, *, text: str | None = None,
+            **fields: Any) -> None:
+        self.items.append((when, type, payload, text, fields))
+        self.size += len(payload or b"") + len(text or "") + 64
+
+    @property
+    def full(self) -> bool:
+        return self.size >= self.cap
+
+    def into(self, s: Session) -> None:
+        """Every item waiting, into `s`'s raw feed (not used: nothing turned it into rows)."""
+        for when, type, payload, text, fields in self.items:
+            s.raw(type, payload, text=text, t=when - s.started, ms=when * 1000, **fields)
+        self.items = []
+        self.size = 0
+
+    def flush(self, ctx: Context, adapter: Adapter, **meta: Any) -> None:
+        """What is left, in a session of its own: it has no rows, only what the source sent."""
+        if not self.items:
+            return
+        s = ctx.open(adapter, when=self.items[0][0], meta={"raw_only": True, **meta})
+        self.into(s)
+        ctx.close(s)
+
+
+class Repeats:
+    """
+    A polled reply that is byte for byte the one before carries nothing new:
+    it is kept once and counted (`unchanged_replies` in meta.json per type),
+    so a reader knows how often the source said the same again.
+    """
+
+    def __init__(self) -> None:
+        self.last: dict[str, str | bytes] = {}
+        self.counts: dict[str, int] = {}
+
+    def same(self, type: str, body: str | bytes) -> bool:
+        if self.last.get(type) == body:
+            self.counts[type] = self.counts.get(type, 0) + 1
+            return True
+        self.last[type] = body
+        return False
+
+    def into(self, s: Session | None) -> None:
+        """Say the counts in `s`'s meta.json (they are cumulative over the session)."""
+        if s is not None and self.counts:
+            s.meta["unchanged_replies"] = dict(self.counts)
+
+    def reset(self) -> None:
+        self.last.clear()
+        self.counts.clear()
+
+
 class _Handler(BaseHTTPRequestHandler):
     server: "_Server"
 
@@ -151,7 +235,7 @@ class _Handler(BaseHTTPRequestHandler):
             n = 0
         body = self.rfile.read(n) if 0 < n <= MAX_BODY else b""
         try:
-            self.server.inbox.put_nowait((time.time(), body))
+            self.server.inbox.put_nowait((time.time(), body, n))
         except queue.Full:
             self.server.dropped += 1
         # The game waits for the answer before it sends the next state: answer first, think later.
@@ -169,7 +253,7 @@ class _Server(ThreadingHTTPServer):
 
     def __init__(self, port: int):
         super().__init__(("127.0.0.1", port), _Handler)
-        self.inbox: queue.Queue[tuple[float, bytes]] = queue.Queue(maxsize=10000)
+        self.inbox: queue.Queue[tuple[float, bytes, int]] = queue.Queue(maxsize=10000)
         self.dropped = 0
 
 
@@ -196,6 +280,7 @@ class GsiAdapter(Adapter):
     _accept: str | None = None
     _bad: int = 0
     _bad_auth: int = 0
+    _backlog: Backlog = field(default_factory=Backlog)
 
     # -- where the game is -----------------------------------------------------
 
@@ -269,6 +354,7 @@ class GsiAdapter(Adapter):
             log.info("%s: no cfg file with a token found; accepting any local post (`setup %s --apply`)",
                      self.id, self.id)
         self._bad = self._bad_auth = 0
+        self._backlog = Backlog()
         self._server = _Server(self.port)
         self._thread = threading.Thread(target=self._server.serve_forever, kwargs={"poll_interval": 0.2},
                                         name=f"gsi-{self.id}", daemon=True)
@@ -281,7 +367,7 @@ class GsiAdapter(Adapter):
         deadline = time.monotonic() + 0.1
         while time.monotonic() < deadline:
             try:
-                when, body = srv.inbox.get_nowait()
+                when, body, length = srv.inbox.get_nowait()
             except queue.Empty:
                 break
             try:
@@ -291,17 +377,42 @@ class GsiAdapter(Adapter):
             except (ValueError, UnicodeDecodeError):
                 self._bad += 1
                 self._count()
+                self._keep(ctx, when, "gsi-unreadable", payload=body, length=length)
                 continue
+            text = self._redact(body.decode("utf-8"), doc)
             if self._accept is not None and str((doc.get("auth") or {}).get("token") or "") != self._accept:
                 self._bad_auth += 1
                 self._count()
+                self._keep(ctx, when, "gsi-bad-auth", text=text)
                 continue
             try:
                 self.handle(ctx, doc, when)
+                used = self._session is not None
             except (TypeError, ValueError, AttributeError, KeyError):
-                # A field of an unexpected shape: one document lost, never the watcher.
+                # A field of an unexpected shape: no rows from this document, never the watcher lost.
                 self._bad += 1
                 self._count()
+                used = False
+            self._keep(ctx, when, "gsi", text=text, used=used)
+
+    @staticmethod
+    def _redact(text: str, doc: dict[str, Any]) -> str:
+        """The document as posted, but the cfg file's token blanked: it is the watcher's secret, not game data."""
+        auth = doc.get("auth")
+        if isinstance(auth, dict) and auth.get("token"):
+            return AUTH_TOKEN.sub(r'\1""', text, count=1)
+        return text
+
+    def _keep(self, ctx: Context, when: float, type: str, *, payload: bytes | None = None, text: str | None = None,
+              used: bool = False, **fields: Any) -> None:
+        """One post, whole: into the open match's raw feed, else the backlog for the next one."""
+        s = self._session
+        if s is not None:
+            s.raw(type, payload, text=text, used=used, ms=when * 1000, **fields)
+            return
+        self._backlog.add(when, type, payload, text=text, **fields)
+        if self._backlog.full:
+            self._backlog.flush(ctx, self)
 
     def stop(self, ctx: Context) -> None:
         if self._server is not None:
@@ -309,11 +420,15 @@ class GsiAdapter(Adapter):
             self._server.server_close()
             self._server = None
         self.end(ctx)
+        # Menus after the last match, or a game closed before any: their documents in a session of their own.
+        self._backlog.flush(ctx, self)
 
     # -- sessions ----------------------------------------------------------------
 
     def begin(self, ctx: Context, when: float, **meta: Any) -> Session:
         self._session = ctx.open(self, when=when, meta={k: v for k, v in meta.items() if v not in (None, "")})
+        # What the game posted before this match (its menu, the loading, warm-up) leads into it.
+        self._backlog.into(self._session)
         self._count()
         return self._session
 
@@ -495,7 +610,8 @@ class Cs2Gsi(GsiAdapter):
                 fwd = vec(p.get("forward"))
                 s.position(*pos, ms=ms, player="me", team=team, session=label, health=health,
                            armor=int(num(st.get("armor"))), money=int(num(st.get("money"))),
-                           fx=fwd[0] if fwd else None, fy=fwd[1] if fwd else None, fz=fwd[2] if fwd else None)
+                           fx=fwd[0] if fwd else None, fy=fwd[1] if fwd else None, fz=fwd[2] if fwd else None,
+                           weapon=active_weapon(p), **{k: int(num(st.get(k))) for k in OWN_STATE if k in st})
             self._pos = pos
         self._health = health
         # 4. Kills, from the match statistics growing.
@@ -515,6 +631,11 @@ class Cs2Gsi(GsiAdapter):
         self._round_dmg = max(self._round_dmg, int(num(st.get("round_totaldmg"))))
 
 
+#: More of the watched player's `state` on each position row: the game's own numbers, 0-255 for the
+#: flash, smoke and fire amounts, 0/1 for the helmet and the defuse kit, the equipment's value in $.
+OWN_STATE = ("helmet", "defusekit", "flashed", "smoked", "burning", "equip_value")
+
+
 def active_weapon(player: dict[str, Any]) -> str | None:
     weapons = player.get("weapons")
     if not isinstance(weapons, dict):
@@ -526,6 +647,10 @@ def active_weapon(player: dict[str, Any]) -> str | None:
 
 
 # ---------------------------------------------------------------------- Dota 2
+
+
+#: More of the own hero on each position row, as the game names them.
+HERO_STATE = ("max_health", "mana", "max_mana")
 
 
 @dataclass
@@ -593,7 +718,8 @@ class DotaGsi(GsiAdapter):
                 s.event("respawn", ms=ms, player="me", team=team, session=match, hero=hero, clock=clock, **where)
             if alive and pos != self._pos:
                 s.position(*pos, ms=ms, player="me", team=team, session=match, clock=clock,
-                           level=int(num(h.get("level"))), health=int(num(h.get("health"))))
+                           level=int(num(h.get("level"))), health=int(num(h.get("health"))),
+                           **{k: int(num(h.get(k))) for k in HERO_STATE if k in h})
                 self._pos = pos
             self._alive = alive
             if "level" in h:
@@ -690,6 +816,40 @@ ADAPTERS = [
         axes=Axes(up="z", flip_y=True, units="inches (Hammer units)"),
         verified="tested on documents in the published GSI format posted to the running adapter; "
         "the install and cfg folder were found on this machine; untested against the running game",
+        completeness={
+            "read": (
+                "the watched player's position, view direction, health, armor, money, active weapon, helmet, "
+                "defuse kit, flash/smoke/fire amounts and equipment value, on each position row while it is the "
+                "player's own (provider steamid = player steamid)",
+                "spawns, deaths (health to 0, or the match statistics' death count), kills (the kill count growing)",
+                "match phases, rounds (freeze time, live, over, winner), bomb planted/defused/exploded, the result",
+                "kills, assists, deaths, MVPs, score, money, damage, headshot kills, rounds won and lost as statistics",
+            ),
+            "raw": (
+                "`gsi`: every document the game posts, whole, as posted (`text`), `used` true when it was read in "
+                "a match - provider (version, timestamp), map (mode, team names, consecutive round losses, timeouts, "
+                "series wins, `round_wins` with each round's win condition), round, the watched player (clan, "
+                "observer slot, activity, every weapon with skin, ammo and reserve), bomb, phase countdowns, and the "
+                "game's own `previously`/`added` diff of the post before",
+                "documents from menus, loading and between matches: kept the same way, at their own time before the "
+                "next match's start; after the last match, in a session of their own (`raw_only` in meta.json)",
+                "`gsi-unreadable`: a post that is not a JSON object, its bytes as `payload` and `length`",
+                "`gsi-bad-auth`: a post with another token than the cfg file's",
+            ),
+            "missing": (
+                "other players (`allplayers_*`) and grenades (`allgrenades`): the game sends them only to "
+                "spectators and GOTV, and the watcher does not ask for them (Sources and rules); a demo has every "
+                "player - see cs2-demos",
+                "states between posts: the game posts at most every 0.1 s (`throttle`) and only on a change, "
+                "every 10 s (`heartbeat`) otherwise",
+                "the cfg file's token, blanked in each kept document: the watcher's own secret, not game data",
+                "posts beyond 10,000 waiting (the watcher stalled) are counted as `dropped_packets`, not kept; "
+                "a post over 4 MB is kept as `gsi-unreadable` with its length but without its bytes",
+            ),
+            "size": "a player's document is 2-4 KB, posted up to 10 times a second while something changes: "
+            "about 30-150 MB per hour in `raw.bin` while the match runs, a tenth of that or less in the zstd "
+            "`heat.raw.parquet` (estimated from the published format, not measured on the game)",
+        },
     ),
     DotaGsi(
         id="dota2-gsi",
@@ -698,7 +858,9 @@ ADAPTERS = [
         port=int(os.environ.get("HEAT3D_DOTA_GSI_PORT", "3312")),
         steam_folder="dota 2 beta",
         cfg_file=r"game\dota\cfg\gamestate_integration\gamestate_integration_heat3d.cfg",
-        providers=("provider", "map", "player", "hero", "buildings", "roshan", "events"),
+        # Every component Dota's GSI offers: what the adapter does not read is kept whole in the raw feed.
+        providers=("provider", "map", "player", "hero", "abilities", "items", "buildings", "roshan", "events",
+                   "draft", "wearables", "minimap", "couriers", "neutralitems", "league"),
         source=r"Game State Integration: HTTP POSTs to 127.0.0.1:3312 configured by "
         r"<Dota>\game\dota\cfg\gamestate_integration\gamestate_integration_heat3d.cfg",
         records=(
@@ -712,5 +874,40 @@ ADAPTERS = [
         axes=Axes(up="z", flip_y=True, units="Dota world units (z always 0)"),
         verified="tested on documents in the published GSI format posted to the running adapter; "
         "untested against the running game (not installed here)",
+        completeness={
+            "read": (
+                "the own hero's position (x/y), alive, level, health, max health, mana, max mana; spawn, deaths "
+                "with the respawn time, respawns",
+                "kills (the kill count growing); kills, deaths, assists, last hits, denies, gold, GPM, XPM, net "
+                "worth, level and hero as statistics",
+                "buildings destroyed, Roshan down and back, every entry of `events` once, game states, the winner",
+            ),
+            "raw": (
+                "`gsi`: every document the game posts, whole, as posted (`text`), `used` true when it was read in "
+                "a match - all fifteen components the cfg file asks for: provider, map (day/night, paused, ward "
+                "cooldowns, scores), player (reliable and unreliable gold, streaks, kill list, commands issued, "
+                "...), hero (buffs, talents, Aghanim's, attributes), abilities, items, buildings, roshan, events, "
+                "draft, wearables, minimap, couriers, neutralitems, league, and the game's `previously`/`added` diff",
+                "documents from menus, loading and between matches: kept the same way, at their own time before the "
+                "next match's start; after the last match, in a session of their own (`raw_only` in meta.json)",
+                "`gsi-unreadable`: a post that is not a JSON object, its bytes as `payload` and `length`",
+                "`gsi-bad-auth`: a post with another token than the cfg file's",
+            ),
+            "missing": (
+                "height: the game sends x and y only",
+                "the other heroes while playing: the game sends the own hero, and every player's only to "
+                "spectators (kept raw then, not drawn); several components (draft, minimap, couriers) carry "
+                "only what the player's own client has - which, while playing, is untested (Dota 2 is not "
+                "installed here)",
+                "states between posts: at most one every 0.1 s (`throttle`), every 10 s when nothing changes",
+                "the cfg file's token, blanked in each kept document: the watcher's own secret, not game data",
+                "posts beyond 10,000 waiting (the watcher stalled) are counted as `dropped_packets`, not kept; "
+                "a post over 4 MB is kept as `gsi-unreadable` with its length but without its bytes",
+            ),
+            "size": "with every component a player's document is about 5-15 KB, posted up to 10 times a second "
+            "(the clock changes every post): about 100-500 MB per hour in `raw.bin` while the match runs, "
+            "roughly a tenth in the zstd `heat.raw.parquet`; a spectator's, with every player and the minimap, "
+            "several times that (estimated from the published format, not measured on the game)",
+        },
     ),
 ]

@@ -78,6 +78,17 @@ one the stage varies least along, decided when the session closes.
 The `heat3d` protocol mod gamecapture ships (UDP 4460, Options > Other >
 Protocols > "others"); BeamNG's Z-up world turned to Y up as `beamng.py` does.
 
+#### Everything kept
+
+The rows are a few a second; the games send far more. Every UDP packet that
+arrives - in the menus, between laps, ones no decoder reads - is kept whole
+in the session's `heat.raw.parquet` under its format (`dash-horizon`,
+`session_update`, `extradata3`, `H3D1`, ...), and every shared memory page
+(the whole mapping, not only the bytes decoded) each time it changes, under
+its mapping's name (`acpmf_physics`, ...). `used` marks what also became
+rows; `meta.json`'s `selfCheck.completeness` counts each kind (3DHeat's
+converter rule).
+
 The same module also serves: [Assetto Corsa (telemetry)](game-assetto-corsa.md), [Assetto Corsa Competizione (telemetry)](game-assetto-corsa-competizione.md), [Assetto Corsa EVO (telemetry)](game-assetto-corsa-evo.md), [BeamNG.drive (telemetry)](game-beamng.md), [DiRT Rally 2.0 (telemetry)](game-dirt-rally-2.md), [EA SPORTS WRC (telemetry)](game-ea-wrc.md), [Forza Horizon 4 (telemetry)](game-forza-horizon-4.md), [Forza Horizon 5 (telemetry)](game-forza-horizon-5.md), [Forza Horizon 6 (telemetry)](game-forza-horizon-6.md), [Forza Motorsport (telemetry)](game-forza-motorsport.md), [Richard Burns Rally (telemetry)](game-richard-burns-rally.md).
 
 ## Positions and axes
@@ -105,6 +116,27 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 `best_lap`, `best_stage`, `distance_km`, `laps`, `race_position`, `stages`, `top_speed_kmh`
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
+
+## Completeness
+
+The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the source holds is read or kept, never dropped. Besides the rows, every packet, page, line or reply the adapter receives is kept whole in the session's `heat.raw.parquet` (columns `time`, `ms`, `type`, `used`, `payload`, `text`, then any field kept by name; `used` marks what also became rows), and `meta.json`'s `selfCheck.completeness` counts each `type` - `lost` is 0.
+
+**Read**
+
+- rows at 10 Hz from the physics page: position (mean of the tyre contact points), speed, gear, throttle, brake, yaw/pitch/roll (rad), rpm, steer (as the page has it); session start with the track and car from the static page; laps, race position
+
+**Kept raw**
+
+- each page whole - the full mapping region, not only the bytes decoded - every time its bytes change, at the watcher's 10 Hz read: `acpmf_physics`, `acpmf_static`; a reread that is byte for byte the last one is counted in meta.json's `unchanged_reads`, not stored again
+- everything decoded only for lap files (`decoders/kunos.py`: per wheel slip, load, pressure, temperatures, camber, suspension, contact points, brake temperatures, slip ratio and angle; world and local velocity, angular velocity, aids) is in those pages
+
+**Not available**
+
+- other cars' positions: the pages describe the player's car only (ACC's graphics page has car ids and coordinates for others in some versions - kept in the raw page, not decoded)
+- physics ticks between the watcher's reads: the game rewrites the page at its physics rate (up to 333 Hz) and the watcher reads 10 times a second
+- a stage clock or the game's stage time: AC Rally publishes no graphics page; stages end where the car stops
+
+**Size**: about 150-300 MB an hour before compression (a 4 KB region per page at up to 10 changes a second); the pages are mostly zeros and zstd keeps a small fraction
 
 ## Verified
 

@@ -20,6 +20,10 @@ from heat3d_watch.adapters.msfs import (
     DEFINE_ID,
     EVENTS,
     MAX_PATH,
+    MOTION_DEFINE,
+    MOTION_VARS,
+    NAME_VARS,
+    NAMES_DEFINE,
     RECV_EVENT,
     RECV_EVENT_FILENAME,
     RECV_EXCEPTION,
@@ -159,3 +163,42 @@ def test_without_a_dll_the_adapter_says_why(monkeypatch):
     a = replace(ADAPTERS[1], _missing=(0.0, None))
     why = a.missing()
     assert why and "SimConnect.dll" in why and "MSFS 2024 SDK" in why
+
+
+def test_every_message_is_kept_in_the_raw_sidecar(tmp_path):
+    """Messages that made rows, frames thinned out of them, blocks read by name and messages nobody reads all reach heat.raw.parquet."""
+    a = replace(ADAPTERS[0])
+    ctx = Context(Settings(data=str(tmp_path)), tmp_path)
+    c = FakeClient()
+    a._client = c
+    motion = [float(i) for i in range(len(MOTION_VARS))]
+    motion_msg = recv(RECV_SIMOBJECT_DATA, struct.pack("<7I", 2, 0, MOTION_DEFINE, 0, 1, 1, len(motion))
+                      + struct.pack(f"<{len(motion)}d", *motion))
+    names = b"".join(t.encode().ljust(256, b"\0") for t in ("Cub Example", "Piper", "J3", "N1234"))
+    names_msg = recv(RECV_SIMOBJECT_DATA, struct.pack("<7I", 4, 0, NAMES_DEFINE, 0, 1, 1, len(NAME_VARS)) + names)
+    system_state = recv(15, struct.pack("<III", 1, 0, 0) + b"\0" * 260)  # SYSTEM_STATE: not asked for, not read
+    menu = data(lat=0.0, lon=0.0, alt=0.0)  # the menus' 0/0: no row, but the session opens to keep it
+    first, second = data(lat=47.0, lon=8.0, alt=400, on_ground=1), data(lat=47.0001, lon=8.0, alt=400, on_ground=1)
+    pause = recv(RECV_EVENT, struct.pack("<III", 0xFFFFFFFF, next(k for k, n in EVENTS.items() if n == "Pause"), 1))
+    polls = [[menu, system_state], [names_msg, motion_msg, first, second, pause], [recv(RECV_QUIT, b"")]]
+    c.queue = [list(p) for p in polls]
+    a.poll(ctx)
+    folder = a._session.folder
+    for _ in range(2):
+        a.poll(ctx)
+    assert a._session is None
+    t = pq.read_table(folder / "heat.raw.parquet").to_pylist()
+    assert [r["payload"] for r in t] == [m for p in polls for m in p]
+    assert [(r["type"], r["used"]) for r in t] == [
+        ("SIMOBJECT_DATA", False), ("SYSTEM_STATE", False), ("SIMOBJECT_DATA", True), ("SIMOBJECT_DATA", True),
+        ("SIMOBJECT_DATA", False), ("SIMOBJECT_DATA", True), ("EVENT", False), ("QUIT", True),
+    ]  # of the two position frames in one poll, the last made the row; the first is only kept
+    pos = next(r for r in read_rows(folder) if r["event"] == "position")
+    assert pos["aircraft"] == "Cub Example" and pos["tas_kt"] == 0.0 and pos["rate_body_z"] == 14.0
+    meta = json.loads((folder / "meta.json").read_text(encoding="utf-8"))
+    assert meta["atc_id"] == "N1234" and meta["geo"] == {"lat0": 47.0001, "lon0": 8.0}  # the first fix, not 0/0
+    assert meta["requests"]["motion"]["vars"][0] == ["AIRSPEED TRUE", "knots"]
+    assert meta["requests"]["names"]["vars"][0] == ["TITLE", None]
+    check = meta["selfCheck"]["completeness"]
+    assert check["lost"] == 0 and check["types"]["SIMOBJECT_DATA"] == {"seen": 5, "decoded": 0, "partial": 3,
+                                                                       "raw": 2, "lost": 0}

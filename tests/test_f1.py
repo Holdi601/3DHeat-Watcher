@@ -217,6 +217,49 @@ def test_a_race_every_car_its_laps_and_its_events(tmp_path, fmt):
     assert meta["axes"]["up"] == "y"
 
 
+def test_every_packet_is_kept_whole_even_the_ones_not_read(tmp_path):
+    """docs/converters.md: a packet nothing reads (Car Status, BUTN, an old format) is in the raw sidecar as it came."""
+    data = tmp_path / "data"
+    ctx = Context(Settings(data=str(data)), data)
+    a = f1.F1Adapter(id="f1-test", game="EA SPORTS F1 25", exes=("x.exe",), port=free_port())
+    a.start(ctx)
+    status = head(2025, 7, 1.0, 5) + bytes(range(256)) * 4 + bytes(1239 - 29 - 1024)  # Car Status, 1239 bytes
+    moving = bytearray(motion(2025, 1.0, 5, {0: (10.0, 1.0, 20.0, (30.0, 0.0, 0.0))}))
+    struct.pack_into("<3f", moving, 29 + 48, 0.5, -0.25, 0.125)  # car 0's yaw, pitch, roll (radians)
+    old = head(2022, 0, 0.0, 0) + bytes(1300)
+    packets = [
+        telemetry(2025, 1.0, 5, {0: (108, 4)}),
+        bytes(moving),
+        status,
+        event(2025, 1.0, "BUTN", struct.pack("<I", 1)),
+        event(2025, 1.0, "OVTK", bytes([0, 1])),
+        old,
+        b"\x01\x02",
+    ]
+    for p in packets:
+        a.feed(p)
+    a.stop(ctx)
+
+    (folder,) = [p for p in (data / "sessions").glob("*/*")]
+    t = pq.read_table(folder / "heat.raw.parquet").to_pydict()
+    assert t["type"] == ["car_telemetry", "motion", "car_status", "event", "event", "format 2022", "short"]
+    assert t["payload"] == packets  # whole, byte for byte
+    assert t["used"] == [True, True, False, False, True, False, False]
+    assert t["packet_id"][:5] == [6, 0, 7, 3, 3] and t["format"][:6] == [2025] * 5 + [2022]
+    assert t["frame"][2] == 5 and t["session_uid"][2] == f"{0xABCDEF0123:016x}"
+    meta = json.loads((folder / "meta.json").read_text(encoding="utf-8"))
+    c = meta["selfCheck"]["completeness"]
+    assert c["lost"] == 0
+    assert c["types"]["car_status"] == {"seen": 1, "decoded": 0, "partial": 0, "raw": 1, "lost": 0}
+    assert c["types"]["event"] == {"seen": 2, "decoded": 0, "partial": 1, "raw": 1, "lost": 0}
+    assert c["types"]["motion"]["partial"] == 1
+    # What is now read of Motion and Car Telemetry besides the position.
+    (row,) = [r for r in read_rows(folder) if r["event"] == "position"]
+    assert row["yaw"] == pytest.approx(28.648, abs=1e-3) and row["pitch"] == pytest.approx(-14.324, abs=1e-3)
+    assert row["roll"] == pytest.approx(7.162, abs=1e-3) and row["g_vert"] == 1.0
+    assert row["rpm"] == 11000 and row["steer"] == 0.0 and row["drs"] == 0 and row["gear"] == 4
+
+
 def test_setup_switches_the_udp_output_on(tmp_path, monkeypatch):
     monkeypatch.setattr(f1, "documents", lambda: tmp_path)
     config = tmp_path / "My Games" / "F1 25" / "hardwaresettings" / "hardware_settings_config.xml"

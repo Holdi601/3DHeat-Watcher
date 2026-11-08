@@ -63,7 +63,7 @@ class Context:
         if session is None:
             return None
         table = session.close()
-        if not session.counts:
+        if not session.counts and not session.raw_counts:
             # The game ran and said nothing - a menu, a crash at start. An empty
             # folder per launch would bury the sittings worth keeping.
             import shutil
@@ -103,6 +103,11 @@ class Adapter:
     axes: Axes = field(default_factory=Axes)
     #: What has been checked, honestly: "tested against real journals", "packets built from the spec".
     verified: str = ""
+    #: The converter rule's account of the source (docs/converters.md in the viewer's repository):
+    #: {"read": (...), "raw": (...), "missing": (...), "size": "..."} - what goes into the rows, what is
+    #: kept whole in `heat.raw.parquet` under which `type`, what the source does not give and why, and
+    #: how big the raw feed gets. Written into the game's page by tools/gen_game_pages.py.
+    completeness: dict = field(default_factory=dict)
 
     # -- lifecycle; adapters override what they need --------------------------------
 

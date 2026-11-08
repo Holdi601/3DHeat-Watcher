@@ -13,8 +13,9 @@ than misread. Offsets used (zones as the header marks them; natural alignment):
        0  bool sdkActive          4  bool paused
       40  u32  telemetry_plugin_revision, version_major, version_minor, game (1 ETS2, 2 ATS)
       64  u32  common_ui.time_abs (in-game minutes)
+     504  i32  truck_i.gear
      640  i32  gameplay_i.jobDeliveredEarnedXp
-     948  f32  truck_f.speed (m/s); 1056 truckOdometer (km)
+     948  f32  truck_f.speed (m/s); 952 engineRpm; 1056 truckOdometer (km)
     1460  f32  gameplay_f.jobDeliveredDistanceKm
     2200  f64  truck_dp.coordinateX/Y/Z (m), rotationX/Y/Z (heading, pitch, roll in turns, 0..1)
     2300  char[64] config_s: truckBrand +64, truckName +192, cargo +320, cityDst +448, compDst +576,
@@ -27,6 +28,12 @@ than misread. Offsets used (zones as the header marks them; natural alignment):
 The truck's world placement is SCS's world frame: x east, y up, z south, metres
 (right-handed, y up - the viewer draws it as it is). Ferries, trains and loading
 a save move the truck without driving: the route is cut there.
+
+The whole mapping (the plugin's 32 KiB: every zone above and the ones not
+read - truck configuration, wheels, wear, the truck's other channels, and
+what the revision lays out after byte 4400, the trailers) is kept in the session's raw sidecar each time it changes,
+`type` `SCSTelemetry` with the `revision` beside it - a page of another
+revision too, which is kept whole rather than misread.
 """
 
 from __future__ import annotations
@@ -47,8 +54,10 @@ log = logging.getLogger("heat3d_watch")
 
 NAME = "Local\\SCSTelemetry"
 REVISION = 12
-#: Bytes read: everything up to the end of the special events zone; trailers are not read.
+#: Bytes decoded: everything up to the end of the special events zone; trailers are not decoded.
 READ = 4400
+#: The plugin's whole mapping, kept raw (SCS_PLUGIN_MMF_SIZE).
+MAP_SIZE = 32 * 1024
 
 SPECIAL = ("on_job", "job_finished", "job_cancelled", "job_delivered", "fined", "tollgate", "ferry", "train",
            "refuel", "refuel_paid")
@@ -74,8 +83,10 @@ def decode(buf: bytes) -> dict[str, Any]:
         "game_version": f"{vmaj}.{vmin}",
         "game": {1: "ets2", 2: "ats"}.get(game, ""),
         "time_abs": struct.unpack_from("<I", buf, 64)[0],
+        "gear": struct.unpack_from("<i", buf, 504)[0],
         "xp": struct.unpack_from("<i", buf, 640)[0],
         "speed": struct.unpack_from("<f", buf, 948)[0],
+        "rpm": struct.unpack_from("<f", buf, 952)[0],
         "odometer": struct.unpack_from("<f", buf, 1056)[0],
         "delivered_km": struct.unpack_from("<f", buf, 1460)[0],
         "fine_offence": _s(buf, 3436, 32),
@@ -140,6 +151,9 @@ class ScsAdapter(Adapter):
     _odo: float | None = None
     _stint: int = 0
     _warned: bool = False
+    #: The page last kept raw, and how many reads since were byte for byte the same.
+    _page: bytes = b""
+    _unchanged: int = 0
 
     def missing(self) -> str | None:
         return None if sys.platform == "win32" else "Windows only (shared memory)"
@@ -155,23 +169,42 @@ class ScsAdapter(Adapter):
         if now < self._next_try:
             return False
         self._next_try = now + 2.0
-        try:
-            self._mem = SharedMemory(self.name, READ)
-        except OSError:
-            return False  # the plugin is not installed, or the game has not loaded it yet
-        return True
+        # The whole mapping; a smaller one (another plugin build) at least up to the zones decoded.
+        for size in (MAP_SIZE, READ):
+            try:
+                self._mem = SharedMemory(self.name, size)
+                return True
+            except FileNotFoundError:
+                return False  # the plugin is not installed, or the game has not loaded it yet
+            except OSError:
+                continue
+        return False
 
     def poll(self, ctx: Context) -> None:
         if not self._open():
             return
+        page = self._mem.read()
         try:
-            d = decode(self._mem.read())
+            d = decode(page)
         except ValueError as e:
             if not self._warned:
                 log.warning("%s: %s; not reading it", self.id, e)
                 self._warned = True
+            self._keep(ctx, page, used=False)
             return
+        self._keep(ctx, page, used=d["active"])
         self.sample(ctx, d)
+
+    def _keep(self, ctx: Context, page: bytes, *, used: bool) -> None:
+        """The whole page in the raw sidecar, each time it differs from the copy kept last (docs/converters.md)."""
+        if page == self._page:
+            self._unchanged += 1
+            return
+        self._page = page
+        revision, vmaj, vmin = struct.unpack_from("<3I", page, 40) if len(page) >= 52 else (None, 0, 0)
+        if self._session is None:
+            self._session = ctx.open(self, meta={"plugin_revision": revision, "game_version": f"{vmaj}.{vmin}"})
+        self._session.raw("SCSTelemetry", page, used=used, revision=revision)
 
     @property
     def _label(self) -> str:
@@ -206,8 +239,12 @@ class ScsAdapter(Adapter):
                 *here,
                 **common,
                 heading=round(d["heading"] * 360.0, 2),
+                pitch=round(d["pitch"] * 360.0, 2),
+                roll=round(d["roll"] * 360.0, 2),
                 speed_kmh=round(d["speed"] * 3.6, 1),
                 odometer=round(d["odometer"], 2),
+                gear=d["gear"],
+                rpm=round(d["rpm"]) if math.isfinite(d["rpm"]) else None,
             )
             s.stat("max_speed_kmh", round(abs(d["speed"]) * 3.6, 1), "max")
             s.stat("distance_km", round(step / 1000.0, 4), "add")
@@ -252,11 +289,47 @@ class ScsAdapter(Adapter):
         if self._session is not None and self._last is not None:
             self._session.event("session_end", x=self._last[0], y=self._last[1], z=self._last[2], player="me",
                                 session=self._label)
+        if self._session is not None and self._unchanged:
+            self._session.meta["unchanged_reads"] = {"SCSTelemetry": self._unchanged}
         ctx.close(self._session)
         self._session, self._last, self._flags, self._stint, self._warned = None, None, {}, 0, False
+        self._page, self._unchanged = b"", 0
         if self._mem is not None:
             self._mem.close()
             self._mem = None
+
+
+#: The converter rule's account of the source (docs/converters.md).
+_COMPLETENESS = {
+    "read": (
+        "SDK and pause state, plugin revision, game and version, in-game time, the truck's world position and "
+        "heading, speed, odometer, truck brand and name, cargo, source and destination city and company, job "
+        "revenue, XP and distance, cancellation penalty, fines and their offence, tolls, ferries, trains, the "
+        "special event flags (rows, events and statistics)",
+        "now also on the position rows: `pitch` and `roll` (degrees, from the SDK's turns), `gear` and `rpm`",
+        "offsets checked against a field-by-field transcription of the plugin's revision 12 header whose zone "
+        "starts are asserted in the tests; not yet against the game",
+    ),
+    "raw": (
+        "`SCSTelemetry`: the plugin's whole 32 KiB mapping, each read whose bytes differ from the copy kept "
+        "last (`unchanged_reads` in meta.json counts the others), `revision` beside it: every zone - truck and "
+        "trailer configuration, the truck's channels (pedals, steering, fuel, AdBlue, pressures, temperatures, "
+        "wear, lights, wheels), placement and acceleration vectors, job and gameplay strings, and everything the "
+        "revision lays out after byte 4400 (the trailers); `used` is true while the SDK is active and the "
+        "revision is 12",
+        "a page of another plugin revision is kept whole with `used` false instead of being misread",
+    ),
+    "missing": (
+        "anything the plugin does not copy out of the SDK, and everything while the plugin is not installed: "
+        "the game publishes no telemetry of its own",
+        "other players' trucks in TruckersMP or convoys: the SDK gives only the player's own truck",
+    ),
+    "size": (
+        "32 KiB up to 10 times a second while driving (every read differs then): about 1.2 GB per hour before "
+        "compression, one copy while paused; most of the page is zeros and configuration that does not change, "
+        "so zstd shrinks it many times over (not yet measured on a real session)"
+    ),
+}
 
 
 def _adapter(id: str, game: str, exe: str) -> ScsAdapter:
@@ -275,6 +348,7 @@ def _adapter(id: str, game: str, exe: str) -> ScsAdapter:
             "refuels",
             "ferries, trains and loaded saves cut the route (teleport, spawn)",
             "distance, top speed, deliveries, revenue, XP, fines",
+            "the plugin's whole shared memory in `heat.raw.parquet`, each time it changes",
         ),
         enable=(
             "install scs-telemetry.dll (revision 12) from github.com/RenCloud/scs-sdk-plugin into "
@@ -286,6 +360,7 @@ def _adapter(id: str, game: str, exe: str) -> ScsAdapter:
             "tested on shared memory built from the plugin's revision 12 header layout; untested against the game "
             "(not installed on the test machine)"
         ),
+        completeness=_COMPLETENESS,
     )
 
 

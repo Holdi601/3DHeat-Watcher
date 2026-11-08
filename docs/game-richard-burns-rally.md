@@ -77,6 +77,17 @@ one the stage varies least along, decided when the session closes.
 The `heat3d` protocol mod gamecapture ships (UDP 4460, Options > Other >
 Protocols > "others"); BeamNG's Z-up world turned to Y up as `beamng.py` does.
 
+#### Everything kept
+
+The rows are a few a second; the games send far more. Every UDP packet that
+arrives - in the menus, between laps, ones no decoder reads - is kept whole
+in the session's `heat.raw.parquet` under its format (`dash-horizon`,
+`session_update`, `extradata3`, `H3D1`, ...), and every shared memory page
+(the whole mapping, not only the bytes decoded) each time it changes, under
+its mapping's name (`acpmf_physics`, ...). `used` marks what also became
+rows; `meta.json`'s `selfCheck.completeness` counts each kind (3DHeat's
+converter rule).
+
 The same module also serves: [Assetto Corsa (telemetry)](game-assetto-corsa.md), [Assetto Corsa Competizione (telemetry)](game-assetto-corsa-competizione.md), [Assetto Corsa EVO (telemetry)](game-assetto-corsa-evo.md), [Assetto Corsa Rally (telemetry)](game-assetto-corsa-rally.md), [BeamNG.drive (telemetry)](game-beamng.md), [DiRT Rally 2.0 (telemetry)](game-dirt-rally-2.md), [EA SPORTS WRC (telemetry)](game-ea-wrc.md), [Forza Horizon 4 (telemetry)](game-forza-horizon-4.md), [Forza Horizon 5 (telemetry)](game-forza-horizon-5.md), [Forza Horizon 6 (telemetry)](game-forza-horizon-6.md), [Forza Motorsport (telemetry)](game-forza-motorsport.md).
 
 ## Positions and axes
@@ -104,6 +115,26 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 `best_lap`, `best_stage`, `distance_km`, `laps`, `stages`, `top_speed_kmh`
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
+
+## Completeness
+
+The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the source holds is read or kept, never dropped. Besides the rows, every packet, page, line or reply the adapter receives is kept whole in the session's `heat.raw.parquet` (columns `time`, `ms`, `type`, `used`, `payload`, `text`, then any field kept by name; `used` marks what also became rows), and `meta.json`'s `selfCheck.completeness` counts each `type` - `lost` is 0.
+
+**Read**
+
+- rows at 10 Hz: position, speed, gear, throttle, brake, stage distance, yaw, rpm, steer; stage start, finish with the stage time, restarts
+
+**Kept raw**
+
+- every packet that reaches the port, whole, at the game's rate, under its format: `telemetry` (NGP's 664-byte TelemetryData), `rbr <n>-byte` otherwise
+- in the packet beyond the rows: attitude, the car's own velocities and accelerations, per wheel spring deflection and force, the stage's progress and distance to the end; the rest of the 664 bytes (engine, tyre and brake blocks per wheel) is decoded nowhere yet
+
+**Not available**
+
+- other cars: the games send the player's car only
+- its speed unit and axes: not documented - speed is taken from the positions, up from the drive
+
+**Size**: about 160 MB an hour at 60 packets a second (664 bytes plus a 70-byte item header); zstd keeps a fraction
 
 ## Verified
 

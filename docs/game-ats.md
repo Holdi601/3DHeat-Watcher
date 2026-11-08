@@ -14,6 +14,7 @@ Adapter `ats` - kind [`telemetry`](sources-and-rules.md) - runs while `amtrucks.
 - jobs started (cargo, from, to), delivered (revenue, XP, km), cancelled; fines, tolls, ferries, trains, refuels
 - ferries, trains and loaded saves cut the route (teleport, spawn)
 - distance, top speed, deliveries, revenue, XP, fines
+- the plugin's whole shared memory in `heat.raw.parquet`, each time it changes
 
 ## Where it comes from
 
@@ -40,8 +41,9 @@ than misread. Offsets used (zones as the header marks them; natural alignment):
    0  bool sdkActive          4  bool paused
   40  u32  telemetry_plugin_revision, version_major, version_minor, game (1 ETS2, 2 ATS)
   64  u32  common_ui.time_abs (in-game minutes)
+ 504  i32  truck_i.gear
  640  i32  gameplay_i.jobDeliveredEarnedXp
- 948  f32  truck_f.speed (m/s); 1056 truckOdometer (km)
+ 948  f32  truck_f.speed (m/s); 952 engineRpm; 1056 truckOdometer (km)
 1460  f32  gameplay_f.jobDeliveredDistanceKm
 2200  f64  truck_dp.coordinateX/Y/Z (m), rotationX/Y/Z (heading, pitch, roll in turns, 0..1)
 2300  char[64] config_s: truckBrand +64, truckName +192, cargo +320, cityDst +448, compDst +576,
@@ -55,6 +57,12 @@ than misread. Offsets used (zones as the header marks them; natural alignment):
 The truck's world placement is SCS's world frame: x east, y up, z south, metres
 (right-handed, y up - the viewer draws it as it is). Ferries, trains and loading
 a save move the truck without driving: the route is cut there.
+
+The whole mapping (the plugin's 32 KiB: every zone above and the ones not
+read - truck configuration, wheels, wear, the truck's other channels, and
+what the revision lays out after byte 4400, the trailers) is kept in the session's raw sidecar each time it changes,
+`type` `SCSTelemetry` with the `revision` beside it - a page of another
+revision too, which is kept whole rather than misread.
 
 The same module also serves: [Euro Truck Simulator 2 (telemetry)](game-ets2.md).
 
@@ -83,6 +91,28 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 `deliveries`, `distance_km`, `fines`, `fines_total`, `jobs_cancelled`, `max_speed_kmh`, `refuels`, `revenue`, `tolls_total`, `xp`
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
+
+## Completeness
+
+The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the source holds is read or kept, never dropped. Besides the rows, every packet, page, line or reply the adapter receives is kept whole in the session's `heat.raw.parquet` (columns `time`, `ms`, `type`, `used`, `payload`, `text`, then any field kept by name; `used` marks what also became rows), and `meta.json`'s `selfCheck.completeness` counts each `type` - `lost` is 0.
+
+**Read**
+
+- SDK and pause state, plugin revision, game and version, in-game time, the truck's world position and heading, speed, odometer, truck brand and name, cargo, source and destination city and company, job revenue, XP and distance, cancellation penalty, fines and their offence, tolls, ferries, trains, the special event flags (rows, events and statistics)
+- now also on the position rows: `pitch` and `roll` (degrees, from the SDK's turns), `gear` and `rpm`
+- offsets checked against a field-by-field transcription of the plugin's revision 12 header whose zone starts are asserted in the tests; not yet against the game
+
+**Kept raw**
+
+- `SCSTelemetry`: the plugin's whole 32 KiB mapping, each read whose bytes differ from the copy kept last (`unchanged_reads` in meta.json counts the others), `revision` beside it: every zone - truck and trailer configuration, the truck's channels (pedals, steering, fuel, AdBlue, pressures, temperatures, wear, lights, wheels), placement and acceleration vectors, job and gameplay strings, and everything the revision lays out after byte 4400 (the trailers); `used` is true while the SDK is active and the revision is 12
+- a page of another plugin revision is kept whole with `used` false instead of being misread
+
+**Not available**
+
+- anything the plugin does not copy out of the SDK, and everything while the plugin is not installed: the game publishes no telemetry of its own
+- other players' trucks in TruckersMP or convoys: the SDK gives only the player's own truck
+
+**Size**: 32 KiB up to 10 times a second while driving (every read differs then): about 1.2 GB per hour before compression, one copy while paused; most of the page is zeros and configuration that does not change, so zstd shrinks it many times over (not yet measured on a real session)
 
 ## Verified
 

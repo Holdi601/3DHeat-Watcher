@@ -12,7 +12,9 @@ Adapter `dota-replays` - kind [`replay`](sources-and-rules.md) - runs always on 
 
 - every hero's position, height, health and level, 7.5 times a second while alive
 - kills and deaths where they happened; towers, barracks, Roshan and Tormentors where they fell; wards where they were planted
+- every player's map pings, map drawings and orders (move, attack, cast, buy, ...) where they pointed
 - the score and every player's line; the signed-in player's as statistics
+- everything else the replay holds, kept whole beside the table: every frame and network message, every entity property change, every string table entry
 
 ## Where it comes from
 
@@ -63,19 +65,33 @@ of its own (`heat3d_watch/decoders/dota_replay.py`): every hero's position,
 height, health, level, facing, mana, experience, attributes and items 7.5
 times a second while alive, kills and deaths where they happened, towers,
 barracks, Roshan and Tormentors where they fell, every ward where it was
-planted and where it ended, and the combat log's entries about the heroes
+planted and where it ended, the combat log's entries about the heroes
 (damage, heals, abilities, items, purchases, runes, gold, experience,
-modifiers) - into `dota/<match>.parquet`; every other unit (creeps, summons,
-illusions, couriers, buildings) once a second into `<match>.units.parquet`;
-the whole combat log into `<match>.combatlog.parquet`; and the match, the
-chat, the draft and everything else the parser extracts into
-`<match>.match.json`, in the session folder. Positions are Dota's world
+modifiers), and every player's map pings, map drawings and orders - into
+`dota/<match>.parquet`; every other unit (creeps, summons, illusions,
+couriers, buildings) once a second into `<match>.units.parquet`; the whole
+combat log into `<match>.combatlog.parquet`; and the match, the chat, the
+draft, everything else the parser extracts and the game's own end-of-match
+record into `<match>.match.json`, in the session folder. Everything else
+the replay holds is kept whole beside them (3DHeat's converter rule):
+every frame and network message in `<match>.packets.parquet`, every entity
+property change in `<match>.entities.parquet`, every string table entry in
+`<match>.strings.parquet`, counted in the match document's
+`selfCheck.completeness`. Positions are Dota's world
 units, the same the game-state integration reports. The signed-in player's
 scoreboard line becomes the session's statistics: kills, deaths, assists,
 last hits, denies, net worth, GPM, XPM, hero damage, wards, and whether the
 match was won. A new Dota patch can change the replay's entities before gem
 follows; a replay gem cannot read to the end is converted as far as it goes
 and marked `incomplete` in its summary.
+
+#### osu!
+
+osu! (stable) saves every play to `osu!/Data/r/*.osr` and exported ones to
+`osu!/Replays/`. The watcher reads them itself, to the format the osu! wiki
+publishes: the cursor's path and keys every frame, the score line, the life
+bar, the seed and the score id; the file is kept whole beside, part by part,
+in the session's `heat.raw.parquet`.
 
 #### War Thunder
 
@@ -150,9 +166,35 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
 
+## Completeness
+
+The converter follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the replay holds is read or kept, never dropped. Besides the table, everything else the replay holds is kept whole in sidecars beside it in the session's `dota/` folder - `<match>.packets.parquet`, `<match>.entities.parquet`, `<match>.strings.parquet` (columns `time`, `tick`, `type`, `name`, `entity`, `decoded`, `payload`, as each applies) - and the match document's (`<match>.match.json`) `selfCheck.completeness` counts each `type` - `lost` is 0.
+
+**Read**
+
+- the table (`dota/<match>.parquet`): every hero's position, height, health, level, facing, mana, experience, attributes, armour, speed, damage, items and the player's cursor 7.5 times a second; kills, deaths, objectives, wards, the combat log's entries about heroes; map pings (`ping`, DOTA_UM_LocationPing), map drawings (`map_line`, DOTA_UM_MapLine) and every unit order (`order`, DOTA_UM_SpectatorPlayerUnitOrders: `other` the order type, `value` the ability or item id, `text` the target's class; at the ordered point, else at the hero)
+- `<match>.units.parquet`: every other unit once a second; `<match>.combatlog.parquet`: the whole combat log as gem reads it, every field
+- the match document: everything gem extracts, and whole the replay's own records - `fileHeader` (DEM_FileHeader), `fileInfo` (DEM_FileInfo: playback length, every player's name, hero, Steam id, team), `matchDetails` (DOTA_UM_MatchDetails: the game coordinator's end-of-match scoreboard, every player's numbers, items, damage by type, picks and bans) and `matchMetadata` (DOTA_UM_MatchMetadata)
+- `selfCheck.crossCheck`: kills, deaths, assists, level, last hits and denies as read from the stream against `matchDetails`, per player
+
+**Kept raw**
+
+- `<match>.packets.parquet`: every frame that is not a packet (`type` `frame <n>`) and every network message (`message <n>`, `name` Valve's), whole in `payload`, in file order (`seq`, `frame`), with `decoded` the protobuf as JSON (a bytes field given as its length) - on the sample 553,048 rows of 52 message types, every one decoded: svc_PacketEntities (the entity stream), DOTA_UM_SpectatorPlayerUnitOrders, UM_ParticleManager, DOTA_UM_CombatLogDataHLTV, GE_SosStartSoundEvent, DOTA_UM_TE_\* (projectiles, animations, blood), DOTA_UM_OverheadEvent, DOTA_UM_UnitEvent, svc_UpdateStringTable, net_Tick, ...; the send tables, class list and server info a later entity decoder needs are among them
+- `<match>.entities.parquet`: every entity's every property each time it changed (`type` the property, `name` the class, `entity` its index; `value`, `vector` or `decoded`), its whole state when created, and each creation, entering, leaving and deletion - on the sample 10.2 million rows, 379 classes, 12,598 property names
+- `<match>.strings.parquet`: every string table entry from every update and every full snapshot, the value whole; `userinfo`, `ActiveModifiers` and `EconItems` decoded from their protobufs - on the sample 243,842 rows of 20 tables
+- `selfCheck.completeness` in the match document counts frames and messages by Valve's name, combat log entries (`combatlog <type>`), game events (`gameevent <name>`), string table entries (`stringtable <name>`) and entity updates (`entity <class>`): on the sample 5,487,369 items of 478 types, 57 kept raw only (53 full entity snapshots gem skips because it rebuilds from the deltas, 4 entries of two tables with values nothing reads), lost 0
+
+**Not available**
+
+- voice: the replay has the voice setup but no voice data
+- names behind hashes and ids: sounds and particles are named by hashes of the game's files, abilities by ids; the replay does not carry the names (items are named through gem's catalogue where it has them)
+- anything only the players' own clients knew (their camera, their screen) beyond what the server broadcast; the cursor and every order are in
+
+**Size**: on a 70.3 MB replay of a 27-minute match: packets 58.4 MB, entities 40.3 MB, strings 5.3 MB, the table 5.8 MB, units 2.9 MB, combat log 0.8 MB, match document 8.1 MB; about a minute and a half in one process (gem's parse alone about 40 s)
+
 ## Verified
 
-checked on a public match's replay (patch 7.40, November 2026): kills and deaths per hero match the scoreboard; the table and statistics by tests on synthetic data
+checked on a public match's replay (patch 7.40, November 2026): kills and deaths per hero match the scoreboard; every frame and message in the packets sidecar is byte for byte the replay's and every one of the 553,048 re-serialises exactly from its protobuf; the last kills, deaths, assists, level, last hits and denies in the entities sidecar match the game's own end-of-match record (DOTA_UM_MatchDetails) for all ten players; after 90% of 59,898 move orders the hero is closer to the point a second later; the table and statistics by tests on synthetic data
 
 ## Source
 

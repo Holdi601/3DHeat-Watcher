@@ -16,10 +16,11 @@ Adapter `warthunder-webmap` - kind [`gsi`](sources-and-rules.md) - runs while `a
 - airfields, capture zones and bases once, and zones changing side
 - kill and damage feed lines (who, vehicle, verb); the player's kills and deaths when your name is set (`config --set player_names.warthunder-webmap=<name>`)
 - spawns, distance, top altitude, top true airspeed, vehicle; kills and deaths with your name set
+- every reply of the web map kept whole in heat.raw.parquet - the full /state and /indicators, the chat, the battle's objectives and the map's picture included; between battles in a session of its own
 
 ## Where it comes from
 
-the game's local web map, <http://127.0.0.1:8111> (/map_info.json, /map_obj.json, /state, /indicators, /hudmsg)
+the game's local web map, <http://127.0.0.1:8111> (/map_info.json, /map_obj.json, /state, /indicators, /hudmsg, /gamechat, /mission.json, /map.img)
 
 ## How to switch it on
 
@@ -46,7 +47,14 @@ and the JSON behind it, while it runs - in every mode, multiplayer included:
 /hudmsg?lastEvt=N&lastDmg=M   {"events": [...], "damage": [...]} newer than the ids given, each
                   {"id", "msg", "sender", "enemy", "mode", "time"}; damage lines read like
                   "Name (Vehicle) shot down Name (Vehicle)"
+/gamechat?lastId=N  the chat newer than the id given, [{"id", "msg", "sender", "enemy", "mode", "time"}]
+/mission.json    the battle's objectives and their status
+/map.img         the map's picture the page draws the objects on
 ```
+
+Every reply is kept whole in the session's raw sidecar under its endpoint
+(map_info, map_obj, state, indicators, hudmsg, gamechat, mission, map_img);
+between battles the replies go to a session of their own.
 
 A map position becomes metres with the extent: u = min_x + x \* (max_x - min_x)
 east, v = max_y - y \* (max_y - min_y) north (the picture's y runs down). Rows are
@@ -92,6 +100,32 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 `bad_packets`, `deaths`, `distance_m`, `hits_dealt`, `hits_taken`, `kills`, `max_altitude_m`, `max_tas_kmh`, `spawns`, `vehicle`
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
+
+## Completeness
+
+The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the source holds is read or kept, never dropped. Besides the rows, every packet, page, line or reply the adapter receives is kept whole in the session's `heat.raw.parquet` (columns `time`, `ms`, `type`, `used`, `payload`, `text`, then any field kept by name; `used` marks what also became rows), and `meta.json`'s `selfCheck.completeness` counts each `type` - `lost` is 0.
+
+**Read**
+
+- /map_info.json: the map's extent and grid (metres, the map id) into meta.json; an invalid one ends the battle
+- /map_obj.json (twice a second): the own vehicle, other aircraft and ground units (tracked ids, side from the colour, icon, heading, colour) and airfields, zones and bases as rows
+- /state (twice a second, in an aircraft): height, TAS, IAS, Mach and Vy on the own rows
+- /indicators (every 2 s): army and vehicle type
+- /hudmsg (once a second): kill and damage feed lines as kills, deaths, hits and feed rows; other HUD events as rows
+
+**Kept raw**
+
+- every reply whole, `text` the JSON as the game sent it, under its endpoint: `map_info`, `map_obj`, `state`, `indicators`, `hudmsg`, `gamechat`, `mission`; `map_img` the map picture's bytes as `payload`, once a battle
+- what only the raw sidecar holds: every /state field beyond the five read (AoA, AoS, Ny, Wx, throttle, RPM, fuel, ... - one aircraft's set differs from another's), every /indicators field (the cockpit instruments of aircraft, the speed, gear, crew and stabiliser of tanks), the map objects' other keys (color[], blink, icon_bg, airfield ends), hudmsg's sender, enemy and mode, the chat (/gamechat, once a second), the battle's objectives and their status (/mission.json, every 10 s in a battle), lines said before the watcher started
+- between battles (hangar, loading) the replies go to a session of their own, marked `between_battles` in meta.json, which has no rows
+
+**Not available**
+
+- names, ids and heights of other players' vehicles: the web map has none (ids are given here by following objects from poll to poll); the kill feed names players without positions
+- everything outside the web map: the game's replays are read by the warthunder replay converter, and the game's memory is never read (an online game)
+- /map_obj.json faster than twice a second: the polling rate is kept low, so the game's own web server is not loaded
+
+**Size**: about 50-120 MB an hour of JSON before zstd in a battle (map_obj 5-15 KB twice a second, state about 1.5 KB twice a second, indicators every 2 s, the chat and HUD lines small) plus the map picture once a battle (under 2 MB); 1-2 MB an hour between battles (the map look twice a second, HUD and chat once, each a short reply); zstd reduces repeated JSON well over tenfold
 
 ## Verified
 

@@ -9,10 +9,11 @@ import os
 import sys
 from dataclasses import replace
 
+import pyarrow.parquet as pq
 import pytest
 
 from heat3d_watch.adapters.base import Context
-from heat3d_watch.adapters.ets2 import ADAPTERS, READ, SPECIAL, STRINGS, decode
+from heat3d_watch.adapters.ets2 import ADAPTERS, MAP_SIZE, READ, SPECIAL, STRINGS, decode
 from heat3d_watch.config import Settings
 from heat3d_watch.session import read_rows
 
@@ -45,7 +46,8 @@ class Map(C.Structure):
         ("scale", C.c_float),
         ("config_f_head", C.c_float * 12), ("truckWheelRadius", C.c_float * 16), ("gearRatiosForward", C.c_float * 24),
         ("gearRatiosReverse", C.c_float * 8), ("unitMass", C.c_float),
-        ("speed", C.c_float), ("truck_f_1", C.c_float * 26), ("truckOdometer", C.c_float), ("truck_f_2", C.c_float * 3),
+        ("speed", C.c_float), ("engineRpm", C.c_float), ("truck_f_1", C.c_float * 25), ("truckOdometer", C.c_float),
+        ("truck_f_2", C.c_float * 3),
         ("truck_f_wheels", C.c_float * 96),
         ("jobDeliveredCargoDamage", C.c_float), ("jobDeliveredDistanceKm", C.c_float), ("refuelAmount", C.c_float),
         ("cargoDamage", C.c_float), ("buffer_f", C.c_char * 28),
@@ -85,9 +87,10 @@ def test_the_transcribed_header_lands_on_the_zones_it_marks():
         assert getattr(Map, name).offset == offset, name
     assert C.sizeof(Map) == READ
     # ... and the offsets the adapter reads are the fields they claim to be.
-    used = {"time_abs": 64, "jobDeliveredEarnedXp": 640, "speed": 948, "truckOdometer": 1056,
-            "jobDeliveredDistanceKm": 1460, "fineOffence": 3436, "truckBrand": STRINGS["truck_brand"],
-            "truckName": STRINGS["truck_name"], "cargo": STRINGS["cargo"], "cityDst": STRINGS["city_dst"],
+    used = {"time_abs": 64, "gear": 504, "jobDeliveredEarnedXp": 640, "speed": 948, "engineRpm": 952,
+            "truckOdometer": 1056, "jobDeliveredDistanceKm": 1460, "fineOffence": 3436,
+            "truckBrand": STRINGS["truck_brand"], "truckName": STRINGS["truck_name"], "cargo": STRINGS["cargo"],
+            "cityDst": STRINGS["city_dst"],
             "compDst": STRINGS["company_dst"], "citySrc": STRINGS["city_src"], "compSrc": STRINGS["company_src"]}
     for name, offset in used.items():
         assert getattr(Map, name).offset == offset, name
@@ -101,6 +104,8 @@ def snapshot(**kw) -> bytes:
     m.version_major, m.version_minor, m.game = 1, 50, 1
     m.coordinateX, m.coordinateY, m.coordinateZ = kw.get("pos", (0.0, 0.0, 0.0))
     m.rotationX = kw.get("heading", 0.25)
+    m.rotationY, m.rotationZ = kw.get("pitch", 0.0), kw.get("roll", 0.0)
+    m.gear, m.engineRpm = kw.get("gear", 0), kw.get("rpm", 0.0)
     m.speed = kw.get("speed", 0.0)
     m.truckOdometer = kw.get("odometer", 1000.0)
     m.truckName = b"Truck"
@@ -140,9 +145,11 @@ def test_a_drive_read_from_shared_memory(tmp_path):
     frame(pos=(100.0, 10.0, 200.0), flags=("on_job",))
     folder = a._session.folder
     for i in range(1, 5):
-        frame(pos=(100.0 + i * 2, 10.0, 200.0), speed=20.0, flags=("on_job",))
+        frame(pos=(100.0 + i * 2, 10.0, 200.0), speed=20.0, flags=("on_job",), gear=6, rpm=1450.0, pitch=0.01,
+              roll=-0.005)
     frame(pos=(108.0, 10.0, 200.0), flags=("on_job", "fined"))
     frame(pos=(108.0, 10.0, 200.0), flags=("on_job", "fined"))  # still set: one fine, not two
+    frame(pos=(108.0, 10.0, 200.0), flags=("on_job", "fined"), revision=11)  # another layout: kept, not read
     frame(pos=(5000.0, 0.0, 9000.0), flags=("on_job", "ferry"))  # across the sea
     frame(pos=(5003.0, 0.0, 9000.0), flags=("job_delivered",), speed=10.0)
     frame(pos=(5004.0, 0.0, 9000.0), active=False)
@@ -154,6 +161,7 @@ def test_a_drive_read_from_shared_memory(tmp_path):
     ]
     pos = [r for r in rows if r["event"] == "position"]
     assert len(pos) == 5 and pos[0]["x"] == 102.0 and pos[0]["heading"] == 90.0 and pos[0]["speed_kmh"] == 72.0
+    assert pos[0]["pitch"] == 3.6 and pos[0]["roll"] == -1.8 and pos[0]["gear"] == 6 and pos[0]["rpm"] == 1450
     teleport = next(r for r in rows if r["event"] == "teleport")
     assert teleport["x"] == 108.0 and teleport["session"] == "drive-1"
     assert rows[-1]["session"] == "drive-2"
@@ -165,6 +173,17 @@ def test_a_drive_read_from_shared_memory(tmp_path):
     assert st["fines_total"] == 250 and st["max_speed_kmh"] == 72.0
     assert st["distance_km"] == pytest.approx(0.011)  # 8 m driven, then 3 m: the ferry is not distance
     assert meta["axes"]["up"] == "y" and meta["plugin_revision"] == 12
+
+    # docs/converters.md: the whole mapping, each time it changed - the other revision's page and the
+    # inactive one too, which became no rows.
+    t = pq.read_table(folder / "heat.raw.parquet").to_pydict()
+    assert set(t["type"]) == {"SCSTelemetry"} and all(len(p) == MAP_SIZE for p in t["payload"])
+    assert t["used"] == [True] * 6 + [False, True, True, False]
+    assert t["revision"] == [12] * 6 + [11, 12, 12, 12]
+    assert meta["unchanged_reads"] == {"SCSTelemetry": 1}  # the fine read twice
+    c = meta["selfCheck"]["completeness"]
+    assert c["lost"] == 0
+    assert c["types"]["SCSTelemetry"] == {"seen": 10, "decoded": 0, "partial": 8, "raw": 2, "lost": 0}
 
 
 def test_no_plugin_means_nothing_happens(tmp_path):

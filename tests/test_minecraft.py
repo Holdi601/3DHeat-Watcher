@@ -163,6 +163,55 @@ def test_the_adapter_records_log_stats_and_positions(tmp_path):
     assert meta["axes"]["up"] == "y"
 
 
+def test_every_line_and_saved_file_is_kept_whole_in_the_raw_sidecar(tmp_path):
+    root = tmp_path / ".minecraft"
+    world = root / "saves" / "Test World"
+    for sub in ("stats", "playerdata", "advancements"):
+        (world / sub).mkdir(parents=True)
+    (root / "logs").mkdir()
+    stats_file = world / "stats" / f"{UUID}.json"
+    before = stats(play_ticks=20 * 100, mined=10)
+    stats_file.write_text(before, encoding="utf-8")
+    old = time.time() - 3600
+    os.utime(stats_file, (old, old))
+    data = tmp_path / "data"
+    ctx = Context(Settings(data=str(data)), data)
+    a = replace(mc.ADAPTERS[0], folder=root, world_every=0.0)
+    a.start(ctx)
+    log = LOG + "java.lang.IllegalStateException: something a mod threw\n\tat net.example.Test.run(Test.java:1)\n"
+    (root / "logs" / "latest.log").write_text(log, encoding="utf-8")
+    a.poll(ctx)
+    after = stats(play_ticks=20 * 160, mined=30)
+    stats_file.write_text(after, encoding="utf-8")
+    dat = nbt_file(player(100.5, 70.0, -200.25))
+    (world / "playerdata" / f"{UUID}.dat").write_bytes(dat)
+    adv = json.dumps({"minecraft:story/mine_stone": {"criteria": {"get_stone": "2026-01-01 12:02:00 +0000"},
+                                                      "done": True}, "DataVersion": 3700})
+    (world / "advancements" / f"{UUID}.json").write_text(adv, encoding="utf-8")
+    a.stop(ctx)
+
+    [session] = list((data / "sessions").glob("*/*"))
+    raw = pq.read_table(session / "heat.raw.parquet").to_pydict()
+    rows = list(zip(raw["type"], raw["used"], raw["text"], raw["payload"], raw["baseline"], raw["file"]))
+    lines = [r for r in rows if r[0] not in ("stats", "playerdata", "advancements")]
+    assert [r[2] for r in lines] == log.splitlines()  # every line, in order, whole
+    kinds = {r[2]: r[:2] for r in lines}
+    assert kinds["[12:00:01] [Server thread/INFO]: Starting integrated minecraft server version 1.20.4"] == ("INFO", False)
+    assert kinds["\tat net.example.Test.run(Test.java:1)"] == ("untagged", False)
+    slain = [r[1] for r in lines if r[2].endswith("Tester was slain by Zombie")]
+    assert slain == [True, False]  # the integrated server's repeat: kept, no second row
+    st = [r for r in rows if r[0] == "stats"]
+    assert [(r[1], r[2], r[4]) for r in st] == [(False, before, "true"), (True, after, None)]
+    assert st[0][5] == f"Test World/stats/{UUID}.json"
+    [pd] = [r for r in rows if r[0] == "playerdata"]
+    assert pd[1] is True and pd[3] == dat  # the NBT file's bytes, unchanged
+    [ad] = [r for r in rows if r[0] == "advancements"]
+    assert ad[1] is False and ad[2] == adv
+    check = json.loads((session / "meta.json").read_text(encoding="utf-8"))["selfCheck"]["completeness"]
+    assert check["lost"] == 0
+    assert check["types"]["advancements"] == {"seen": 1, "decoded": 0, "partial": 0, "raw": 1, "lost": 0}
+
+
 def test_a_world_not_played_in_this_sitting_is_left_alone(tmp_path):
     root = tmp_path / ".minecraft"
     world = root / "saves" / "Old"

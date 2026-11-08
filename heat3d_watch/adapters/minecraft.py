@@ -23,11 +23,21 @@ Where (`%APPDATA%\\.minecraft\\`):
   `Pos` [x, y, z] doubles, `Rotation` [yaw, pitch], `Dimension`
   ("minecraft:overworld"; an int 0/-1/1 before 1.16). NBT per
   https://minecraft.wiki/w/NBT_format - read here by a small reader of our own.
+* `saves\\<world>\\advancements\\<uuid>.json` - the advancement screen's progress,
+  written on the same saves.
 
 Coordinates are blocks, one block a metre, y up; x east, z south - a right-
 handed frame, drawn as it is. Positions come only when the world saves, so a
 route is a few points per autosave, not a trail; the dimension is the
 `session`, so the Nether is not drawn over the Overworld.
+
+Everything read is kept whole in the session's raw sidecar (3DHeat's converter
+rule): every log line under its level (`INFO`, `WARN`, `ERROR`, ...; a line
+without the bracketed head, such as a stack trace, as `untagged`), and each
+saved file under its kind (`stats`, `advancements`, `playerdata`,
+`level.dat`) - JSON as text, NBT as its bytes. A stats file's numbers are only
+understood against what it said when the game started, so that first copy is
+kept too (`baseline`), the first time the file changes.
 """
 
 from __future__ import annotations
@@ -223,6 +233,10 @@ class MinecraftAdapter(Adapter):
     _baseline: dict[Path, dict[str, float]] = field(default_factory=dict, repr=False)
     _recent: list[tuple[str, str]] = field(default_factory=list, repr=False)
     _next_world: float = field(default=0.0, repr=False)
+    #: A stats file as it was at the start (its time, its bytes zlib-packed), kept beside its first change.
+    _baseline_raw: dict[Path, tuple[int, bytes]] = field(default_factory=dict, repr=False)
+    #: Files that did not read, with the time they did not: twice the same is not a save in progress.
+    _bad: dict[Path, int] = field(default_factory=dict, repr=False)
 
     def root(self) -> Path:
         return Path(self.folder) if self.folder else minecraft_dir()
@@ -238,6 +252,8 @@ class MinecraftAdapter(Adapter):
         self._recent = []
         self._seen = {}
         self._baseline = {}
+        self._baseline_raw = {}
+        self._bad = {}
         self._next_world = 0.0
         self._since = game_started(ctx.pid)
         log = self.root() / "logs" / "latest.log"
@@ -248,15 +264,17 @@ class MinecraftAdapter(Adapter):
                 self._seen[path] = path.stat().st_mtime_ns
             except OSError:
                 continue
-            if path.suffix == ".json":
+            if _kind(path) == "stats":
                 try:
-                    self._baseline[path] = stat_totals(json.loads(read_shared(path)))
+                    data = read_shared(path)
+                    self._baseline_raw[path] = (self._seen[path], zlib.compress(data))
+                    self._baseline[path] = stat_totals(json.loads(data))
                 except (OSError, ValueError):
                     self._baseline[path] = {}
 
     def poll(self, ctx: Context) -> None:
         if self._follow is not None:
-            for line in self._follow.lines():
+            for line in self._follow.iter_lines():
                 try:
                     self.line(ctx, line)
                 except (ValueError, IndexError):
@@ -267,7 +285,7 @@ class MinecraftAdapter(Adapter):
 
     def stop(self, ctx: Context) -> None:
         if self._follow is not None:
-            for line in self._follow.lines():
+            for line in self._follow.iter_lines():
                 try:
                     self.line(ctx, line)
                 except (ValueError, IndexError):
@@ -276,15 +294,32 @@ class MinecraftAdapter(Adapter):
         ctx.close(self._session)
         self._session = None
         self._follow = None
+        self._baseline_raw = {}
 
     def _open(self, ctx: Context) -> Session:
         if self._session is None:
             self._session = ctx.open(self)
         return self._session
 
+    def _rows(self) -> int:
+        return sum(self._session.counts.values()) if self._session is not None else 0
+
     # --------------------------------------------------------------------- log
 
     def line(self, ctx: Context, text: str) -> None:
+        """One log line: what it means, and the line itself whole in the raw sidecar."""
+        if not text.strip():
+            return
+        before = self._rows()
+        try:
+            self._line(ctx, text)
+        finally:
+            m = _LINE.match(text)
+            s = self._open(ctx)
+            s.raw(m.group(3) if m else "untagged", text=text, used=self._rows() > before,
+                  thread=m.group(2) if m else None)
+
+    def _line(self, ctx: Context, text: str) -> None:
         m = _LINE.match(text)
         if not m:
             return
@@ -345,6 +380,7 @@ class MinecraftAdapter(Adapter):
             return out
         for w in worlds:
             out += list((w / "stats").glob("*.json"))
+            out += list((w / "advancements").glob("*.json"))
             out += list((w / "playerdata").glob("*.dat"))
             if (w / "level.dat").exists():
                 out.append(w / "level.dat")
@@ -371,29 +407,62 @@ class MinecraftAdapter(Adapter):
             except OSError:
                 self._seen.pop(path, None)
                 continue
+            kind = _kind(path)
+            used = False
             try:
-                if path.suffix == ".json":
-                    self._stats(ctx, path, json.loads(data))
+                if kind == "stats":
+                    used = self._stats(ctx, path, json.loads(data))
+                elif kind == "advancements":
+                    json.loads(data)  # whole, or caught mid-save
                 else:
-                    self._player(ctx, path, read_nbt(data))
+                    used = self._player(ctx, path, read_nbt(data))
             except (ValueError, OSError, EOFError, struct.error, zlib.error):
-                self._seen.pop(path, None)  # caught mid-save: next look
-                self._open(ctx).stat("bad_files", 1, "add")
+                if self._bad.get(path) != stamp:
+                    self._bad[path] = stamp
+                    self._seen.pop(path, None)  # caught mid-save: next look
+                    self._open(ctx).stat("bad_files", 1, "add")
+                    continue
+                # The same file failing twice is not a save in progress: kept as it is.
+            self._bad.pop(path, None)
+            self._keep(ctx, kind, path, data, stamp, used)
 
-    def _stats(self, ctx: Context, path: Path, doc: dict) -> None:
+    def _keep(self, ctx: Context, kind: str, path: Path, data: bytes, stamp: int, used: bool) -> None:
+        """A saved file whole in the raw sidecar: JSON as text, NBT as its bytes; a stats file's start beside it."""
+        s = self._open(ctx)
+        saves = self.root() / "saves"
+        try:
+            rel = path.relative_to(saves).as_posix()
+        except ValueError:
+            rel = path.name
+        world = rel.split("/", 1)[0]
+        base = self._baseline_raw.pop(path, None)
+        if base is not None:
+            when = base[0] / 1e9
+            s.raw(kind, text=zlib.decompress(base[1]).decode("utf-8", errors="replace"), t=when - s.started,
+                  ms=when * 1000, world=world, file=rel, baseline=True)
+        when = stamp / 1e9
+        if path.suffix == ".json":
+            s.raw(kind, text=data.decode("utf-8", errors="replace"), used=used, t=when - s.started, ms=when * 1000,
+                  world=world, file=rel)
+        else:
+            s.raw(kind, data, used=used, t=when - s.started, ms=when * 1000, world=world, file=rel)
+
+    def _stats(self, ctx: Context, path: Path, doc: dict) -> bool:
         now = stat_totals(doc)
         base = self._baseline.setdefault(path, {})
         s = self._open(ctx)
         for k, v in now.items():
             s.stat(k, round(v - base.get(k, 0.0), 3))
         s.stat("world", path.parent.parent.name)
+        return True
 
-    def _player(self, ctx: Context, path: Path, root: dict) -> None:
+    def _player(self, ctx: Context, path: Path, root: dict) -> bool:
+        """A player's position from a saved player file; whether it made a row."""
         world = path.parent.parent if path.parent.name == "playerdata" else path.parent
         if path.name == "level.dat":
             # The single-player host is in level.dat as well; use it only where no playerdata exists.
             if any((world / "playerdata").glob("*.dat")):
-                return
+                return False
             root = (root.get("Data") or {}).get("Player") or {}
             who = "me"
         else:
@@ -401,13 +470,21 @@ class MinecraftAdapter(Adapter):
             who = "me" if len(others) <= 1 else path.stem
         fix = player_fix(root)
         if fix is None:
-            return
+            return False
         (x, y, z), dim, rot = fix
         s = self._open(ctx)
         yaw = rot[0] if rot else None
         pitch = rot[1] if rot and len(rot) > 1 else None
         s.position(x, y, z, player=who, session=dim, world=world.name, yaw=yaw, pitch=pitch,
                    health=root.get("Health"), level=root.get("XpLevel"))
+        return True
+
+
+def _kind(path: Path) -> str:
+    """What a world file is: `stats`, `advancements`, `playerdata` or `level.dat`."""
+    if path.name == "level.dat":
+        return "level.dat"
+    return path.parent.name
 
 
 ADAPTERS = [
@@ -427,11 +504,47 @@ ADAPTERS = [
             "joins, leaves, deaths with the death message, advancements, chat lines",
             "deaths, advancements, chat messages; from the stats file: play time, distance, mob and player kills, "
             "jumps, damage, blocks mined, items crafted (this session's share)",
+            "every log line and every saved stats, advancements and player file whole in heat.raw.parquet",
         ),
         enable="",
         interval=0.5,
         axes=Axes(up="y", units="blocks (1 block = 1 m)"),
         verified="tested on synthetic log lines, stats JSON and NBT files built from the published formats; "
         "untested against the game",
+        completeness={
+            "read": (
+                "latest.log: the player's name (`Setting user`), logins with position, joins, leaves, deaths with "
+                "the death message, advancements, chat lines, the server stopping",
+                "stats/<uuid>.json: play time, distance, mob and player kills, jumps, damage dealt and taken, "
+                "blocks mined, items crafted - this sitting's share",
+                "playerdata/<uuid>.dat and level.dat (NBT): position, dimension, yaw, pitch, health, XP level",
+            ),
+            "raw": (
+                "every latest.log line whole, `type` = its level (`INFO`, `WARN`, `ERROR`, `DEBUG`, `FATAL`) with "
+                "the logger's thread in `thread`, `used` where it became a row; a line without the bracketed head "
+                "(a stack trace, a mod's banner) as `untagged`",
+                "each stats/<uuid>.json whole as text, `type` `stats` (`used`: its numbers are in the statistics), "
+                "with its first copy from the game's start as `baseline`",
+                "each advancements/<uuid>.json whole as text, `type` `advancements` (every criterion and when it "
+                "was met; not made into rows yet)",
+                "each playerdata/<uuid>.dat and level.dat whole as bytes (gzip NBT), `type` `playerdata` / "
+                "`level.dat`, `used` where it gave a position: inventory, ender chest, effects, spawn point, "
+                "game rules, world seed and time are only here",
+                "every saved file has `world` and `file` (its path under `saves`)",
+            ),
+            "missing": (
+                "a position trail: the game writes the player's position only when the world saves (every few "
+                "minutes and on leaving)",
+                "positions on a server someone else hosts: its world files are on the server, not here; only the "
+                "log is read then",
+                "the world itself (region .mca files, entities, data/*.dat maps and raids): large, and the "
+                "terrain, not the play",
+                "earlier sittings' logs (logs/*.log.gz): kept when they were played",
+                "Bedrock Edition: it writes no such log or files",
+            ),
+            "size": "latest.log 0.1-2 MB per hour (more with mods); a stats file 5-50 KB and a player file "
+            "5-100 KB per autosave, level.dat 1-20 KB - about 1-5 MB per hour in all; zstd in heat.raw.parquet "
+            "makes the text roughly a tenth (the NBT files are gzip already)",
+        },
     )
 ]

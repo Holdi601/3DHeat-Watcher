@@ -10,11 +10,12 @@ Adapter `f1-25` - kind [`telemetry`](sources-and-rules.md) - runs while `F1_25.e
 
 ## What is recorded
 
-- every car's position (world XYZ, m) at 10 Hz, by driver name, team, own car marked (`own_car` 1, from the player car index), with speed, gear, throttle, brake
+- every car's position (world XYZ, m) at 10 Hz, by driver name, team, own car marked (`own_car` 1, from the player car index), with speed, gear, throttle, brake, steer, rpm, DRS, yaw, pitch, roll (degrees) and g-forces
 - laps per car with the lap time and race position; finishes and retirements
 - the game's race events: session start and end, fastest lap, penalties, overtakes, collisions, safety car, red flag, start lights, chequered flag, winner, flashbacks (`teleport` where the car was, `spawn` where it went back to)
 - track, session type, laps and drivers of each session
 - own laps, best lap, race and grid position, pit stops, penalties, overtakes, collisions, distance, top speed
+- every packet the game sends, whole, in `heat.raw.parquet` - also the ones not read into rows
 
 ## Where it comes from
 
@@ -63,8 +64,16 @@ What is read, by packet id:
                 number, name (48 bytes in 2023 and 2024, 32 in 2025; 58,
                 60 and 57 bytes per car)
 6 Car Telemetry CarTelemetryData[22], 60 bytes: speed km/h, throttle,
-                steer, brake, clutch, gear, rpm ...
+                steer, brake, clutch, gear, rpm, DRS ...
 ```
+
+Every packet is also kept whole, as it came, in the session's raw sidecar
+(`heat.raw.parquet`, `type` the packet's name - `motion`, `car_status` ... -
+with `format`, `packet_id`, `frame` and `session_uid`) - the ones read above and the ones
+nothing reads yet: 5 Car Setups, 7 Car Status, 8 Final Classification, 9 Lobby
+Info, 10 Car Damage, 11 Session History, 12 Tyre Sets, 13 Motion Ex, 14 Time
+Trial, 15 Lap Positions, any later id, and packets in a format this does not
+read. So a later decoder needs only the sidecar.
 
 Every car's position is in the Motion packet - online too, where the game
 itself hands it out (only fuel, ERS, damage and tyre-set data are held back
@@ -103,6 +112,33 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 `best_lap`, `collisions`, `distance_km`, `fastest_laps`, `finishes`, `flashbacks`, `grid_position`, `laps`, `overtaken`, `overtakes`, `penalties`, `penalty_seconds`, `pit_stops`, `race_position`, `sessions`, `top_speed_kmh`, `wins`
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
+
+## Completeness
+
+The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the source holds is read or kept, never dropped. Besides the rows, every packet, page, line or reply the adapter receives is kept whole in the session's `heat.raw.parquet` (columns `time`, `ms`, `type`, `used`, `payload`, `text`, then any field kept by name; `used` marks what also became rows), and `meta.json`'s `selfCheck.completeness` counts each `type` - `lost` is 0.
+
+**Read**
+
+- 0 Motion: every car's world position and velocity, and now also yaw, pitch, roll (degrees, from the spec's radians) and the lateral, longitudinal and vertical g-force, on each car's position rows
+- 1 Session: track, session type, total laps, track length, online or not (meta.json `sessions`)
+- 2 Lap Data: last lap time, lap number, race and grid position, pit stops, penalties, result status (laps, finishes, retirements, statistics)
+- 3 Event: every code but BUTN as its own row, with its details
+- 4 Participants: driver names, teams, number of active cars (rows' `player` and `team`, meta.json `drivers`)
+- 6 Car Telemetry: speed, gear, throttle, brake, and now also steer (-1..1), rpm and DRS, on each car's position rows
+- checked against EA's published UDP specifications for the 2023, 2024 and 2025 formats (packet sizes asserted in the tests); not yet against the game
+
+**Kept raw**
+
+- every packet whole in `heat.raw.parquet`, `payload` the datagram, `type` its id's name: `motion`, `session`, `lap_data`, `event`, `participants`, `car_setups`, `car_telemetry`, `car_status`, `final_classification`, `lobby_info`, `car_damage`, `session_history`, `tyre_sets`, `motion_ex`, `time_trial`, `lap_positions` (`packet <n>` for an id the specifications do not list yet); columns `format` (2023/2024/2025), `packet_id`, `frame`, `session_uid`
+- `used` is true for the packets read above (Motion, Session, Lap Data, Participants, Car Telemetry, and Event codes other than BUTN); the rest - car setups, car status (fuel, ERS, tyre compound and age, flags), final classification, lobby, car damage, session history (every lap and sector time per car), tyre sets, motion ex (the own car's suspension, wheel speeds, local velocity, angular velocity and acceleration), time trial, lap positions, BUTN button events - are kept for a later decoder
+- `format <year>`: a packet in a format before 2023 (another header layout), whole; `short`: a datagram shorter than the 29-byte header, whole
+
+**Not available**
+
+- other players' fuel, ERS, damage and tyre sets online when their "Your Telemetry" is restricted: the game sends zeros for them
+- packets sent while the watcher is not running, or while another app holds port 20777: UDP is not stored by the game
+
+**Size**: at a send rate of 60 Hz every packet is about 0.38 MB/s (Motion, Lap Data, Car Telemetry, Car Status and Motion Ex at 60 Hz, Session History and Tyre Sets at 20/s, Car Damage at 10/s, Session and Car Setups at 2/s) plus about 0.03 MB/s of item headers: about 1.5 GB per hour of driving before compression, about 0.55 GB at the default 20 Hz; zstd brings it to a fraction of that (empty car slots and repeated values compress well; not yet measured on a real session)
 
 ## Verified
 
