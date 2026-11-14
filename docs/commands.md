@@ -11,6 +11,8 @@ Every command is run from the repository folder as
 python -m heat3d_watch <command> [options]
 ```
 
+![python -m heat3d_watch --help](assets/img/help.svg)
+
 | Command | What it does |
 |---|---|
 | [`run`](#run) | watch in the background and record every game that runs |
@@ -28,6 +30,9 @@ python -m heat3d_watch <command> [options]
 Options for every command: `-h` / `--help` prints the help, and `python -m heat3d_watch --version`
 prints the version (the `VERSION` file).
 
+The pictures on this page are runs on synthetic example sessions (`Example Racer`, `Example Arena`),
+not real recordings.
+
 Every command except `update` first looks for a newer release (at most every six hours; skipped with
 `HEAT3D_NO_UPDATE=1`, see [Updates](updates.md)). `run` only prints a notice. The other commands ask
 `Update now? [Y/n]` when they run in a terminal, and print how to update when they do not. Output is
@@ -38,6 +43,8 @@ UTF-8, so game names in any script print in any console.
 ```bash
 python -m heat3d_watch run [--once] [-v]
 ```
+
+![run: what games publish, into files](assets/img/overview.svg)
 
 Watches until stopped (Ctrl+C): every `scan_seconds` it reads the process list and runs an adapter for
 each game it finds, plus the always-on adapters. Before the first look it finishes the sessions an
@@ -57,6 +64,8 @@ code 1); see [The lock file](installing-and-running.md#the-lock-file).
 ```bash
 python -m heat3d_watch games [--markdown]
 ```
+
+![games](assets/img/games.svg)
 
 Lists every adapter sorted by game: its name, id and kind, where it reads from, what it records, and
 how to switch it on. An adapter that cannot run on this machine is marked
@@ -82,6 +91,10 @@ an HTML tag in kramdown). The one piece of HTML is the `<br>` between the items 
 ```bash
 python -m heat3d_watch setup <adapter id | all> [--apply]
 ```
+
+![setup](assets/img/setup.svg)
+
+![setup step by step](assets/img/setup-flow.svg)
 
 Switches a game's own output on, where the game needs a file changed for it. Without `--apply`
 nothing is changed: each line says what would change, and when there is anything to change the last
@@ -141,6 +154,8 @@ adapters only with `memory` on and every memory check passed. It does not start 
 python -m heat3d_watch sessions [--game NAME] [--limit N]
 ```
 
+![sessions](assets/img/sessions.svg)
+
 The newest sessions from `watcher.sqlite`, one line each: start (local time), game, minutes, events,
 positions, folder.
 
@@ -154,6 +169,8 @@ positions, folder.
 ```bash
 python -m heat3d_watch stats [--game NAME] [--csv DIR]
 ```
+
+![stats](assets/img/stats.svg)
 
 Without options: a table of every game (sessions, hours, events, positions, last played), most played
 first, then for each game its 25 most frequent events and every numeric statistic with the number of
@@ -173,6 +190,8 @@ the highest for everything else (kills, distance, top speed, a game's own counte
 python -m heat3d_watch table <session folder>
 ```
 
+![stats --csv and table](assets/img/csv-and-table.svg)
+
 Rebuilds `heat.parquet` in a session folder from its `events.jsonl`, with the axes from its
 `meta.json`. Prints the table's path, or `no positions in this session`. Use it for a session recorded
 while `pyarrow` was missing, or after editing `events.jsonl` by hand.
@@ -182,6 +201,8 @@ while `pyarrow` was missing, or after editing `events.jsonl` by hand.
 ```bash
 python -m heat3d_watch replays <adapter id> [folder] [-v]
 ```
+
+![replays and their converters](assets/img/replays.svg)
 
 Converts the replays already on disk, now, one after another, each into a session as the folder watch
 would. The first time the watcher sees a replay folder it only notes what is in it (see
@@ -239,6 +260,8 @@ minutes later. Private lobbies and matches with a hidden profile are not on the 
 python -m heat3d_watch update [--check]
 ```
 
+![updates](assets/img/updates.svg)
+
 Asks GitHub for the newest release, ignoring the cached answer, and updates this copy when it is newer
 (see [Updates](updates.md)). `--check` only says whether a newer release is out. This command runs even
 with `HEAT3D_NO_UPDATE` set: asking for it is the decision. `python -m heat3d_update [--check]` does the
@@ -249,6 +272,8 @@ same.
 ```bash
 python -m heat3d_watch config [--set KEY=VALUE ...]
 ```
+
+![config](assets/img/config.svg)
 
 Prints every setting as `key = value`. With `--set`, changes the given ones first and saves
 `settings.json` (`saved <path>`). Values are read by the setting's type:

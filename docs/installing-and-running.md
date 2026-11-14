@@ -89,6 +89,8 @@ way a game ending would, so the sessions they opened are closed, their tables wr
 counted in the statistics before it exits. Use it to check that a game is detected, not to record.
 
 ### Replays already on disk
+![replays and their converters](assets/img/replays.svg)
+
 
 The first time a replay adapter sees one of its folders, it only notes the replays already in it: a
 player with years of demos would otherwise find the watcher busy converting for a day. From then on
@@ -178,6 +180,8 @@ The watcher deletes nothing in these folders, except a session folder in which n
 (a game left in its menus).
 
 ## Settings
+![config](assets/img/config.svg)
+
 
 `python -m heat3d_watch config` shows the settings; `config --set key=value ...` changes them and saves
 `settings.json` (see [config](commands.md#config)). The file is plain JSON and can also be edited by

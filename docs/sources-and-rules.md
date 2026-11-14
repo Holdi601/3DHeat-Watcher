@@ -10,6 +10,8 @@ sources that covers, what the watcher may do with each, and which games or parts
 out on purpose.
 
 ## The six kinds of source
+![sources into sessions](assets/img/overview.svg)
+
 
 Every adapter has a `kind`, and the kind decides what the adapter may do:
 

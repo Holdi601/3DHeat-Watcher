@@ -63,19 +63,33 @@ of its own (`heat3d_watch/decoders/dota_replay.py`): every hero's position,
 height, health, level, facing, mana, experience, attributes and items 7.5
 times a second while alive, kills and deaths where they happened, towers,
 barracks, Roshan and Tormentors where they fell, every ward where it was
-planted and where it ended, and the combat log's entries about the heroes
+planted and where it ended, the combat log's entries about the heroes
 (damage, heals, abilities, items, purchases, runes, gold, experience,
-modifiers) - into `dota/<match>.parquet`; every other unit (creeps, summons,
-illusions, couriers, buildings) once a second into `<match>.units.parquet`;
-the whole combat log into `<match>.combatlog.parquet`; and the match, the
-chat, the draft and everything else the parser extracts into
-`<match>.match.json`, in the session folder. Positions are Dota's world
+modifiers), and every player's map pings, map drawings and orders - into
+`dota/<match>.parquet`; every other unit (creeps, summons, illusions,
+couriers, buildings) once a second into `<match>.units.parquet`; the whole
+combat log into `<match>.combatlog.parquet`; and the match, the chat, the
+draft, everything else the parser extracts and the game's own end-of-match
+record into `<match>.match.json`, in the session folder. Everything else
+the replay holds is kept whole beside them (3DHeat's converter rule):
+every frame and network message in `<match>.packets.parquet`, every entity
+property change in `<match>.entities.parquet`, every string table entry in
+`<match>.strings.parquet`, counted in the match document's
+`selfCheck.completeness`. Positions are Dota's world
 units, the same the game-state integration reports. The signed-in player's
 scoreboard line becomes the session's statistics: kills, deaths, assists,
 last hits, denies, net worth, GPM, XPM, hero damage, wards, and whether the
 match was won. A new Dota patch can change the replay's entities before gem
 follows; a replay gem cannot read to the end is converted as far as it goes
 and marked `incomplete` in its summary.
+
+#### osu!
+
+osu! (stable) saves every play to `osu!/Data/r/*.osr` and exported ones to
+`osu!/Replays/`. The watcher reads them itself, to the format the osu! wiki
+publishes: the cursor's path and keys every frame, the score line, the life
+bar, the seed and the score id; the file is kept whole beside, part by part,
+in the session's `heat.raw.parquet`.
 
 #### War Thunder
 
@@ -149,6 +163,10 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 `map`, `survived`, `vehicle`, `won`
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
+
+## Completeness
+
+The converter this adapter runs follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the replay holds is read or kept, never dropped - read into the table and the match document, everything else kept whole in sidecars beside them, counted in the match document's `selfCheck.completeness`. The converter's own documentation lists what it reads, keeps raw and cannot read.
 
 ## Verified
 

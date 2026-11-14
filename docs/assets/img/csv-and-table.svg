@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="929" height="122" viewBox="0 0 929 122" role="img" aria-label="stats --csv and table (synthetic example session)">
+<rect width="929" height="122" rx="8" fill="#1e1f24"/>
+<rect width="929" height="26" rx="8" fill="#2c2e35"/><rect y="18" width="929" height="8" fill="#2c2e35"/>
+<circle cx="16" cy="13" r="5" fill="#ff5f57"/><circle cx="32" cy="13" r="5" fill="#febc2e"/><circle cx="48" cy="13" r="5" fill="#28c840"/>
+<text x="464.5" y="17" fill="#9aa0aa" font-family="Segoe UI,Helvetica,Arial,sans-serif" font-size="12" text-anchor="middle">stats --csv and table (synthetic example session)</text>
+<g font-family="Consolas,Menlo,DejaVu Sans Mono,monospace" font-size="13" xml:space="preserve" style="white-space:pre">
+<text x="16" y="46" fill="#7ee787" xml:space="preserve" style="white-space:pre">$&#160;python&#160;-m&#160;heat3d_watch&#160;stats&#160;--csv&#160;out</text>
+<text x="16" y="64" fill="#d6d9df" xml:space="preserve" style="white-space:pre">wrote&#160;sessions.csv,&#160;events.csv&#160;and&#160;stats.csv&#160;to&#160;out</text>
+<text x="16" y="82" fill="#7ee787" xml:space="preserve" style="white-space:pre">$&#160;python&#160;-m&#160;heat3d_watch&#160;table&#160;%LOCALAPPDATA%\3DHeat\Watcher\sessions\Example-Racer\2026-11-14_20-00-00_example-udp</text>
+<text x="16" y="100" fill="#d6d9df" xml:space="preserve" style="white-space:pre">%LOCALAPPDATA%\3DHeat\Watcher\sessions\Example-Racer\2026-11-14_20-00-00_example-udp\heat.parquet</text>
+</g></svg>

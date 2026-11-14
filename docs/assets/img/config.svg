@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="266" viewBox="0 0 500 266" role="img" aria-label="config: the settings">
+<rect width="500" height="266" rx="8" fill="#1e1f24"/>
+<rect width="500" height="26" rx="8" fill="#2c2e35"/><rect y="18" width="500" height="8" fill="#2c2e35"/>
+<circle cx="16" cy="13" r="5" fill="#ff5f57"/><circle cx="32" cy="13" r="5" fill="#febc2e"/><circle cx="48" cy="13" r="5" fill="#28c840"/>
+<text x="250.0" y="17" fill="#9aa0aa" font-family="Segoe UI,Helvetica,Arial,sans-serif" font-size="12" text-anchor="middle">config: the settings</text>
+<g font-family="Consolas,Menlo,DejaVu Sans Mono,monospace" font-size="13" xml:space="preserve" style="white-space:pre">
+<text x="16" y="46" fill="#7ee787" xml:space="preserve" style="white-space:pre">$&#160;python&#160;-m&#160;heat3d_watch&#160;config</text>
+<text x="16" y="64" fill="#d6d9df" xml:space="preserve" style="white-space:pre">data&#160;=&#160;&#x27;&#x27;</text>
+<text x="16" y="82" fill="#d6d9df" xml:space="preserve" style="white-space:pre">disabled&#160;=&#160;[]</text>
+<text x="16" y="100" fill="#d6d9df" xml:space="preserve" style="white-space:pre">auto_update&#160;=&#160;True</text>
+<text x="16" y="118" fill="#d6d9df" xml:space="preserve" style="white-space:pre">scan_seconds&#160;=&#160;2.0</text>
+<text x="16" y="136" fill="#d6d9df" xml:space="preserve" style="white-space:pre">memory&#160;=&#160;False</text>
+<text x="16" y="154" fill="#d6d9df" xml:space="preserve" style="white-space:pre">replays&#160;=&#160;True</text>
+<text x="16" y="172" fill="#d6d9df" xml:space="preserve" style="white-space:pre">replay_folders&#160;=&#160;{}</text>
+<text x="16" y="190" fill="#d6d9df" xml:space="preserve" style="white-space:pre">riot_id&#160;=&#160;&#x27;&#x27;</text>
+<text x="16" y="208" fill="#d6d9df" xml:space="preserve" style="white-space:pre">riot_api_key&#160;=&#160;&#x27;&#x27;</text>
+<text x="16" y="226" fill="#d6d9df" xml:space="preserve" style="white-space:pre">riot_platform&#160;=&#160;&#x27;EUW1&#x27;</text>
+<text x="16" y="244" fill="#d6d9df" xml:space="preserve" style="white-space:pre">player_names&#160;=&#160;{}</text>
+</g></svg>

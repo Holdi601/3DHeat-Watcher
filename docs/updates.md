@@ -10,6 +10,8 @@ The watcher keeps itself current from the releases of
 `heat3d_update` package next to `heat3d_watch` in the repository.
 
 ## The check
+![updates](assets/img/updates.svg)
+
 
 - **When**: every command except `update` checks when it starts. `run` also checks while it is running,
   at most once an hour and only while no game is running.

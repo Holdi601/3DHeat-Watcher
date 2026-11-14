@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="835" height="680" viewBox="0 0 835 680" role="img" aria-label="python -m heat3d_watch --help">
+<rect width="835" height="680" rx="8" fill="#1e1f24"/>
+<rect width="835" height="26" rx="8" fill="#2c2e35"/><rect y="18" width="835" height="8" fill="#2c2e35"/>
+<circle cx="16" cy="13" r="5" fill="#ff5f57"/><circle cx="32" cy="13" r="5" fill="#febc2e"/><circle cx="48" cy="13" r="5" fill="#28c840"/>
+<text x="417.5" y="17" fill="#9aa0aa" font-family="Segoe UI,Helvetica,Arial,sans-serif" font-size="12" text-anchor="middle">python -m heat3d_watch --help</text>
+<g font-family="Consolas,Menlo,DejaVu Sans Mono,monospace" font-size="13" xml:space="preserve" style="white-space:pre">
+<text x="16" y="46" fill="#7ee787" xml:space="preserve" style="white-space:pre">$&#160;python&#160;-m&#160;heat3d_watch&#160;--help</text>
+<text x="16" y="64" fill="#d6d9df" xml:space="preserve" style="white-space:pre">usage:&#160;heat3d_watch&#160;[-h]&#160;[--version]</text>
+<text x="16" y="82" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;{run,games,setup,status,sessions,stats,table,replays,dota-replay,update,config}&#160;...</text>
+<text x="16" y="100" fill="#d6d9df" xml:space="preserve" style="white-space:pre"></text>
+<text x="16" y="118" fill="#d6d9df" xml:space="preserve" style="white-space:pre">`python&#160;-m&#160;heat3d_watch&#160;&lt;command&gt;`</text>
+<text x="16" y="136" fill="#d6d9df" xml:space="preserve" style="white-space:pre"></text>
+<text x="16" y="154" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;&#160;&#160;run&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;watch&#160;in&#160;the&#160;background:&#160;record&#160;every&#160;game&#160;that&#160;is&#160;running</text>
+<text x="16" y="172" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;&#160;&#160;games&#160;&#160;&#160;&#160;&#160;&#160;what&#160;each&#160;game&#160;gives&#160;and&#160;from&#160;where&#160;(--markdown&#160;for&#160;the&#160;docs)</text>
+<text x="16" y="190" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;&#160;&#160;setup&#160;&#160;&#160;&#160;&#160;&#160;switch&#160;a&#160;game&#x27;s&#160;own&#160;output&#160;on&#160;(--apply&#160;to&#160;change&#160;files)</text>
+<text x="16" y="208" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;&#160;&#160;status&#160;&#160;&#160;&#160;&#160;which&#160;games&#160;are&#160;running&#160;now&#160;and&#160;what&#160;would&#160;be&#160;recorded</text>
+<text x="16" y="226" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;&#160;&#160;sessions&#160;&#160;&#160;the&#160;recordings&#160;so&#160;far</text>
+<text x="16" y="244" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;&#160;&#160;stats&#160;&#160;&#160;&#160;&#160;&#160;totals&#160;per&#160;game;&#160;--game&#160;for&#160;one,&#160;--csv&#160;DIR&#160;to&#160;write&#160;the&#160;tables&#160;out</text>
+<text x="16" y="262" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;&#160;&#160;table&#160;&#160;&#160;&#160;&#160;&#160;rebuild&#160;a&#160;session&#x27;s&#160;heat.parquet&#160;from&#160;its&#160;events.jsonl</text>
+<text x="16" y="280" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;&#160;&#160;replays&#160;&#160;&#160;&#160;convert&#160;the&#160;replays&#160;already&#160;on&#160;disk&#160;for&#160;one&#160;adapter&#160;(or&#160;a&#160;folder&#160;of&#160;them)</text>
+<text x="16" y="298" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;&#160;&#160;dota-replay&#160;&#160;download&#160;a&#160;public&#160;Dota&#160;2&#160;match&#x27;s&#160;replay&#160;by&#160;its&#160;id&#160;(--convert&#160;to&#160;convert&#160;it&#160;now)</text>
+<text x="16" y="316" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;&#160;&#160;update&#160;&#160;&#160;&#160;&#160;update&#160;the&#160;tools&#160;to&#160;the&#160;newest&#160;release&#160;(--check&#160;to&#160;only&#160;ask)</text>
+<text x="16" y="334" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;&#160;&#160;config&#160;&#160;&#160;&#160;&#160;show&#160;the&#160;settings,&#160;or&#160;change&#160;them&#160;(--set&#160;key=value&#160;...)</text>
+<text x="16" y="352" fill="#d6d9df" xml:space="preserve" style="white-space:pre"></text>
+<text x="16" y="370" fill="#d6d9df" xml:space="preserve" style="white-space:pre">positional&#160;arguments:</text>
+<text x="16" y="388" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;{run,games,setup,status,sessions,stats,table,replays,dota-replay,update,config}</text>
+<text x="16" y="406" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;&#160;&#160;run&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;watch&#160;in&#160;the&#160;background</text>
+<text x="16" y="424" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;&#160;&#160;games&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;what&#160;each&#160;game&#160;gives&#160;and&#160;from&#160;where</text>
+<text x="16" y="442" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;&#160;&#160;setup&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;switch&#160;a&#160;game&#x27;s&#160;own&#160;output&#160;on</text>
+<text x="16" y="460" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;&#160;&#160;status&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;which&#160;games&#160;are&#160;running&#160;now</text>
+<text x="16" y="478" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;&#160;&#160;sessions&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;the&#160;recordings&#160;so&#160;far</text>
+<text x="16" y="496" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;&#160;&#160;stats&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;totals&#160;per&#160;game</text>
+<text x="16" y="514" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;&#160;&#160;table&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;rebuild&#160;a&#160;session&#x27;s&#160;heat.parquet</text>
+<text x="16" y="532" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;&#160;&#160;replays&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;convert&#160;the&#160;replays&#160;already&#160;on&#160;disk</text>
+<text x="16" y="550" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;&#160;&#160;dota-replay&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;download&#160;a&#160;public&#160;Dota&#160;2&#160;match&#x27;s&#160;replay</text>
+<text x="16" y="568" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;&#160;&#160;update&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;update&#160;to&#160;the&#160;newest&#160;release</text>
+<text x="16" y="586" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;&#160;&#160;config&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;show&#160;or&#160;change&#160;the&#160;settings</text>
+<text x="16" y="604" fill="#d6d9df" xml:space="preserve" style="white-space:pre"></text>
+<text x="16" y="622" fill="#d6d9df" xml:space="preserve" style="white-space:pre">options:</text>
+<text x="16" y="640" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;-h,&#160;--help&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;show&#160;this&#160;help&#160;message&#160;and&#160;exit</text>
+<text x="16" y="658" fill="#d6d9df" xml:space="preserve" style="white-space:pre">&#160;&#160;--version&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;show&#160;program&#x27;s&#160;version&#160;number&#160;and&#160;exit</text>
+</g></svg>

@@ -18,6 +18,8 @@ a profile that was right before reads garbage, and garbage looks just like numbe
 be checked on the build a player has, by that player.
 
 ## The checks, in order
+![every condition must hold](assets/img/memory-rules.svg)
+
 
 Every check below must pass. The first four are made **before** the game is opened, because opening a
 protected game for reading is itself what an anti-cheat notices, and refusing afterwards would be too

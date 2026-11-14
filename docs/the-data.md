@@ -10,6 +10,8 @@ see [Installing and running](installing-and-running.md#where-everything-is)). Yo
 delete them without the watcher.
 
 ## Session folders
+![a session folder](assets/img/session-folder.svg)
+
 
 A **session** is one sitting with one source: from the moment the game first says something until it
 stops (the game closes, a match ends, a drive or a flight is reset - each adapter's page says what
@@ -243,6 +245,8 @@ The log says "finished N session(s) left open by an earlier run". The lock file 
 watcher from "recovering" the sessions of one that is still running.
 
 ## CSV export
+![stats --csv and table](assets/img/csv-and-table.svg)
+
 
 ```bash
 python -m heat3d_watch stats --csv out
@@ -253,6 +257,11 @@ writes `out\sessions.csv`, `out\events.csv` and `out\stats.csv`. Each file is on
 `--game` does not narrow the export; every session is written.
 
 ## Opening a session in the 3DHeat viewer
+
+The viewer: [github.com/Holdi601/3DHeat](https://github.com/Holdi601/3DHeat), documentation
+[holdi601.github.io/3DHeat](https://holdi601.github.io/3DHeat/) - its
+[`.3dheat` container](https://holdi601.github.io/3DHeat/container.html) page describes the one-file-a-match
+format the replay converters can write.
 
 Open a session's `heat.parquet` in the 3DHeat viewer. The footer tells the viewer which column is the
 position, the time, the player, the team and the session, and which way is up, so nothing has to be

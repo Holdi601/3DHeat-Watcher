@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="952" height="302" viewBox="0 0 952 302" role="img" aria-label="a session folder (synthetic example session)">
+<rect width="952" height="302" rx="8" fill="#1e1f24"/>
+<rect width="952" height="26" rx="8" fill="#2c2e35"/><rect y="18" width="952" height="8" fill="#2c2e35"/>
+<circle cx="16" cy="13" r="5" fill="#ff5f57"/><circle cx="32" cy="13" r="5" fill="#febc2e"/><circle cx="48" cy="13" r="5" fill="#28c840"/>
+<text x="476.0" y="17" fill="#9aa0aa" font-family="Segoe UI,Helvetica,Arial,sans-serif" font-size="12" text-anchor="middle">a session folder (synthetic example session)</text>
+<g font-family="Consolas,Menlo,DejaVu Sans Mono,monospace" font-size="13" xml:space="preserve" style="white-space:pre">
+<text x="16" y="46" fill="#7ee787" xml:space="preserve" style="white-space:pre">$&#160;tree&#160;sessions\Example-Racer</text>
+<text x="16" y="64" fill="#d6d9df" xml:space="preserve" style="white-space:pre">sessions\Example-Racer</text>
+<text x="16" y="82" fill="#d6d9df" xml:space="preserve" style="white-space:pre">+--&#160;2026-11-14_20-00-00_example-udp</text>
+<text x="16" y="100" fill="#d6d9df" xml:space="preserve" style="white-space:pre">|&#160;&#160;&#160;+--&#160;events.jsonl</text>
+<text x="16" y="118" fill="#d6d9df" xml:space="preserve" style="white-space:pre">|&#160;&#160;&#160;+--&#160;heat.parquet</text>
+<text x="16" y="136" fill="#d6d9df" xml:space="preserve" style="white-space:pre">|&#160;&#160;&#160;+--&#160;meta.json</text>
+<text x="16" y="154" fill="#d6d9df" xml:space="preserve" style="white-space:pre">+--&#160;2026-11-14_21-00-00_example-udp</text>
+<text x="16" y="172" fill="#d6d9df" xml:space="preserve" style="white-space:pre">|&#160;&#160;&#160;+--&#160;events.jsonl</text>
+<text x="16" y="190" fill="#d6d9df" xml:space="preserve" style="white-space:pre">|&#160;&#160;&#160;+--&#160;heat.parquet</text>
+<text x="16" y="208" fill="#d6d9df" xml:space="preserve" style="white-space:pre">|&#160;&#160;&#160;+--&#160;meta.json</text>
+<text x="16" y="226" fill="#7ee787" xml:space="preserve" style="white-space:pre">$&#160;head&#160;-3&#160;events.jsonl</text>
+<text x="16" y="244" fill="#d6d9df" xml:space="preserve" style="white-space:pre">{&quot;time&quot;:0.0,&quot;ms&quot;:1794700436104,&quot;event&quot;:&quot;position&quot;,&quot;x&quot;:400.0,&quot;y&quot;:0.0,&quot;z&quot;:0.0,&quot;player&quot;:&quot;you&quot;,&quot;speed&quot;:40.0}</text>
+<text x="16" y="262" fill="#d6d9df" xml:space="preserve" style="white-space:pre">{&quot;time&quot;:0.5,&quot;ms&quot;:1794700436104,&quot;event&quot;:&quot;position&quot;,&quot;x&quot;:397.80875814730933,&quot;y&quot;:0.0,&quot;z&quot;:26.132115816913362,&quot;player&quot;:&quot;you&quot;</text>
+<text x="16" y="280" fill="#d6d9df" xml:space="preserve" style="white-space:pre">{&quot;time&quot;:1.0,&quot;ms&quot;:1794700436104,&quot;event&quot;:&quot;position&quot;,&quot;x&quot;:391.2590402935223,&quot;y&quot;:0.0,&quot;z&quot;:51.97792270443983,&quot;player&quot;:&quot;you&quot;,&quot;</text>
+</g></svg>

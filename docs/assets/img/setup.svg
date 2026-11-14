@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1147" height="104" viewBox="0 0 1147 104" role="img" aria-label="setup: says what it would change; --apply changes it">
+<rect width="1147" height="104" rx="8" fill="#1e1f24"/>
+<rect width="1147" height="26" rx="8" fill="#2c2e35"/><rect y="18" width="1147" height="8" fill="#2c2e35"/>
+<circle cx="16" cy="13" r="5" fill="#ff5f57"/><circle cx="32" cy="13" r="5" fill="#febc2e"/><circle cx="48" cy="13" r="5" fill="#28c840"/>
+<text x="573.5" y="17" fill="#9aa0aa" font-family="Segoe UI,Helvetica,Arial,sans-serif" font-size="12" text-anchor="middle">setup: says what it would change; --apply changes it</text>
+<g font-family="Consolas,Menlo,DejaVu Sans Mono,monospace" font-size="13" xml:space="preserve" style="white-space:pre">
+<text x="16" y="46" fill="#7ee787" xml:space="preserve" style="white-space:pre">$&#160;python&#160;-m&#160;heat3d_watch&#160;setup&#160;f1-25</text>
+<text x="16" y="64" fill="#d6d9df" xml:space="preserve" style="white-space:pre">f1-25:&#160;would&#160;change:&#160;%USERPROFILE%\Documents\My&#160;Games\F1&#160;25\hardwaresettings\hardware_settings_config.xml&#160;not&#160;found&#160;-&#160;start&#160;the&#160;game&#160;once&#160;first</text>
+<text x="16" y="82" fill="#d6d9df" xml:space="preserve" style="white-space:pre">Nothing&#160;was&#160;changed.&#160;Run&#160;again&#160;with&#160;--apply&#160;to&#160;make&#160;these&#160;changes.</text>
+</g></svg>

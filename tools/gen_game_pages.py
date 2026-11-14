@@ -329,16 +329,21 @@ RULE = "https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md"
 def completeness_section(adapter) -> list[str]:
     """The converter rule's three lists, from the adapter's `completeness`."""
     c = getattr(adapter, "completeness", None) or {}
-    lines = [
-        "## Completeness",
-        "",
+    intro = c.get("intro") or (
         f"The watcher follows 3DHeat's [converter rule]({RULE}): what the source holds is read or kept, never "
         "dropped. Besides the rows, every packet, page, line or reply the adapter receives is kept whole in the "
         "session's `heat.raw.parquet` (columns `time`, `ms`, `type`, `used`, `payload`, `text`, then any field kept "
         "by name; `used` marks what also became rows), and `meta.json`'s `selfCheck.completeness` counts each "
-        "`type` - `lost` is 0.",
-        "",
-    ]
+        "`type` - `lost` is 0."
+    )
+    if not c and any(k.__name__ == "ReplayAdapter" for k in type(adapter).__mro__):
+        # A replay adapter without its own lists runs a converter that keeps the replay whole itself.
+        return ["## Completeness", "",
+                f"The converter this adapter runs follows 3DHeat's [converter rule]({RULE}): what the replay holds "
+                "is read or kept, never dropped - read into the table and the match document, everything else kept "
+                "whole in sidecars beside them, counted in the match document's `selfCheck.completeness`. The "
+                "converter's own documentation lists what it reads, keeps raw and cannot read."]
+    lines = ["## Completeness", "", intro, ""]
     if not c:
         return lines + ["The adapter does not list its source's contents yet."]
     for key, head in (("read", "Read"), ("raw", "Kept raw"), ("missing", "Not available")):

@@ -16,6 +16,13 @@ saves. Recordings stay on your machine. The program contacts only two outside se
 these cases: GitHub, to look for a newer release (see [Updates](updates.md)), and Riot's Match-V5 API,
 and only if you enter your own Riot API key (see [League of Legends replays](game-lol-replays.md)).
 
+![the watcher: what games publish, into files on your machine](assets/img/overview.svg)
+
+It is useful for keeping your own record of every sitting - where you drove, flew or fought, what
+happened where, your totals per game - and for opening any of it in the
+[3DHeat viewer](https://github.com/Holdi601/3DHeat) ([documentation](https://holdi601.github.io/3DHeat/)) as
+a heatmap or as route lines.
+
 ## What it records
 
 - **Positions**: the car, aircraft, hero or player, several times a second where the game publishes
@@ -65,6 +72,11 @@ Everything is written to `%LOCALAPPDATA%\3DHeat\Watcher`. To use another folder,
 - `watcher.sqlite` - the statistics of every session, in three plain tables
 - `watcher.log` - what the watcher did
 
+The viewer opens a session's `heat.parquet` directly, with nothing to set (its axes and units are in
+the file). Converted replays are written as tables and match documents beside it; the viewer's own
+one-file-a-match format is described in its [`.3dheat` container](https://holdi601.github.io/3DHeat/container.html)
+page, and every table's columns in [The data](the-data.md).
+
 ## The documentation
 
 | Page | What it covers |
@@ -75,6 +87,7 @@ Everything is written to `%LOCALAPPDATA%\3DHeat\Watcher`. To use another folder,
 | [Commands](commands.md) | every command and option of `python -m heat3d_watch` |
 | [Sources and rules](sources-and-rules.md) | the six kinds of source, the multiplayer rules, which games are left out and why |
 | [NVIDIA Highlights](nvidia-highlights.md) | what NVIDIA Highlights can and cannot deliver, and how a highlight gets a position |
+| [Server recorder mods](server-mods.md) | the Arma 3 and Arma Reforger server mods that record whole missions for the viewer |
 | [Reading memory](memory-reading.md) | single-player memory profiles: the format, the checks, how to write and verify one |
 | [Updates](updates.md) | how the watcher looks for new releases and updates itself |
 | [Development](development.md) | writing an adapter: the API, tests, an honest `verified`, regenerating the game pages |
@@ -92,3 +105,11 @@ separate project with its own releases and licence: [3DHeat GameFiles](https://g
 Licence: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). The licences
 of the third-party packages it uses, and what the games it reads require, are listed in
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).
+
+## Part of 3DHeat
+
+The watcher is one of the free tools around the 3DHeat viewer:
+[github.com/Holdi601/3DHeat](https://github.com/Holdi601/3DHeat), documentation
+[holdi601.github.io/3DHeat](https://holdi601.github.io/3DHeat/). This site:
+[holdi601.github.io/3DHeat-Watcher](https://holdi601.github.io/3DHeat-Watcher/); the source:
+[github.com/Holdi601/3DHeat-Watcher](https://github.com/Holdi601/3DHeat-Watcher).
