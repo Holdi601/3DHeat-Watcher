@@ -21,7 +21,7 @@ python -m heat3d_watch <command> [options]
 | [`table`](#table) | rebuild a session's `heat.parquet` from its `events.jsonl` |
 | [`replays`](#replays) | convert the replays already on disk |
 | [`dota-replay`](#dota-replay) | download a public Dota 2 match's replay by its id |
-| [`dota-map`](#dota-map) | the Dota 2 map from your install as a 3D level for the viewer |
+| [`dota-map`](#dota-map) | the Dota 2 map from your install as a 3D level, by the separate 3DHeat Dota tool |
 | [`update`](#update) | update to the newest release |
 | [`config`](#config) | show or change the settings |
 
@@ -261,12 +261,14 @@ python -m heat3d_watch dota-map [<map>] -o <file.glb> [--game FOLDER] [--source2
 ```
 
 Writes the Dota 2 map - ground, cliffs, water, trees and buildings - as a `.glb` level in the frame
-the Dota replay tables are drawn in, from your own Dota 2 install, read by Source2Viewer's command
-line. Nothing is downloaded. `<map>` is `dota` by default; `--game` is the Dota 2 folder when it is
-not in a Steam library; `--source2viewer` the CLI's path when it is neither in `HEAT3D_SOURCE2VIEWER`
-nor on `PATH`; `--detail` the vertex clustering cell for buildings in game units (default 8, 0 keeps
-every triangle). Exits with code 1 and `dota-map: <why>` when Dota 2, the map or Source2Viewer is not
-found. Every step, the file's parts and how it was checked: [Dota 2 map](dota-map).
+the Dota replay tables are drawn in, from your own Dota 2 install. The watcher does not read the game's
+files itself: it runs the separate tool **3DHeat Dota** (`heat3d-dota-maps level`,
+[3DHeat-Ext-Dota](https://github.com/Holdi601/3DHeat-Ext-Dota)) with these options and passes its output
+and exit status through. `<map>` is `dota` by default; `--game` is the Dota 2 folder when it is not in a
+Steam library; `--source2viewer` the path of Source2Viewer's CLI, which that tool needs; `--detail` the
+vertex clustering cell for buildings in game units (default 8, 0 keeps every triangle). When the tool is
+not installed it prints `dota-map: the Dota 2 map converter is not installed: ...` with where to get it
+and exits with code 2. Details: [Dota 2 map](dota-map).
 
 ## update
 

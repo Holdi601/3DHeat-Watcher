@@ -10,7 +10,7 @@
     table      rebuild a session's heat.parquet from its events.jsonl
     replays    convert the replays already on disk for one adapter (or a folder of them)
     dota-replay  download a public Dota 2 match's replay by its id (--convert to convert it now)
-    dota-map   the Dota 2 map from your install as a level (.glb) under the replay tables
+    dota-map   the Dota 2 map as a level (.glb), made by the 3DHeat-Ext-Dota converter when installed
     update     update the tools to the newest release (--check to only ask)
     config     show the settings, or change them (--set key=value ...)
 """
@@ -298,21 +298,71 @@ def cmd_dota_replay(args: argparse.Namespace, s: Settings) -> int:
     return 0
 
 
+#: The command the Dota 2 map converter installs (exporters/ext/dota-maps, repository 3DHeat-Ext-Dota).
+DOTA_MAPS_COMMAND = "heat3d-dota-maps"
+DOTA_MAPS_INSTALL = (
+    "the Dota 2 map converter is not installed: get it from https://github.com/Holdi601/3DHeat-Ext-Dota "
+    "and run `python -m pip install -e .` in its folder (it installs the `heat3d-dota-maps` command); "
+    "its docs: https://holdi601.github.io/3DHeat-Ext-Dota/"
+)
+
+
+def dota_maps_folder() -> Path | None:
+    """The converter's source folder, when it is not installed: `HEAT3D_DOTA_MAPS`, or beside the watcher."""
+    import os
+
+    root = Path(__file__).resolve().parents[1]
+    candidates = [Path(os.environ["HEAT3D_DOTA_MAPS"])] if os.environ.get("HEAT3D_DOTA_MAPS") else []
+    candidates += [root.parent / "ext" / "dota-maps", root.parent / "3DHeat-Ext-Dota"]
+    return next((c for c in candidates if (c / "heat3d_ext_dota" / "__init__.py").is_file()), None)
+
+
+def dota_maps_converter() -> list[str] | None:
+    """
+    How to run the Dota 2 map converter, an extension kept outside the watcher
+    because it reads Valve's files: its `heat3d-dota-maps` command when it is
+    on PATH, else `python -m heat3d_ext_dota` when the package is installed or
+    its folder is found. None when it is nowhere. Nothing of it is imported
+    here; it is only run.
+    """
+    import importlib.util
+    import shutil
+
+    found = shutil.which(DOTA_MAPS_COMMAND)
+    if found:
+        return [found]
+    if dota_maps_folder() is not None or importlib.util.find_spec("heat3d_ext_dota") is not None:
+        return [sys.executable, "-m", "heat3d_ext_dota"]
+    return None
+
+
 def cmd_dota_map(args: argparse.Namespace, s: Settings) -> int:
     """
-    The Dota 2 map as level geometry, from the installed game's own files, in
-    the frame the Dota replay tables are drawn in (decoders/dota_map.py).
+    The Dota 2 map as a level, made by the external converter (3DHeat-Ext-Dota,
+    `heat3d-dota-maps level`) from the installed game's own files. Its output
+    and exit status are passed through.
     """
-    from .decoders.dota_map import export_map
+    import os
+    import subprocess
 
+    command = dota_maps_converter()
+    if command is None:
+        print(f"dota-map: {DOTA_MAPS_INSTALL}", file=sys.stderr)
+        return 2
+    run = [*command, "level", args.map, "-o", str(Path(args.out).resolve()), "--detail", str(args.detail)]
+    if args.game:
+        run += ["--game", str(Path(args.game).resolve())]
+    if args.source2viewer:
+        run += ["--source2viewer", str(Path(args.source2viewer).resolve())]
+    env = dict(os.environ)
+    folder = dota_maps_folder()
+    if folder is not None and command[0] == sys.executable:
+        env["PYTHONPATH"] = os.pathsep.join(p for p in (str(folder), env.get("PYTHONPATH", "")) if p)
     try:
-        line = export_map(args.map, args.out, game=args.game, source2viewer=args.source2viewer, detail=args.detail,
-                          say=lambda text: print(text, file=sys.stderr))
-    except (FileNotFoundError, RuntimeError, ValueError) as e:
-        print(f"dota-map: {e}", file=sys.stderr)
+        return subprocess.run(run, env=env).returncode
+    except OSError as e:
+        print(f"dota-map: could not run {run[0]}: {e}", file=sys.stderr)
         return 1
-    print(line)
-    return 0
 
 
 def cmd_update(args: argparse.Namespace, s: Settings) -> int:
@@ -382,11 +432,11 @@ def main(argv: list[str] | None = None) -> int:
     dr.add_argument("-o", "--out", help="the folder to save to (default: Dota's own replays folder)")
     dr.add_argument("--convert", action="store_true", help="convert the folder's replays now")
     dr.add_argument("-v", "--verbose", action="store_true")
-    dm = sub.add_parser("dota-map", help="the Dota 2 map from your install as a level (.glb)")
+    dm = sub.add_parser("dota-map", help="the Dota 2 map as a level (.glb), by 3DHeat-Ext-Dota")
     dm.add_argument("map", nargs="?", default="dota", help="the map's name (default: dota) or the path to its .vpk")
     dm.add_argument("-o", "--out", required=True, help="the .glb to write")
     dm.add_argument("--game", help="the Dota 2 folder (default: found in your Steam libraries)")
-    dm.add_argument("--source2viewer", help="Source2Viewer-CLI's path (default: HEAT3D_SOURCE2VIEWER, then PATH)")
+    dm.add_argument("--source2viewer", help="Source2Viewer-CLI's path (default: where heat3d-dota-maps finds it)")
     dm.add_argument("--detail", type=float, default=8.0,
                     help="buildings' vertex clustering cell in game units (default 8; 0 keeps every triangle)")
     u = sub.add_parser("update", help="update to the newest release")

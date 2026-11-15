@@ -1,8 +1,8 @@
 # The English pages' hashes; written by tools/docs_i18n.py hashes. Do not edit.
 before-you-start.md: "0bf5e50d8593"
-commands.md: "84f365438309"
+commands.md: "86f8fa0285c7"
 development.md: "cb213e22ddea"
-dota-map.md: "c9830d37ea89"
+dota-map.md: "3dcde11c7784"
 game-assetto-corsa-competizione.md: "08033208b212"
 game-assetto-corsa-evo.md: "b14d46c10e85"
 game-assetto-corsa-rally.md: "09b8a6d66e31"

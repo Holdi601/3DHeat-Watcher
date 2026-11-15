@@ -49,7 +49,7 @@ python -m heat3d_watch replays wot-replays [folder]   # World of Tanks replays, 
 python -m heat3d_watch replays wows-replays [folder]  # World of Warships replays, likewise
 python -m heat3d_watch replays dota-replays [folder]  # Dota 2 replays (needs `pip install gem-dota`)
 python -m heat3d_watch dota-replay <match id> --convert  # fetch a public Dota 2 match's replay from Valve and convert it (needs internet)
-python -m heat3d_watch dota-map -o dota.glb      # the Dota 2 map from your install as a 3D level (needs Source2Viewer's CLI)
+python -m heat3d_watch dota-map -o dota.glb      # the Dota 2 map from your install as a 3D level (needs the 3DHeat-Ext-Dota tool)
 ```
 
 `<...>` are placeholders. After `games` you should see a table of games, one line
@@ -69,7 +69,7 @@ says `No module named ...`, see [Before you start](https://holdi601.github.io/3D
 | `table <session folder>` | | rebuild a session's `heat.parquet` from its `events.jsonl` |
 | `replays <adapter id> [folder]` | `-v` | convert the replays already on disk |
 | `dota-replay <match id> ...` | `-o DIR` where to save; `--convert`; `-v` | download a public Dota 2 match's replay |
-| `dota-map [map] -o FILE` | `--game DIR`; `--source2viewer EXE`; `--detail UNITS` | the Dota 2 map from your install as a 3D level |
+| `dota-map [map] -o FILE` | `--game DIR`; `--source2viewer EXE`; `--detail UNITS` | the Dota 2 map as a 3D level, by the separate 3DHeat-Ext-Dota tool |
 | `update` | `--check` only ask | update to the newest release |
 | `config` | `--set KEY=VALUE ...` (`KEY.ID=VALUE` for one entry of a dictionary) | show or change the settings |
 
@@ -167,9 +167,10 @@ objectives, wards and combat log. `dota-replay <match id>` downloads one public
 match's replay (it needs internet; the match id is the number on the match's
 page in the Dota client or on OpenDota). Details:
 [Dota 2 replays](https://holdi601.github.io/3DHeat-Watcher/game-dota-replays.html).
-With Dota 2 installed, `dota-map -o dota.glb` makes the map itself a 3D level
-under those tables - ground, cliffs, water, trees and buildings - from the game's
-own files, through Source2Viewer's CLI:
+With Dota 2 installed, the separate tool
+[3DHeat-Ext-Dota](https://github.com/Holdi601/3DHeat-Ext-Dota) makes the map itself
+a 3D level under those tables - ground, cliffs, water, trees and buildings - from
+the game's own files; once it is installed, `dota-map -o dota.glb` runs it:
 [Dota 2 map](https://holdi601.github.io/3DHeat-Watcher/dota-map.html).
 
 The watcher updates itself while no game is running and starts again - never

@@ -20,7 +20,7 @@ usage: heat3d_watch [-h] [--version]
     table      rebuild a session's heat.parquet from its events.jsonl
     replays    convert the replays already on disk for one adapter (or a folder of them)
     dota-replay  download a public Dota 2 match's replay by its id (--convert to convert it now)
-    dota-map   the Dota 2 map from your install as a level (.glb) under the replay tables
+    dota-map   the Dota 2 map as a level (.glb), made by the 3DHeat-Ext-Dota converter when installed
     update     update the tools to the newest release (--check to only ask)
     config     show the settings, or change them (--set key=value ...)
 
@@ -35,7 +35,7 @@ positional arguments:
     table               rebuild a session's heat.parquet
     replays             convert the replays already on disk
     dota-replay         download a public Dota 2 match's replay
-    dota-map            the Dota 2 map from your install as a level (.glb)
+    dota-map            the Dota 2 map as a level (.glb), by 3DHeat-Ext-Dota
     update              update to the newest release
     config              show or change the settings
 
@@ -165,8 +165,8 @@ options:
   -o, --out OUT         the .glb to write
   --game GAME           the Dota 2 folder (default: found in your Steam libraries)
   --source2viewer SOURCE2VIEWER
-                        Source2Viewer-CLI's path (default: HEAT3D_SOURCE2VIEWER, then
-                        PATH)
+                        Source2Viewer-CLI's path (default: where heat3d-dota-maps
+                        finds it)
   --detail DETAIL       buildings' vertex clustering cell in game units (default 8; 0
                         keeps every triangle)
 ```
