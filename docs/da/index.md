@@ -27,8 +27,8 @@ Det kører stille, bemærker hvilket spil du startede, og læser det spils egne 
 eller delt hukommelse, som spillet udgiver til dashboards, en spiltilstandsintegration, den journal eller log
 spillet skriver, replayet det gemmer efter en kamp, statistikkerne Steam fører, klipene
 NVIDIA App gemmer. Optagelser bliver på din maskine. Programmet kontakter kun to eksterne tjenester, og kun i
-disse tilfælde: GitHub, for at lede efter en nyere udgivelse (se [Opdateringer](../updates.md)), og Riots Match-V5-API,
-og kun hvis du indtaster din egen Riot-API-nøgle (se [League of Legends-replays](../game-lol-replays.md)).
+disse tilfælde: GitHub, for at lede efter en nyere udgivelse (se [Opdateringer](updates.md)), og Riots Match-V5-API,
+og kun hvis du indtaster din egen Riot-API-nøgle (se [League of Legends-replays](game-lol-replays.md)).
 
 ![watcheren: hvad spil udgiver, ind i filer på din maskine](../assets/img/da/overview.svg)
 
@@ -41,9 +41,9 @@ og kun hvis du indtaster din egen Riot-API-nøgle (se [League of Legends-replays
 - **Statistik pr. session**: drab, dødsfald, omgange, bedste omgang, distance, topfart, spilletid, og spillets
   egen statistik, hvor det fører den.
 
-Hvad hvert spil giver, og hvorfra, står på sin egen side under [Spil](../games.md). Én kilde kan ikke
+Hvad hvert spil giver, og hvorfra, står på sin egen side under [Spil](games.md). Én kilde kan ikke
 optage alt: multiplayer-spil optages kun gennem det, de udgiver, og watcheren læser aldrig
-deres hukommelse (se [Kilder og regler](../sources-and-rules.md)).
+deres hukommelse (se [Kilder og regler](sources-and-rules.md)).
 
 ## Installation {#install}
 
@@ -60,7 +60,7 @@ pip install -r requirements.txt
 
 Et hentet udgivelsesarkiv virker på samme måde: pak det ud, og kør derefter `pip install -r requirements.txt`
 inde i mappen. Detaljerne, og de ekstra ting nogle spil har brug for, står i
-[Installation og kørsel](../installing-and-running.md).
+[Installation og kørsel](installing-and-running.md).
 
 ## Hurtig start {#quick-start}
 
@@ -88,26 +88,26 @@ miljøvariablen `HEAT3D_WATCH_HOME`, eller kør `python -m heat3d_watch config -
 Vieweren åbner en sessions `heat.parquet` direkte, uden at du skal indstille noget (dens akser og enheder står i
 filen). Konverterede replays skrives som tabeller og kampdokumenter ved siden af; viewerens
 eget format med én fil pr. kamp beskrives på dens side om [`.3dheat`-containeren](https://holdi601.github.io/3DHeat/container.html),
-og alle tabellers kolonner står i [Data](../the-data.md).
+og alle tabellers kolonner står i [Data](the-data.md).
 
 ## Dokumentationen {#the-documentation}
 
 | Side | Hvad den dækker |
 |---|---|
 | [Før du går i gang](before-you-start.md) | Python, en terminal, pladsholdere, hvordan succes og de almindelige fejl ser ud |
-| [Installation og kørsel](../installing-and-running.md) | krav, kørsel i baggrunden, start med Windows, låsefilen, loggen, alle indstillinger og miljøvariabler |
-| [Spil](../games.md) | én side pr. spil: hvad der optages, hvorfra, hvordan det slås til, hvordan det virker, akser, statistik, hvad der er kontrolleret |
-| [Data](../the-data.md) | sessionsmapper, `events.jsonl`, `heat.parquet` og dens footer, `meta.json`, `watcher.sqlite`, gendannelse efter et nedbrud, CSV-eksport, åbning af en session i 3DHeat-vieweren |
-| [Kommandoer](../commands.md) | hver kommando og valgmulighed for `python -m heat3d_watch` |
-| [Kilder og regler](../sources-and-rules.md) | de seks slags kilder, multiplayer-reglerne, hvilke spil der er udeladt og hvorfor |
-| [NVIDIA Highlights](../nvidia-highlights.md) | hvad NVIDIA Highlights kan og ikke kan levere, og hvordan et højdepunkt får en position |
-| [Serveroptagermods](../server-mods.md) | Arma 3- og Arma Reforger-servermods, der optager hele missioner til vieweren |
-| [Læsning af hukommelse](../memory-reading.md) | enkeltspiller-hukommelsesprofiler: formatet, kontrollerne, hvordan man skriver og verificerer en |
-| [Opdateringer](../updates.md) | hvordan watcheren leder efter nye udgivelser og opdaterer sig selv |
-| [Udvikling](../development.md) | at skrive en adapter: API'et, tests, en ærlig `verified`, regenerering af spilsiderne |
-| [Alle spil i én tabel](../watcher.md) | hvert spil i én tabel, som `games --markdown` udskriver, plus de spil, der er undersøgt men endnu ikke bygget |
+| [Installation og kørsel](installing-and-running.md) | krav, kørsel i baggrunden, start med Windows, låsefilen, loggen, alle indstillinger og miljøvariabler |
+| [Spil](games.md) | én side pr. spil: hvad der optages, hvorfra, hvordan det slås til, hvordan det virker, akser, statistik, hvad der er kontrolleret |
+| [Data](the-data.md) | sessionsmapper, `events.jsonl`, `heat.parquet` og dens footer, `meta.json`, `watcher.sqlite`, gendannelse efter et nedbrud, CSV-eksport, åbning af en session i 3DHeat-vieweren |
+| [Kommandoer](commands.md) | hver kommando og valgmulighed for `python -m heat3d_watch` |
+| [Kilder og regler](sources-and-rules.md) | de seks slags kilder, multiplayer-reglerne, hvilke spil der er udeladt og hvorfor |
+| [NVIDIA Highlights](nvidia-highlights.md) | hvad NVIDIA Highlights kan og ikke kan levere, og hvordan et højdepunkt får en position |
+| [Serveroptagermods](server-mods.md) | Arma 3- og Arma Reforger-servermods, der optager hele missioner til vieweren |
+| [Læsning af hukommelse](memory-reading.md) | enkeltspiller-hukommelsesprofiler: formatet, kontrollerne, hvordan man skriver og verificerer en |
+| [Opdateringer](updates.md) | hvordan watcheren leder efter nye udgivelser og opdaterer sig selv |
+| [Udvikling](development.md) | at skrive en adapter: API'et, tests, en ærlig `verified`, regenerering af spilsiderne |
+| [Alle spil i én tabel](watcher.md) | hvert spil i én tabel, som `games --markdown` udskriver, plus de spil, der er undersøgt men endnu ikke bygget |
 | [Kommandoreference](../cli-reference.md) | hver kommandos `--help`, genereret ud fra koden |
-| [Vedligeholdelse](../maintaining.md) | udgivelsestjeklisten for disse sider |
+| [Vedligeholdelse](maintaining.md) | udgivelsestjeklisten for disse sider |
 
 ## Del af 3DHeat {#part-of-3dheat}
 

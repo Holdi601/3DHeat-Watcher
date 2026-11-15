@@ -61,4 +61,4 @@ Bir sürüm numarası görmelisiniz, örneğin `1.0.2`.
 | `No module named ...` | 4. adım atlanmış ya da başka bir klasörde çalıştırılmış: aracın klasörüne `cd` ile gidin ve yeniden çalıştırın. |
 | `pip is not recognized` | `pip ...` yerine `python -m pip ...` kullanın. |
 | `No such file or directory` / `can't open file` | Terminal yanlış klasörde ya da yol yanlış yazılmış: kontrol edin; boşluk içeren yolları tırnak içine alın. |
-| `error:` satırıyla biten kırmızı metin | Son satırı okuyun: neyin eksik olduğunu söyler. [Komutlar](../commands.md) sayfası iletileri listeler. |
+| `error:` satırıyla biten kırmızı metin | Son satırı okuyun: neyin eksik olduğunu söyler. [Komutlar](commands.md) sayfası iletileri listeler. |

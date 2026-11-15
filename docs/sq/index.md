@@ -27,8 +27,8 @@ Ekzekutohet në heshtje, vëren cilën lojë nise, dhe lexon daljet e vetë asaj
 ose memorie të përbashkët që loja e boton për dashboard-e, një integrim gjendjeje loje, ditarin ose regjistrin që
 shkruan loja, riluajtjen që ruan pas një ndeshjeje, statistikat që mban Steam, klipet që ruan
 aplikacioni NVIDIA. Regjistrimet mbeten në kompjuterin tënd. Programi kontakton vetëm dy shërbime të jashtme, dhe vetëm në
-këto raste: GitHub, për të kërkuar një botim më të ri (shih [Përditësimet](../updates.md)), dhe API-n Match-V5 të Riot,
-dhe vetëm nëse jep çelësin tënd API të Riot (shih [Riluajtjet e League of Legends](../game-lol-replays.md)).
+këto raste: GitHub, për të kërkuar një botim më të ri (shih [Përditësimet](updates.md)), dhe API-n Match-V5 të Riot,
+dhe vetëm nëse jep çelësin tënd API të Riot (shih [Riluajtjet e League of Legends](game-lol-replays.md)).
 
 ![watcher: çfarë botojnë lojërat, në skedarë në kompjuterin tënd](../assets/img/sq/overview.svg)
 
@@ -42,9 +42,9 @@ dhe vetëm nëse jep çelësin tënd API të Riot (shih [Riluajtjet e League of 
 - **Statistikat për seancë**: vrasje, vdekje, xhiro, xhiroja më e mirë, largësia, shpejtësia maksimale, koha e luajtur, dhe
   statistikat e vetë lojës aty ku i mban.
 
-Çfarë jep secila lojë, dhe nga ku, është në faqen e saj nën [Lojërat](../games.md). Një burim nuk mund të
+Çfarë jep secila lojë, dhe nga ku, është në faqen e saj nën [Lojërat](games.md). Një burim nuk mund të
 regjistrojë gjithçka: lojërat me shumë lojtarë regjistrohen vetëm përmes asaj që botojnë, dhe watcher-i
-nuk lexon kurrë memorien e tyre (shih [Burimet dhe rregullat](../sources-and-rules.md)).
+nuk lexon kurrë memorien e tyre (shih [Burimet dhe rregullat](sources-and-rules.md)).
 
 ## Instalimi {#install}
 
@@ -61,7 +61,7 @@ pip install -r requirements.txt
 
 Një arkiv botimi i shkarkuar funksionon njësoj: shpaketoje, pastaj ekzekuto `pip install -r requirements.txt`
 brenda dosjes. Detajet, dhe shtesat që i duhen disa lojërave, janë te
-[Instalimi dhe ekzekutimi](../installing-and-running.md).
+[Instalimi dhe ekzekutimi](installing-and-running.md).
 
 ## Fillimi i shpejtë {#quick-start}
 
@@ -89,26 +89,26 @@ ndryshoren e mjedisit `HEAT3D_WATCH_HOME` ose ekzekuto `python -m heat3d_watch c
 Shikuesi e hap drejtpërdrejt `heat.parquet` të një seance, pa asgjë për t'u vendosur (boshtet dhe njësitë e tij janë në
 skedar). Riluajtjet e konvertuara shkruhen si tabela dhe dokumente ndeshjesh pranë tij; formati i shikuesit
 një-skedar-për-ndeshje përshkruhet në faqen e tij [kontejneri `.3dheat`](https://holdi601.github.io/3DHeat/container.html),
-dhe kolonat e çdo tabele te [Të dhënat](../the-data.md).
+dhe kolonat e çdo tabele te [Të dhënat](the-data.md).
 
 ## Dokumentacioni {#the-documentation}
 
 | Faqja | Çfarë mbulon |
 |---|---|
 | [Para se të fillosh](before-you-start.md) | Python, një terminal, vendmbajtësit, si duken suksesi dhe gabimet e zakonshme |
-| [Instalimi dhe ekzekutimi](../installing-and-running.md) | kërkesat, ekzekutimi në sfond, nisja me Windows, skedari i kyçjes, regjistri, çdo cilësim dhe ndryshore mjedisi |
-| [Lojërat](../games.md) | një faqe për lojë: çfarë regjistrohet, nga ku, si aktivizohet, si funksionon, boshtet, statistikat, çfarë u verifikua |
-| [Të dhënat](../the-data.md) | dosjet e seancave, `events.jsonl`, `heat.parquet` dhe fundi i tij, `meta.json`, `watcher.sqlite`, rikuperimi pas një prishjeje, eksporti CSV, hapja e një seance në shikuesin 3DHeat |
-| [Komandat](../commands.md) | çdo komandë dhe opsion i `python -m heat3d_watch` |
-| [Burimet dhe rregullat](../sources-and-rules.md) | gjashtë llojet e burimeve, rregullat për lojërat me shumë lojtarë, cilat lojëra lihen jashtë dhe pse |
-| [NVIDIA Highlights](../nvidia-highlights.md) | çfarë mund dhe çfarë nuk mund të japë NVIDIA Highlights, dhe si merr një moment i spikatur një pozicion |
-| [Modet regjistruese të serverit](../server-mods.md) | modet e serverit të Arma 3 dhe Arma Reforger që regjistrojnë misione të plota për shikuesin |
-| [Leximi i memories](../memory-reading.md) | profile memorieje për lojëra me një lojtar: formati, kontrollet, si shkruhet dhe verifikohet një |
-| [Përditësimet](../updates.md) | si kërkon watcher-i botime të reja dhe si përditësohet vetë |
-| [Zhvillimi](../development.md) | shkrimi i një adapteri: API, testet, një `verified` i ndershëm, rigjenerimi i faqeve të lojërave |
-| [Të gjitha lojërat në një tabelë](../watcher.md) | çdo lojë në një tabelë, siç e shtyp `games --markdown`, plus lojërat e kërkuara por ende të pandërtuara |
+| [Instalimi dhe ekzekutimi](installing-and-running.md) | kërkesat, ekzekutimi në sfond, nisja me Windows, skedari i kyçjes, regjistri, çdo cilësim dhe ndryshore mjedisi |
+| [Lojërat](games.md) | një faqe për lojë: çfarë regjistrohet, nga ku, si aktivizohet, si funksionon, boshtet, statistikat, çfarë u verifikua |
+| [Të dhënat](the-data.md) | dosjet e seancave, `events.jsonl`, `heat.parquet` dhe fundi i tij, `meta.json`, `watcher.sqlite`, rikuperimi pas një prishjeje, eksporti CSV, hapja e një seance në shikuesin 3DHeat |
+| [Komandat](commands.md) | çdo komandë dhe opsion i `python -m heat3d_watch` |
+| [Burimet dhe rregullat](sources-and-rules.md) | gjashtë llojet e burimeve, rregullat për lojërat me shumë lojtarë, cilat lojëra lihen jashtë dhe pse |
+| [NVIDIA Highlights](nvidia-highlights.md) | çfarë mund dhe çfarë nuk mund të japë NVIDIA Highlights, dhe si merr një moment i spikatur një pozicion |
+| [Modet regjistruese të serverit](server-mods.md) | modet e serverit të Arma 3 dhe Arma Reforger që regjistrojnë misione të plota për shikuesin |
+| [Leximi i memories](memory-reading.md) | profile memorieje për lojëra me një lojtar: formati, kontrollet, si shkruhet dhe verifikohet një |
+| [Përditësimet](updates.md) | si kërkon watcher-i botime të reja dhe si përditësohet vetë |
+| [Zhvillimi](development.md) | shkrimi i një adapteri: API, testet, një `verified` i ndershëm, rigjenerimi i faqeve të lojërave |
+| [Të gjitha lojërat në një tabelë](watcher.md) | çdo lojë në një tabelë, siç e shtyp `games --markdown`, plus lojërat e kërkuara por ende të pandërtuara |
 | [Referenca e komandave](../cli-reference.md) | `--help` i çdo komande, e gjeneruar nga kodi |
-| [Mirëmbajtja](../maintaining.md) | lista e kontrollit të botimit për këto faqe |
+| [Mirëmbajtja](maintaining.md) | lista e kontrollit të botimit për këto faqe |
 
 ## Pjesë e 3DHeat {#part-of-3dheat}
 

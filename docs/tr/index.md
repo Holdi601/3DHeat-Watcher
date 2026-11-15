@@ -18,7 +18,7 @@ permalink: /tr/
 
 Daha ayrıntılı olarak: 3DHeat Watcher, oyunların oynamanız hakkında yayımladıklarını (nereye gittiğiniz, nerede neler olduğu ve bunların arkasındaki sayılar) makinenizdeki dosyalara kaydeden bir arka plan programıdır. Dosyalar kendi istatistikleriniz içindir; 3DHeat görüntüleyicisinin ısı haritaları ve rota çizgileri içindir.
 
-Sessizce çalışır, hangi oyunu başlattığınızı fark eder ve o oyunun kendi çıktılarını okur: gösterge tabloları için yayımlanan bir telemetri portu ya da paylaşılan bellek, bir oyun durumu entegrasyonu, oyunun yazdığı günlük ya da kayıt, bir maçtan sonra kaydedilen tekrar, Steam'in tuttuğu istatistikler, NVIDIA App'in kaydettiği klipler. Kayıtlar makinenizde kalır. Program yalnızca iki dış servise bağlanır ve yalnızca şu durumlarda: yeni bir sürüm aramak için GitHub ([Güncellemeler](../updates.md)) ve yalnızca kendi Riot API anahtarınızı girdiğinizde Riot'un Match-V5 API'si ([League of Legends tekrarları](../game-lol-replays.md)).
+Sessizce çalışır, hangi oyunu başlattığınızı fark eder ve o oyunun kendi çıktılarını okur: gösterge tabloları için yayımlanan bir telemetri portu ya da paylaşılan bellek, bir oyun durumu entegrasyonu, oyunun yazdığı günlük ya da kayıt, bir maçtan sonra kaydedilen tekrar, Steam'in tuttuğu istatistikler, NVIDIA App'in kaydettiği klipler. Kayıtlar makinenizde kalır. Program yalnızca iki dış servise bağlanır ve yalnızca şu durumlarda: yeni bir sürüm aramak için GitHub ([Güncellemeler](updates.md)) ve yalnızca kendi Riot API anahtarınızı girdiğinizde Riot'un Match-V5 API'si ([League of Legends tekrarları](game-lol-replays.md)).
 
 ![watcher: oyunların yayımladıkları, makinenizdeki dosyalara](../assets/img/tr/overview.svg)
 
@@ -28,7 +28,7 @@ Sessizce çalışır, hangi oyunu başlattığınızı fark eder ve o oyunun ken
 - **Olaylar**: doğuşlar, ölümler, öldürmeler, turlar, etaplar, raundlar, goller, görevler, kalkışlar ve inişler, bölge değişiklikleri, başarımlar, öne çıkanlar. Her olay zamanıyla birlikte saklanır; oyun bir yer verdiğinde yerleriyle birlikte.
 - **Oturum başına istatistikler**: öldürmeler, ölümler, turlar, en iyi tur, mesafe, en yüksek hız, oynama süresi ve oyunun tuttuğu kendi istatistikleri.
 
-Her oyunun ne verdiği ve nereden geldiği kendi sayfasında, [Oyunlar](../games.md) altında yazılıdır. Tek bir kaynak her şeyi kaydedemez: çok oyunculu oyunlar yalnızca yayımladıkları şeylerle kaydedilir ve watcher onların belleğini asla okumaz ([Kaynaklar ve kurallar](../sources-and-rules.md)).
+Her oyunun ne verdiği ve nereden geldiği kendi sayfasında, [Oyunlar](games.md) altında yazılıdır. Tek bir kaynak her şeyi kaydedemez: çok oyunculu oyunlar yalnızca yayımladıkları şeylerle kaydedilir ve watcher onların belleğini asla okumaz ([Kaynaklar ve kurallar](sources-and-rules.md)).
 
 ## Kurulum {#install}
 
@@ -42,7 +42,7 @@ cd 3DHeat-Watcher
 pip install -r requirements.txt
 ```
 
-İndirilmiş bir sürüm arşivi aynı şekilde çalışır: açın, sonra klasörün içinde `pip install -r requirements.txt` çalıştırın. Ayrıntılar ve bazı oyunların ihtiyaç duyduğu ek bileşenler [Kurulum ve çalıştırma](../installing-and-running.md) sayfasındadır.
+İndirilmiş bir sürüm arşivi aynı şekilde çalışır: açın, sonra klasörün içinde `pip install -r requirements.txt` çalıştırın. Ayrıntılar ve bazı oyunların ihtiyaç duyduğu ek bileşenler [Kurulum ve çalıştırma](installing-and-running.md) sayfasındadır.
 
 ## Hızlı başlangıç {#quick-start}
 
@@ -63,26 +63,26 @@ Her şey `%LOCALAPPDATA%\3DHeat\Watcher` klasörüne yazılır. Başka bir klas�
 - `watcher.sqlite`: her oturumun istatistikleri, üç düz tabloda
 - `watcher.log`: watcher'ın ne yaptığı
 
-Görüntüleyici bir oturumun `heat.parquet` dosyasını hiçbir ayar gerektirmeden doğrudan açar (eksenleri ve birimleri dosyanın içindedir). Dönüştürülmüş tekrarlar yanına tablo ve maç belgeleri olarak yazılır; görüntüleyicinin kendi maç başına tek dosya biçimi [`.3dheat` kapsayıcısı](https://holdi601.github.io/3DHeat/container.html) sayfasında anlatılır, her tablonun sütunları ise [Veriler](../the-data.md) sayfasındadır.
+Görüntüleyici bir oturumun `heat.parquet` dosyasını hiçbir ayar gerektirmeden doğrudan açar (eksenleri ve birimleri dosyanın içindedir). Dönüştürülmüş tekrarlar yanına tablo ve maç belgeleri olarak yazılır; görüntüleyicinin kendi maç başına tek dosya biçimi [`.3dheat` kapsayıcısı](https://holdi601.github.io/3DHeat/container.html) sayfasında anlatılır, her tablonun sütunları ise [Veriler](the-data.md) sayfasındadır.
 
 ## Belgeler {#the-documentation}
 
 | Sayfa | Neyi anlatır |
 |---|---|
 | [Başlamadan önce](before-you-start.md) | Python, bir terminal, yer tutucular, başarının ve sık hataların nasıl göründüğü |
-| [Kurulum ve çalıştırma](../installing-and-running.md) | gereksinimler, arka planda çalıştırma, Windows ile başlatma, kilit dosyası, günlük, her ayar ve ortam değişkeni |
-| [Oyunlar](../games.md) | oyun başına bir sayfa: ne kaydedilir, nereden, nasıl açılır, nasıl çalışır, eksenler, istatistikler, neyin doğrulandığı |
-| [Veriler](../the-data.md) | oturum klasörleri, `events.jsonl`, `heat.parquet` ve altbilgisi, `meta.json`, `watcher.sqlite`, çökmeden sonra kurtarma, CSV dışa aktarımı, bir oturumu 3DHeat görüntüleyicisinde açma |
-| [Komutlar](../commands.md) | `python -m heat3d_watch` komutunun her komutu ve seçeneği |
-| [Kaynaklar ve kurallar](../sources-and-rules.md) | altı kaynak türü, çok oyunculu kurallar, hangi oyunların ve neden dışarıda bırakıldığı |
-| [NVIDIA Highlights](../nvidia-highlights.md) | NVIDIA Highlights neyi sağlayabilir ve neyi sağlayamaz, bir öne çıkanın konumu nasıl alır |
-| [Sunucu kayıt modları](../server-mods.md) | görüntüleyici için bütün görevleri kaydeden Arma 3 ve Arma Reforger sunucu modları |
-| [Bellek okuma](../memory-reading.md) | tek oyunculu oyunlar için bellek profilleri: biçim, denetimler, bir tanesini nasıl yazıp doğrulayacağınız |
-| [Güncellemeler](../updates.md) | watcher'ın yeni sürümleri nasıl aradığı ve kendini nasıl güncellediği |
-| [Geliştirme](../development.md) | bir adaptör yazmak: API, testler, dürüst bir `verified`, oyun sayfalarını yeniden üretmek |
-| [Tüm oyunlar tek tabloda](../watcher.md) | her oyun tek bir tabloda, `games --markdown`'ın yazdığı gibi; ama henüz yapılmamış, araştırılmış oyunlar dahil |
+| [Kurulum ve çalıştırma](installing-and-running.md) | gereksinimler, arka planda çalıştırma, Windows ile başlatma, kilit dosyası, günlük, her ayar ve ortam değişkeni |
+| [Oyunlar](games.md) | oyun başına bir sayfa: ne kaydedilir, nereden, nasıl açılır, nasıl çalışır, eksenler, istatistikler, neyin doğrulandığı |
+| [Veriler](the-data.md) | oturum klasörleri, `events.jsonl`, `heat.parquet` ve altbilgisi, `meta.json`, `watcher.sqlite`, çökmeden sonra kurtarma, CSV dışa aktarımı, bir oturumu 3DHeat görüntüleyicisinde açma |
+| [Komutlar](commands.md) | `python -m heat3d_watch` komutunun her komutu ve seçeneği |
+| [Kaynaklar ve kurallar](sources-and-rules.md) | altı kaynak türü, çok oyunculu kurallar, hangi oyunların ve neden dışarıda bırakıldığı |
+| [NVIDIA Highlights](nvidia-highlights.md) | NVIDIA Highlights neyi sağlayabilir ve neyi sağlayamaz, bir öne çıkanın konumu nasıl alır |
+| [Sunucu kayıt modları](server-mods.md) | görüntüleyici için bütün görevleri kaydeden Arma 3 ve Arma Reforger sunucu modları |
+| [Bellek okuma](memory-reading.md) | tek oyunculu oyunlar için bellek profilleri: biçim, denetimler, bir tanesini nasıl yazıp doğrulayacağınız |
+| [Güncellemeler](updates.md) | watcher'ın yeni sürümleri nasıl aradığı ve kendini nasıl güncellediği |
+| [Geliştirme](development.md) | bir adaptör yazmak: API, testler, dürüst bir `verified`, oyun sayfalarını yeniden üretmek |
+| [Tüm oyunlar tek tabloda](watcher.md) | her oyun tek bir tabloda, `games --markdown`'ın yazdığı gibi; ama henüz yapılmamış, araştırılmış oyunlar dahil |
 | [Komut başvurusu](../cli-reference.md) | her komutun `--help` çıktısı, koddan üretilmiş |
-| [Bakım](../maintaining.md) | Bu sayfalar için sürüm kontrol listesi |
+| [Bakım](maintaining.md) | Bu sayfalar için sürüm kontrol listesi |
 
 ## 3DHeat'in parçası {#part-of-3dheat}
 

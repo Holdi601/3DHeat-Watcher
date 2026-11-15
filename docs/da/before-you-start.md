@@ -74,4 +74,4 @@ Du bør se: `1.0.2 (versionsnummeret)`.
 | `No module named ...` | trin 4 blev sprunget over, eller kørt i en anden mappe: `cd` til værktøjets mappe og kør det igen. |
 | `pip is not recognized` | brug `python -m pip ...` i stedet for `pip ...`. |
 | `No such file or directory` / `can't open file` | terminalen står i den forkerte mappe, eller stien er skrevet forkert: tjek den, og sæt stier med mellemrum i anførselstegn. |
-| rød tekst, der slutter med en `error:`-linje | læs den sidste linje: den siger, hvad der mangler. Siden [Kommandoer](../commands.md) lister meddelelserne. |
+| rød tekst, der slutter med en `error:`-linje | læs den sidste linje: den siger, hvad der mangler. Siden [Kommandoer](commands.md) lister meddelelserne. |

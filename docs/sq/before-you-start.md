@@ -75,4 +75,4 @@ Duhet të shohësh: `1.0.2 (the version number)`.
 | `No module named ...` | hapi 4 u anashkalua ose u ekzekutua në një dosje tjetër: bëj `cd` te dosja e mjetit dhe ekzekutoje përsëri. |
 | `pip is not recognized` | përdor `python -m pip ...` në vend të `pip ...`. |
 | `No such file or directory` / `can't open file` | terminali është në dosjen e gabuar, ose shtegu është shkruar gabim: kontrolloje, dhe vendos shtigjet me hapësira në thonjëza. |
-| tekst i kuq që mbaron me një rresht `error:` | lexo rreshtin e fundit: thotë çfarë mungon. Faqja [Komandat](../commands.md) liston mesazhet. |
+| tekst i kuq që mbaron me një rresht `error:` | lexo rreshtin e fundit: thotë çfarë mungon. Faqja [Komandat](commands.md) liston mesazhet. |
