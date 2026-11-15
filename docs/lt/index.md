@@ -11,16 +11,16 @@ permalink: /lt/
 # 3DHeat Watcher {#dheat-watcher}
 
 **Kas tai?** Jūs žaidžiate žaidimą. Ši programa tyliai užrašo, kur nuvykote ir kas įvyko.
-Vėliau tai galite pažiūrėti kaip spalvotą žemėlapį 3DHeat žiūrintuve.
+Vėliau tai galite pažiūrėti kaip spalvotą žemėlapį 3DHeat žiūryklėje.
 
 **Kam tai naudoti?** Kad turėtumėte savo įrašą apie kiekvieną sėdėjimą – kur važiavote, skridote ar kovojote,
 savo sumas pagal žaidimą – be jokios svetainės ir nekeisdami žaidimo.
 
 **Pavyzdys:** važiuojate ratą lenktynių žaidime su veikiančiu watcher; vėliau aplanke `sessions\<game>\` esantis failas
-laiko jūsų važiuotą liniją, o žiūrintojas ją nupiešia.
+laiko jūsų važiuotą liniją, o žiūryklė ją nupiešia.
 
 Išsamiau: 3DHeat Watcher yra fono programa, kuri įrašo, ką žaidimai skelbia apie jūsų žaidimą – kur nuėjote, kas kur įvyko,
-ir skaičius, esančius už to – į failus jūsų kompiuteryje. Failai skirti jūsų pačių statistikai ir 3DHeat žiūrintojo šilumos
+ir skaičius, esančius už to – į failus jūsų kompiuteryje. Failai skirti jūsų pačių statistikai ir 3DHeat žiūryklės šilumos
 žemėlapiams bei maršrutų linijoms.
 
 Ji veikia tyliai, pastebi, kurį žaidimą pradėjote, ir skaito to žaidimo paties išvestis: telemetrijos prievadą ar bendrąją atmintį, kurią
@@ -78,12 +78,12 @@ Viskas įrašoma į `%LOCALAPPDATA%\3DHeat\Watcher`. Norėdami naudoti kitą apl
 `HEAT3D_WATCH_HOME` arba paleiskite `python -m heat3d_watch config --set data=D:\somewhere`.
 
 - `sessions\<game>\<date>_<adapter>\` – po aplanką kiekvienam sėdėjimui, jame `events.jsonl` (kiekvienas įvykis, kai jis įvyksta),
-  `heat.parquet` (eilutės su pozicija, paruoštos 3DHeat žiūrintojui) ir `meta.json` (žaidimas, šaltinis, ašys, skaičiai, statistika)
+  `heat.parquet` (eilutės su pozicija, paruoštos 3DHeat žiūryklei) ir `meta.json` (žaidimas, šaltinis, ašys, skaičiai, statistika)
 - `watcher.sqlite` – kiekvienos sesijos statistika trijose paprastose lentelėse
 - `watcher.log` – ką darė watcher
 
-Žiūrintojas atidaro sesijos `heat.parquet` tiesiogiai, nieko nekonfigūruojant (jo ašys ir vienetai yra faile). Konvertuoti įrašai
-rašomi kaip lentelės ir rungtynių dokumentai šalia jo; žiūrintojo vieno failo rungtynių formatas aprašytas jo
+Žiūryklė atidaro sesijos `heat.parquet` tiesiogiai, nieko nekonfigūruojant (jo ašys ir vienetai yra faile). Konvertuoti įrašai
+rašomi kaip lentelės ir rungtynių dokumentai šalia jo; žiūryklės vieno failo rungtynių formatas aprašytas jo
 [`.3dheat` konteinerio](https://holdi601.github.io/3DHeat/container.html) puslapyje, o kiekvienos lentelės stulpeliai –
 [Duomenys](../the-data.md).
 
@@ -94,11 +94,11 @@ rašomi kaip lentelės ir rungtynių dokumentai šalia jo; žiūrintojo vieno fa
 | [Prieš pradedant](before-you-start.md) | Python, terminalas, žymekliai, kaip atrodo sėkmė ir dažnos klaidos |
 | [Įdiegimas ir paleidimas](../installing-and-running.md) | reikalavimai, paleidimas fone, paleidimas su Windows, užrakto failas, žurnalas, kiekviena nuostata ir aplinkos kintamasis |
 | [Žaidimai](../games.md) | kiekvienas žaidimas atskirai: kas įrašoma, iš kur, kaip įjungti, kaip veikia, ašys, statistika, kas patikrinta |
-| [Duomenys](../the-data.md) | sesijų aplankai, `events.jsonl`, `heat.parquet` ir jo poraštė, `meta.json`, `watcher.sqlite`, atkūrimas po avarijos, CSV eksportas, sesijos atidarymas 3DHeat žiūrintuve |
+| [Duomenys](../the-data.md) | sesijų aplankai, `events.jsonl`, `heat.parquet` ir jo poraštė, `meta.json`, `watcher.sqlite`, atkūrimas po avarijos, CSV eksportas, sesijos atidarymas 3DHeat žiūryklėje |
 | [Komandos](../commands.md) | kiekviena `python -m heat3d_watch` komanda ir parinktis |
 | [Šaltiniai ir taisyklės](../sources-and-rules.md) | šeši šaltinių tipai, daugelio žaidėjų taisyklės, kurie žaidimai praleidžiami ir kodėl |
 | [NVIDIA Highlights](../nvidia-highlights.md) | ką NVIDIA Highlights gali ir ko negali pateikti ir kaip paryškinimas gauna poziciją |
-| [Serverio įrašymo modai](../server-mods.md) | Arma 3 ir Arma Reforger serverio modai, įrašantys visas misijas žiūrintojui |
+| [Serverio įrašymo modai](../server-mods.md) | Arma 3 ir Arma Reforger serverio modai, įrašantys visas misijas žiūryklei |
 | [Atminties skaitymas](../memory-reading.md) | vieno žaidėjo atminties profiliai: formatas, patikros, kaip parašyti ir patikrinti |
 | [Atnaujinimai](../updates.md) | kaip watcher ieško naujų išleidimų ir atsinaujina pats |
 | [Kūrimas](../development.md) | adapterio rašymas: API, testai, sąžiningas `verified`, žaidimų puslapių generavimas iš naujo |
@@ -108,12 +108,12 @@ rašomi kaip lentelės ir rungtynių dokumentai šalia jo; žiūrintojo vieno fa
 
 ## Dalis 3DHeat {#part-of-3dheat}
 
-3DHeat Watcher yra vienas iš nemokamų įrankių aplink 3DHeat žiūrintoją (watcher naudoja 3DHeat CS2 CS2 demo konvertavimui).
+3DHeat Watcher yra vienas iš nemokamų įrankių aplink 3DHeat žiūryklę (watcher naudoja 3DHeat CS2 CS2 demo konvertavimui).
 Kiekvienas yra atskiras projektas su savo išleidimais ir licencija:
 
 | Įrankis | Ką daro | Dokumentacija |
 |---|---|---|
-| [3DHeat](https://github.com/Holdi601/3DHeat) | žiūrintojas: šilumos žemėlapiai, lenktynių analizė ir rungtynių apžvalga 3D | [svetainė](https://holdi601.github.io/3DHeat/) |
+| [3DHeat](https://github.com/Holdi601/3DHeat) | žiūryklė: šilumos žemėlapiai, lenktynių analizė ir rungtynių apžvalga 3D | [svetainė](https://holdi601.github.io/3DHeat/) |
 | [GameFiles](https://github.com/Holdi601/3DHeat-GameFiles) | trasos ir lygiai iš žaidimų pristatomų failų kaip 3D modeliai | [svetainė](https://holdi601.github.io/3DHeat-GameFiles/) |
 | [GameCapture](https://github.com/Holdi601/3DHeat-GameCapture) | ratų telemetrija iš lenktynių žaidimų; lygiai, atkurti iš žaidimo vaizdo | [svetainė](https://holdi601.github.io/3DHeat-GameCapture/) |
 | [Unreal Exporter](https://github.com/Holdi601/3DHeat-UnrealExporter) | Unreal Editor papildinys, eksportuojantis lygį kaip vieną 3D modelį | [svetainė](https://holdi601.github.io/3DHeat-UnrealExporter/) |

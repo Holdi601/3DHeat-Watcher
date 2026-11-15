@@ -47,7 +47,7 @@ leser aldri deres minne (se [Kilder og regler](../sources-and-rules.md)).
 
 ## Installasjon {#install}
 
-Ny til kommandolinjen? Les [Før du begynner](before-you-start.md) først.
+Ny til kommandolinjen? Les [Før du starter](before-you-start.md) først.
 
 Watcheren er et Python-program for Windows (Python 3.10 eller nyere). Mange av kildene finnes bare på Windows: delt
 minne, registeret, Windows-varsler.
@@ -65,12 +65,12 @@ inne i mappen. Detaljene, og tilleggene noen spill trenger, står i
 ## Hurtigstart {#quick-start}
 
 ```bash
-python -m heat3d_watch games            # what each game gives, and from where
-python -m heat3d_watch setup all        # what would have to be switched on (nothing is changed)
-python -m heat3d_watch setup f1-25 --apply   # switch one game's output on (the original file is backed up)
-python -m heat3d_watch run              # watch; leave it running while you play
-python -m heat3d_watch stats            # totals per game
-python -m heat3d_watch stats --csv out  # sessions, events and stats as CSV files
+python -m heat3d_watch games            # hva hvert spill gir, og fra hvor
+python -m heat3d_watch setup all        # hva som må slås på (ingenting endres)
+python -m heat3d_watch setup f1-25 --apply   # slå på ett spills utdata (den opprinnelige filen sikkerhetskopieres)
+python -m heat3d_watch run              # overvåk; la det kjøre mens du spiller
+python -m heat3d_watch stats            # totaler per spill
+python -m heat3d_watch stats --csv out  # økter, hendelser og statistikk som CSV-filer
 ```
 
 Du bør se: etter `games`, en tabell med én linje per spill; `run` fortsetter til du trykker
@@ -94,7 +94,7 @@ eget format med én fil per kamp er beskrevet på sin
 
 | Side | Hva den dekker |
 |---|---|
-| [Før du begynner](before-you-start.md) | Python, en terminal, plassholdere, hvordan suksess og de vanlige feilene ser ut |
+| [Før du starter](before-you-start.md) | Python, en terminal, plassholdere, hvordan suksess og de vanlige feilene ser ut |
 | [Installere og kjøre](../installing-and-running.md) | krav, kjøring i bakgrunnen, start med Windows, låsefilen, loggen, hver innstilling og miljøvariabel |
 | [Spill](../games.md) | én side per spill: hva som tas opp, hvorfra, hvordan det slås på, hvordan det virker, akser, statistikk, hva som er verifisert |
 | [Dataene](../the-data.md) | økt-mapper, `events.jsonl`, `heat.parquet` og dens fotnote, `meta.json`, `watcher.sqlite`, gjenoppretting etter krasj, CSV-eksport, åpne en økt i 3DHeat-visningsprogrammet |
@@ -107,7 +107,7 @@ eget format med én fil per kamp er beskrevet på sin
 | [Utvikling](../development.md) | å skrive en adapter: API-et, tester, en ærlig `verified`, regenerering av spillsidene |
 | [Alle spill i én tabell](../watcher.md) | hvert spill i én tabell, slik `games --markdown` skriver den, pluss spillene undersøkt men ikke bygget ennå |
 | [Kommandoreferanse](../cli-reference.md) | hver kommandos `--help`, generert fra koden |
-| [Vedlikehold](../maintaining.md) | utgivelsessjekklisten for disse sidene |
+| [Vedlikeholde dokumentasjonen](../maintaining.md) | utgivelsessjekklisten for disse sidene |
 
 ## Del av 3DHeat {#part-of-3dheat}
 
@@ -127,7 +127,7 @@ til å konvertere CS2-demoer). Hver er sitt eget prosjekt, med egne utgivelser o
 | [Ext-WoWs](https://github.com/Holdi601/3DHeat-Ext-WoWs) | World of Warships-replayer til tabeller og kampdokumenter | [nettsted](https://holdi601.github.io/3DHeat-Ext-WoWs/) |
 | [Ext-Squad](https://github.com/Holdi601/3DHeat-Ext-Squad) | Squad-serverdemoer til tabeller og kampdokumenter | [nettsted](https://holdi601.github.io/3DHeat-Ext-Squad/) |
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | DCS World-kart til 3D-modeller | [nettsted](https://holdi601.github.io/3DHeat-Ext-DCS/) |
-| [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | IL-2 Sturmovik-kart til 3D-modeller | [nettsted](https://holdi601.github.io/3DHeat-Ext-IL2/) |
+| [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | IL-2 Great Battles-kart til 3D-modeller | [nettsted](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
 Lisens: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Lisensene
 til tredjepartspakkene den bruker, og hva spillene den leser krever, står i

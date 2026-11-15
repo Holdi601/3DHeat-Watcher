@@ -13,7 +13,7 @@
 <text x="142.0" y="257.0" text-anchor="middle" font-size="14" fill="#3c4043">游戏写出的文件</text>
 <rect x="24" y="288.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
 <text x="142.0" y="314.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">回放</text>
-<text x="142.0" y="333.0" text-anchor="middle" font-size="14" fill="#3c4043">比赛后保存</text>
+<text x="142.0" y="333.0" text-anchor="middle" font-size="14" fill="#3c4043">对局后保存</text>
 <rect x="24" y="364.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
 <text x="142.0" y="390.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">Steam、NVIDIA</text>
 <text x="142.0" y="409.0" text-anchor="middle" font-size="14" fill="#3c4043">统计、时间线、高光</text>

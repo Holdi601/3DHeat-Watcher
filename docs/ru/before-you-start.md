@@ -51,7 +51,7 @@ python -m pip install -r requirements.txt
 python -m heat3d_watch --version
 ```
 
-Вы должны увидеть: `1.0.2 (номер версии)`.
+Вы должны увидеть номер версии, например `1.0.2`.
 
 ## Как читать команды на этих страницах {#how-to-read-the-commands-on-these-pages}
 

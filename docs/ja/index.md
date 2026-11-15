@@ -55,15 +55,15 @@ python -m heat3d_watch stats            # ゲームごとの合計
 python -m heat3d_watch stats --csv out  # セッション、出来事、統計を CSV ファイルで
 ```
 
-次のように表示されるはずです: `games` の後に、ゲームごとに1行の表。`run` は、Ctrl+C を押すか、ウィンドウを閉じるまで動き続けます。
+次のように表示されるはずです: `games` の後に、ゲームごとに1行のテーブル。`run` は、Ctrl+C を押すか、ウィンドウを閉じるまで動き続けます。
 
 すべては `%LOCALAPPDATA%\3DHeat\Watcher` に書かれます。別のフォルダーを使うには、`HEAT3D_WATCH_HOME` 環境変数を設定するか、`python -m heat3d_watch config --set data=D:\somewhere` を実行します。
 
 - `sessions\<game>\<date>_<adapter>\`: セッションごとに1つのフォルダー。中身は `events.jsonl`（起きたすべての出来事）、`heat.parquet`（位置のある行。3DHeat ビューア用）、`meta.json`（ゲーム、情報源、軸、件数、統計）
-- `watcher.sqlite`: すべてのセッションの統計。3つの単純な表
+- `watcher.sqlite`: すべてのセッションの統計。3つの単純なテーブル
 - `watcher.log`: ウォッチャーが行ったこと
 
-ビューアはセッションの `heat.parquet` を、何も設定せずに直接開きます（軸と単位はファイルの中にあります）。変換されたリプレイは、その隣に表と試合ドキュメントとして書かれます。ビューア自身の1試合1ファイルの形式は、その [`.3dheat` コンテナ](https://holdi601.github.io/3DHeat/container.html) のページに説明があり、各表の列は [データ](../the-data.md) にあります。
+ビューアはセッションの `heat.parquet` を、何も設定せずに直接開きます（軸と単位はファイルの中にあります）。変換されたリプレイは、その隣にテーブルとマッチドキュメントとして書かれます。ビューア自身の1 マッチを 1 ファイルにの形式は、その [`.3dheat` コンテナ](https://holdi601.github.io/3DHeat/container.html) のページに説明があり、各表の列は [データ](../the-data.md) にあります。
 
 ## ドキュメント {#the-documentation}
 
@@ -90,16 +90,16 @@ python -m heat3d_watch stats --csv out  # セッション、出来事、統計�
 
 | ツール | 内容 | ドキュメント |
 |---|---|---|
-| [3DHeat](https://github.com/Holdi601/3DHeat) | ビューア: 3Dでのヒートマップ、レース分析、試合の振り返り | [サイト](https://holdi601.github.io/3DHeat/) |
+| [3DHeat](https://github.com/Holdi601/3DHeat) | ビューア: 3Dでのヒートマップ、レース分析、マッチの振り返り | [サイト](https://holdi601.github.io/3DHeat/) |
 | [GameFiles](https://github.com/Holdi601/3DHeat-GameFiles) | ゲームが同梱するファイルから、コースとレベルを3Dモデルとして | [サイト](https://holdi601.github.io/3DHeat-GameFiles/) |
 | [GameCapture](https://github.com/Holdi601/3DHeat-GameCapture) | レースゲームの周回テレメトリ。ゲーム映像から再構築したレベル | [サイト](https://holdi601.github.io/3DHeat-GameCapture/) |
 | [Unreal Exporter](https://github.com/Holdi601/3DHeat-UnrealExporter) | レベルを1つの3Dモデルとして書き出す Unreal Editor のプラグイン | [サイト](https://holdi601.github.io/3DHeat-UnrealExporter/) |
-| [CS2](https://github.com/Holdi601/3DHeat-CS2) | Counter-Strike 2 のデモを表と試合ドキュメントに。マップを3Dモデルに | [サイト](https://holdi601.github.io/3DHeat-CS2/) |
+| [CS2](https://github.com/Holdi601/3DHeat-CS2) | Counter-Strike 2 のデモをテーブルとマッチドキュメントに。マップを3Dモデルに | [サイト](https://holdi601.github.io/3DHeat-CS2/) |
 | [Watcher](https://github.com/Holdi601/3DHeat-Watcher) | ゲームが公開する情報から、あなたのプレイについて、バックグラウンドで記録 | [サイト](https://holdi601.github.io/3DHeat-Watcher/) |
-| [Ext-WarThunder](https://github.com/Holdi601/3DHeat-Ext-WarThunder) | War Thunder のリプレイを表と試合ドキュメントに | [サイト](https://holdi601.github.io/3DHeat-Ext-WarThunder/) |
-| [Ext-WoT](https://github.com/Holdi601/3DHeat-Ext-WoT) | World of Tanks のリプレイを表と試合ドキュメントに | [サイト](https://holdi601.github.io/3DHeat-Ext-WoT/) |
-| [Ext-WoWs](https://github.com/Holdi601/3DHeat-Ext-WoWs) | World of Warships のリプレイを表と試合ドキュメントに | [サイト](https://holdi601.github.io/3DHeat-Ext-WoWs/) |
-| [Ext-Squad](https://github.com/Holdi601/3DHeat-Ext-Squad) | Squad のサーバーのデモを表と試合ドキュメントに | [サイト](https://holdi601.github.io/3DHeat-Ext-Squad/) |
+| [Ext-WarThunder](https://github.com/Holdi601/3DHeat-Ext-WarThunder) | War Thunder のリプレイをテーブルとマッチドキュメントに | [サイト](https://holdi601.github.io/3DHeat-Ext-WarThunder/) |
+| [Ext-WoT](https://github.com/Holdi601/3DHeat-Ext-WoT) | World of Tanks のリプレイをテーブルとマッチドキュメントに | [サイト](https://holdi601.github.io/3DHeat-Ext-WoT/) |
+| [Ext-WoWs](https://github.com/Holdi601/3DHeat-Ext-WoWs) | World of Warships のリプレイをテーブルとマッチドキュメントに | [サイト](https://holdi601.github.io/3DHeat-Ext-WoWs/) |
+| [Ext-Squad](https://github.com/Holdi601/3DHeat-Ext-Squad) | Squad のサーバーのデモをテーブルとマッチドキュメントに | [サイト](https://holdi601.github.io/3DHeat-Ext-Squad/) |
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | DCS World のマップを3Dモデルに | [サイト](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | IL-2 Sturmovik のマップを3Dモデルに | [サイト](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 

@@ -47,12 +47,12 @@ pip install -r requirements.txt
 ## Hızlı başlangıç {#quick-start}
 
 ```bash
-python -m heat3d_watch games            # what each game gives, and from where
-python -m heat3d_watch setup all        # what would have to be switched on (nothing is changed)
-python -m heat3d_watch setup f1-25 --apply   # switch one game's output on (the original file is backed up)
-python -m heat3d_watch run              # watch; leave it running while you play
-python -m heat3d_watch stats            # totals per game
-python -m heat3d_watch stats --csv out  # sessions, events and stats as CSV files
+python -m heat3d_watch games            # her oyunun ne verdiği ve nereden geldiği
+python -m heat3d_watch setup all        # hangilerinin açılması gerektiği (hiçbir şey değişmez)
+python -m heat3d_watch setup f1-25 --apply   # tek bir oyunun çıktısını açar (özgün dosyanın yedeği alınır)
+python -m heat3d_watch run              # izler; oynarken açık bırakın
+python -m heat3d_watch stats            # oyun başına toplamlar
+python -m heat3d_watch stats --csv out  # oturumlar, olaylar ve istatistikler CSV dosyaları olarak
 ```
 
 Şunu görmelisiniz: `games` komutundan sonra, oyun başına bir satırlık bir tablo; `run` komutu, Ctrl+C'ye basana ya da pencereyi kapatana kadar çalışmaya devam eder.

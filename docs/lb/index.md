@@ -35,11 +35,11 @@ an nëmmen, wann Dir Ären eegene Riot-API-Schlëssel aginn ([League-of-Legends-
 ## Wat et opzeechent {#what-it-records}
 
 - **Positiounen**: d'Auto, de Fliger, den Held oder de Spiller, e puer Mol d'Sekonn, wou d'Spill se
-  publizéiert, mat Vitesse, Richtung a wat d'Spill soss nach derbäi schéckt.
+  publizéiert, mat Geschwindegkeet, Richtung a wat d'Spill soss nach derbäi schéckt.
 - **Evenementer**: Spawns, Doudesfäll, Kills, Ronnen, Etappen, Match-Ronnen, Goler, Jobs, Opstieger a Landungen, Zone-
   Wiesselen, Erfolleger, Highlights. All Evenement gëtt mat senger Zäit gespäichert, a mat sengem Plaz, wann d'
   Spill een gëtt.
-- **Statistiken pro Sëtzung**: Kills, Doudesfäll, Ronnen, bescht Ronn, Distanz, Héchstvitesse, Spillzäit, an d'
+- **Statistiken pro Sëtzung**: Kills, Doudesfäll, Ronnen, bescht Ronn, Distanz, Héchstgeschwindegkeet, Spillzäit, an d'
   eegen Statistike vum Spill, wou et se hält.
 
 Wat all Spill gëtt, a vu wou, steet op senger eegener Säit ënner [Spiller](../games.md). Eng Quell kann net
@@ -60,7 +60,7 @@ pip install -r requirements.txt
 ```
 
 Eng erofgeluede Release-Archiv funktionéiert op déiselwecht Aart: entpackt se, dann féiert `pip install -r requirements.txt`
-am Ordner aus. D'Detailer, an d'Extras, déi e puer Spiller brauchen, si bei
+am Dossier aus. D'Detailer, an d'Extras, déi e puer Spiller brauchen, si bei
 [Installéieren a Lafen](../installing-and-running.md).
 
 ## Séier Start {#quick-start}
@@ -77,10 +77,10 @@ python -m heat3d_watch stats --csv out  # sessions, events and stats as CSV file
 Dir sollt gesinn: no `games` eng Tabell mat enger Zeil pro Spill; `run` geet weider, bis Dir
 Ctrl+C dréckt oder d'Fënster zoumécht.
 
-Alles gëtt a `%LOCALAPPDATA%\3DHeat\Watcher` geschriwwen. Fir en aneren Ordner ze benotzen, setzt d'
+Alles gëtt a `%LOCALAPPDATA%\3DHeat\Watcher` geschriwwen. Fir en aneren Dossier ze benotzen, setzt d'
 Ëmgéigungsvariabel `HEAT3D_WATCH_HOME` oder féiert `python -m heat3d_watch config --set data=D:\somewhere` aus.
 
-- `sessions\<game>\<date>_<adapter>\` - ee Ordner pro Sëtzung, mat `events.jsonl` (all Evenement,
+- `sessions\<game>\<date>_<adapter>\` - ee Dossier pro Sëtzung, mat `events.jsonl` (all Evenement,
   wéi et geschitt), `heat.parquet` (d'Zeilen mat enger Positioun, prett fir den 3DHeat-Viewer) an
   `meta.json` (Spill, Quell, Achsen, Zuelen, Statistiken)
 - `watcher.sqlite` - d'Statistike vun all Sëtzung, an dräi einfachen Tabellen
@@ -98,7 +98,7 @@ beschriwwen, an d'Kolonne vun all Tabell an [D'Daten](../the-data.md).
 | [Ier Dir ufänkt](before-you-start.md) | Python, e Terminal, Platzhalter, wéi Erfolleg an heefeg Feeler ausgesinn |
 | [Installéieren a Lafen](../installing-and-running.md) | Ufuerderungen, am Hannergrond lafen, mat Windows starten, d'Lock-Datei, de Log, all Astellung an Ëmgéigungsvariabel |
 | [Spiller](../games.md) | eng Säit pro Spill: wat opgeholl gëtt, vu wou, wéi een et uschalt, wéi et funktionéiert, Achsen, Statistiken, wat gepréift gouf |
-| [D'Daten](../the-data.md) | Sëtzungsordner, `events.jsonl`, `heat.parquet` a säi Footer, `meta.json`, `watcher.sqlite`, Recovery no engem Crash, CSV-Export, eng Sëtzung am 3DHeat-Viewer opmaachen |
+| [D'Daten](../the-data.md) | Sëtzungsdossier, `events.jsonl`, `heat.parquet` a säi Footer, `meta.json`, `watcher.sqlite`, Recovery no engem Crash, CSV-Export, eng Sëtzung am 3DHeat-Viewer opmaachen |
 | [Kommandoen](../commands.md) | all Kommando an Optioun vun `python -m heat3d_watch` |
 | [Quellen a Reegelen](../sources-and-rules.md) | déi sechs Zorte vu Quellen, d'Multiplayer-Reegelen, wéi eng Spiller ausgelooss sinn a firwat |
 | [NVIDIA Highlights](../nvidia-highlights.md) | wat NVIDIA Highlights liwwere kënnen a wat net, a wéi e Highlight eng Positioun kritt |

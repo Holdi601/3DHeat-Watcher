@@ -10,27 +10,27 @@ permalink: /lv/
 ---
 # 3DHeat Watcher {#dheat-watcher}
 
-**Kas tas ir?** Tu spēlē spēli. Šī programma klusi pieraksta, kur tu gāji un kas notika.
+**Kas tas ir?** Jūs spēlējat spēli. Šī programma klusi pieraksta, kur jūs gājāt un kas notika.
 Vēlāk to var apskatīt kā krāsainu karti 3DHeat skatītājā.
 
-**Kāpēc to lietot?** Lai glabātu savu ierakstu par katru sesiju - kur braucāt, lidoji vai cīnījies,
+**Kāpēc to lietot?** Lai glabātu savu ierakstu par katru sesiju - kur braucāt, lidojāt vai cīnījāties,
 savus kopsummas katrā spēlē - bez jebkādas vietnes un bez spēles mainīšanas.
 
-**Piemērs:** tu brauc braucienu sacensību spēlē, kamēr darbojas Watcher; pēc tam fails
-`sessions\<game>\` satur līniju, pa kuru tu brauci, un skatītājs to uzzīmē.
+**Piemērs:** jūs braucat braucienu sacensību spēlē, kamēr darbojas Watcher; pēc tam fails
+`sessions\<game>\` satur līniju, pa kuru jūs braucāt, un skatītājs to uzzīmē.
 
-Sīkāk: 3DHeat Watcher ir fona programma, kas pieraksta to, ko spēles publicē par tavu spēli - kur tu gāji,
-kas kur notika un skaitļus aiz tā - failos uz tava paša datora. Faili ir domāti tavai pašu statistikai un
+Sīkāk: 3DHeat Watcher ir fona programma, kas pieraksta to, ko spēles publicē par jūsu spēli - kur jūs gājāt,
+kas kur notika un skaitļus aiz tā - failos uz jūsu paša datora. Faili ir domāti jūsu pašu statistikai un
 3DHeat skatītāja siltumkartēm un maršrutu līnijām.
 
-Tā darbojas klusi, pamana, kuru spēli tu sāki, un nolasa šīs spēles pašas izvades: telemetrijas portu vai
+Tā darbojas klusi, pamana, kuru spēli jūs sākāt, un nolasa šīs spēles pašas izvades: telemetrijas portu vai
 koplietoto atmiņu, ko spēle publicē panelēm, spēles stāvokļa integrāciju, žurnālu vai reģistru, ko spēle raksta,
 atkārtojumu, ko tā saglabā pēc mača, statistiku, ko glabā Steam, klipus, ko saglabā NVIDIA App. Ieraksti paliek
 tavā datorā. Programma sazinās tikai ar diviem ārējiem pakalpojumiem un tikai šajos gadījumos: GitHub, lai meklētu
-jaunāku versiju (skat. [Atjauninājumi](../updates.md)), un Riot Match-V5 API, un tikai tad, ja ievadi savu Riot API atslēgu
+jaunāku versiju (skat. [Atjauninājumi](../updates.md)), un Riot Match-V5 API, un tikai tad, ja ievadāt savu Riot API atslēgu
 (skat. [League of Legends atkārtojumi](../game-lol-replays.md)).
 
-![watcher: ko publicē spēles, failos uz tava datora](../assets/img/lv/overview.svg)
+![watcher: ko publicē spēles, failos uz jūsu datora](../assets/img/lv/overview.svg)
 
 ## Ko tas ieraksta {#what-it-records}
 
@@ -42,7 +42,7 @@ Ko katra spēle dod un no kurienes, ir tās pašas lapā sadaļā [Spēles](../g
 
 ## Uzstādīšana {#install}
 
-Nekad nav strādāts ar komandrindu? Vispirms izlasi [Pirms sākat](before-you-start.md).
+Nekad neesat strādājis ar komandrindu? Vispirms izlasiet [Pirms sākat](before-you-start.md).
 
 Watcher ir Python programma Windows videi (Python 3.10 vai jaunāks). Daudzi tā avoti pastāv tikai Windows: koplietotā
 atmiņa, reģistrs, Windows paziņojumi.
@@ -53,7 +53,7 @@ cd 3DHeat-Watcher
 pip install -r requirements.txt
 ```
 
-Lejupielādēts izlaides arhīvs darbojas tāpat: izpako to, tad palaid `pip install -r requirements.txt`
+Lejupielādēts izlaides arhīvs darbojas tāpat: izpakojiet to, tad palaidiet `pip install -r requirements.txt`
 mapē. Sīkāka informācija un papildinājumi, kas vajadzīgi dažām spēlēm, ir lapā
 [Uzstādīšana un palaišana](../installing-and-running.md).
 
@@ -68,11 +68,11 @@ python -m heat3d_watch stats            # kopsummas katrai spēlei
 python -m heat3d_watch stats --csv out  # sesijas, notikumi un statistika kā CSV faili
 ```
 
-Tev vajadzētu redzēt: pēc `games` tabulu ar vienu rindu katrai spēlei; `run` darbojas, līdz nospied
-Ctrl+C vai aizver logu.
+Jums vajadzētu redzēt: pēc `games` tabulu ar vienu rindu katrai spēlei; `run` darbojas, līdz nospiediet
+Ctrl+C vai aizverat logu.
 
-Viss tiek rakstīts `%LOCALAPPDATA%\3DHeat\Watcher`. Lai izmantotu citu mapi, iestati vides mainīgo
-`HEAT3D_WATCH_HOME` vai palaid `python -m heat3d_watch config --set data=D:\somewhere`.
+Viss tiek rakstīts `%LOCALAPPDATA%\3DHeat\Watcher`. Lai izmantotu citu mapi, iestatiet vides mainīgo
+`HEAT3D_WATCH_HOME` vai palaidiet `python -m heat3d_watch config --set data=D:\somewhere`.
 
 - `sessions\<game>\<date>_<adapter>\` - viena mape katrai sesijai, kurā ir `events.jsonl` (katrs notikums, kā tas notiek),
   `heat.parquet` (rindas ar pozīciju, gatavas 3DHeat skatītājam) un `meta.json` (spēle, avots, asis, skaitļi, statistika)
@@ -88,7 +88,7 @@ kolonnas - lapā [Dati](../the-data.md).
 
 | Lapa | Ko tā aptver |
 |---|---|
-| [Pirms sākat](before-you-start.md) | Python, terminālis, vietturi, kā izskatās veiksme un biežākās kļūdas |
+| [Pirms sākat](before-you-start.md) | Python, termināls, vietturi, kā izskatās veiksme un biežākās kļūdas |
 | [Uzstādīšana un palaišana](../installing-and-running.md) | prasības, darbība fonā, palaišana kopā ar Windows, bloķēšanas fails, žurnāls, katrs iestatījums un vides mainīgais |
 | [Spēles](../games.md) | viena lapa katrai spēlei: kas tiek ierakstīts, no kurienes, kā to ieslēgt, kā tas darbojas, asis, statistika, kas pārbaudīts |
 | [Dati](../the-data.md) | sesiju mapes, `events.jsonl`, `heat.parquet` un tā kājene, `meta.json`, `watcher.sqlite`, atkopšana pēc avārijas, CSV eksports, sesijas atvēršana 3DHeat skatītājā |
@@ -115,7 +115,7 @@ konvertētu CS2 demo). Katrs ir atsevišķs projekts ar savām izlaidēm un lice
 | [GameCapture](https://github.com/Holdi601/3DHeat-GameCapture) | braucienu telemetrija no sacensību spēlēm; līmeņi, atjaunoti no spēles video | [vietne](https://holdi601.github.io/3DHeat-GameCapture/) |
 | [Unreal Exporter](https://github.com/Holdi601/3DHeat-UnrealExporter) | Unreal Editor spraudnis, kas eksportē līmeni kā vienu 3D modeli | [vietne](https://holdi601.github.io/3DHeat-UnrealExporter/) |
 | [CS2](https://github.com/Holdi601/3DHeat-CS2) | Counter-Strike 2 demo tabulās un mača dokumentos; kartes 3D modeļos | [vietne](https://holdi601.github.io/3DHeat-CS2/) |
-| [Watcher](https://github.com/Holdi601/3DHeat-Watcher) | fona režīmā ieraksta to, ko spēles publicē par tavu spēli | [vietne](https://holdi601.github.io/3DHeat-Watcher/) |
+| [Watcher](https://github.com/Holdi601/3DHeat-Watcher) | fona režīmā ieraksta to, ko spēles publicē par jūsu spēli | [vietne](https://holdi601.github.io/3DHeat-Watcher/) |
 | [Ext-WarThunder](https://github.com/Holdi601/3DHeat-Ext-WarThunder) | War Thunder atkārtojumi tabulās un mača dokumentos | [vietne](https://holdi601.github.io/3DHeat-Ext-WarThunder/) |
 | [Ext-WoT](https://github.com/Holdi601/3DHeat-Ext-WoT) | World of Tanks atkārtojumi tabulās un mača dokumentos | [vietne](https://holdi601.github.io/3DHeat-Ext-WoT/) |
 | [Ext-WoWs](https://github.com/Holdi601/3DHeat-Ext-WoWs) | World of Warships atkārtojumi tabulās un mača dokumentos | [vietne](https://holdi601.github.io/3DHeat-Ext-WoWs/) |

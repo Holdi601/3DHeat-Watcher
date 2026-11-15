@@ -66,7 +66,7 @@ python -m heat3d_watch stats --csv out  # sessions, events and stats as CSV file
 - `watcher.sqlite`：每次工作階段的統計資料，分為三個簡單的表格
 - `watcher.log`：watcher 做過的事
 
-檢視器可以直接開啟工作階段的 `heat.parquet`，無需任何設定（座標軸與單位記錄在檔案中）。轉換後的對戰錄影會以表格與比賽文件的形式寫在它旁邊；檢視器自己每場比賽一個檔案的格式，記載於其 [`.3dheat` 容器](https://holdi601.github.io/3DHeat/container.html)頁面，而每個表格的欄位則見[資料](../the-data.md)。
+檢視器可以直接開啟工作階段的 `heat.parquet`，無需任何設定（座標軸與單位記錄在檔案中）。轉換後的對戰錄影會以表格與對戰文件的形式寫在它旁邊；檢視器自己每場比賽一個檔案的格式，記載於其 [`.3dheat` 容器](https://holdi601.github.io/3DHeat/container.html)頁面，而每個表格的欄位則見[資料](../the-data.md)。
 
 ## 文件 {#the-documentation}
 
@@ -76,7 +76,7 @@ python -m heat3d_watch stats --csv out  # sessions, events and stats as CSV file
 | [安裝與執行](../installing-and-running.md) | 需求、在背景執行、隨 Windows 啟動、鎖定檔、記錄、每個設定與環境變數 |
 | [遊戲](../games.md) | 每款遊戲一頁：記錄什麼、來源為何、如何開啟、運作方式、座標軸、統計、已驗證的內容 |
 | [資料](../the-data.md) | 工作階段資料夾、`events.jsonl`、`heat.parquet` 及其 footer、`meta.json`、`watcher.sqlite`、當機後的復原、CSV 匯出、在 3DHeat 檢視器中開啟工作階段 |
-| [命令](../commands.md) | `python -m heat3d_watch` 的每個命令與選項 |
+| [指令](../commands.md) | `python -m heat3d_watch` 的每個指令與選項 |
 | [來源與規則](../sources-and-rules.md) | 六種來源、多人遊戲的規則，以及哪些遊戲被排除在外及其原因 |
 | [NVIDIA Highlights](../nvidia-highlights.md) | NVIDIA Highlights 能與不能提供什麼，以及一個精彩片段如何取得位置 |
 | [伺服器錄製模組](../server-mods.md) | 為檢視器錄製完整任務的 Arma 3 與 Arma Reforger 伺服器模組 |
@@ -84,7 +84,7 @@ python -m heat3d_watch stats --csv out  # sessions, events and stats as CSV file
 | [更新](../updates.md) | watcher 如何檢查新版本並自行更新 |
 | [開發](../development.md) | 撰寫轉接器：API、測試、誠實的 `verified`、重新產生遊戲頁面 |
 | [所有遊戲一覽](../watcher.md) | 所有遊戲的一張表，即 `games --markdown` 的輸出，以及已研究但尚未建構的遊戲 |
-| [命令參考](../cli-reference.md) | 每個命令的 `--help`，由程式碼產生 |
+| [指令參考](../cli-reference.md) | 每個指令的 `--help`，由程式碼產生 |
 | [維護](../maintaining.md) | 這些頁面的發行檢查清單 |
 
 ## 屬於 3DHeat 的一部分 {#part-of-3dheat}
@@ -97,12 +97,12 @@ python -m heat3d_watch stats --csv out  # sessions, events and stats as CSV file
 | [GameFiles](https://github.com/Holdi601/3DHeat-GameFiles) | 從遊戲所出貨的檔案中取得賽道與關卡，輸出為 3D 模型 | [網站](https://holdi601.github.io/3DHeat-GameFiles/) |
 | [GameCapture](https://github.com/Holdi601/3DHeat-GameCapture) | 賽車遊戲的圈速遙測；從遊戲影片重建關卡 | [網站](https://holdi601.github.io/3DHeat-GameCapture/) |
 | [Unreal Exporter](https://github.com/Holdi601/3DHeat-UnrealExporter) | Unreal Editor 外掛，將關卡匯出為單一 3D 模型 | [網站](https://holdi601.github.io/3DHeat-UnrealExporter/) |
-| [CS2](https://github.com/Holdi601/3DHeat-CS2) | 將 Counter-Strike 2 對戰錄影轉為表格與比賽文件；將地圖轉為 3D 模型 | [網站](https://holdi601.github.io/3DHeat-CS2/) |
+| [CS2](https://github.com/Holdi601/3DHeat-CS2) | 將 Counter-Strike 2 對戰錄影轉為表格與對戰文件；將地圖轉為 3D 模型 | [網站](https://holdi601.github.io/3DHeat-CS2/) |
 | [Watcher](https://github.com/Holdi601/3DHeat-Watcher) | 在背景中記錄遊戲所發布的關於你遊玩的內容 | [網站](https://holdi601.github.io/3DHeat-Watcher/) |
-| [Ext-WarThunder](https://github.com/Holdi601/3DHeat-Ext-WarThunder) | 將 War Thunder 錄影轉為表格與比賽文件 | [網站](https://holdi601.github.io/3DHeat-Ext-WarThunder/) |
-| [Ext-WoT](https://github.com/Holdi601/3DHeat-Ext-WoT) | 將 World of Tanks 錄影轉為表格與比賽文件 | [網站](https://holdi601.github.io/3DHeat-Ext-WoT/) |
-| [Ext-WoWs](https://github.com/Holdi601/3DHeat-Ext-WoWs) | 將 World of Warships 錄影轉為表格與比賽文件 | [網站](https://holdi601.github.io/3DHeat-Ext-WoWs/) |
-| [Ext-Squad](https://github.com/Holdi601/3DHeat-Ext-Squad) | 將 Squad 伺服器對戰轉為表格與比賽文件 | [網站](https://holdi601.github.io/3DHeat-Ext-Squad/) |
+| [Ext-WarThunder](https://github.com/Holdi601/3DHeat-Ext-WarThunder) | 將 War Thunder 錄影轉為表格與對戰文件 | [網站](https://holdi601.github.io/3DHeat-Ext-WarThunder/) |
+| [Ext-WoT](https://github.com/Holdi601/3DHeat-Ext-WoT) | 將 World of Tanks 錄影轉為表格與對戰文件 | [網站](https://holdi601.github.io/3DHeat-Ext-WoT/) |
+| [Ext-WoWs](https://github.com/Holdi601/3DHeat-Ext-WoWs) | 將 World of Warships 錄影轉為表格與對戰文件 | [網站](https://holdi601.github.io/3DHeat-Ext-WoWs/) |
+| [Ext-Squad](https://github.com/Holdi601/3DHeat-Ext-Squad) | 將 Squad 伺服器對戰轉為表格與對戰文件 | [網站](https://holdi601.github.io/3DHeat-Ext-Squad/) |
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | 將 DCS World 地圖轉為 3D 模型 | [網站](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | 將 IL-2 Sturmovik 地圖轉為 3D 模型 | [網站](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 

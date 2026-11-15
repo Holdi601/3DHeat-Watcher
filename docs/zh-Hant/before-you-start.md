@@ -9,7 +9,7 @@ search_exclude: true
 ---
 # 開始之前 {#before-you-start}
 
-第一次使用命令列？這一頁會帶你從零開始，約十分鐘內完成可運作的 3DHeat Watcher。你在*終端機*中輸入命令，即一個你寫下一行、按 Enter 的視窗。
+第一次使用命令列？這一頁會帶你從零開始，約十分鐘內完成可運作的 3DHeat Watcher。你在*終端機*中輸入指令，即一個你寫下一行、按 Enter 的視窗。
 
 ## 1. 安裝 Python {#install-python}
 
@@ -32,7 +32,7 @@ search_exclude: true
   `powershell` 再按 Enter。會開啟一個藍色或黑色的視窗，已經位於該資料夾中。
 - **macOS / Linux：** 開啟*終端機*，輸入 `cd `（後面要有一個空格），把資料夾拖進視窗，然後按 Enter。
 
-`cd <folder>` 會把終端機移到另一個資料夾。本頁的所有命令都在工具自己的資料夾中輸入。
+`cd <folder>` 會把終端機移到另一個資料夾。本頁的所有指令都在工具自己的資料夾中輸入。
 
 ## 4. 安裝所需的套件 {#install-what-it-needs}
 
@@ -49,9 +49,9 @@ already satisfied`）。
 python -m heat3d_watch --version
 ```
 
-你應該會看到：`1.0.2 (the version number)`。
+你應該會看到：`1.0.2`（版本號）。
 
-## 如何閱讀本頁的命令 {#how-to-read-the-commands-on-these-pages}
+## 如何閱讀本頁的指令 {#how-to-read-the-commands-on-these-pages}
 
 - `<角括號>` 中的文字是佔位符：請改輸入你自己的檔案或資料夾，不要輸入括號。`python -m heat3d_watch sessions --game <name>` 表示你要替換括號中的部分。
 - 含有空格的路徑要加引號：`"C:\My Games\my file"`。
@@ -66,4 +66,4 @@ python -m heat3d_watch --version
 | `No module named ...` | 略過了第 4 步，或在另一個資料夾中執行：用 `cd` 前往工具的資料夾，然後再執行一次。 |
 | `pip is not recognized` | 改用 `python -m pip ...`，不要用 `pip ...`。 |
 | `No such file or directory` / `can't open file` | 終端機位於錯誤的資料夾，或路徑打錯字：請檢查，並把含有空格的路徑加上引號。 |
-| 紅色文字，以 `error:` 行結尾 | 閱讀最後一行：它會說明缺少什麼。[命令](../commands.md)頁面列出了各種訊息。 |
+| 紅色文字，以 `error:` 行結尾 | 閱讀最後一行：它會說明缺少什麼。[指令](../commands.md)頁面列出了各種訊息。 |

@@ -9,7 +9,7 @@ search_exclude: true
 ---
 # Para se të fillosh {#before-you-start}
 
-Je i ri me vijën e komandës? Kjo faqe të çon nga zero te një 3DHeat Watcher që funksionon në
+Je i ri me rreshtin e komandave? Kjo faqe të çon nga zero te një 3DHeat Watcher që funksionon në
 rreth dhjetë minuta. Shkruaj komanda në një *terminal*, një dritare
 ku shkruan një rresht dhe shtyp Enter.
 
@@ -19,7 +19,7 @@ ku shkruan një rresht dhe shtyp Enter.
 2. Nis instaluesin. Në ekranin e parë zgjidh **Add python.exe to PATH**,
    pastaj kliko **Install Now**.
 3. Kontrollo: hap një terminal (hapi 3) dhe shkruaj `python --version`. Duhet të
-   shih `Python 3.` dhe një numër 10 ose më të madh.
+   shohësh `Python 3.` dhe një numër 10 ose më të madh.
 
 Në Linux ose macOS, Python zakonisht është tashmë i instaluar: përdor `python3` aty ku
 këto faqe thonë `python`.
@@ -27,7 +27,7 @@ këto faqe thonë `python`.
 ## 2. Merr 3DHeat Watcher {#get-3dheat-watcher}
 
 Shkarko zip-in nga
-[faqja Releases](https://github.com/Holdi601/3DHeat-Watcher/releases) dhe çzipoje, për
+[faqja Releases](https://github.com/Holdi601/3DHeat-Watcher/releases) dhe shpaketoje, për
 shembull te `C:\Tools\3DHeat-Watcher`. (Nëse ke Git, funksionon edhe `git clone`.)
 
 ## 3. Hap një terminal në atë dosje {#open-a-terminal-in-that-folder}
@@ -62,7 +62,7 @@ Duhet të shohësh: `1.0.2 (the version number)`.
 
 - Fjalët në `<angle brackets>` janë vendmbajtës: shkruaj skedarin ose dosjen tënde
   në vend të tyre, pa kllapat. `python -m heat3d_watch sessions --game <name>` do të thotë se
-  e zëvendëso pjesën në kllapa.
+  e zëvendëson pjesën në kllapa.
 - Një shteg me hapësira vendoset në thonjëza: `"C:\My Games\my file"`.
 - Rreshtat që nisin me `#` në shembuj janë komente; nuk i shkruaj.
 - Suksesi duket kështu: pas `python -m heat3d_watch games`, një tabelë me një rresht për lojë.

@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="848" height="318" viewBox="0 0 848 318" font-family="Segoe UI,Helvetica,Arial,sans-serif" role="img" aria-label="Updates: checked at start, applied between games">
 <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5f6368"/></marker></defs>
 <rect width="848" height="318" rx="10" fill="#ffffff" stroke="#dadce0"/>
-<text x="24" y="36" font-size="18" font-weight="600" fill="#202124">Päivitykset: tarkistetaan käynnistyksessä, asennetaan pelien välissä</text>
+<text x="24" y="36" font-size="18" font-weight="600" fill="#202124">Päivitykset: tarkistus käynnistyksessä</text>
 <rect x="24" y="69.5" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
 <text x="142.0" y="95.5" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">käynnistys</text>
 <text x="142.0" y="114.5" text-anchor="middle" font-size="14" fill="#3c4043">mikä tahansa komento</text>
@@ -17,7 +17,7 @@
 <path d="M706.0,129.5 V162.0 H142.0 V192.5" fill="none" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
 <rect x="24" y="194.5" width="236" height="60" rx="8" fill="#fff1e0" stroke="#d9822b" stroke-width="1.5"/>
 <text x="142.0" y="220.5" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">ei peliä käynnissä</text>
-<text x="142.0" y="239.5" text-anchor="middle" font-size="14" fill="#3c4043">ei koskaan kesken pelin</text>
+<text x="142.0" y="239.5" text-anchor="middle" font-size="14" fill="#3c4043">ei kesken pelin</text>
 <rect x="306" y="185.0" width="236" height="79" rx="8" fill="#e6f4ea" stroke="#2e8b57" stroke-width="1.5"/>
 <text x="424.0" y="211.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">päivitys</text>
 <text x="424.0" y="230.0" text-anchor="middle" font-size="14" fill="#3c4043">git pull, tai julkaisu</text>
@@ -34,5 +34,5 @@
 <rect x="159.5" y="284" width="18" height="18" rx="3" fill="#e6f4ea" stroke="#2e8b57"/>
 <text x="183.5" y="298" font-size="14" fill="#3c4043">kirjoitetut tiedostot</text>
 <rect x="291.0" y="284" width="18" height="18" rx="3" fill="#fff1e0" stroke="#d9822b"/>
-<text x="315.0" y="298" font-size="14" fill="#3c4043">yksi tiedosto ottelua kohden</text>
+<text x="315.0" y="298" font-size="14" fill="#3c4043">yksi tiedosto/ottelu</text>
 </svg>

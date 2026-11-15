@@ -36,7 +36,7 @@ ja vain jos syötät oman Riot-API-avaimesi (katso [League of Legends -toistot](
 
 - **Sijainnit**: auto, lentokone, sankari tai pelaaja, useita kertoja sekunnissa siellä, missä peli ne julkaisee,
   nopeuden, suunnan ja kaiken muun, mitä peli lähettää niiden mukana.
-- **Tapahtumat**: synnyt, kuolemat, tapot, kierrokset, osuudet, kierrokset, maalit, työt, lento-onnistumiset ja
+- **Tapahtumat**: synnyt, kuolemat, tapot, kierrokset, osuudet, erät, maalit, työt, lento-onnistumiset ja
   laskeutumiset, vyöhykkeiden vaihdot, saavutukset, kohokohdat. Jokainen tapahtuma tallennetaan ajastaan ja
   paikastaan, kun peli sen antaa.
 - **Tilastot sessiota kohden**: tapot, kuolemat, kierrokset, paras kierros, matka, huippunopeus, pelitunnit
@@ -105,7 +105,7 @@ ja jokaisen taulukon sarakkeet kohdassa [Tiedot](../the-data.md).
 | [Palvelinrekorderimodit](../server-mods.md) | Arma 3 ja Arma Reforger -palvelinmodit, jotka tallentavat koko tehtävät katselimelle |
 | [Muistin lukeminen](../memory-reading.md) | yksinpelin muistiprofiilit: muoto, tarkistukset, miten profiili kirjoitetaan ja varmistetaan |
 | [Päivitykset](../updates.md) | miten watcher etsii uusia julkaisuja ja päivittää itsensä |
-| [Kehitys](../development.md) | adapterin kirjoittaminen: rajapinta, testit, rehellinen `verified`, peli­sivujen uudelleenluonti |
+| [Kehitys](../development.md) | adapterin kirjoittaminen: rajapinta, testit, rehellinen `verified`, pelisivujen uudelleenluonti |
 | [Kaikki pelit yhdessä taulukossa](../watcher.md) | jokainen peli yhdessä taulukossa, kuten `games --markdown` sen tulostaa, sekä tutkitut mutta vielä rakentamattomat pelit |
 | [Komentoviite](../cli-reference.md) | jokaisen komennon `--help`, luotu koodista |
 | [Ylläpito](../maintaining.md) | julkaisun tarkistuslista näille sivuille |
@@ -118,9 +118,9 @@ CS2-demojen muuntamiseen). Jokainen on oma projektinsa, omilla julkaisuillaan ja
 | Työkalu | Mitä se tekee | Dokumentaatio |
 |---|---|---|
 | [3DHeat](https://github.com/Holdi601/3DHeat) | katselin: lämpökartat, kilpa-analyysi ja ottelun tarkastelu 3D:nä | [sivusto](https://holdi601.github.io/3DHeat/) |
-| [GameFiles](https://github.com/Holdi601/3DHeat-GameFiles) | radat ja tasot pelien toimittamista tiedostoista 3D-malleina | [sivusto](https://holdi601.github.io/3DHeat-GameFiles/) |
-| [GameCapture](https://github.com/Holdi601/3DHeat-GameCapture) | kierrosten telemetria kilpailupeleistä; tasot rakennettu pelivideosta | [sivusto](https://holdi601.github.io/3DHeat-GameCapture/) |
-| [Unreal Exporter](https://github.com/Holdi601/3DHeat-UnrealExporter) | Unreal Editor -liitännäinen, joka vie tason yhtenä 3D-mallina | [sivusto](https://holdi601.github.io/3DHeat-UnrealExporter/) |
+| [GameFiles](https://github.com/Holdi601/3DHeat-GameFiles) | radat ja kentät pelien toimittamista tiedostoista 3D-malleina | [sivusto](https://holdi601.github.io/3DHeat-GameFiles/) |
+| [GameCapture](https://github.com/Holdi601/3DHeat-GameCapture) | kierrosten telemetria kilpailupeleistä; kentät rakennettu pelivideosta | [sivusto](https://holdi601.github.io/3DHeat-GameCapture/) |
+| [Unreal Exporter](https://github.com/Holdi601/3DHeat-UnrealExporter) | Unreal Editor -liitännäinen, joka vie kentän yhtenä 3D-mallina | [sivusto](https://holdi601.github.io/3DHeat-UnrealExporter/) |
 | [CS2](https://github.com/Holdi601/3DHeat-CS2) | Counter-Strike 2 -demot taulukoiksi ja ottelutiedostoiksi; kartat 3D-malleiksi | [sivusto](https://holdi601.github.io/3DHeat-CS2/) |
 | [Watcher](https://github.com/Holdi601/3DHeat-Watcher) | tallentaa pelaamisesi taustalla pelien julkaisemasta datasta | [sivusto](https://holdi601.github.io/3DHeat-Watcher/) |
 | [Ext-WarThunder](https://github.com/Holdi601/3DHeat-Ext-WarThunder) | War Thunder -tallenteet taulukoiksi ja ottelutiedostoiksi | [sivusto](https://holdi601.github.io/3DHeat-Ext-WarThunder/) |

@@ -7,7 +7,7 @@
 <text x="142.0" y="105.0" text-anchor="middle" font-size="14" fill="#3c4043">UDP-portit, jaettu muisti</text>
 <rect x="24" y="136.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
 <text x="142.0" y="162.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">pelitilaintegraatio</text>
-<text x="142.0" y="181.0" text-anchor="middle" font-size="14" fill="#3c4043">paikalliset rajapinnat, verkkokartat</text>
+<text x="142.0" y="181.0" text-anchor="middle" font-size="14" fill="#3c4043">paikalliset rajapinnat, kartat</text>
 <rect x="24" y="212.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
 <text x="142.0" y="238.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">lokit ja päiväkirjat</text>
 <text x="142.0" y="257.0" text-anchor="middle" font-size="14" fill="#3c4043">pelin kirjoittamat tiedostot</text>
@@ -41,7 +41,7 @@
 <text x="142.0" y="515.0" text-anchor="middle" font-size="14" fill="#3c4043">lämpökartat, reittiviivat</text>
 <rect x="24" y="546.0" width="236" height="60" rx="8" fill="#f3e8fd" stroke="#8a4fd0" stroke-width="1.5"/>
 <text x="142.0" y="572.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">stats, sessiot, --csv</text>
-<text x="142.0" y="591.0" text-anchor="middle" font-size="14" fill="#3c4043">summat pelikohtaisesti, CSV-tiedostot</text>
+<text x="142.0" y="591.0" text-anchor="middle" font-size="14" fill="#3c4043">summat, CSV-tiedostot</text>
 <rect x="24" y="626" width="18" height="18" rx="3" fill="#f1f3f4" stroke="#80868b"/>
 <text x="48" y="640" font-size="14" fill="#3c4043">syöte</text>
 <rect x="95.5" y="626" width="18" height="18" rx="3" fill="#e8f0fe" stroke="#3b6fd8"/>

@@ -61,8 +61,7 @@ Du bör se: `1.0.2 (versionsnumret)`.
 ## Så läser du kommandona på de här sidorna {#how-to-read-the-commands-on-these-pages}
 
 - Ord inom `<vinkelparenteser>` är platshållare: skriv in din egen fil eller mapp
-  i stället, utan parenteserna. `python -m heat3d_watch sessions --game <name>` betyder
-  att du ersätter den inklämda delen.
+  i stället, utan parenteserna. I `python -m heat3d_watch sessions --game <name>` ersätter du `<name>` med spelets namn.
 - En sökväg med mellanslag skrivs inom citattecken: `"C:\My Games\my file"`.
 - Rader som börjar med `#` i exemplen är kommentarer; du skriver dem inte.
 - Lyckat ser ut så här: efter `python -m heat3d_watch games`, en tabell med en rad per spel.

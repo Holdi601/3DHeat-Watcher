@@ -10,8 +10,8 @@ permalink: /sq/
 ---
 # 3DHeat Watcher {#dheat-watcher}
 
-**Çfarë është?** Ju luaj një lojë. Ky program shënon në heshtje ku shkove dhe çfarë ndodhi.
-Më vonë mund ta shih si një hartë të ngjyrosur në shikuesin 3DHeat.
+**Çfarë është?** Ti luan një lojë. Ky program shënon në heshtje ku shkove dhe çfarë ndodhi.
+Më vonë mund ta shikosh si një hartë të ngjyrosur në shikuesin 3DHeat.
 
 **Pse ta përdor?** Për të mbajtur regjistrin tënd për çdo seancë - ku vozite, fluturove ose luftove,
 totalet e tua për lojë - pa asnjë faqe interneti dhe pa e ndryshuar lojën.
@@ -48,7 +48,7 @@ nuk lexon kurrë memorien e tyre (shih [Burimet dhe rregullat](../sources-and-ru
 
 ## Instalimi {#install}
 
-Je i ri me vijën e komandës? Lexo së pari [Para se të fillosh](before-you-start.md).
+Je i ri me rreshtin e komandave? Lexo së pari [Para se të fillosh](before-you-start.md).
 
 Watcher-i është një program Python për Windows (Python 3.10 ose më i ri). Shumë nga burimet e tij ekzistojnë vetëm në Windows: memoria e
 përbashkët, regjistri, njoftimet e Windows.
@@ -59,11 +59,11 @@ cd 3DHeat-Watcher
 pip install -r requirements.txt
 ```
 
-Një arkiv botimi i shkarkuar funksionon njësoj: çzipoje, pastaj ekzekuto `pip install -r requirements.txt`
+Një arkiv botimi i shkarkuar funksionon njësoj: shpaketoje, pastaj ekzekuto `pip install -r requirements.txt`
 brenda dosjes. Detajet, dhe shtesat që i duhen disa lojërave, janë te
 [Instalimi dhe ekzekutimi](../installing-and-running.md).
 
-## Fillim i shpejtë {#quick-start}
+## Fillimi i shpejtë {#quick-start}
 
 ```bash
 python -m heat3d_watch games            # what each game gives, and from where

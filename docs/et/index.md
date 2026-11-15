@@ -25,10 +25,10 @@ sinu enda statistika jaoks ning 3DHeat vaataja kuumuskaartide ja marsruudijoonte
 
 See töötab vaikselt, märkab, millise mängu alustasid, ja loeb selle mängu enda väljundeid: telemeetria pordi
 või jagatud mälu, mille mäng avaldab armatuurlaudadele, mängu oleku integratsiooni, logi või ajakirja, mida mäng
-kirjutab, replay'd, mille ta salvestab pärast mängu, Steami hoitud statistika ja NVIDIA Appi salvestatud klipid.
+kirjutab, kordused, mille ta salvestab pärast mängu, Steami hoitud statistika ja NVIDIA Appi salvestatud klipid.
 Salvestised jäävad sinu masinasse. Programm võtab ühendust ainult kahe välisteenusega, ja ainult nendel juhtudel:
 GitHub, uuema väljaande otsimiseks (vt [Uuendused](../updates.md)), ning Riot'i Match-V5 API, ja ainult siis, kui
-sisestad oma Riot'i API võtme (vt [League of Legendsi replayd](../game-lol-replays.md)).
+sisestad oma Riot'i API võtme (vt [League of Legendsi kordused](../game-lol-replays.md)).
 
 ![watcher: mida mängud avaldavad, failidesse sinu masinas](../assets/img/et/overview.svg)
 
@@ -47,7 +47,7 @@ kunagi (vt [Allikad ja reeglid](../sources-and-rules.md)).
 
 ## Paigaldus {#install}
 
-Pole sul käsurealt kogemust? Loe enne [Enne alustamist](before-you-start.md).
+Pole sul käsurealt kogemust? Loe esmalt [Enne alustamist](before-you-start.md).
 
 Watcher on Windowsi Pythoni programm (Python 3.10 või uuem). Paljud tema allikad on olemas ainult Windowsis: jagatud
 mälu, register, Windowsi teavitused.
@@ -86,7 +86,7 @@ keskkonnamuutuja `HEAT3D_WATCH_HOME` või käivita `python -m heat3d_watch confi
 - `watcher.log` - mida watcher tegi
 
 Vaataja avab seansi `heat.parquet` otse, ilma et midagi seadistada (selle teljed ja ühikud on failis). Teisendatud
-replay'd kirjutatakse sellele kõrvale tabelite ja mängu dokumentidena; vaataja enda üks-fail-mängu vorming on kirjeldatud
+kordused kirjutatakse sellele kõrvale tabelite ja mängu dokumentidena; vaataja enda üks-fail-mängu vorming on kirjeldatud
 tema [`.3dheat` konteineri](https://holdi601.github.io/3DHeat/container.html) lehel ja iga tabeli veerud lehel
 [Andmed](../the-data.md).
 
@@ -104,7 +104,7 @@ tema [`.3dheat` konteineri](https://holdi601.github.io/3DHeat/container.html) le
 | [Serveri salvestusmodid](../server-mods.md) | Arma 3 ja Arma Reforgeri serveri modid, mis salvestavad terve missiooni vaataja jaoks |
 | [Mälu lugemine](../memory-reading.md) | ainult ühemängijamängude mäluprofiilid: vorming, kontrollid, kuidas kirjutada ja kontrollida |
 | [Uuendused](../updates.md) | kuidas watcher otsib uusi väljaandeid ja uuendab end ise |
-| [Arendus](../development.md) | adapteri kirjutamine: API, testid, aus `verified`, mänguleheküljede uuesti genereerimine |
+| [Arendus](../development.md) | adapteri kirjutamine: API, testid, märge `verified`, mänguleheküljede uuesti genereerimine |
 | [Kõik mängud ühes tabelis](../watcher.md) | iga mäng ühes tabelis, nii nagu `games --markdown` prindib, ja uuritud, kuid veel ehitamata mängud |
 | [Käsu viide](../cli-reference.md) | iga käsu `--help`, koodist genereeritud |
 | [Nende dokumentide hooldamine](../maintaining.md) | väljalaske kontrollnimekiri nende lehtede jaoks |
@@ -121,10 +121,10 @@ tema [`.3dheat` konteineri](https://holdi601.github.io/3DHeat/container.html) le
 | [GameCapture](https://github.com/Holdi601/3DHeat-GameCapture) | ringi telemeetria võidusõidumängudest; tasemed taastatud mänguvideost | [sait](https://holdi601.github.io/3DHeat-GameCapture/) |
 | [Unreal Exporter](https://github.com/Holdi601/3DHeat-UnrealExporter) | Unreal Editori plugin, mis eksportib taseme ühe 3D-mudelina | [sait](https://holdi601.github.io/3DHeat-UnrealExporter/) |
 | [CS2](https://github.com/Holdi601/3DHeat-CS2) | Counter-Strike 2 demod tabeliteks ja mängu dokumentideks; kaardid 3D-mudeliteks | [sait](https://holdi601.github.io/3DHeat-CS2/) |
-| [Watcher](https://github.com/Holdi601/3DHeat-Watcher) | salvestab, mida sa mängides kirjutad, taustal, mängude avaldatu põhjal | [sait](https://holdi601.github.io/3DHeat-Watcher/) |
-| [Ext-WarThunder](https://github.com/Holdi601/3DHeat-Ext-WarThunder) | War Thunderi replayd tabeliteks ja mängu dokumentideks | [sait](https://holdi601.github.io/3DHeat-Ext-WarThunder/) |
-| [Ext-WoT](https://github.com/Holdi601/3DHeat-Ext-WoT) | World of Tanksi replayd tabeliteks ja mängu dokumentideks | [sait](https://holdi601.github.io/3DHeat-Ext-WoT/) |
-| [Ext-WoWs](https://github.com/Holdi601/3DHeat-Ext-WoWs) | World of Warshipsi replayd tabeliteks ja mängu dokumentideks | [sait](https://holdi601.github.io/3DHeat-Ext-WoWs/) |
+| [Watcher](https://github.com/Holdi601/3DHeat-Watcher) | salvestab taustal sinu mängu sellest, mida mängud avaldavad | [sait](https://holdi601.github.io/3DHeat-Watcher/) |
+| [Ext-WarThunder](https://github.com/Holdi601/3DHeat-Ext-WarThunder) | War Thunderi kordused tabeliteks ja mängu dokumentideks | [sait](https://holdi601.github.io/3DHeat-Ext-WarThunder/) |
+| [Ext-WoT](https://github.com/Holdi601/3DHeat-Ext-WoT) | World of Tanksi kordused tabeliteks ja mängu dokumentideks | [sait](https://holdi601.github.io/3DHeat-Ext-WoT/) |
+| [Ext-WoWs](https://github.com/Holdi601/3DHeat-Ext-WoWs) | World of Warshipsi kordused tabeliteks ja mängu dokumentideks | [sait](https://holdi601.github.io/3DHeat-Ext-WoWs/) |
 | [Ext-Squad](https://github.com/Holdi601/3DHeat-Ext-Squad) | Squadi serverdemod tabeliteks ja mängu dokumentideks | [sait](https://holdi601.github.io/3DHeat-Ext-Squad/) |
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | DCS Worldi kaardid 3D-mudeliteks | [sait](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | IL-2 Sturmovigi kaardid 3D-mudeliteks | [sait](https://holdi601.github.io/3DHeat-Ext-IL2/) |

@@ -4,7 +4,7 @@
 <text x="24" y="36" font-size="18" font-weight="600" fill="#202124">Lectura de memòria: cal que es compleixi cada condició</text>
 <rect x="24" y="60.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
 <text x="142.0" y="86.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">memory = true</text>
-<text x="142.0" y="105.0" text-anchor="middle" font-size="14" fill="#3c4043">desactivat per defecte</text>
+<text x="142.0" y="105.0" text-anchor="middle" font-size="14" fill="#3c4043">desactivat</text>
 <rect x="306" y="60.0" width="236" height="60" rx="8" fill="#e8f0fe" stroke="#3b6fd8" stroke-width="1.5"/>
 <text x="424.0" y="86.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">joc d'un sol jugador</text>
 <text x="424.0" y="105.0" text-anchor="middle" font-size="14" fill="#3c4043">mai un de multijugador</text>

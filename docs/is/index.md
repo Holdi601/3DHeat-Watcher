@@ -48,7 +48,7 @@ les aldrei minni þeirra (sjá [Heimildir og reglur](../sources-and-rules.md)).
 
 ## Uppsetning {#install}
 
-Ertu ný/r í skipanalínunni? Lestu fyrst [Áður en þú byrjar](before-you-start.md).
+Hefurðu aldrei notað skipanalínu? Lestu fyrst [Áður en þú byrjar](before-you-start.md).
 
 Vaktin er Python-forrit fyrir Windows (Python 3.10 eða nýrra). Margar heimildir hennar eru aðeins til á Windows: sameiginlegt
 minni, registry, Windows-tilkynningar.
@@ -87,7 +87,7 @@ umhverfisbreytuna `HEAT3D_WATCH_HOME` eða keyrðu `python -m heat3d_watch confi
 - `watcher.log` - það sem vaktin gerði
 
 Skoðarinn opnar `heat.parquet` setu beint, án þess að nokkuð þurfi að stilla (ásar hennar og einingar eru í
-skránni). Umbreyttar upptökur eru skrifaðar sem töflur og leikskjöl við hliðina; snið skoðarans með einni skrá
+skránni). Umbreyttar upptökur eru skrifaðar sem töflur og leikjaskjöl við hliðina; snið skoðarans með einni skrá
 fyrir hvern leik er lýst á síðunni um [`.3dheat` gáminn](https://holdi601.github.io/3DHeat/container.html),
 og dálkar hverrar töflu í [Gögnin](../the-data.md).
 
@@ -100,7 +100,7 @@ og dálkar hverrar töflu í [Gögnin](../the-data.md).
 | [Leikir](../games.md) | ein síða fyrir hvern leik: hvað er skráð, hvaðan, hvernig á að kveikja á því, hvernig það virkar, ásar, tölfræði, hvað var staðfest |
 | [Gögnin](../the-data.md) | setumöppur, `events.jsonl`, `heat.parquet` og fótur hennar, `meta.json`, `watcher.sqlite`, endurheimt eftir hrun, CSV-útflutningur, að opna setu í 3DHeat-skoðaranum |
 | [Skipanir](../commands.md) | hver skipun og valkostur `python -m heat3d_watch` |
-| [Heimildir og reglur](../sources-and-rules.md) | heimildirnar sex gerðir, fjölspilunarreglurnar, hvaða leikjum er sleppt og hvers vegna |
+| [Heimildir og reglur](../sources-and-rules.md) | sex gerðir heimilda, fjölspilunarreglurnar, hvaða leikjum er sleppt og hvers vegna |
 | [NVIDIA Highlights](../nvidia-highlights.md) | hvað NVIDIA Highlights getur og getur ekki skilað, og hvernig hápunktur fær staðsetningu |
 | [Þjónsmod til skráningar](../server-mods.md) | Arma 3 og Arma Reforger þjónsmodin sem skrá heil verkefni fyrir skoðarann |
 | [Lestur minnis](../memory-reading.md) | minnisprófílar fyrir einspilun: sniðið, athuganirnar, hvernig á að skrifa og sannprófa einn |
@@ -112,21 +112,21 @@ og dálkar hverrar töflu í [Gögnin](../the-data.md).
 
 ## Hluti af 3DHeat {#part-of-3dheat}
 
-3DHeat Watcher er eitt af ókeypis tólunum í kringum 3DHeat-skoðarann (vaktin notar 3DHeat CS2
+3DHeat Watcher er eitt af ókeypis verkfærunum í kringum 3DHeat-skoðarann (vaktin notar 3DHeat CS2
 til að umbreyta CS2 demo). Hvert er sitt eigið verkefni, með sínar eigin útgáfur og leyfi:
 
-| Tól | Hvað það gerir | Skjöl |
+| Verkfæri | Hvað það gerir | Skjöl |
 |---|---|---|
 | [3DHeat](https://github.com/Holdi601/3DHeat) | skoðarinn: hitakort, kappakstursgreining og leikjayfirlit í 3D | [vefur](https://holdi601.github.io/3DHeat/) |
 | [GameFiles](https://github.com/Holdi601/3DHeat-GameFiles) | brautir og borð úr skrám sem leikir senda með, sem 3D líkön | [vefur](https://holdi601.github.io/3DHeat-GameFiles/) |
 | [GameCapture](https://github.com/Holdi601/3DHeat-GameCapture) | hringmælingagögn úr kappakstursleikjum; borð endurbyggð úr leikmyndbandi | [vefur](https://holdi601.github.io/3DHeat-GameCapture/) |
 | [Unreal Exporter](https://github.com/Holdi601/3DHeat-UnrealExporter) | viðbót fyrir Unreal Editor sem flytur borð út sem eitt 3D líkan | [vefur](https://holdi601.github.io/3DHeat-UnrealExporter/) |
-| [CS2](https://github.com/Holdi601/3DHeat-CS2) | Counter-Strike 2 demo í töflur og leikskjöl; kort í 3D líkön | [vefur](https://holdi601.github.io/3DHeat-CS2/) |
+| [CS2](https://github.com/Holdi601/3DHeat-CS2) | Counter-Strike 2 demo í töflur og leikjaskjöl; kort í 3D líkön | [vefur](https://holdi601.github.io/3DHeat-CS2/) |
 | [Watcher](https://github.com/Holdi601/3DHeat-Watcher) | skráir í bakgrunni það sem leikir birta um leik þinn | [vefur](https://holdi601.github.io/3DHeat-Watcher/) |
-| [Ext-WarThunder](https://github.com/Holdi601/3DHeat-Ext-WarThunder) | War Thunder upptökur í töflur og leikskjöl | [vefur](https://holdi601.github.io/3DHeat-Ext-WarThunder/) |
-| [Ext-WoT](https://github.com/Holdi601/3DHeat-Ext-WoT) | World of Tanks upptökur í töflur og leikskjöl | [vefur](https://holdi601.github.io/3DHeat-Ext-WoT/) |
-| [Ext-WoWs](https://github.com/Holdi601/3DHeat-Ext-WoWs) | World of Warships upptökur í töflur og leikskjöl | [vefur](https://holdi601.github.io/3DHeat-Ext-WoWs/) |
-| [Ext-Squad](https://github.com/Holdi601/3DHeat-Ext-Squad) | Squad þjónadem í töflur og leikskjöl | [vefur](https://holdi601.github.io/3DHeat-Ext-Squad/) |
+| [Ext-WarThunder](https://github.com/Holdi601/3DHeat-Ext-WarThunder) | War Thunder upptökur í töflur og leikjaskjöl | [vefur](https://holdi601.github.io/3DHeat-Ext-WarThunder/) |
+| [Ext-WoT](https://github.com/Holdi601/3DHeat-Ext-WoT) | World of Tanks upptökur í töflur og leikjaskjöl | [vefur](https://holdi601.github.io/3DHeat-Ext-WoT/) |
+| [Ext-WoWs](https://github.com/Holdi601/3DHeat-Ext-WoWs) | World of Warships upptökur í töflur og leikjaskjöl | [vefur](https://holdi601.github.io/3DHeat-Ext-WoWs/) |
+| [Ext-Squad](https://github.com/Holdi601/3DHeat-Ext-Squad) | Squad þjónsdemo í töflur og leikjaskjöl | [vefur](https://holdi601.github.io/3DHeat-Ext-Squad/) |
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | DCS World kort í 3D líkön | [vefur](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | IL-2 Sturmovik kort í 3D líkön | [vefur](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 

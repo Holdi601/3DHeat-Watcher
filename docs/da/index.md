@@ -11,17 +11,17 @@ permalink: /da/
 # 3DHeat Watcher {#dheat-watcher}
 
 **Hvad er det?** Du spiller et spil. Dette program skriver stille ned, hvor du var, og hvad der skete.
-Senere kan du se det som et farvet kort i 3DHeat-fremviseren.
+Senere kan du se det som et farvet kort i 3DHeat-vieweren.
 
 **Hvorfor skulle jeg bruge det?** For at have din egen optegnelse over hver session - hvor du kørte, fløj eller kæmpede,
 dine samlede tal pr. spil - uden nogen hjemmeside og uden at ændre spillet.
 
 **Eksempel:** du kører en omgang i et løbsspil med watcheren kørende; bagefter ligger en fil i
-`sessions\<game>\`, der holder den linje, du kørte, og fremviseren tegner den.
+`sessions\<game>\`, der holder den linje, du kørte, og vieweren tegner den.
 
 Mere detaljeret: 3DHeat Watcher er et baggrundsprogram, der optager, hvad spil udgiver om dit spil - hvor du
 var, hvad der skete hvor, og tallene bag det - i filer på din egen maskine. Filerne er
-til din egen statistik og til varmekortene og rutelinjerne i 3DHeat-fremviseren.
+til din egen statistik og til varmekortene og rutelinjerne i 3DHeat-vieweren.
 
 Det kører stille, bemærker hvilket spil du startede, og læser det spils egne udgange: en telemetriport
 eller delt hukommelse, som spillet udgiver til dashboards, en spiltilstandsintegration, den journal eller log
@@ -80,13 +80,13 @@ Alt skrives til `%LOCALAPPDATA%\3DHeat\Watcher`. For at bruge en anden mappe, s�
 miljøvariablen `HEAT3D_WATCH_HOME`, eller kør `python -m heat3d_watch config --set data=D:\somewhere`.
 
 - `sessions\<game>\<date>_<adapter>\` - én mappe pr. session, der holder `events.jsonl` (hver hændelse
-  når den sker), `heat.parquet` (rækkerne med en position, klar til 3DHeat-fremviseren) og
+  når den sker), `heat.parquet` (rækkerne med en position, klar til 3DHeat-vieweren) og
   `meta.json` (spil, kilde, akser, antal, statistik)
 - `watcher.sqlite` - statistikken for hver session, i tre almindelige tabeller
 - `watcher.log` - hvad watcheren gjorde
 
-Fremviseren åbner en sessions `heat.parquet` direkte, uden at du skal indstille noget (dens akser og enheder står i
-filen). Konverterede replays skrives som tabeller og kampdokumenter ved siden af; fremviserens
+Vieweren åbner en sessions `heat.parquet` direkte, uden at du skal indstille noget (dens akser og enheder står i
+filen). Konverterede replays skrives som tabeller og kampdokumenter ved siden af; viewerens
 eget format med én fil pr. kamp beskrives på dens side om [`.3dheat`-containeren](https://holdi601.github.io/3DHeat/container.html),
 og alle tabellers kolonner står i [Data](../the-data.md).
 
@@ -97,11 +97,11 @@ og alle tabellers kolonner står i [Data](../the-data.md).
 | [Før du går i gang](before-you-start.md) | Python, en terminal, pladsholdere, hvordan succes og de almindelige fejl ser ud |
 | [Installation og kørsel](../installing-and-running.md) | krav, kørsel i baggrunden, start med Windows, låsefilen, loggen, alle indstillinger og miljøvariabler |
 | [Spil](../games.md) | én side pr. spil: hvad der optages, hvorfra, hvordan det slås til, hvordan det virker, akser, statistik, hvad der er kontrolleret |
-| [Data](../the-data.md) | sessionsmapper, `events.jsonl`, `heat.parquet` og dens footer, `meta.json`, `watcher.sqlite`, gendannelse efter et nedbrud, CSV-eksport, åbning af en session i 3DHeat-fremviseren |
+| [Data](../the-data.md) | sessionsmapper, `events.jsonl`, `heat.parquet` og dens footer, `meta.json`, `watcher.sqlite`, gendannelse efter et nedbrud, CSV-eksport, åbning af en session i 3DHeat-vieweren |
 | [Kommandoer](../commands.md) | hver kommando og valgmulighed for `python -m heat3d_watch` |
 | [Kilder og regler](../sources-and-rules.md) | de seks slags kilder, multiplayer-reglerne, hvilke spil der er udeladt og hvorfor |
 | [NVIDIA Highlights](../nvidia-highlights.md) | hvad NVIDIA Highlights kan og ikke kan levere, og hvordan et højdepunkt får en position |
-| [Serveroptagermods](../server-mods.md) | Arma 3- og Arma Reforger-servermods, der optager hele missioner til fremviseren |
+| [Serveroptagermods](../server-mods.md) | Arma 3- og Arma Reforger-servermods, der optager hele missioner til vieweren |
 | [Læsning af hukommelse](../memory-reading.md) | enkeltspiller-hukommelsesprofiler: formatet, kontrollerne, hvordan man skriver og verificerer en |
 | [Opdateringer](../updates.md) | hvordan watcheren leder efter nye udgivelser og opdaterer sig selv |
 | [Udvikling](../development.md) | at skrive en adapter: API'et, tests, en ærlig `verified`, regenerering af spilsiderne |
@@ -111,12 +111,12 @@ og alle tabellers kolonner står i [Data](../the-data.md).
 
 ## Del af 3DHeat {#part-of-3dheat}
 
-3DHeat Watcher er et af de gratis værktøjer omkring 3DHeat-fremviseren (watcheren bruger 3DHeat CS2
+3DHeat Watcher er et af de gratis værktøjer omkring 3DHeat-vieweren (watcheren bruger 3DHeat CS2
 til at konvertere CS2-demoer). Hver er sit eget projekt med sine egne udgivelser og licens:
 
 | Værktøj | Hvad det gør | Dokumentation |
 |---|---|---|
-| [3DHeat](https://github.com/Holdi601/3DHeat) | fremviseren: varmekort, løbsanalyse og kampgennemgang i 3D | [site](https://holdi601.github.io/3DHeat/) |
+| [3DHeat](https://github.com/Holdi601/3DHeat) | vieweren: varmekort, løbsanalyse og kampgennemgang i 3D | [site](https://holdi601.github.io/3DHeat/) |
 | [GameFiles](https://github.com/Holdi601/3DHeat-GameFiles) | baner og kort ud af de filer, spil leverer, som 3D-modeller | [site](https://holdi601.github.io/3DHeat-GameFiles/) |
 | [GameCapture](https://github.com/Holdi601/3DHeat-GameCapture) | omgangstelemetri fra løbsspil; baner genskabt ud fra spilvideo | [site](https://holdi601.github.io/3DHeat-GameCapture/) |
 | [Unreal Exporter](https://github.com/Holdi601/3DHeat-UnrealExporter) | et Unreal Editor-plugin, der eksporterer en bane som én 3D-model | [site](https://holdi601.github.io/3DHeat-UnrealExporter/) |

@@ -11,7 +11,7 @@ permalink: /hu/
 # 3DHeat Watcher {#dheat-watcher}
 
 **Mi ez?** Játszol egy játékot. Ez a program csendben feljegyzi, hol járt, és mi történt.
-Később a 3DHeat megjelenítőben színes térképként nézheti meg.
+Később a 3DHeat megjelenítőben színes térképként nézheted meg.
 
 **Mire jó?** Hogy saját nyilvántartásod legyen minden játékülésről – hol vezetett, repült vagy harcolt, és a
 játékonkénti összesítői –, weboldal nélkül, és a játék megváltoztatása nélkül.
@@ -49,7 +49,7 @@ olvassa a memóriájukat (lásd: [Források és szabályok](../sources-and-rules
 
 ## Telepítés {#install}
 
-Még nem használt parancssort? Előbb olvasd el a [Mielőtt elkezdi](before-you-start.md) oldalt.
+Még nem használt parancssort? Előbb olvasd el a [Mielőtt elkezded](before-you-start.md) oldalt.
 
 A watcher egy Windowsra készült Python-program (Python 3.10 vagy újabb). Sok forrása csak Windowson létezik: a
 megosztott memória, a rendszerleíró adatbázis, a Windows-értesítések.
@@ -70,7 +70,7 @@ parancsot a mappában. A részletek és néhány játékhoz szükséges extrák 
 python -m heat3d_watch games            # mit ad minden játék, és honnan
 python -m heat3d_watch setup all        # mit kellene bekapcsolni (semmi nem változik)
 python -m heat3d_watch setup f1-25 --apply   # egy játék kimenetének bekapcsolása (az eredeti fájl biztonsági mentést kap)
-python -m heat3d_watch run              # figyelés; hagyja futni, amíg játszik
+python -m heat3d_watch run              # figyelés; hagyd futni, amíg játszik
 python -m heat3d_watch stats            # összesítők játékonként
 python -m heat3d_watch stats --csv out  # munkamenetek, események és statisztikák CSV-fájlokban
 ```
@@ -97,7 +97,7 @@ oldal írja le, minden táblázat oszlopait pedig az [Adatok](../the-data.md) ol
 
 | Oldal | Mit tartalmaz |
 |---|---|
-| [Mielőtt elkezdi](before-you-start.md) | Python, egy terminál, helyőrzők, mit jelent a siker és a gyakori hibák |
+| [Mielőtt elkezded](before-you-start.md) | Python, egy terminál, helyőrzők, mit jelent a siker és a gyakori hibák |
 | [Telepítés és futtatás](../installing-and-running.md) | követelmények, futtatás a háttérben, indítás a Windows-szal, a zárfájl, a napló, minden beállítás és környezeti változó |
 | [Játékok](../games.md) | játékonként egy oldal: mit rögzít, honnan, hogyan kapcsold be, hogyan működik, tengelyek, statisztikák, mit ellenőriztünk |
 | [Az adatok](../the-data.md) | munkamenet-mappák, `events.jsonl`, `heat.parquet` és lábléce, `meta.json`, `watcher.sqlite`, helyreállítás összeomlás után, CSV-export, munkamenet megnyitása a 3DHeat megjelenítőben |

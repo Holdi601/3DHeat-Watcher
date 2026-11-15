@@ -9,7 +9,7 @@ search_exclude: true
 ---
 # 시작하기 전에 {#before-you-start}
 
-명령줄이 처음이신가요? 이 페이지는 약 10분 만에 아무것도 없는 상태에서 작동하는 3DHeat Watcher까지 안내합니다. 명령은 *터미널*에 입력합니다. 한 줄을 쓰고 Enter를 누르는 창입니다.
+명령줄이 처음입니까? 이 페이지는 약 10분 만에 아무것도 없는 상태에서 작동하는 3DHeat Watcher까지 안내합니다. 명령은 *터미널*에 입력합니다. 한 줄을 쓰고 Enter를 누르는 창입니다.
 
 ## 1. Python 설치 {#install-python}
 

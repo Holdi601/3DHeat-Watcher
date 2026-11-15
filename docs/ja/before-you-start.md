@@ -51,7 +51,7 @@ python -m heat3d_watch --version
 - `<山括弧>` の中の言葉は **置き換え用の場所** です。山括弧を外し、自分のファイルまたはフォルダーを入力してください。`python -m heat3d_watch sessions --game <name>` は、括弧の部分を置き換えるという意味です。
 - スペースを含むパスは引用符で囲みます: `"C:\My Games\my file"`。
 - 例の中で `#` で始まる行はコメントです。入力しません。
-- 成功時の表示: `python -m heat3d_watch games` の後に、ゲームごとに1行の表が出ます。
+- 成功時の表示: `python -m heat3d_watch games` の後に、ゲームごとに1行のテーブルが出ます。
 
 ## よくあるエラー {#common-errors}
 

@@ -7,7 +7,7 @@
 <text x="142.0" y="105.0" text-anchor="middle" font-size="14" fill="#3c4043">UDP pordid, jagatud mälu</text>
 <rect x="24" y="136.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
 <text x="142.0" y="162.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">mängu oleku integratsioon</text>
-<text x="142.0" y="181.0" text-anchor="middle" font-size="14" fill="#3c4043">kohalikud API-d, veebikaardid</text>
+<text x="142.0" y="181.0" text-anchor="middle" font-size="14" fill="#3c4043">kohalikud API-d, veebid</text>
 <rect x="24" y="212.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
 <text x="142.0" y="238.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">logid ja ajakirjad</text>
 <text x="142.0" y="257.0" text-anchor="middle" font-size="14" fill="#3c4043">failid, mida mäng kirjutab</text>
@@ -38,7 +38,7 @@
 <path d="M706.0,319.5 V447.0 H142.0 V468.0" fill="none" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
 <rect x="24" y="470.0" width="236" height="60" rx="8" fill="#f3e8fd" stroke="#8a4fd0" stroke-width="1.5"/>
 <text x="142.0" y="496.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">3DHeat vaataja</text>
-<text x="142.0" y="515.0" text-anchor="middle" font-size="14" fill="#3c4043">kuumuskaardid, marsruudijooned</text>
+<text x="142.0" y="515.0" text-anchor="middle" font-size="14" fill="#3c4043">kuumuskaardid, teejooned</text>
 <rect x="24" y="546.0" width="236" height="60" rx="8" fill="#f3e8fd" stroke="#8a4fd0" stroke-width="1.5"/>
 <text x="142.0" y="572.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">stats, seansid, --csv</text>
 <text x="142.0" y="591.0" text-anchor="middle" font-size="14" fill="#3c4043">kokkuvõtted mängu kohta, CSV-failid</text>

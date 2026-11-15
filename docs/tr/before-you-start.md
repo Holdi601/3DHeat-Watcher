@@ -44,7 +44,7 @@ Sonunda `Successfully installed ...` (ya da `Requirement already satisfied`) gö
 python -m heat3d_watch --version
 ```
 
-Şunu görmelisiniz: `1.0.2 (sürüm numarası)`.
+Bir sürüm numarası görmelisiniz, örneğin `1.0.2`.
 
 ## Bu sayfalardaki komutları nasıl okursunuz {#how-to-read-the-commands-on-these-pages}
 

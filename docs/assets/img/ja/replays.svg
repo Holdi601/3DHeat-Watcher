@@ -34,13 +34,13 @@
 <text x="424.0" y="257.0" text-anchor="middle" font-size="14" fill="#3c4043">osu! wiki の形式</text>
 <rect x="306" y="288.0" width="236" height="60" rx="8" fill="#e8f0fe" stroke="#3b6fd8" stroke-width="1.5"/>
 <text x="424.0" y="314.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">heat3d-wt-replay</text>
-<text x="424.0" y="333.0" text-anchor="middle" font-size="14" fill="#3c4043">外部の変換器、オプトイン</text>
+<text x="424.0" y="333.0" text-anchor="middle" font-size="14" fill="#3c4043">外部の変換ツール、オプトイン</text>
 <rect x="306" y="364.0" width="236" height="60" rx="8" fill="#e8f0fe" stroke="#3b6fd8" stroke-width="1.5"/>
 <text x="424.0" y="390.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">heat3d-wot/wows-replay</text>
-<text x="424.0" y="409.0" text-anchor="middle" font-size="14" fill="#3c4043">外部の変換器、オプトイン</text>
+<text x="424.0" y="409.0" text-anchor="middle" font-size="14" fill="#3c4043">外部の変換ツール、オプトイン</text>
 <rect x="306" y="440.0" width="236" height="60" rx="8" fill="#e8f0fe" stroke="#3b6fd8" stroke-width="1.5"/>
-<text x="424.0" y="466.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">Squad 変換器</text>
-<text x="424.0" y="485.0" text-anchor="middle" font-size="14" fill="#3c4043">外部の変換器、オプトイン</text>
+<text x="424.0" y="466.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">Squad 変換ツール</text>
+<text x="424.0" y="485.0" text-anchor="middle" font-size="14" fill="#3c4043">外部の変換ツール、オプトイン</text>
 <rect x="306" y="516.0" width="236" height="60" rx="8" fill="#e8f0fe" stroke="#3b6fd8" stroke-width="1.5"/>
 <text x="424.0" y="542.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">ウォッチャーが読む</text>
 <text x="424.0" y="561.0" text-anchor="middle" font-size="14" fill="#3c4043">ファイルが公開して示すものだけ</text>

@@ -4,7 +4,7 @@
 <text x="24" y="36" font-size="18" font-weight="600" fill="#202124">Güncellemeler: başlangıçta denetlenir, oyunlar arasında uygulanır</text>
 <rect x="24" y="69.5" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
 <text x="142.0" y="95.5" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">başlat</text>
-<text x="142.0" y="114.5" text-anchor="middle" font-size="14" fill="#3c4043">herhangi bir komut</text>
+<text x="142.0" y="114.5" text-anchor="middle" font-size="14" fill="#3c4043">her komut</text>
 <rect x="306" y="60.0" width="236" height="79" rx="8" fill="#e8f0fe" stroke="#3b6fd8" stroke-width="1.5"/>
 <text x="424.0" y="86.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">sürüm denetimi</text>
 <text x="424.0" y="105.0" text-anchor="middle" font-size="14" fill="#3c4043">GitHub sürümleri, en fazla</text>

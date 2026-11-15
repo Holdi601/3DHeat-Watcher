@@ -115,7 +115,7 @@ för att konvertera CS2-demos). Vart och ett är ett eget projekt, med egna utg�
 
 | Verktyg | Vad det gör | Dokumentation |
 |---|---|---|
-| [3DHeat](https://github.com/Holdi601/3DHeat) | visaren: värmekartor, racinganalys och matchgenomgång i 3D | [webbplats](https://holdi601.github.io/3DHeat/) |
+| [3DHeat](https://github.com/Holdi601/3DHeat) | visaren: värmekartor, Racinganalys och matchgenomgång i 3D | [webbplats](https://holdi601.github.io/3DHeat/) |
 | [GameFiles](https://github.com/Holdi601/3DHeat-GameFiles) | banor och nivåer ur de filer spel levererar, som 3D-modeller | [webbplats](https://holdi601.github.io/3DHeat-GameFiles/) |
 | [GameCapture](https://github.com/Holdi601/3DHeat-GameCapture) | varvtelemetri från racingspel; nivåer återskapade från spelvideo | [webbplats](https://holdi601.github.io/3DHeat-GameCapture/) |
 | [Unreal Exporter](https://github.com/Holdi601/3DHeat-UnrealExporter) | ett Unreal Editor-tillägg som exporterar en nivå som en 3D-modell | [webbplats](https://holdi601.github.io/3DHeat-UnrealExporter/) |

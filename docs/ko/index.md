@@ -10,15 +10,15 @@ permalink: /ko/
 ---
 # 3DHeat Watcher {#dheat-watcher}
 
-**무엇인가요?** 여러분이 게임을 합니다. 이 프로그램은 조용히, 여러분이 어디에 갔고 무슨 일이 있었는지를 기록합니다. 나중에 3DHeat 뷰어에서 색을 칠한 지도로 볼 수 있습니다.
+**무엇입니까?** 여러분이 게임을 합니다. 이 프로그램은 조용히, 여러분이 어디에 갔고 무슨 일이 있었는지를 기록합니다. 나중에 3DHeat 뷰어에서 색을 칠한 맵으로 볼 수 있습니다.
 
-**왜 쓰나요?** 웹사이트 없이, 게임을 바꾸지 않고도, 모든 플레이 기록을 직접 보관하기 위해서입니다. 어디서 운전하고, 비행하고, 싸웠는지, 게임별 합계가 얼마인지를 남길 수 있습니다.
+**왜 씁니까?** 웹사이트 없이, 게임을 바꾸지 않고도, 모든 플레이 기록을 직접 보관하기 위해서입니다. 어디서 운전하고, 비행하고, 싸웠는지, 게임별 합계가 얼마인지를 남길 수 있습니다.
 
 **예시:** Watcher를 켠 채 레이싱 게임에서 랩 하나를 달립니다. 나중에 `sessions\<game>\` 안의 파일에 여러분이 달린 선이 들어 있고, 뷰어가 그것을 그립니다.
 
 조금 더 자세히 말하면, 3DHeat Watcher는 게임이 여러분의 플레이에 대해 공개하는 것을 백그라운드에서 기록하는 프로그램입니다. 어디에 갔는지, 어디서 무슨 일이 있었는지, 그 뒤의 수치를 여러분의 컴퓨터 안의 파일로 남깁니다. 이 파일들은 여러분 자신의 통계와, 3DHeat 뷰어의 히트맵과 경로선을 위한 것입니다.
 
-조용히 실행되며, 여러분이 어떤 게임을 시작했는지 알아채고, 그 게임 자체의 출력을 읽습니다. 대시보드용으로 게임이 공개하는 텔레메트리 포트나 공유 메모리, 게임 상태 연동(game-state integration), 게임이 쓰는 저널이나 로그, 경기 후에 저장하는 리플레이, Steam이 보관하는 통계, NVIDIA App이 저장하는 클립입니다. 기록은 여러분의 컴퓨터에만 남습니다. 프로그램이 외부 서비스와 통신하는 경우는 두 가지뿐입니다. 더 새로운 릴리스를 찾기 위한 GitHub([업데이트](../updates.md) 참고)와, 여러분이 직접 입력한 Riot API 키를 쓸 때의 Riot Match-V5 API([리그 오브 레전드 리플레이](../game-lol-replays.md) 참고)입니다.
+조용히 실행되며, 여러분이 어떤 게임을 시작했는지 알아채고, 그 게임 자체의 출력을 읽습니다. 대시보드용으로 게임이 공개하는 텔레메트리 포트나 공유 메모리, 게임 상태 연동(game-state integration), 게임이 쓰는 저널이나 로그, 매치 후에 저장하는 리플레이, Steam이 보관하는 통계, NVIDIA App이 저장하는 클립입니다. 기록은 여러분의 컴퓨터에만 남습니다. 프로그램이 외부 서비스와 통신하는 경우는 두 가지뿐입니다. 더 새로운 릴리스를 찾기 위한 GitHub([업데이트](../updates.md) 참고)와, 여러분이 직접 입력한 Riot API 키를 쓸 때의 Riot Match-V5 API([리그 오브 레전드 리플레이](../game-lol-replays.md) 참고)입니다.
 
 ![watcher: 게임이 공개하는 것이 여러분의 컴퓨터의 파일로](../assets/img/ko/overview.svg)
 
@@ -32,7 +32,7 @@ permalink: /ko/
 
 ## 설치 {#install}
 
-명령줄이 처음이신가요? 먼저 [시작하기 전에](before-you-start.md)를 읽으세요.
+명령줄이 처음입니까? 먼저 [시작하기 전에](before-you-start.md)를 읽으세요.
 
 Watcher는 Windows용 Python 프로그램입니다(Python 3.10 이상). 출처 중 많은 것이 Windows에서만 존재합니다. 공유 메모리, 레지스트리, Windows 알림이 그렇습니다.
 
@@ -63,7 +63,7 @@ python -m heat3d_watch stats --csv out  # 세션, 이벤트, 통계를 CSV 파�
 - `watcher.sqlite` - 모든 세션의 통계, 세 개의 평범한 표로
 - `watcher.log` - Watcher가 한 일
 
-뷰어는 세션의 `heat.parquet`을 아무 설정 없이 바로 엽니다(축과 단위는 파일 안에 있습니다). 변환한 리플레이는 그 옆에 표와 경기 문서로 씁니다. 뷰어 자체의 경기 하나당 파일 한 개 형식은 뷰어의 [`.3dheat` 컨테이너](https://holdi601.github.io/3DHeat/container.html) 페이지에 설명되어 있고, 표의 모든 열은 [데이터](../the-data.md)에 있습니다.
+뷰어는 세션의 `heat.parquet`을 아무 설정 없이 바로 엽니다(축과 단위는 파일 안에 있습니다). 변환한 리플레이는 그 옆에 표와 매치 문서로 씁니다. 뷰어 자체의 매치 하나당 파일 한 개 형식은 뷰어의 [`.3dheat` 컨테이너](https://holdi601.github.io/3DHeat/container.html) 페이지에 설명되어 있고, 표의 모든 열은 [데이터](../the-data.md)에 있습니다.
 
 ## 문서 {#the-documentation}
 
@@ -90,16 +90,16 @@ python -m heat3d_watch stats --csv out  # 세션, 이벤트, 통계를 CSV 파�
 
 | 도구 | 하는 일 | 문서 |
 |---|---|---|
-| [3DHeat](https://github.com/Holdi601/3DHeat) | 뷰어: 3D 히트맵, 레이스 분석, 경기 리뷰 | [사이트](https://holdi601.github.io/3DHeat/) |
+| [3DHeat](https://github.com/Holdi601/3DHeat) | 뷰어: 3D 히트맵, 레이스 분석, 매치 리뷰 | [사이트](https://holdi601.github.io/3DHeat/) |
 | [GameFiles](https://github.com/Holdi601/3DHeat-GameFiles) | 게임이 배포하는 파일에서 코스와 레벨을 3D 모델로 | [사이트](https://holdi601.github.io/3DHeat-GameFiles/) |
 | [GameCapture](https://github.com/Holdi601/3DHeat-GameCapture) | 레이싱 게임의 랩 텔레메트리. 게임플레이 영상에서 다시 만든 레벨 | [사이트](https://holdi601.github.io/3DHeat-GameCapture/) |
 | [Unreal Exporter](https://github.com/Holdi601/3DHeat-UnrealExporter) | 레벨을 3D 모델 하나로 내보내는 Unreal 에디터 플러그인 | [사이트](https://holdi601.github.io/3DHeat-UnrealExporter/) |
-| [CS2](https://github.com/Holdi601/3DHeat-CS2) | Counter-Strike 2 데모를 표와 경기 문서로, 맵을 3D 모델로 | [사이트](https://holdi601.github.io/3DHeat-CS2/) |
+| [CS2](https://github.com/Holdi601/3DHeat-CS2) | Counter-Strike 2 데모를 표와 매치 문서로, 맵을 3D 모델로 | [사이트](https://holdi601.github.io/3DHeat-CS2/) |
 | [Watcher](https://github.com/Holdi601/3DHeat-Watcher) | 게임이 여러분의 플레이에 대해 공개하는 것을 백그라운드에서 기록 | [사이트](https://holdi601.github.io/3DHeat-Watcher/) |
-| [Ext-WarThunder](https://github.com/Holdi601/3DHeat-Ext-WarThunder) | War Thunder 리플레이를 표와 경기 문서로 | [사이트](https://holdi601.github.io/3DHeat-Ext-WarThunder/) |
-| [Ext-WoT](https://github.com/Holdi601/3DHeat-Ext-WoT) | World of Tanks 리플레이를 표와 경기 문서로 | [사이트](https://holdi601.github.io/3DHeat-Ext-WoT/) |
-| [Ext-WoWs](https://github.com/Holdi601/3DHeat-Ext-WoWs) | World of Warships 리플레이를 표와 경기 문서로 | [사이트](https://holdi601.github.io/3DHeat-Ext-WoWs/) |
-| [Ext-Squad](https://github.com/Holdi601/3DHeat-Ext-Squad) | Squad 서버 데모를 표와 경기 문서로 | [사이트](https://holdi601.github.io/3DHeat-Ext-Squad/) |
+| [Ext-WarThunder](https://github.com/Holdi601/3DHeat-Ext-WarThunder) | 워 썬더 리플레이를 표와 매치 문서로 | [사이트](https://holdi601.github.io/3DHeat-Ext-WarThunder/) |
+| [Ext-WoT](https://github.com/Holdi601/3DHeat-Ext-WoT) | 월드 오브 탱크 리플레이를 표와 매치 문서로 | [사이트](https://holdi601.github.io/3DHeat-Ext-WoT/) |
+| [Ext-WoWs](https://github.com/Holdi601/3DHeat-Ext-WoWs) | 월드 오브 워십 리플레이를 표와 매치 문서로 | [사이트](https://holdi601.github.io/3DHeat-Ext-WoWs/) |
+| [Ext-Squad](https://github.com/Holdi601/3DHeat-Ext-Squad) | Squad 서버 데모를 표와 매치 문서로 | [사이트](https://holdi601.github.io/3DHeat-Ext-Squad/) |
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | DCS World 맵을 3D 모델로 | [사이트](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | IL-2 Sturmovik 맵을 3D 모델로 | [사이트](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 

@@ -9,7 +9,7 @@ search_exclude: true
 ---
 # 开始之前 {#before-you-start}
 
-第一次使用命令行？本页带你从零开始，用大约十分钟让 3DHeat Watcher 正常运行。你在一个*终端*中输入命令，那是一个让你写下一行并按回车的窗口。
+第一次使用命令行？本页带你从零开始，用大约十分钟让 3DHeat Watcher 正常运行。你在一个*终端*中输入命令，那是一个让你输入一行并按回车的窗口。
 
 ## 1. 安装 Python {#install-python}
 

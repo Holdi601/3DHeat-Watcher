@@ -9,7 +9,7 @@ search_exclude: true
 ---
 # Áður en þú byrjar {#before-you-start}
 
-Ertu ný/r í skipanalínunni? Þessi síða kemur þér frá engu að virku
+Hefurðu aldrei notað skipanalínu? Þessi síða kemur þér frá engu að virku
 3DHeat Watcher á um tíu mínútum. Þú skrifar skipanir í *skipanalínu* (terminal), glugga
 þar sem þú skrifar línu og ýtir á Enter.
 
@@ -39,7 +39,7 @@ Sæktu zip-skrána af
   möppuna inn í gluggann, ýttu á Enter.
 
 `cd <folder>` færir skipanalínuna í aðra möppu. Allar skipanir á þessum
-síðum eru skrifaðar í eigin möppu tólsins.
+síðum eru skrifaðar í eigin möppu verkfærisins.
 
 ## 4. Settu upp það sem það þarf {#install-what-it-needs}
 
@@ -72,7 +72,7 @@ python -m heat3d_watch --version
 | Þú sérð | Gerðu þetta |
 |---|---|
 | `'python' is not recognized` eða `command not found` | Python er ekki á PATH: keyrðu uppsetningarforritið aftur og hakaðu við **Add python.exe to PATH**, opnaðu síðan nýja skipanalínu. Á macOS/Linux prófaðu `python3`. |
-| `No module named ...` | skrefi 4 var sleppt eða það var keyrt í annarri möppu: farðu með `cd` í möppu tólsins og keyrðu það aftur. |
+| `No module named ...` | skrefi 4 var sleppt eða það var keyrt í annarri möppu: farðu með `cd` í möppu verkfærisins og keyrðu það aftur. |
 | `pip is not recognized` | notaðu `python -m pip ...` í stað `pip ...`. |
 | `No such file or directory` / `can't open file` | skipanalínan er í rangri möppu, eða slóðin er rangt skrifuð: athugaðu hana, og settu slóðir með bilum innan gæsalappa. |
-| rauður texti sem endar á `error:` línu | lestu síðustu línuna: hún segir hvað vantar. Síðan [Skipanir](../commands.md) telur upp skilaboðin. |
+| rauður texti sem endar á `error:` línu | lestu síðustu línuna: hún segir hvað vantar. Á síðunni [Skipanir](../commands.md) eru skilaboðin talin upp. |

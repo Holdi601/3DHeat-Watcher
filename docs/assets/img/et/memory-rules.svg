@@ -15,13 +15,13 @@
 <line x1="542" y1="90.0" x2="586" y2="90.0" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
 <path d="M706.0,120.0 V143.0 H142.0 V173.5" fill="none" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
 <rect x="24" y="175.5" width="236" height="60" rx="8" fill="#e8f0fe" stroke="#3b6fd8" stroke-width="1.5"/>
-<text x="142.0" y="201.5" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">ei ole vastu-petmist</text>
+<text x="142.0" y="201.5" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">ei ole petukaitset</text>
 <text x="142.0" y="220.5" text-anchor="middle" font-size="14" fill="#3c4043">paigaldatud või käimas</text>
 <rect x="306" y="175.5" width="236" height="60" rx="8" fill="#e8f0fe" stroke="#3b6fd8" stroke-width="1.5"/>
 <text x="424.0" y="201.5" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">ei ole väljundühendust</text>
 <text x="424.0" y="220.5" text-anchor="middle" font-size="14" fill="#3c4043">mäng on võrguühenduseta</text>
 <rect x="588" y="166.0" width="236" height="79" rx="8" fill="#e6f4ea" stroke="#2e8b57" stroke-width="1.5"/>
-<text x="706.0" y="192.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">ainult lugemine</text>
+<text x="706.0" y="192.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">vaid lugemine</text>
 <text x="706.0" y="211.0" text-anchor="middle" font-size="14" fill="#3c4043">midagi ei kirjutata, ei haagita</text>
 <text x="706.0" y="230.0" text-anchor="middle" font-size="14" fill="#3c4043">või süstitud</text>
 <line x1="260" y1="205.5" x2="304" y2="205.5" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>

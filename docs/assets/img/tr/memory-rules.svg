@@ -4,7 +4,7 @@
 <text x="24" y="36" font-size="18" font-weight="600" fill="#202124">Bellek okuma: her koşul sağlanmalı</text>
 <rect x="24" y="60.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
 <text x="142.0" y="86.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">memory = true</text>
-<text x="142.0" y="105.0" text-anchor="middle" font-size="14" fill="#3c4043">varsayılan olarak kapalı</text>
+<text x="142.0" y="105.0" text-anchor="middle" font-size="14" fill="#3c4043">varsayılan kapalı</text>
 <rect x="306" y="60.0" width="236" height="60" rx="8" fill="#e8f0fe" stroke="#3b6fd8" stroke-width="1.5"/>
 <text x="424.0" y="86.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">tek oyunculu oyun</text>
 <text x="424.0" y="105.0" text-anchor="middle" font-size="14" fill="#3c4043">asla çok oyunculu olmaz</text>
@@ -21,9 +21,9 @@
 <text x="424.0" y="201.5" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">dışa bağlantı yok</text>
 <text x="424.0" y="220.5" text-anchor="middle" font-size="14" fill="#3c4043">oyun çevrim dışı</text>
 <rect x="588" y="166.0" width="236" height="79" rx="8" fill="#e6f4ea" stroke="#2e8b57" stroke-width="1.5"/>
-<text x="706.0" y="192.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">yalnızca okuma</text>
+<text x="706.0" y="192.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">salt okunur</text>
 <text x="706.0" y="211.0" text-anchor="middle" font-size="14" fill="#3c4043">yazılmaz, kancalanmaz</text>
-<text x="706.0" y="230.0" text-anchor="middle" font-size="14" fill="#3c4043">ya da enjekte edilmez</text>
+<text x="706.0" y="230.0" text-anchor="middle" font-size="14" fill="#3c4043">ya da enjekte</text>
 <line x1="260" y1="205.5" x2="304" y2="205.5" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
 <line x1="542" y1="205.5" x2="586" y2="205.5" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
 <rect x="24" y="265" width="18" height="18" rx="3" fill="#f1f3f4" stroke="#80868b"/>

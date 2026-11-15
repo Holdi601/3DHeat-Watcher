@@ -37,7 +37,7 @@
 <line x1="542" y1="242.0" x2="586" y2="289.5" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
 <path d="M706.0,319.5 V447.0 H142.0 V468.0" fill="none" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
 <rect x="24" y="470.0" width="236" height="60" rx="8" fill="#f3e8fd" stroke="#8a4fd0" stroke-width="1.5"/>
-<text x="142.0" y="496.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">3DHeat viewer</text>
+<text x="142.0" y="496.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">3DHeat-skoðari</text>
 <text x="142.0" y="515.0" text-anchor="middle" font-size="14" fill="#3c4043">hitakort, leiðarlínur</text>
 <rect x="24" y="546.0" width="236" height="60" rx="8" fill="#f3e8fd" stroke="#8a4fd0" stroke-width="1.5"/>
 <text x="142.0" y="572.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">stats, sessions, --csv</text>

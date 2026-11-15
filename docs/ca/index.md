@@ -10,29 +10,29 @@ permalink: /ca/
 ---
 # 3DHeat Watcher {#dheat-watcher}
 
-**Què és?** Vostè juga a un joc. Aquest programa anota en silenci on heu anat i què ha passat.
+**Què és?** Tu jugues a un joc. Aquest programa anota en silenci on has anat i què ha passat.
 Més tard, pot veure-ho com un mapa de colors al visualitzador de 3DHeat.
 
-**Per a què el faria servir?** Per tenir el seu propi registre de cada sessió (on heu conduït, volat o
-lluitat, els vostres totals per joc) sense cap pàgina web i sense canviar el joc.
+**Per a què el faria servir?** Per tenir el seu propi registre de cada sessió (on has conduït, volat o
+lluitat, els teus totals per joc) sense cap pàgina web i sense canviar el joc.
 
 **Exemple:** condueix una volta en un joc de carreres amb el watcher en marxa; després, un fitxer a
-`sessions\<joc>\` conté la línia que heu seguit, i el visualitzador la dibuixa.
+`sessions\<joc>\` conté la línia que has seguit, i el visualitzador la dibuixa.
 
-Amb més detall: 3DHeat Watcher és un programa en segon pla que registra el que publiquen els jocs sobre la vostra partida
-—on heu anat, què ha passat en cada lloc, i les xifres que hi ha darrere— en fitxers a la vostra
-pròpia màquina. Els fitxers són per a les vostres estadístiques i per als mapes de calor i les línies de
+Amb més detall: 3DHeat Watcher és un programa en segon pla que registra el que publiquen els jocs sobre la teva partida
+—on has anat, què ha passat en cada lloc, i les xifres que hi ha darrere— en fitxers a la teva
+pròpia màquina. Els fitxers són per a les teves estadístiques i per als mapes de calor i les línies de
 ruta del visualitzador de 3DHeat.
 
-Funciona en silenci, detecta quin joc heu obert, i llegeix les sortides pròpies d'aquest joc: un port de
+Funciona en silenci, detecta quin joc has obert, i llegeix les sortides pròpies d'aquest joc: un port de
 telemetria o una memòria compartida que el joc publica per als tauler de control, una integració d'estat de
 joc, el diari o el registre que escriu el joc, la repetició que desa després d'una partida, les estadístiques
-que guarda Steam, els clips que desa l'NVIDIA App. Les gravacions es queden a la vostra màquina. El programa
+que guarda Steam, els clips que desa l'NVIDIA App. Les gravacions es queden a la teva màquina. El programa
 només es comunica amb dos serveis externs, i només en aquests casos: GitHub, per buscar una versió més nova
-(vegi [Actualitzacions](../updates.md)), i l'API Match-V5 de Riot, i només si introduïu la vostra pròpia clau
-d'API de Riot (vegi [Repeticions de League of Legends](../game-lol-replays.md)).
+(mira [Actualitzacions](../updates.md)), i l'API Match-V5 de Riot, i només si introduïu la teva pròpia clau
+d'API de Riot (mira [Repeticions de League of Legends](../game-lol-replays.md)).
 
-![el watcher: el que publiquen els jocs, en fitxers a la vostra màquina](../assets/img/ca/overview.svg)
+![el watcher: el que publiquen els jocs, en fitxers a la teva màquina](../assets/img/ca/overview.svg)
 
 ## Què registra {#what-it-records}
 
@@ -46,11 +46,11 @@ d'API de Riot (vegi [Repeticions de League of Legends](../game-lol-replays.md)).
 
 El que dona cada joc, i d'on, és a la seva pròpia pàgina dins de [Jocs](../games.md). Una sola font no pot
 registrar-ho tot: els jocs multijugador només es registren mitjançant el que publiquen, i el watcher
-mai no llegeix la seva memòria (vegi [Fonts i regles](../sources-and-rules.md)).
+mai no llegeix la seva memòria (mira [Fonts i regles](../sources-and-rules.md)).
 
 ## Instal·lació {#install}
 
-Si és nou amb la línia d'ordres, llegeixi primer [Abans de començar](before-you-start.md).
+Si ets nou amb la línia d'ordres, llegeix primer [Abans de començar](before-you-start.md).
 
 El watcher és un programa de Python per a Windows (Python 3.10 o posterior). Moltes de les seves fonts només
 existeixen a Windows: la memòria compartida, el registre, les notificacions de Windows.
@@ -61,7 +61,7 @@ cd 3DHeat-Watcher
 pip install -r requirements.txt
 ```
 
-Un arxiu de versió descarregat funciona de la mateixa manera: descomprimeixi'l, i després executi
+Un arxiu de versió descarregat funciona de la mateixa manera: descomprimeix'l, i després executa
 `pip install -r requirements.txt` dins de la carpeta. Els detalls, i els extres que necessiten alguns jocs,
 són a [Instal·lar i executar](../installing-and-running.md).
 
@@ -71,16 +71,16 @@ són a [Instal·lar i executar](../installing-and-running.md).
 python -m heat3d_watch games            # què dona cada joc, i d'on
 python -m heat3d_watch setup all        # què caldria activar (no es canvia res)
 python -m heat3d_watch setup f1-25 --apply   # activar la sortida d'un joc (l'arxiu original es guarda com a còpia)
-python -m heat3d_watch run              # vigilar; deixi-ho en marxa mentre juga
+python -m heat3d_watch run              # vigilar; deixa-ho en marxa mentre juga
 python -m heat3d_watch stats            # totals per joc
 python -m heat3d_watch stats --csv out  # sessions, esdeveniments i estadístiques en fitxers CSV
 ```
 
-Hauria de veure: després de `games`, una taula amb una línia per joc; `run` continua fins que premeu
-Ctrl+C o tanqueu la finestra.
+Hauries de veure: després de `games`, una taula amb una línia per joc; `run` continua fins que prem
+Ctrl+C o tanca la finestra.
 
 Tot s'escriu a `%LOCALAPPDATA%\3DHeat\Watcher`. Per usar una altra carpeta, definiu la variable d'entorn
-`HEAT3D_WATCH_HOME` o executi `python -m heat3d_watch config --set data=D:\somewhere`.
+`HEAT3D_WATCH_HOME` o executa `python -m heat3d_watch config --set data=D:\somewhere`.
 
 - `sessions\<joc>\<data>_<adaptador>\` - una carpeta per sessió, que conté `events.jsonl` (cada esdeveniment
   en el moment en què passa), `heat.parquet` (les files amb una posició, a punt per al visualitzador de 3DHeat) i
@@ -125,7 +125,7 @@ per convertir les demos de CS2). Cada una és un projecte propi, amb les seves v
 | [GameCapture](https://github.com/Holdi601/3DHeat-GameCapture) | telemetria de voltes de jocs de carreres; nivells reconstruïts a partir de vídeo de joc | [lloc](https://holdi601.github.io/3DHeat-GameCapture/) |
 | [Unreal Exporter](https://github.com/Holdi601/3DHeat-UnrealExporter) | un connector per a l'editor d'Unreal que exporta un nivell com un model 3D | [lloc](https://holdi601.github.io/3DHeat-UnrealExporter/) |
 | [CS2](https://github.com/Holdi601/3DHeat-CS2) | demos de Counter-Strike 2 en taules i documents de partida; mapes en models 3D | [lloc](https://holdi601.github.io/3DHeat-CS2/) |
-| [Watcher](https://github.com/Holdi601/3DHeat-Watcher) | registra el que publiquen els jocs sobre la vostra partida, en segon pla | [lloc](https://holdi601.github.io/3DHeat-Watcher/) |
+| [Watcher](https://github.com/Holdi601/3DHeat-Watcher) | registra el que publiquen els jocs sobre la teva partida, en segon pla | [lloc](https://holdi601.github.io/3DHeat-Watcher/) |
 | [Ext-WarThunder](https://github.com/Holdi601/3DHeat-Ext-WarThunder) | repeticions de War Thunder en taules i documents de partida | [lloc](https://holdi601.github.io/3DHeat-Ext-WarThunder/) |
 | [Ext-WoT](https://github.com/Holdi601/3DHeat-Ext-WoT) | repeticions de World of Tanks en taules i documents de partida | [lloc](https://holdi601.github.io/3DHeat-Ext-WoT/) |
 | [Ext-WoWs](https://github.com/Holdi601/3DHeat-Ext-WoWs) | repeticions de World of Warships en taules i documents de partida | [lloc](https://holdi601.github.io/3DHeat-Ext-WoWs/) |

@@ -63,7 +63,7 @@ Arkivju ta' rilaxx imniżżel jaħdem bl-istess mod: ħollu, imbagħad ħaddem `
 ġewwa l-folder. Id-dettalji, u l-extras li jeħtieġu xi logħob, huma f'
 [Installazzjoni u tħaddim](../installing-and-running.md).
 
-## Tluq malajr {#quick-start}
+## Bidu veloċi {#quick-start}
 
 ```bash
 python -m heat3d_watch games            # what each game gives, and from where
@@ -119,7 +119,7 @@ biex jikkonverti demos ta' CS2). Kull waħda hija proġett tagħha, bir-rilaxxi 
 | --- | --- | --- |
 | [3DHeat](https://github.com/Holdi601/3DHeat) | il-viewer: heatmaps, analiżi tat-tlielaq u reviżjoni tal-partiti f'3D | [sit](https://holdi601.github.io/3DHeat/) |
 | [GameFiles](https://github.com/Holdi601/3DHeat-GameFiles) | korsijiet u livelli mill-fajls li jipprovdu l-logħob, bħala mudelli 3D | [sit](https://holdi601.github.io/3DHeat-GameFiles/) |
-| [GameCapture](https://github.com/Holdi601/3DHeat-GameCapture) | telemetrija tal-laps minn logħob tat-tlielaq; livelli mibnija mill-ġdid minn vidjow tal-logħba | [sit](https://holdi601.github.io/3DHeat-GameCapture/) |
+| [GameCapture](https://github.com/Holdi601/3DHeat-GameCapture) | telemetrija tal-laps minn logħob tat-tlielaq; livelli mibnija mill-ġdid minn vidjo tal-logħba | [sit](https://holdi601.github.io/3DHeat-GameCapture/) |
 | [Unreal Exporter](https://github.com/Holdi601/3DHeat-UnrealExporter) | plugin ta' Unreal Editor li jesporta livell bħala mudell 3D wieħed | [sit](https://holdi601.github.io/3DHeat-UnrealExporter/) |
 | [CS2](https://github.com/Holdi601/3DHeat-CS2) | demos ta' Counter-Strike 2 f'tabelli u dokumenti tal-partiti; mapep f'mudelli 3D | [sit](https://holdi601.github.io/3DHeat-CS2/) |
 | [Watcher](https://github.com/Holdi601/3DHeat-Watcher) | jirrekordja fl-isfond dak li l-logħob jippubblikaw dwar il-logħob tiegħek | [sit](https://holdi601.github.io/3DHeat-Watcher/) |

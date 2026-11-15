@@ -28,7 +28,7 @@ esimerkiksi kansioon `C:\Tools\3DHeat-Watcher`. (Jos sinulla on Git, `git clone`
 
 ## 3. Avaa pääte kyseisessä kansiossa {#open-a-terminal-in-that-folder}
 
-- **Windows:** avaa kansio File Explorerissa, napsauta osoitepalkkiin, kirjoita `powershell` ja
+- **Windows:** avaa kansio Resurssienhallinnassa, napsauta osoitepalkkiin, kirjoita `powershell` ja
   paina Enter. Sininen tai musta ikkuna aukeaa, jo kyseisessä kansiossa.
 - **macOS / Linux:** avaa *Terminal* ja kirjoita `cd ` (välilyönnin kanssa), vedä kansio
   ikkunaan ja paina Enter.
@@ -50,7 +50,7 @@ Lopussa pitäisi näkyä `Successfully installed ...` (tai `Requirement already 
 python -m heat3d_watch --version
 ```
 
-Pitäisi näkyä: `1.0.2 (the version number)`.
+Pitäisi näkyä: `1.0.2 (versionumero)`.
 
 ## Miten näitä komentoja luetaan {#how-to-read-the-commands-on-these-pages}
 

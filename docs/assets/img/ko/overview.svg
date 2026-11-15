@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="848" height="660" viewBox="0 0 848 660" font-family="Segoe UI,Helvetica,Arial,sans-serif" role="img" aria-label="The watcher: what games publish, into files on your machine">
 <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5f6368"/></marker></defs>
 <rect width="848" height="660" rx="10" fill="#ffffff" stroke="#dadce0"/>
-<text x="24" y="36" font-size="18" font-weight="600" fill="#202124">워처: 게임이 공개하는 것을 내 컴퓨터의 파일로</text>
+<text x="24" y="36" font-size="18" font-weight="600" fill="#202124">Watcher: 게임이 공개하는 것을 내 컴퓨터의 파일로</text>
 <rect x="24" y="60.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
 <text x="142.0" y="86.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">텔레메트리</text>
 <text x="142.0" y="105.0" text-anchor="middle" font-size="14" fill="#3c4043">UDP 포트, 공유 메모리</text>

@@ -16,7 +16,7 @@ search_exclude: true
 ## 1. Εγκαταστήστε την Python {#install-python}
 
 1. Κατεβάστε την Python 3.10 ή νεότερη από το <https://www.python.org/downloads/>.
-2. Τρέξτε το πρόγραμμα εγκατάστασης. Στην πρώτη οθόνη τικάρετε **Add python.exe to PATH**,
+2. Τρέξτε το πρόγραμμα εγκατάστασης. Στην πρώτη οθόνη επιλέξτε **Add python.exe to PATH**,
    και μετά κάντε κλικ στο **Install Now**.
 3. Ελέγξτε την: ανοίξτε ένα τερματικό (βήμα 3) και πληκτρολογήστε `python --version`. Θα δείτε
    `Python 3.` και έναν αριθμό 10 ή μεγαλύτερο.
@@ -53,7 +53,7 @@ already satisfied`).
 python -m heat3d_watch --version
 ```
 
-Θα δείτε: `1.0.2 (the version number)`.
+Θα δείτε: `1.0.2` (ο αριθμός έκδοσης).
 
 ## Πώς να διαβάζετε τις εντολές αυτών των σελίδων {#how-to-read-the-commands-on-these-pages}
 
@@ -68,7 +68,7 @@ python -m heat3d_watch --version
 
 | Βλέπετε | Τι να κάνετε |
 |---|---|
-| `'python' is not recognized` ή `command not found` | Η Python δεν είναι στο PATH: τρέξτε ξανά το πρόγραμμα εγκατάστασης και τικάρετε **Add python.exe to PATH**, και μετά ανοίξτε νέο τερματικό. Στο macOS/Linux δοκιμάστε `python3`. |
+| `'python' is not recognized` ή `command not found` | Η Python δεν είναι στο PATH: τρέξτε ξανά το πρόγραμμα εγκατάστασης και επιλέξτε **Add python.exe to PATH**, και μετά ανοίξτε νέο τερματικό. Στο macOS/Linux δοκιμάστε `python3`. |
 | `No module named ...` | Παραλείφθηκε το βήμα 4, ή έτρεξε σε άλλον φάκελο: κάντε `cd` στον φάκελο του εργαλείου και τρέξτε το ξανά. |
 | `pip is not recognized` | χρησιμοποιήστε `python -m pip ...` αντί για `pip ...`. |
 | `No such file or directory` / `can't open file` | το τερματικό είναι σε λάθος φάκελο, ή η διαδρομή είναι λάθος γραμμένη: ελέγξτε την, και βάλτε τις διαδρομές με κενά σε εισαγωγικά. |
