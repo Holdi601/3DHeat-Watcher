@@ -74,4 +74,4 @@ Je ziet het versienummer, bijvoorbeeld `1.0.2`.
 | `No module named ...` | stap 4 is overgeslagen of in een andere map uitgevoerd: ga met `cd` naar de map van het hulpmiddel en voer het opnieuw uit. |
 | `pip is not recognized` | gebruik `python -m pip ...` in plaats van `pip ...`. |
 | `No such file or directory` / `can't open file` | de terminal staat in de verkeerde map, of het pad is verkeerd getypt: controleer het, en zet paden met spaties tussen aanhalingstekens. |
-| rode tekst die eindigt op een `error:`-regel | lees de laatste regel: die zegt wat er ontbreekt. De pagina [Commando's](../commands.md) somt de meldingen op. |
+| rode tekst die eindigt op een `error:`-regel | lees de laatste regel: die zegt wat er ontbreekt. De pagina [Commando's](commands.md) somt de meldingen op. |

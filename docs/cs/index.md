@@ -13,7 +13,7 @@ permalink: /cs/
 **Co to je?** Hrajete hru. Tento program tiše zapisuje, kam jste jeli a co se stalo.
 Později to můžete prohlédnout jako barevnou mapu v prohlížeči 3DHeat.
 
-**Proč ho používat?** Abyste si vedli vlastní záznam každého sezení – kde jste jeli, letěli
+**Proč ho používat?** Abyste si vedli vlastní záznam každé relace – kde jste jeli, letěli
 nebo bojovali, své součty pro každou hru – bez jakékoli webové stránky a bez změny hry.
 
 **Příklad:** s běžícím Watcherem ujedete kolo v závodní hře; potom soubor v
@@ -27,11 +27,11 @@ Běží nenápadně, všimne si, kterou hru jste spustili, a čte výstupy té h
 sdílenou paměť, které hra zveřejňuje pro panely, integraci herního stavu, deník nebo log, který
 hra zapisuje, replay uložený po zápase, statistiky, které drží Steam, a klipy, které ukládá
 NVIDIA App. Záznamy zůstávají na vašem počítači. Program kontaktuje jen dvě externí služby a jen
-v těchto případech: GitHub, aby hledal novější vydání (viz [Aktualizace](../updates.md)), a
+v těchto případech: GitHub, aby hledal novější vydání (viz [Aktualizace](updates.md)), a
 Riot Match-V5 API, a to jen tehdy, když zadáte svůj vlastní klíč Riot API (viz
-[Replaye League of Legends](../game-lol-replays.md)).
+[Replaye League of Legends](game-lol-replays.md)).
 
-![watcher: co hry zveřejňují, do souborů na vašem počítači](../assets/img/cs/overview.svg)
+![Watcher: co hry zveřejňují, do souborů na vašem počítači](../assets/img/cs/overview.svg)
 
 ## Co zaznamenává {#what-it-records}
 
@@ -39,12 +39,12 @@ Riot Match-V5 API, a to jen tehdy, když zadáte svůj vlastní klíč Riot API 
   s rychlostí, směrem a vším dalším, co hra posílá spolu s tím.
 - **Události**: vznik, smrti, zabití, kola, etapy, rundy, góly, úkoly, vzlety a přistání, změny
   zón, úspěchy, zvýrazněné momenty. Každá událost se ukládá s časem a s místem, pokud ji hra udá.
-- **Statistiky pro každé sezení**: zabití, smrti, kola, nejlepší kolo, vzdálenost, nejvyšší rychlost,
+- **Statistiky pro každou relaci**: zabití, smrti, kola, nejlepší kolo, vzdálenost, nejvyšší rychlost,
   čas hraní a vlastní statistiky hry, pokud je hra vede.
 
-Co každá hra dává a odkud, je na její vlastní stránce v části [Hry](../games.md). Jeden zdroj nemůže
-zaznamenat všechno: hry pro více hráčů se zaznamenávají jen přes to, co zveřejňují, a watcher
-jejich paměť nikdy nečte (viz [Zdroje a pravidla](../sources-and-rules.md)).
+Co každá hra dává a odkud, je na její vlastní stránce v části [Hry](games.md). Jeden zdroj nemůže
+zaznamenat všechno: hry pro více hráčů se zaznamenávají jen přes to, co zveřejňují, a Watcher
+jejich paměť nikdy nečte (viz [Zdroje a pravidla](sources-and-rules.md)).
 
 ## Instalace {#install}
 
@@ -61,7 +61,7 @@ pip install -r requirements.txt
 
 Stažený archiv vydání funguje stejně: rozbalte ho a uvnitř složky spusťte `pip install -r requirements.txt`.
 Podrobnosti a doplňky, které některé hry potřebují, jsou na stránce
-[Instalace a spuštění](../installing-and-running.md).
+[Instalace a spuštění](installing-and-running.md).
 
 ## Rychlý start {#quick-start}
 
@@ -80,40 +80,40 @@ Ctrl+C nebo nezavřete okno.
 Všechno se zapisuje do `%LOCALAPPDATA%\3DHeat\Watcher`. Chcete-li jinou složku, nastavte
 proměnnou prostředí `HEAT3D_WATCH_HOME` nebo spusťte `python -m heat3d_watch config --set data=D:\somewhere`.
 
-- `sessions\<game>\<date>_<adapter>\` – jedna složka na sezení, která obsahuje `events.jsonl` (každou
+- `sessions\<game>\<date>_<adapter>\` – jedna složka na relaci, která obsahuje `events.jsonl` (každou
   událost v okamžiku, kdy nastane), `heat.parquet` (řádky s polohou, připravené pro prohlížeč 3DHeat)
   a `meta.json` (hra, zdroj, osy, počty, statistiky)
-- `watcher.sqlite` – statistiky každého sezení ve třech prostých tabulkách
-- `watcher.log` – co watcher dělal
+- `watcher.sqlite` – statistiky každé relace ve třech prostých tabulkách
+- `watcher.log` – co Watcher dělal
 
-Prohlížeč otevře `heat.parquet` sezení přímo, bez jakéhokoli nastavování (jeho osy a jednotky jsou
+Prohlížeč otevře přímo `heat.parquet` relace, bez jakéhokoli nastavování (jeho osy a jednotky jsou
 v souboru). Převedené replaye se zapisují jako tabulky a dokumenty zápasů vedle něj; formát prohlížeče
 pro jeden soubor na zápas je popsán na stránce
 [kontejner `.3dheat`](https://holdi601.github.io/3DHeat/container.html) a sloupce každé tabulky na stránce
-[Data](../the-data.md).
+[Data](the-data.md).
 
 ## Dokumentace {#the-documentation}
 
 | Stránka | Co obsahuje |
 |---|---|
 | [Než začnete](before-you-start.md) | Python, terminál, zástupné texty, jak vypadá úspěch a časté chyby |
-| [Instalace a spuštění](../installing-and-running.md) | požadavky, běh na pozadí, spuštění s Windows, zámkový soubor, log, každé nastavení a proměnná prostředí |
-| [Hry](../games.md) | stránka pro každou hru: co se zaznamenává, odkud, jak to zapnout, jak to funguje, osy, statistiky, co bylo ověřeno |
-| [Data](../the-data.md) | složky sezení, `events.jsonl`, `heat.parquet` a jeho patička, `meta.json`, `watcher.sqlite`, obnova po pádu, export CSV, otevření sezení v prohlížeči 3DHeat |
-| [Příkazy](../commands.md) | každý příkaz a možnost `python -m heat3d_watch` |
-| [Zdroje a pravidla](../sources-and-rules.md) | šest druhů zdrojů, pravidla pro hry pro více hráčů, které hry jsou vynechány a proč |
-| [NVIDIA Highlights](../nvidia-highlights.md) | co NVIDIA Highlights umí a neumí doručit a jak zvýrazněný moment dostane polohu |
-| [Serverové nahrávací mody](../server-mods.md) | mody serveru pro Arma 3 a Arma Reforger, které nahrávají celé mise pro prohlížeč |
-| [Čtení paměti](../memory-reading.md) | profily paměti pro jednoho hráče: formát, kontroly, jak ho napsat a ověřit |
-| [Aktualizace](../updates.md) | jak watcher hledá nová vydání a sám se aktualizuje |
-| [Vývoj](../development.md) | psaní adaptéru: API, testy, poctivé `verified`, regenerace stránek her |
-| [Všechny hry v jedné tabulce](../watcher.md) | každá hra v jedné tabulce, jak ji vypisuje `games --markdown`, plus hry prozkoumané, ale zatím nezpracované |
+| [Instalace a spuštění](installing-and-running.md) | požadavky, běh na pozadí, spuštění s Windows, zamykací soubor, log, každé nastavení a proměnná prostředí |
+| [Hry](games.md) | stránka pro každou hru: co se zaznamenává, odkud, jak to zapnout, jak to funguje, osy, statistiky, co bylo ověřeno |
+| [Data](the-data.md) | složky relace, `events.jsonl`, `heat.parquet` a jeho patička, `meta.json`, `watcher.sqlite`, obnova po pádu, export CSV, otevření relace v prohlížeči 3DHeat |
+| [Příkazy](commands.md) | každý příkaz a možnost `python -m heat3d_watch` |
+| [Zdroje a pravidla](sources-and-rules.md) | šest druhů zdrojů, pravidla pro hry pro více hráčů, které hry jsou vynechány a proč |
+| [NVIDIA Highlights](nvidia-highlights.md) | co NVIDIA Highlights umí a neumí doručit a jak zvýrazněný moment dostane polohu |
+| [Serverové nahrávací mody](server-mods.md) | mody serveru pro Arma 3 a Arma Reforger, které nahrávají celé mise pro prohlížeč |
+| [Čtení paměti](memory-reading.md) | profily paměti pro jednoho hráče: formát, kontroly, jak ho napsat a ověřit |
+| [Aktualizace](updates.md) | jak Watcher hledá nová vydání a sám se aktualizuje |
+| [Vývoj](development.md) | psaní adaptéru: API, testy, poctivé `verified`, regenerace stránek her |
+| [Všechny hry v jedné tabulce](watcher.md) | každá hra v jedné tabulce, jak ji vypisuje `games --markdown`, plus hry prozkoumané, ale zatím nezpracované |
 | [Přehled příkazů](../cli-reference.md) | `--help` každého příkazu, vygenerováno z kódu |
-| [Údržba](../maintaining.md) | kontrolní seznam vydání pro tyto stránky |
+| [Údržba](maintaining.md) | kontrolní seznam vydání pro tyto stránky |
 
 ## Součást 3DHeat {#part-of-3dheat}
 
-3DHeat Watcher je jeden z bezplatných nástrojů kolem prohlížeče 3DHeat (watcher pro převod dem CS2
+3DHeat Watcher je jeden z bezplatných nástrojů kolem prohlížeče 3DHeat (Watcher pro převod dem CS2
 používá 3DHeat CS2). Každý je samostatný projekt s vlastními vydáními a licencí:
 
 | Nástroj | Co dělá | Dokumentace |

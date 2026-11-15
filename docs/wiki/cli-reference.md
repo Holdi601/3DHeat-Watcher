@@ -7,7 +7,7 @@ each command step by step; this page lists everything exactly as the program has
 
 ```text
 usage: heat3d_watch [-h] [--version]
-                    {run,games,setup,status,sessions,stats,table,replays,dota-replay,update,config} ...
+                    {run,games,setup,status,sessions,stats,table,replays,dota-replay,dota-map,update,config} ...
 
 `python -m heat3d_watch <command>`
 
@@ -20,11 +20,12 @@ usage: heat3d_watch [-h] [--version]
     table      rebuild a session's heat.parquet from its events.jsonl
     replays    convert the replays already on disk for one adapter (or a folder of them)
     dota-replay  download a public Dota 2 match's replay by its id (--convert to convert it now)
+    dota-map   the Dota 2 map from your install as a level (.glb) under the replay tables
     update     update the tools to the newest release (--check to only ask)
     config     show the settings, or change them (--set key=value ...)
 
 positional arguments:
-  {run,games,setup,status,sessions,stats,table,replays,dota-replay,update,config}
+  {run,games,setup,status,sessions,stats,table,replays,dota-replay,dota-map,update,config}
     run                 watch in the background
     games               what each game gives and from where
     setup               switch a game's own output on
@@ -34,6 +35,7 @@ positional arguments:
     table               rebuild a session's heat.parquet
     replays             convert the replays already on disk
     dota-replay         download a public Dota 2 match's replay
+    dota-map            the Dota 2 map from your install as a level (.glb)
     update              update to the newest release
     config              show or change the settings
 
@@ -146,6 +148,27 @@ options:
   -o, --out OUT  the folder to save to (default: Dota's own replays folder)
   --convert      convert the folder's replays now
   -v, --verbose
+```
+
+## `dota-map`
+
+```text
+usage: heat3d_watch dota-map [-h] -o OUT [--game GAME] [--source2viewer SOURCE2VIEWER]
+                             [--detail DETAIL]
+                             [map]
+
+positional arguments:
+  map                   the map's name (default: dota) or the path to its .vpk
+
+options:
+  -h, --help            show this help message and exit
+  -o, --out OUT         the .glb to write
+  --game GAME           the Dota 2 folder (default: found in your Steam libraries)
+  --source2viewer SOURCE2VIEWER
+                        Source2Viewer-CLI's path (default: HEAT3D_SOURCE2VIEWER, then
+                        PATH)
+  --detail DETAIL       buildings' vertex clustering cell in game units (default 8; 0
+                        keeps every triangle)
 ```
 
 ## `update`

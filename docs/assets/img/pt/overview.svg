@@ -1,26 +1,26 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="848" height="660" viewBox="0 0 848 660" font-family="Segoe UI,Helvetica,Arial,sans-serif" role="img" aria-label="The watcher: what games publish, into files on your machine">
 <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5f6368"/></marker></defs>
 <rect width="848" height="660" rx="10" fill="#ffffff" stroke="#dadce0"/>
-<text x="24" y="36" font-size="18" font-weight="600" fill="#202124">O watcher: o que os jogos publicam, em arquivos na sua máquina</text>
+<text x="24" y="36" font-size="18" font-weight="600" fill="#202124">O watcher: o que os jogos publicam, em ficheiros no computador</text>
 <rect x="24" y="60.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
 <text x="142.0" y="86.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">telemetria</text>
-<text x="142.0" y="105.0" text-anchor="middle" font-size="14" fill="#3c4043">portas UDP, memória compartilhada</text>
+<text x="142.0" y="105.0" text-anchor="middle" font-size="14" fill="#3c4043">portas UDP, memória partilhada</text>
 <rect x="24" y="136.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
 <text x="142.0" y="162.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">integração de estado do jogo</text>
-<text x="142.0" y="181.0" text-anchor="middle" font-size="14" fill="#3c4043">APIs locais, mapas da web</text>
+<text x="142.0" y="181.0" text-anchor="middle" font-size="14" fill="#3c4043">APIs locais, mapas web</text>
 <rect x="24" y="212.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
-<text x="142.0" y="238.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">logs e diários</text>
-<text x="142.0" y="257.0" text-anchor="middle" font-size="14" fill="#3c4043">arquivos que o jogo grava</text>
+<text x="142.0" y="238.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">registos e diários</text>
+<text x="142.0" y="257.0" text-anchor="middle" font-size="14" fill="#3c4043">ficheiros que o jogo escreve</text>
 <rect x="24" y="288.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
-<text x="142.0" y="314.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">repetições</text>
-<text x="142.0" y="333.0" text-anchor="middle" font-size="14" fill="#3c4043">salvo após uma partida</text>
+<text x="142.0" y="314.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">replays</text>
+<text x="142.0" y="333.0" text-anchor="middle" font-size="14" fill="#3c4043">guardado após uma partida</text>
 <rect x="24" y="364.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
 <text x="142.0" y="390.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">Steam, NVIDIA</text>
-<text x="142.0" y="409.0" text-anchor="middle" font-size="14" fill="#3c4043">estatísticas, linha, destaques</text>
+<text x="142.0" y="409.0" text-anchor="middle" font-size="14" fill="#3c4043">estatísticas, linha do tempo, destaques</text>
 <rect x="306" y="202.5" width="236" height="79" rx="8" fill="#e8f0fe" stroke="#3b6fd8" stroke-width="1.5"/>
 <text x="424.0" y="228.5" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">run</text>
-<text x="424.0" y="247.5" text-anchor="middle" font-size="14" fill="#3c4043">percebe o jogo em execução,</text>
-<text x="424.0" y="266.5" text-anchor="middle" font-size="14" fill="#3c4043">inicia o seu adaptador</text>
+<text x="424.0" y="247.5" text-anchor="middle" font-size="14" fill="#3c4043">deteta o jogo em execução,</text>
+<text x="424.0" y="266.5" text-anchor="middle" font-size="14" fill="#3c4043">inicia o adaptador</text>
 <rect x="588" y="164.5" width="236" height="79" rx="8" fill="#e6f4ea" stroke="#2e8b57" stroke-width="1.5"/>
 <text x="706.0" y="190.5" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">pasta da sessão</text>
 <text x="706.0" y="209.5" text-anchor="middle" font-size="14" fill="#3c4043">events.jsonl, heat.parquet,</text>
@@ -38,16 +38,16 @@
 <path d="M706.0,319.5 V447.0 H142.0 V468.0" fill="none" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
 <rect x="24" y="470.0" width="236" height="60" rx="8" fill="#f3e8fd" stroke="#8a4fd0" stroke-width="1.5"/>
 <text x="142.0" y="496.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">visualizador 3DHeat</text>
-<text x="142.0" y="515.0" text-anchor="middle" font-size="14" fill="#3c4043">mapas de calor, trajetos</text>
+<text x="142.0" y="515.0" text-anchor="middle" font-size="14" fill="#3c4043">mapas de calor, linhas de rota</text>
 <rect x="24" y="546.0" width="236" height="60" rx="8" fill="#f3e8fd" stroke="#8a4fd0" stroke-width="1.5"/>
 <text x="142.0" y="572.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">stats, sessões, --csv</text>
-<text x="142.0" y="591.0" text-anchor="middle" font-size="14" fill="#3c4043">totais por jogo, arquivos CSV</text>
+<text x="142.0" y="591.0" text-anchor="middle" font-size="14" fill="#3c4043">totais por jogo, ficheiros CSV</text>
 <rect x="24" y="626" width="18" height="18" rx="3" fill="#f1f3f4" stroke="#80868b"/>
 <text x="48" y="640" font-size="14" fill="#3c4043">entrada</text>
 <rect x="95.5" y="626" width="18" height="18" rx="3" fill="#e8f0fe" stroke="#3b6fd8"/>
 <text x="119.5" y="640" font-size="14" fill="#3c4043">passo</text>
 <rect x="159.5" y="626" width="18" height="18" rx="3" fill="#e6f4ea" stroke="#2e8b57"/>
-<text x="183.5" y="640" font-size="14" fill="#3c4043">arquivos gravados</text>
+<text x="183.5" y="640" font-size="14" fill="#3c4043">ficheiros escritos</text>
 <rect x="291.0" y="626" width="18" height="18" rx="3" fill="#f3e8fd" stroke="#8a4fd0"/>
-<text x="315.0" y="640" font-size="14" fill="#3c4043">onde você a vê</text>
+<text x="315.0" y="640" font-size="14" fill="#3c4043">onde o vê</text>
 </svg>

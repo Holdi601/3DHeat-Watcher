@@ -124,7 +124,10 @@ def _codeish(text: str) -> str:
         if i % 2:
             out.append(piece)
             continue
-        out.append(re.sub(r"[^\s`]*[<\\*][^\s`,;)]*", lambda m: f"`{m.group(0)}`", piece))
+        # A placeholder's own spaces (`<match id>`) stay inside its word.
+        piece = re.sub(r"<[^<>`\s][^<>`]*>", lambda m: m.group(0).replace(" ", "\x00"), piece)
+        piece = re.sub(r"[^\s`]*[<\\*][^\s`,;)]*", lambda m: f"`{m.group(0)}`", piece)
+        out.append(piece.replace("\x00", " "))
     return "`".join(out)
 
 

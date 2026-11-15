@@ -73,4 +73,4 @@ Měli byste vidět: `1.0.2 (číslo verze)`.
 | `No module named ...` | krok 4 se přeskočil, nebo běžel v jiné složce: `cd` do složky nástroje a spusťte ho znovu. |
 | `pip is not recognized` | místo `pip ...` napište `python -m pip ...`. |
 | `No such file or directory` / `can't open file` | terminál je ve špatné složce, nebo je cesta přepsaná: zkontrolujte ji a cesty s mezerami dejte do uvozovek. |
-| červený text končící řádkem `error:` | přečtěte poslední řádek: říká, co chybí. Stránka [Příkazy](../commands.md) uvádí hlášení. |
+| červený text končící řádkem `error:` | přečtěte poslední řádek: říká, co chybí. Stránka [Příkazy](commands.md) uvádí hlášení. |

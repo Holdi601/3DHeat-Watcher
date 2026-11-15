@@ -6,6 +6,7 @@
 - [Games](games)
 - [The data](the-data)
 - [Commands](commands)
+- [Dota 2 map](dota-map)
 - [Sources and rules](sources-and-rules)
 - [NVIDIA Highlights](nvidia-highlights)
 - [Reading memory](memory-reading)

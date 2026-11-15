@@ -23,7 +23,7 @@ Kinds: `telemetry`, `gsi`, `log`, `replay` and `platform` - see [Sources and rul
 | [Counter-Strike 2 (game state)](game-cs2-gsi.md) | gsi | yes | Game State Integration: HTTP POSTs to 127.0.0.1:3311 configured by `<CS2>\game\csgo\cfg\gamestate_integration_heat3d.cfg` |
 | [DCS World (live data)](game-dcs.md) | telemetry | yes | the watcher's hook `%USERPROFILE%\Saved` `Games\DCS*\Scripts\Hooks\heat3d-watch.lua`, UDP lines to 127.0.0.1:41993 |
 | [DiRT Rally 2.0 (live data)](game-dirt-rally-2.md) | telemetry | yes | UDP 127.0.0.1:20777, extradata=3 `(Documents\My` `Games\DiRT` Rally `2.0\hardwaresettings\hardware_settings_config.xml`); while another app holds 20777 the watcher leaves the port to it |
-| [Dota 2 (replays)](game-dota-replays.md) | replay | yes | replays Dota 2 saves: `<Dota>/game/dota/replays/<match` id>.dem (downloaded in the client, or with `dota-replay <match id>`) |
+| [Dota 2 (replays)](game-dota-replays.md) | replay | yes | replays Dota 2 saves: `<Dota>/game/dota/replays/<match id>.dem` (downloaded in the client, or with `dota-replay <match id>`) |
 | [Dota 2 (game state)](game-dota2-gsi.md) | gsi | yes | Game State Integration: HTTP POSTs to 127.0.0.1:3312 configured by `<Dota>\game\dota\cfg\gamestate_integration\gamestate_integration_heat3d.cfg` |
 | [EA SPORTS F1 23 (live data)](game-f1-23.md) | telemetry | yes | UDP telemetry 127.0.0.1:20777 `(Documents\My` `Games\F1` `23\hardwaresettings\hardware_settings_config.xml`) |
 | [EA SPORTS F1 24 (live data)](game-f1-24.md) | telemetry | yes | UDP telemetry 127.0.0.1:20777 `(Documents\My` `Games\F1` `24\hardwaresettings\hardware_settings_config.xml`) |
@@ -57,10 +57,10 @@ Kinds: `telemetry`, `gsi`, `log`, `replay` and `platform` - see [Sources and rul
 | [Steam statistics (platform)](game-steam-stats.md) | platform | no | Steam's local stats cache `%STEAM%\appcache\stats\UserGameStats_<account>_<appid>.bin` with `UserGameStatsSchema_<appid>.bin`; playtime from `%STEAM%\userdata\<account>\config\localconfig.vdf` (%STEAM% from `HKCU\Software\Valve\Steam` SteamPath) |
 | [Steam Timeline (platform)](game-steam-timeline.md) | platform | no | `%STEAM%\userdata\<account>\gamerecordings\timelines\timeline_<appid><date>_<time>.json` |
 | [VALORANT (replays)](game-valorant-replays.md) | replay | no | replays VALORANT saves: `%LOCALAPPDATA%/VALORANT/Saved/Demos/*.vrf` (only the parts that are not obfuscated) |
-| [War Thunder (replays)](game-warthunder-replays.md) | replay | yes | replays War Thunder saves: `<War` `Thunder>/Replays/*.wrpl` (with replay saving on), converted by the external converter `heat3d-wt-replay` (exporters/ext/warthunder-replay) |
+| [War Thunder (replays)](game-warthunder-replays.md) | replay | yes | replays War Thunder saves: `<War Thunder>/Replays/*.wrpl` (with replay saving on), converted by the external converter `heat3d-wt-replay` (exporters/ext/warthunder-replay) |
 | [War Thunder (game state)](game-warthunder-webmap.md) | gsi | yes | the game's local web map, <http://127.0.0.1:8111> (/map_info.json, /map_obj.json, /state, /indicators, /hudmsg, /gamechat, /mission.json, /map.img) |
-| [World of Tanks (replays)](game-wot-replays.md) | replay | yes | replays World of Tanks saves: `<World` of `Tanks>/replays/*.wotreplay` (with battle recording on), converted by the external converter `heat3d-wot-replay` (exporters/ext/wot-replay) |
-| [World of Warships (replays)](game-wows-replays.md) | replay | yes | replays World of Warships saves: `<World` of `Warships>/replays/*.wowsreplay` (with replays on), converted by the external converter `heat3d-wows-replay` (exporters/ext/wows-replay) |
+| [World of Tanks (replays)](game-wot-replays.md) | replay | yes | replays World of Tanks saves: `<World of Tanks>/replays/*.wotreplay` (with battle recording on), converted by the external converter `heat3d-wot-replay` (exporters/ext/wot-replay) |
+| [World of Warships (replays)](game-wows-replays.md) | replay | yes | replays World of Warships saves: `<World of Warships>/replays/*.wowsreplay` (with replays on), converted by the external converter `heat3d-wows-replay` (exporters/ext/wows-replay) |
 | [X-Plane (live data)](game-xplane.md) | telemetry | yes | X-Plane's UDP interface on 127.0.0.1:49000 (RREF datarefs and RPOS position, answered to the watcher) |
 
 Games that are not recorded, and why: [Sources and rules](sources-and-rules.md#what-is-declined-and-why). Everything in one table, as `python -m heat3d_watch games --markdown` prints it: [All games in one table](watcher.md).

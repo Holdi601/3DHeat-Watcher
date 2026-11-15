@@ -10,50 +10,49 @@ permalink: /pt/
 ---
 # 3DHeat Watcher {#dheat-watcher}
 
-**O que é?** Você joga um jogo. Este programa anota discretamente por onde você andou e o que aconteceu.
-Depois você pode ver isso como um mapa colorido no visualizador 3DHeat.
+**O que é?** Joga-se um jogo. Este programa regista discretamente por onde se andou e o que aconteceu.
+Depois pode ver-se isso como um mapa colorido no visualizador 3DHeat.
 
-**Para que eu usaria?** Para manter o seu próprio registro de cada sessão - por onde dirigiu, voou ou lutou,
-os seus totais por jogo - sem nenhum site e sem alterar o jogo.
+**Para que serve?** Para manter um registo próprio de cada sessão - por onde se conduziu, voou ou lutou,
+os totais por jogo - sem nenhum site e sem alterar o jogo.
 
-**Exemplo:** você dá uma volta em um jogo de corrida com o watcher rodando; depois, um arquivo em
-`sessions\<jogo>\` guarda a linha que você fez, e o visualizador a desenha.
+**Exemplo:** dá-se uma volta num jogo de corrida com o watcher a correr; depois, um ficheiro em
+`sessions\<jogo>\` guarda a linha feita, e o visualizador desenha-a.
 
-Com mais detalhes: o 3DHeat Watcher é um programa de segundo plano que registra o que os jogos publicam sobre a
-sua jogatina - por onde você andou, o que aconteceu em cada lugar, e os números por trás disso - em arquivos na
-sua própria máquina. Os arquivos servem para as suas estatísticas e para os mapas de calor e as linhas de
+Com mais detalhes: o 3DHeat Watcher é um programa de segundo plano que regista o que os jogos publicam sobre
+o que se joga - por onde se andou, o que aconteceu em cada lugar, e os números por trás disso - em ficheiros no
+próprio computador. Os ficheiros servem para as estatísticas e para os mapas de calor e as linhas de
 trajeto do visualizador 3DHeat.
 
-Ele roda discretamente, percebe qual jogo você iniciou, e lê as saídas desse jogo: uma porta de telemetria
-ou memória compartilhada que o jogo publica para painéis, uma integração de estado de jogo, o diário ou o log que
-o jogo grava, a repetição que ele salva depois de uma partida, as estatísticas que a Steam mantém, os
-clipes que o NVIDIA App salva. As gravações ficam na sua máquina. O programa contacta apenas dois
+Corre discretamente, percebe qual jogo foi iniciado, e lê as saídas desse jogo: uma porta de telemetria
+ou memória partilhada que o jogo publica para painéis, uma integração de estado de jogo, o diário ou o registo que
+o jogo grava, a repetição que ele guarda depois de uma partida, as estatísticas que a Steam mantém, os
+clipes que o NVIDIA App guarda. As gravações ficam no próprio computador. O programa contacta apenas dois
 serviços externos, e só nestes casos: o GitHub, para procurar uma versão mais nova (veja
-[Atualizações](../updates.md)), e a API Match-V5 da Riot, e só se você informar a sua própria
-chave de API da Riot (veja [Repetições de League of Legends](../game-lol-replays.md)).
+[Atualizações](updates.md)), e a API Match-V5 da Riot, e só se for indicada a própria
+chave de API da Riot (veja [Repetições de League of Legends](game-lol-replays.md)).
 
-![o watcher: o que os jogos publicam, em arquivos na sua máquina](../assets/img/pt/overview.svg)
+![o watcher: o que os jogos publicam, em ficheiros no computador](../assets/img/pt/overview.svg)
 
-## O que ele registra {#what-it-records}
+## O que ele regista {#what-it-records}
 
 - **Posições**: o carro, a aeronave, o herói ou o jogador, várias vezes por segundo onde o jogo as publica,
   com velocidade, rumo e o que mais o jogo enviar junto.
-- **Eventos**: surgimentos, mortes, abates, voltas, trechos, rounds, gols, missões, decolagens e pousos,
-  mudanças de zona, conquistas, destaques. Cada evento é guardado com o seu tempo, e com o seu lugar quando o
-  jogo o informa.
+- **Eventos**: surgimentos, mortes, abates, voltas, trechos, rounds, golos, missões, descolagens e aterragens,
+  mudanças de zona, conquistas, destaques. Cada evento fica guardado com a hora e, quando o jogo o indica, com o seu lugar.
 - **Estatísticas por sessão**: abates, mortes, voltas, melhor volta, distância, velocidade máxima,
   tempo de jogo, e as estatísticas do próprio jogo onde ele as mantém.
 
-O que cada jogo dá, e de onde, está na sua própria página em [Jogos](../games.md). Uma única fonte não pode
-registrar tudo: os jogos multijogador são registrados apenas pelo que publicam, e o watcher
-nunca lê a memória deles (veja [Fontes e regras](../sources-and-rules.md)).
+O que cada jogo dá, e de onde, está na página própria de cada jogo em [Jogos](games.md). Uma única fonte não pode
+registar tudo: os jogos multijogador são registados apenas pelo que publicam, e o watcher
+nunca lê a memória deles (veja [Fontes e regras](sources-and-rules.md)).
 
 ## Instalação {#install}
 
-Nunca usou a linha de comando? Leia primeiro [Antes de começar](before-you-start.md).
+Para quem nunca usou a linha de comando, leia primeiro [Antes de começar](before-you-start.md).
 
-O watcher é um programa Python para Windows (Python 3.10 ou mais recente). Muitas das suas fontes existem apenas no Windows: memória
-compartilhada, o registro, as notificações do Windows.
+O watcher é um programa Python para Windows (Python 3.10 ou mais recente). Muitas das fontes existem apenas no Windows: memória
+partilhada, o registo, as notificações do Windows.
 
 ```bash
 git clone https://github.com/Holdi601/3DHeat-Watcher.git
@@ -61,25 +60,25 @@ cd 3DHeat-Watcher
 pip install -r requirements.txt
 ```
 
-Um arquivo de lançamento baixado funciona do mesmo jeito: descompacte e depois execute `pip install -r requirements.txt`
-dentro da pasta. Os detalhes, e os extras que alguns jogos precisam, estão em
-[Instalação e execução](../installing-and-running.md).
+Um ficheiro de lançamento transferido funciona da mesma forma: extraia-o e depois execute `pip install -r requirements.txt`
+dentro da pasta. Os detalhes, e os extras de que alguns jogos precisam, estão em
+[Instalação e execução](installing-and-running.md).
 
 ## Início rápido {#quick-start}
 
 ```bash
 python -m heat3d_watch games            # o que cada jogo dá, e de onde
 python -m heat3d_watch setup all        # o que precisaria ser ligado (nada é alterado)
-python -m heat3d_watch setup f1-25 --apply   # liga a saída de um jogo (o arquivo original é guardado em backup)
-python -m heat3d_watch run              # observa; deixe rodando enquanto você joga
+python -m heat3d_watch setup f1-25 --apply   # liga a saída de um jogo (o ficheiro original fica guardado em cópia de segurança)
+python -m heat3d_watch run              # observa; deixe-o a correr enquanto joga
 python -m heat3d_watch stats            # totais por jogo
-python -m heat3d_watch stats --csv out  # sessões, eventos e estatísticas como arquivos CSV
+python -m heat3d_watch stats --csv out  # sessões, eventos e estatísticas como ficheiros CSV
 ```
 
-Você deve ver: depois de `games`, uma tabela com uma linha por jogo; `run` continua até você pressionar
+Deve aparecer: depois de `games`, uma tabela com uma linha por jogo; `run` continua até premir
 Ctrl+C ou fechar a janela.
 
-Tudo é gravado em `%LOCALAPPDATA%\3DHeat\Watcher`. Para usar outra pasta, defina a
+Tudo fica guardado em `%LOCALAPPDATA%\3DHeat\Watcher`. Para usar outra pasta, defina a
 variável de ambiente `HEAT3D_WATCH_HOME` ou execute `python -m heat3d_watch config --set data=D:\algum\lugar`.
 
 - `sessions\<jogo>\<data>_<adaptador>\` - uma pasta por sessão, com `events.jsonl` (cada evento
@@ -88,44 +87,44 @@ variável de ambiente `HEAT3D_WATCH_HOME` ou execute `python -m heat3d_watch con
 - `watcher.sqlite` - as estatísticas de cada sessão, em três tabelas simples
 - `watcher.log` - o que o watcher fez
 
-O visualizador abre o `heat.parquet` de uma sessão diretamente, sem nenhuma configuração (os seus eixos e unidades
-estão no arquivo). As repetições convertidas são gravadas como tabelas e documentos de partida ao lado dele; o
-formato de um arquivo por partida do visualizador está descrito na página do seu
-[contêiner `.3dheat`](https://holdi601.github.io/3DHeat/container.html), e as colunas de cada tabela em
-[Os dados](../the-data.md).
+O visualizador abre o `heat.parquet` de uma sessão diretamente, sem nenhuma configuração (os eixos e as unidades
+estão no ficheiro). As repetições convertidas são guardadas como tabelas e documentos de partida ao lado dele; o
+formato de um ficheiro por partida do visualizador está descrito na página do seu
+[contentor `.3dheat`](https://holdi601.github.io/3DHeat/container.html), e as colunas de cada tabela em
+[Os dados](the-data.md).
 
 ## A documentação {#the-documentation}
 
 | Página | O que cobre |
 |---|---|
-| [Antes de começar](before-you-start.md) | Python, um terminal, marcadores, como são o sucesso e os erros comuns |
-| [Instalação e execução](../installing-and-running.md) | requisitos, execução em segundo plano, início com o Windows, o arquivo de bloqueio, o log, cada configuração e variável de ambiente |
-| [Jogos](../games.md) | uma página por jogo: o que é registrado, de onde, como ligar, como funciona, eixos, estatísticas, o que foi verificado |
-| [Os dados](../the-data.md) | pastas de sessão, `events.jsonl`, `heat.parquet` e o seu rodapé, `meta.json`, `watcher.sqlite`, recuperação após uma queda, exportação CSV, abrir uma sessão no visualizador 3DHeat |
-| [Comandos](../commands.md) | cada comando e opção de `python -m heat3d_watch` |
-| [Fontes e regras](../sources-and-rules.md) | os seis tipos de fonte, as regras para multijogador, quais jogos ficam de fora e por quê |
-| [NVIDIA Highlights](../nvidia-highlights.md) | o que o NVIDIA Highlights pode e não pode entregar, e como um destaque ganha uma posição |
-| [Mods de servidor gravador](../server-mods.md) | os mods de servidor do Arma 3 e do Arma Reforger que gravam missões inteiras para o visualizador |
-| [Leitura de memória](../memory-reading.md) | perfis de memória para um jogador: o formato, as verificações, como escrever e conferir um |
-| [Atualizações](../updates.md) | como o watcher procura novas versões e se atualiza sozinho |
-| [Desenvolvimento](../development.md) | escrever um adaptador: a API, os testes, um `verified` honesto, regenerar as páginas dos jogos |
-| [Todos os jogos em uma tabela](../watcher.md) | cada jogo em uma tabela, como `games --markdown` a imprime, mais os jogos pesquisados mas ainda não construídos |
+| [Antes de começar](before-you-start.md) | Python, um terminal, marcadores, o que indica sucesso e os erros comuns |
+| [Instalação e execução](installing-and-running.md) | requisitos, execução em segundo plano, início com o Windows, o ficheiro de bloqueio, o registo, cada configuração e variável de ambiente |
+| [Jogos](games.md) | uma página por jogo: o que é registado, de onde, como ligar, como funciona, eixos, estatísticas, o que foi verificado |
+| [Os dados](the-data.md) | pastas de sessão, `events.jsonl`, `heat.parquet` e o rodapé, `meta.json`, `watcher.sqlite`, recuperação após uma queda, exportação CSV, abrir uma sessão no visualizador 3DHeat |
+| [Comandos](commands.md) | cada comando e opção de `python -m heat3d_watch` |
+| [Fontes e regras](sources-and-rules.md) | os seis tipos de fonte, as regras para multijogador, quais jogos ficam de fora e por quê |
+| [NVIDIA Highlights](nvidia-highlights.md) | o que o NVIDIA Highlights pode e não pode entregar, e como um destaque ganha uma posição |
+| [Mods de servidor que gravam](server-mods.md) | os mods de servidor do Arma 3 e do Arma Reforger que gravam missões inteiras para o visualizador |
+| [Leitura de memória](memory-reading.md) | perfis de memória para um jogador: o formato, as verificações, como escrever e verificar um |
+| [Atualizações](updates.md) | como o watcher procura novas versões e se atualiza sozinho |
+| [Desenvolvimento](development.md) | escrever um adaptador: a API, os testes, um `verified` honesto, regenerar as páginas dos jogos |
+| [Todos os jogos numa tabela](watcher.md) | cada jogo numa tabela, como `games --markdown` a imprime, mais os jogos pesquisados mas ainda não construídos |
 | [Referência de comandos](../cli-reference.md) | o `--help` de cada comando, gerado a partir do código |
-| [Manutenção](../maintaining.md) | a lista de verificação de lançamento destas páginas |
+| [Manutenção](maintaining.md) | a lista de verificação de lançamento destas páginas |
 
 ## Parte do 3DHeat {#part-of-3dheat}
 
 O 3DHeat Watcher é uma das ferramentas gratuitas em torno do visualizador 3DHeat (o watcher usa o 3DHeat CS2
-para converter demos do CS2). Cada uma é um projeto próprio, com os seus próprios lançamentos e licença:
+para converter demos do CS2). Cada uma é um projeto próprio, com lançamentos e licença próprios:
 
 | Ferramenta | O que faz | Documentação |
 |---|---|---|
 | [3DHeat](https://github.com/Holdi601/3DHeat) | o visualizador: mapas de calor, análise de corrida e revisão de partidas em 3D | [site](https://holdi601.github.io/3DHeat/) |
-| [GameFiles](https://github.com/Holdi601/3DHeat-GameFiles) | percursos e níveis a partir dos arquivos que os jogos trazem, como modelos 3D | [site](https://holdi601.github.io/3DHeat-GameFiles/) |
+| [GameFiles](https://github.com/Holdi601/3DHeat-GameFiles) | percursos e níveis a partir dos ficheiros que os jogos trazem, como modelos 3D | [site](https://holdi601.github.io/3DHeat-GameFiles/) |
 | [GameCapture](https://github.com/Holdi601/3DHeat-GameCapture) | telemetria de voltas de jogos de corrida; níveis reconstruídos a partir de vídeo de jogo | [site](https://holdi601.github.io/3DHeat-GameCapture/) |
 | [Unreal Exporter](https://github.com/Holdi601/3DHeat-UnrealExporter) | um plugin do Unreal Editor que exporta um nível como um modelo 3D | [site](https://holdi601.github.io/3DHeat-UnrealExporter/) |
 | [CS2](https://github.com/Holdi601/3DHeat-CS2) | demos do Counter-Strike 2 em tabelas e documentos de partida; mapas em modelos 3D | [site](https://holdi601.github.io/3DHeat-CS2/) |
-| [Watcher](https://github.com/Holdi601/3DHeat-Watcher) | registra, em segundo plano, o que os jogos publicam sobre a sua jogatina | [site](https://holdi601.github.io/3DHeat-Watcher/) |
+| [Watcher](https://github.com/Holdi601/3DHeat-Watcher) | regista, em segundo plano, o que os jogos publicam sobre o que se joga | [site](https://holdi601.github.io/3DHeat-Watcher/) |
 | [Ext-WarThunder](https://github.com/Holdi601/3DHeat-Ext-WarThunder) | repetições do War Thunder em tabelas e documentos de partida | [site](https://holdi601.github.io/3DHeat-Ext-WarThunder/) |
 | [Ext-WoT](https://github.com/Holdi601/3DHeat-Ext-WoT) | repetições do World of Tanks em tabelas e documentos de partida | [site](https://holdi601.github.io/3DHeat-Ext-WoT/) |
 | [Ext-WoWs](https://github.com/Holdi601/3DHeat-Ext-WoWs) | repetições do World of Warships em tabelas e documentos de partida | [site](https://holdi601.github.io/3DHeat-Ext-WoWs/) |
