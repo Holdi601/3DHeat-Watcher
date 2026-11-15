@@ -962,7 +962,7 @@ ADAPTERS = [
         axes=Axes(up="y", units="none: the telemetry has no world positions"),
         verified=(
             "tested on packets built from the game's own Il2_TeleOutput spec (rev 1.2); startup.cfg edits "
-            "checked on a copy of a real one; untested against the running game"
+            "tested on a copy of the file; untested against the running game"
         ),
         completeness={
             "read": (
@@ -1012,7 +1012,7 @@ ADAPTERS = [
         enable="python -m heat3d_watch setup il2-tacview --apply (tacviewrecord = 1 in [KEY = track_record])",
         interval=5.0,
         axes=TANGENT_AXES,
-        verified="tested on synthetic ACMI 2.2 files (text and zipped); no IL-2 recording on the test machine",
+        verified="tested on synthetic ACMI 2.2 files (text and zipped); untested on a recording from the game",
         completeness={
             "read": (
                 "every object's T (longitude, latitude, altitude, roll, pitch, yaw, U, V, heading) as positions "

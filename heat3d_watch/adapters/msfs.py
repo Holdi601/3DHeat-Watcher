@@ -630,7 +630,7 @@ def _adapter(id: str, game: str, exe: str, is2024: bool) -> MsfsAdapter:
         axes=TANGENT_AXES,
         verified=(
             "message decoding tested on buffers built from SimConnect.h's layouts; the live SimConnect "
-            "connection is untested (no SimConnect.dll on the test machine)"
+            "connection is untested"
         ),
         completeness={
             "read": (

@@ -1,7 +1,8 @@
+# Counter-Strike 2 (replays)
 
-# Counter-Strike 2 (replay)
+After a match of Counter-Strike 2, the watcher turns the replay the game saved into files you can look at on a map in the 3DHeat viewer.
 
-Adapter `cs2-demos` - kind [`replay`](sources-and-rules) - runs always on (it does not wait for a game to start) - looks for new data every 5 s.
+*Technical details: adapter `cs2-demos`, kind [`replay`](sources-and-rules); it runs all the time (it does not wait for a game to start) and looks for new data every 5 s.*
 
 ## What is recorded
 
@@ -16,6 +17,10 @@ demos CS2 saves: &lt;CS2>/game/csgo/replays/\*.dem (downloaded from the match hi
 ## How to switch it on
 
 download a match's demo in CS2 (Watch > Your Matches), or record one with the console's `record`
+
+Settings from environment variables:
+
+- `HEAT3D_CS2`: the folder of 3DHeat CS2, when it is not beside the watcher or installed
 
 ## How it works
 
@@ -47,7 +52,7 @@ for the player whose Steam account is signed in on this machine (from Steam's
 `loginusers.vdf`) under its plain names - kills, deaths, assists, ADR, KAST,
 headshot percentage, opening kills, clutches - and the score and rounds.
 
-The same module also serves: [osu! (replay)](game-osu-replays).
+The same module also serves: [Dota 2 (replays)](game-dota-replays), [osu! (replays)](game-osu-replays), [Squad (replays)](game-squad-demos), [War Thunder (replays)](game-warthunder-replays), [World of Tanks (replays)](game-wot-replays), [World of Warships (replays)](game-wows-replays).
 
 ## Positions and axes
 
@@ -75,12 +80,16 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
 
+## Completeness
+
+The converter this adapter runs follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the replay holds is read or kept, never dropped - read into the table and the match document, everything else kept whole in sidecars beside them, counted in the match document's `selfCheck.completeness`. The converter's own documentation lists what it reads, keeps raw and cannot read.
+
 ## Verified
 
-the converter is tested on 165 real tournament demos; the folder watch and statistics by tests
+the converter is tested on real tournament demos; the folder watch and statistics by tests
 
 ## Source
 
 [heat3d_watch/adapters/replays.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/replays.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

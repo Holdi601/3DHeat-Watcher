@@ -457,7 +457,7 @@ _RECORDS = (
 )
 _PC2_VERIFIED = (
     "tested on a page built in the test; offsets from two independent copies of SharedMemory.h that agree, "
-    "not from the copy the game ships (not installed here); untested against the game"
+    "not from the copy the game ships; untested against the game"
 )
 _PAGES_RAW = (
     "`used` is true for a page read into rows; false for one in the menus, paused, in a replay, of another "

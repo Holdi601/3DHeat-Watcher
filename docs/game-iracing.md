@@ -1,12 +1,14 @@
 ---
-title: "iRacing (telemetry)"
+title: "iRacing (live data)"
 parent: Games
 nav_order: 28
 ---
 
-# iRacing (telemetry)
+# iRacing (live data)
 
-Adapter `iracing` - kind [`telemetry`](sources-and-rules.md) - runs while `iRacingSim64DX11.exe` or `iRacingSim64.exe` is running - looks for new data every 0.1 s.
+While you play iRacing, the watcher saves the data the game itself sends out, so you can look at it later as statistics and a timeline.
+
+*Technical details: adapter `iracing`, kind [`telemetry`](sources-and-rules.md); it runs while `iRacingSim64DX11.exe` or `iRacingSim64.exe` is running and looks for new data every 0.1 s.*
 
 ## What is recorded
 
@@ -130,4 +132,4 @@ tested on a shared-memory block built in the test from the irsdk layout; unteste
 
 [heat3d_watch/adapters/iracing.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/iracing.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

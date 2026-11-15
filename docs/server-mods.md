@@ -1,6 +1,6 @@
 ---
 title: Server recorder mods
-nav_order: 9.5
+nav_order: 10
 ---
 
 # Server recorder mods (Arma 3, Arma Reforger)
@@ -24,7 +24,9 @@ on a public server before the test steps in its README pass.
 
 ## Arma 3
 
-1. Build the extension once per platform (`mods/arma3/extension`):
+1. Build the extension once per platform (`mods/arma3/extension`). This needs a C compiler: Visual
+   Studio Build Tools on Windows, gcc on Linux; if you have never compiled anything, ask your server
+   host.
    - Windows, in an "x64 Native Tools Command Prompt for VS":
      `cl /nologo /O2 /LD heat3d.c /Fe:heat3d_x64.dll`
    - Linux: `gcc -O2 -shared -fPIC -o heat3d_x64.so heat3d.c -ldl`

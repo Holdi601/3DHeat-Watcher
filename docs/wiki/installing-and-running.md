@@ -1,4 +1,3 @@
-
 # Installing and running
 
 ## Requirements
@@ -8,8 +7,9 @@
   notifications, the process list with executable paths. On another system the program starts, but
   those sources find nothing, notifications are only logged, and memory reading refuses ("only
   implemented on Windows").
-- **Python 3.** The repository does not state a minimum version. 3.10 or newer is a safe choice;
-  older versions have not been checked.
+- **Python 3.10 or later**, from <https://www.python.org/downloads/>: tick **Add python.exe to PATH**
+  in the installer, then check with `python --version` in a new terminal. New to this? Read
+  [Before you start](before-you-start) first.
 - **Packages** (`requirements.txt`): `psutil>=6.0` (which games are running, which program holds a
   port, a game's connections; an older psutil still works, through its older name for a process's
   connections), `pyarrow>=15` (writing `heat.parquet`), `numpy>=1.24`, and
@@ -34,6 +34,9 @@ Each game's page under [Games](games) says what has to be switched on in the gam
 on this machine.
 
 ## Installing
+
+New to the command line? Read [Before you start](before-you-start) first. If `pip` is not found,
+use `python -m pip install -r requirements.txt` instead.
 
 From a clone:
 
@@ -68,7 +71,7 @@ On start, `run`:
    gone, its adapter is stopped and the sessions it had open are closed, which writes their table and
    their line in the statistics. Adapters that do not wait for a game (Steam statistics, Steam
    Timeline, NVIDIA highlights, the replay folders) run the whole time;
-4. while no game is running, looks for a newer release at most once an hour and, with `auto_update`
+4. while no game is running, looks for a newer release at most once an hour (the answer itself is cached for six hours) and, with `auto_update`
    on, installs it and starts itself again (see [Updates](updates)).
 
 An adapter that fails is logged and does not stop the others. If an adapter's poll fails 20 times in a
@@ -85,6 +88,8 @@ way a game ending would, so the sessions they opened are closed, their tables wr
 counted in the statistics before it exits. Use it to check that a game is detected, not to record.
 
 ### Replays already on disk
+![replays and their converters](https://holdi601.github.io/3DHeat-Watcher/assets/img/replays.svg)
+
 
 The first time a replay adapter sees one of its folders, it only notes the replays already in it: a
 player with years of demos would otherwise find the watcher busy converting for a day. From then on
@@ -174,6 +179,8 @@ The watcher deletes nothing in these folders, except a session folder in which n
 (a game left in its menus).
 
 ## Settings
+![config](https://holdi601.github.io/3DHeat-Watcher/assets/img/config.svg)
+
 
 `python -m heat3d_watch config` shows the settings; `config --set key=value ...` changes them and saves
 `settings.json` (see [config](commands#config)). The file is plain JSON and can also be edited by
@@ -187,7 +194,7 @@ starts, so restart `run` after changing them.
 | `auto_update` | `true` | While no game is running, install a newer release and restart (see [Updates](updates)). `false`: only a notice in the log. |
 | `scan_seconds` | `2.0` | Seconds between looks at the process list. |
 | `memory` | `false` | Allow memory adapters (single-player games with a profile you wrote) to run. Off by default; see [Reading memory](memory-reading). |
-| `replays` | `true` | Run the `replay` adapters: CS2 demos, osu!, League of Legends and VALORANT replays, IL-2 Tacview recordings. |
+| `replays` | `true` | Run the `replay` adapters: all of them (see `python -m heat3d_watch replays` and [Games](games)) - CS2 demos, Dota 2, osu!, War Thunder, World of Tanks, World of Warships, Squad, League of Legends and VALORANT replays, IL-2 Tacview recordings. |
 | `replay_folders` | `{}` | Extra folders by adapter id, for example `{"cs2-demos": ["D:\\Demos"]}`. Replay adapters watch them in addition to the game's own folders; `il2-tacview` also accepts install folders (it then looks in their `data\Tracks`); for `elite`, the first folder replaces the journal folder. Set one adapter's folders with `config --set replay_folders.cs2-demos=D:\Demos,E:\More`, or the whole dictionary as JSON. |
 | `riot_id` | `""` | Your Riot ID (`Name#TAG`), so your own line in a League of Legends replay becomes your statistics. Empty: every player's line is kept, none is marked as yours. |
 | `riot_api_key` | `""` | Your own Riot developer API key, to fetch each replayed League match's official timeline (positions each minute, kills where they happened). Empty: nothing is fetched. |

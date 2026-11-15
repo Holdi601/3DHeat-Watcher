@@ -1,0 +1,45 @@
+{
+ "title": "setup: switching a game's own output on",
+ "cols": [
+  [
+   {
+    "t": "setup <id> | all",
+    "s": "reads the game's settings file"
+   }
+  ],
+  [
+   {
+    "t": "would change ...",
+    "s": "prints the file and the change;|nothing is written",
+    "c": "orange"
+   }
+  ],
+  [
+   {
+    "t": "setup <id> --apply",
+    "s": "changes it"
+   }
+  ],
+  [
+   {
+    "t": "<file>.heat3d-backup",
+    "s": "the original, kept",
+    "c": "green"
+   }
+  ]
+ ],
+ "legend": [
+  [
+   "blue",
+   "step"
+  ],
+  [
+   "green",
+   "files written"
+  ],
+  [
+   "orange",
+   "one file a match"
+  ]
+ ]
+}

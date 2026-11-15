@@ -476,7 +476,7 @@ ADAPTERS = [
             units="light years (galaxy rows, session 'galaxy'); metres east/up/north of the first fix on a body "
             "(surface rows, session = body name)",
         ),
-        verified="parser replayed over 43 real journal files on this machine (event counts match the stats); "
+        verified="parser replayed over real journal files from a local install (event counts match the stats); "
         "Status.json surface fixes tested on synthetic snapshots only",
         completeness={
             "read": (

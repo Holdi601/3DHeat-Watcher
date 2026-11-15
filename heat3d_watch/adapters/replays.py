@@ -749,7 +749,7 @@ ADAPTERS = [
         enable="download a match's demo in CS2 (Watch > Your Matches), or record one with the console's `record`",
         # As the converter's own tables say in their footer, and the CS2 game-state adapter: Source units, scale 1.
         axes=Axes(up="z", flip_y=True, units="inches (Source units)"),
-        verified="the converter is tested on 165 real tournament demos; the folder watch and statistics by tests",
+        verified="the converter is tested on real tournament demos; the folder watch and statistics by tests",
         multiplayer=True,
     ),
     DotaReplays(
@@ -767,11 +767,9 @@ ADAPTERS = [
         enable="download a match's replay in Dota 2, or fetch a public one: `python -m heat3d_watch dota-replay <match id>`; needs `pip install gem-dota`",
         # As the converter's table says in its footer, and the Dota game-state adapter: Source 2 world units.
         axes=Axes(up="z", flip_y=True, units="Dota world units (Hammer units; the map is about 16400 across)"),
-        verified="checked on a public match's replay (patch 7.40, November 2026): kills and deaths per hero match the scoreboard; "
-        "every frame and message in the packets sidecar is byte for byte the replay's and every one of the 553,048 re-serialises "
-        "exactly from its protobuf; the last kills, deaths, assists, level, last hits and denies in the entities sidecar match the "
-        "game's own end-of-match record (DOTA_UM_MatchDetails) for all ten players; after 90% of 59,898 move orders the hero is "
-        "closer to the point a second later; the table and statistics by tests on synthetic data",
+        verified="checked on a public match's replay: kills, deaths, assists, level, last hits and denies match the game's own "
+        "end-of-match record for all ten players; every message in the packets sidecar re-serialises byte for byte; the "
+        "table and statistics by tests on synthetic data",
         multiplayer=True,
         completeness={
             # The page's opening paragraph for this source, in place of the live adapters' (heat.raw.parquet).
@@ -799,22 +797,19 @@ ADAPTERS = [
             "raw": (
                 "`<match>.packets.parquet`: every frame that is not a packet (`type` `frame <n>`) and every network message "
                 "(`message <n>`, `name` Valve's), whole in `payload`, in file order (`seq`, `frame`), with `decoded` the "
-                "protobuf as JSON (a bytes field given as its length) - on the sample 553,048 rows of 52 message types, every "
-                "one decoded: svc_PacketEntities (the entity stream), DOTA_UM_SpectatorPlayerUnitOrders, UM_ParticleManager, "
-                "DOTA_UM_CombatLogDataHLTV, GE_SosStartSoundEvent, DOTA_UM_TE_* (projectiles, animations, blood), "
+                "protobuf as JSON (a bytes field given as its length), every message type decoded: svc_PacketEntities (the entity stream), DOTA_UM_SpectatorPlayerUnitOrders, UM_ParticleManager, "
+                "the combat log messages, GE_SosStartSoundEvent, DOTA_UM_TE_* (projectiles, animations, blood), "
                 "DOTA_UM_OverheadEvent, DOTA_UM_UnitEvent, svc_UpdateStringTable, net_Tick, ...; the send tables, class list "
                 "and server info a later entity decoder needs are among them",
                 "`<match>.entities.parquet`: every entity's every property each time it changed (`type` the property, `name` "
                 "the class, `entity` its index; `value`, `vector` or `decoded`), its whole state when created, and each "
-                "creation, entering, leaving and deletion - on the sample 10.2 million rows, 379 classes, 12,598 property names",
+                "creation, entering, leaving and deletion - millions of rows for a whole match",
                 "`<match>.strings.parquet`: every string table entry from every update and every full snapshot, the value "
-                "whole; `userinfo`, `ActiveModifiers` and `EconItems` decoded from their protobufs - on the sample 243,842 rows "
-                "of 20 tables",
+                "whole; `userinfo`, `ActiveModifiers` and `EconItems` decoded from their protobufs",
                 "`selfCheck.completeness` in the match document counts frames and messages by Valve's name, combat log "
                 "entries (`combatlog <type>`), game events (`gameevent <name>`), string table entries (`stringtable <name>`) "
-                "and entity updates (`entity <class>`): on the sample 5,487,369 items of 478 types, 57 kept raw only (53 full "
-                "entity snapshots gem skips because it rebuilds from the deltas, 4 entries of two tables with values nothing "
-                "reads), lost 0",
+                "and entity updates (`entity <class>`); a few are kept raw only (full entity snapshots gem skips because it "
+                "rebuilds from the deltas, and entries of tables whose values nothing reads), lost 0",
             ),
             "missing": (
                 "voice: the replay has the voice setup but no voice data",
@@ -823,8 +818,8 @@ ADAPTERS = [
                 "anything only the players' own clients knew (their camera, their screen) beyond what the server broadcast; "
                 "the cursor and every order are in",
             ),
-            "size": "on a 70.3 MB replay of a 27-minute match: packets 58.4 MB, entities 40.3 MB, strings 5.3 MB, the table "
-            "5.8 MB, units 2.9 MB, combat log 0.8 MB, match document 8.1 MB; about a minute and a half in one process (gem's parse alone about 40 s)",
+            "size": "the sidecars together are somewhat larger than the replay itself, the packets and the entities the biggest; "
+            "a whole match takes a minute or two in one process",
         },
     ),
     OsuReplays(
@@ -1004,8 +999,8 @@ ADAPTERS.append(
         "pip install -e <3DHeat>/exporters/ext/warthunder-replay",
         # The converter's table: the game's metres, x east, y up, z north; z mirrored for the viewer.
         axes=Axes(up="y", flip_z=True, units="metres (x east, y up, z north)"),
-        verified="the converter is checked on public replays from 2025 (an air battle: 30 aircraft, 4 per second, "
-        "kills and names agree with the results) and by tests on built replays; this hook by tests with a "
+        verified="the converter is checked on public replays from several game versions (kills and names agree "
+        "with the results) and by tests on built replays; this hook by tests with a "
         "stand-in command",
         multiplayer=True,
     )
@@ -1179,7 +1174,7 @@ ADAPTERS += [
         enable="turn on battle recording in World of Tanks' settings (General > Record battles) and install the "
         "converter: pip install -e <3DHeat>/exporters/ext/wot-replay",
         axes=Axes(up="y", flip_z=True, units="metres (x east, y up, z north)"),
-        verified="the converter is checked on public replays of 1.12.0 (2021) and 2.4.1 (2026) and by tests on "
+        verified="the converter is checked on public replays from several game versions and by tests on "
         "built replays; this hook by tests with a stand-in command",
         multiplayer=True,
     ),
@@ -1208,7 +1203,7 @@ ADAPTERS += [
         "pip install -e <3DHeat>/exporters/ext/wows-replay",
         axes=Axes(up="y", flip_z=True, units="World of Warships world units (x east, y up, z north; one is 15 m "
                   "by hull geometry, 30 m by the game's ranges)"),
-        verified="the converter is checked on public replays of 0.9.6 (2020), 0.10.11, 15.9 and 15.10 (2026) "
+        verified="the converter is checked on public replays from several game versions "
         "and by tests on built replays; this hook by tests with a stand-in command",
         multiplayer=True,
     ),
@@ -1354,7 +1349,7 @@ ADAPTERS.append(
         "<name> and AdminDemoStop in the game's console; copy the demo here and install the reader: "
         "pip install -e <3DHeat>/exporters/ext/squad-demo",
         axes=Axes(up="z", units="Unreal units (centimetres)"),
-        verified="the reader is checked on public Squad v10.3.1 server demos (movement agrees with the velocity "
+        verified="the reader is checked on public server demos (movement agrees with the velocity "
         "it carries; every row's team matches its soldier's faction) and by tests on built demos; this hook by "
         "tests with a stand-in command",
         multiplayer=True,

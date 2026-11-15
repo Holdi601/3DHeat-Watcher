@@ -1,12 +1,14 @@
 ---
-title: "EA SPORTS F1 25 (telemetry)"
+title: "EA SPORTS F1 25 (live data)"
 parent: Games
 nav_order: 16
 ---
 
-# EA SPORTS F1 25 (telemetry)
+# EA SPORTS F1 25 (live data)
 
-Adapter `f1-25` - kind [`telemetry`](sources-and-rules.md) - runs while `F1_25.exe` is running - looks for new data every 0.1 s.
+While you play EA SPORTS F1 25, the watcher saves the data the game itself sends out, so you can look at it later on a map in the 3DHeat viewer.
+
+*Technical details: adapter `f1-25`, kind [`telemetry`](sources-and-rules.md); it runs while `F1_25.exe` is running and looks for new data every 0.1 s.*
 
 ## What is recorded
 
@@ -25,7 +27,9 @@ UDP telemetry 127.0.0.1:20777 (Documents\My Games\F1 25\hardwaresettings\hardwar
 
 In the game: Settings > Telemetry Settings > UDP Telemetry On, IP 127.0.0.1, port 20777 - or `python -m heat3d_watch setup f1-25 --apply` (edits hardware_settings_config.xml, backed up first; the game must be closed). While another app holds 20777 the watcher leaves the port to it
 
-`python -m heat3d_watch setup f1-25` lists the files it would change; `python -m heat3d_watch setup f1-25 --apply` changes them, keeping the original as `<file>.heat3d-backup` (see [Commands](commands.md#setup)).
+Type the command in a terminal opened in the watcher's folder (see [Before you start](before-you-start.md)). If it fails, the last line says why; [Installing and running](installing-and-running.md) covers the usual causes.
+
+`python -m heat3d_watch setup f1-25` lists the files it would change; `python -m heat3d_watch setup f1-25 --apply` changes them, keeping the original as `<file>.heat3d-backup` (see [Commands](commands.md#setup)). It prints `f1-25: changed: ...` for each change, or `f1-25: nothing to change` when it is already on.
 
 ## How it works
 
@@ -85,7 +89,7 @@ Sources: EA's "F1 25 UDP Specification" (forums.ea.com, F1 games info hub),
 the F1 23 and F1 24 specifications; the same tables mirrored in
 MacManley/f1-25-udp (MIT). Packets in tests are built from these layouts.
 
-The same module also serves: [EA SPORTS F1 23 (telemetry)](game-f1-23.md), [EA SPORTS F1 24 (telemetry)](game-f1-24.md).
+The same module also serves: [EA SPORTS F1 23 (live data)](game-f1-23.md), [EA SPORTS F1 24 (live data)](game-f1-24.md).
 
 ## Positions and axes
 
@@ -148,4 +152,4 @@ tested on packets in the 2023, 2024 and 2025 formats built from EA's published s
 
 [heat3d_watch/adapters/f1.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/f1.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

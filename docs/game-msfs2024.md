@@ -1,12 +1,14 @@
 ---
-title: "Microsoft Flight Simulator 2024 (telemetry)"
+title: "Microsoft Flight Simulator 2024 (live data)"
 parent: Games
 nav_order: 32
 ---
 
-# Microsoft Flight Simulator 2024 (telemetry)
+# Microsoft Flight Simulator 2024 (live data)
 
-Adapter `msfs2024` - kind [`telemetry`](sources-and-rules.md) - runs while `FlightSimulator2024.exe` is running - looks for new data every 0.1 s.
+While you play Microsoft Flight Simulator 2024, the watcher saves the data the game itself sends out, so you can look at it later on a map in the 3DHeat viewer.
+
+*Technical details: adapter `msfs2024`, kind [`telemetry`](sources-and-rules.md); it runs while `FlightSimulator2024.exe` is running and looks for new data every 0.1 s.*
 
 ## What is recorded
 
@@ -82,7 +84,7 @@ Positions go into the same flat map as X-Plane's (x east, y altitude, z north
 in metres from the sitting's first fix); that fix is the session's `geo`, in
 meta.json and the table's footer.
 
-The same module also serves: [Microsoft Flight Simulator 2020 (telemetry)](game-msfs2020.md).
+The same module also serves: [Microsoft Flight Simulator 2020 (live data)](game-msfs2020.md).
 
 ## Positions and axes
 
@@ -138,10 +140,10 @@ The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat
 
 ## Verified
 
-message decoding tested on buffers built from SimConnect.h's layouts; the live SimConnect connection is untested (no SimConnect.dll on the test machine)
+message decoding tested on buffers built from SimConnect.h's layouts; the live SimConnect connection is untested
 
 ## Source
 
 [heat3d_watch/adapters/msfs.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/msfs.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

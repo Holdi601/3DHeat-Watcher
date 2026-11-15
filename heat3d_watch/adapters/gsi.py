@@ -815,7 +815,7 @@ ADAPTERS = [
         enable=r"`python -m heat3d_watch setup cs2-gsi --apply`, then start CS2 (it reads the file at start)",
         axes=Axes(up="z", flip_y=True, units="inches (Hammer units)"),
         verified="tested on documents in the published GSI format posted to the running adapter; "
-        "the install and cfg folder were found on this machine; untested against the running game",
+        "the install and cfg folder lookup tested on a local install; untested against the running game",
         completeness={
             "read": (
                 "the watched player's position, view direction, health, armor, money, active weapon, helmet, "
@@ -839,7 +839,7 @@ ADAPTERS = [
             "missing": (
                 "other players (`allplayers_*`) and grenades (`allgrenades`): the game sends them only to "
                 "spectators and GOTV, and the watcher does not ask for them (Sources and rules); a demo has every "
-                "player - see cs2-demos",
+                "player - see [Counter-Strike 2 (replays)](game-cs2-demos.md)",
                 "states between posts: the game posts at most every 0.1 s (`throttle`) and only on a change, "
                 "every 10 s (`heartbeat`) otherwise",
                 "the cfg file's token, blanked in each kept document: the watcher's own secret, not game data",
@@ -873,7 +873,7 @@ ADAPTERS = [
         enable=r"`python -m heat3d_watch setup dota2-gsi --apply`, then start Dota 2 (it reads the file at start)",
         axes=Axes(up="z", flip_y=True, units="Dota world units (z always 0)"),
         verified="tested on documents in the published GSI format posted to the running adapter; "
-        "untested against the running game (not installed here)",
+        "untested against the running game",
         completeness={
             "read": (
                 "the own hero's position (x/y), alive, level, health, max health, mana, max mana; spawn, deaths "
@@ -897,8 +897,7 @@ ADAPTERS = [
                 "height: the game sends x and y only",
                 "the other heroes while playing: the game sends the own hero, and every player's only to "
                 "spectators (kept raw then, not drawn); several components (draft, minimap, couriers) carry "
-                "only what the player's own client has - which, while playing, is untested (Dota 2 is not "
-                "installed here)",
+                "only what the player's own client has - which, while playing, is untested",
                 "states between posts: at most one every 0.1 s (`throttle`), every 10 s when nothing changes",
                 "the cfg file's token, blanked in each kept document: the watcher's own secret, not game data",
                 "posts beyond 10,000 waiting (the watcher stalled) are counted as `dropped_packets`, not kept; "

@@ -1,6 +1,6 @@
 ---
 title: Development
-nav_order: 10
+nav_order: 12
 ---
 
 # Development
@@ -257,11 +257,13 @@ page, and players rely on it. Examples from the code:
 - "tested on packets in the 2023, 2024 and 2025 formats built from EA's published specification, sent
   over UDP; untested against the game"
 - "tested on documents in the published GSI format posted to the running adapter; untested against the
-  running game (not installed here)"
-- "decoded all real stats files and schemas on this machine (local test); change detection tested on
-  files built in the binary KeyValues format"
+  running game"
+- "tested on real stats files and schemas from a local install; change detection tested on files built
+  in the binary KeyValues format"
 
-Say "untested against the game" until the adapter has recorded the running game. Name the source of
+Say "untested against the game" until the adapter has recorded the running game. State the method and
+the tolerance only: never a map, match id, player name, date, corpus size or exact count from real
+files, and never "this machine" (readers do not know it). Name the source of
 every offset and layout, and say where two sources were compared. Never claim more than was done. A
 format that was guessed or taken from community tools is said to be that.
 
@@ -274,7 +276,9 @@ adding or changing an adapter, regenerate them from the repository folder:
 HEAT3D_NO_UPDATE=1 python tools/gen_game_pages.py
 ```
 
-(In PowerShell: `$env:HEAT3D_NO_UPDATE = "1"; python tools/gen_game_pages.py`.)
+(In PowerShell: `$env:HEAT3D_NO_UPDATE = "1"; python tools/gen_game_pages.py`.) Add `--check` to only
+compare: it writes nothing and exits with 1 when a page is out of date (also `docs/watcher.md`'s
+games table).
 
 The script:
 

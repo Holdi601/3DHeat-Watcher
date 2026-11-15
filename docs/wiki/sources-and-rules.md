@@ -1,4 +1,3 @@
-
 # Sources and rules
 
 The watcher records only what games and platforms hand out to the player. This page explains which
@@ -6,6 +5,8 @@ sources that covers, what the watcher may do with each, and which games or parts
 out on purpose.
 
 ## The six kinds of source
+![sources into sessions](https://holdi601.github.io/3DHeat-Watcher/assets/img/overview.svg)
+
 
 Every adapter has a `kind`, and the kind decides what the adapter may do:
 
@@ -14,7 +15,7 @@ Every adapter has a `kind`, and the kind decides what the adapter may do:
 | `telemetry` | a UDP port or shared memory the game publishes for dashboards, motion rigs and wheel bases (Forza Data Out, F1 UDP, Kunos and iRacing shared memory, SimConnect, X-Plane's UDP interface, the SCS SDK plugin) | yes - it is the game's own output |
 | `gsi` | a game-state integration or local web API the game serves to the player's own machine (Valve GSI, League's Live Client Data API, Rocket League's Stats API, War Thunder's web map) | yes, within what the API shows the player |
 | `log` | files the game writes while it runs: journals, logs, statistics, saves (Elite Dangerous, Minecraft, Path of Exile, Hearthstone, Star Citizen, EVE Online) | yes |
-| `replay` | demos and replays the game saves for its players, converted after the match (CS2, osu!, League of Legends, VALORANT, IL-2 Tacview) | yes, unless encrypted, and only the parts in the open |
+| `replay` | demos and replays the game saves for its players, converted after the match (CS2, Dota 2, osu!, War Thunder, World of Tanks, World of Warships, Squad, League of Legends, VALORANT, IL-2 Tacview) | yes, unless encrypted, and only the parts in the open |
 | `platform` | what Steam and the graphics driver keep: statistics, achievements, timelines, clips and highlights | yes |
 | `memory` | the game's memory, read only, by a profile you wrote | **never** - single-player only |
 
@@ -88,7 +89,7 @@ protection or a game's terms:
 | VALORANT | positions, names, scores in replays; the client's lockfile endpoints | The replay's game stream is obfuscated with values taken from each build's executable. Recovering them means reverse engineering the game, which Riot's Terms of Service forbid (sections 3.1 and 7.1), and the game runs under Vanguard. The lockfile endpoints of the Riot client are not a published API. **Read:** what the replay carries in the open - map, match id, agents, the server's kill and round timeline. |
 | League of Legends | the moment-to-moment part of `.rofl` replays; the client's lockfile endpoints | Obfuscated against cheating, differently every patch; decoding it means taking the game apart, which Riot's terms forbid. **Read:** the end-of-game box score every replay carries as plain JSON, the Live Client Data API during a match, and - with your own developer key - the official Match-V5 timeline (positions once a minute, kills where they happened). |
 | Fortnite | replays | Encrypted, and Epic's terms forbid reverse engineering them. |
-| World of Tanks | replays | Encrypted with a key that is inside the game. |
+| World of Tanks, World of Warships | replays, in the watcher | Enciphered, with a key the game carries and community tools have published for years. The watcher does not read them; separate converters outside it do (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), so that a problem with Wargaming's terms - its licence forbids reverse engineering (5.3 b) and unauthorised software that interacts with its products (12.1 k) - touches only those. **Read, with a converter installed:** every vehicle's or ship's position while the recording client knew of it, and the kills. |
 | Gran Turismo 7 | telemetry | Console only, and its telemetry is encrypted with a key recovered from the game. |
 | Apex Legends | everything | Its LiveAPI sends full events only in private and custom lobbies; nothing is available locally otherwise. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | live data | No local replay, log or game-state output to read. Their statistics come in where Steam keeps them ([Steam statistics](game-steam-stats), [Steam Timeline](game-steam-timeline)), and their clips as [NVIDIA highlights](nvidia-highlights). |
@@ -99,7 +100,7 @@ protection or a game's terms:
 Encrypted replays are not opened: the VALORANT reader checks the replay's encryption flag and
 declines an encrypted file ("this replay is encrypted; it is not read").
 
-Games researched but not built yet (Dota 2 and Deadlock replays, Rocket League `.replay` files,
+Games researched but not built yet (Deadlock replays, Rocket League `.replay` files,
 StarCraft II, Team Fortress 2, Rainbow Six Siege, Beat Saber, Trackmania, several racing sims) are
 listed with their sources in [All games in one table](watcher#researched-not-yet-built). Each one
 needs sample files to be checked against before it is shipped.

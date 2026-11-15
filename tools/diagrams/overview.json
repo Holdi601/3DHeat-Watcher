@@ -1,0 +1,80 @@
+{
+ "title": "The watcher: what games publish, into files on your machine",
+ "cols": [
+  [
+   {
+    "t": "telemetry",
+    "s": "UDP ports, shared memory",
+    "c": "grey"
+   },
+   {
+    "t": "game-state integration",
+    "s": "local APIs, web maps",
+    "c": "grey"
+   },
+   {
+    "t": "logs and journals",
+    "s": "files the game writes",
+    "c": "grey"
+   },
+   {
+    "t": "replays",
+    "s": "saved after a match",
+    "c": "grey"
+   },
+   {
+    "t": "Steam, NVIDIA",
+    "s": "stats, timeline, highlights",
+    "c": "grey"
+   }
+  ],
+  [
+   {
+    "t": "run",
+    "s": "notices the running game,|starts its adapter"
+   }
+  ],
+  [
+   {
+    "t": "session folder",
+    "s": "events.jsonl, heat.parquet,|meta.json, heat.raw.parquet",
+    "c": "green"
+   },
+   {
+    "t": "watcher.sqlite",
+    "s": "sessions, events, stats",
+    "c": "green"
+   }
+  ],
+  [
+   {
+    "t": "3DHeat viewer",
+    "s": "heatmaps, route lines",
+    "c": "purple"
+   },
+   {
+    "t": "stats, sessions, --csv",
+    "s": "totals per game, CSV files",
+    "c": "purple"
+   }
+  ]
+ ],
+ "legend": [
+  [
+   "grey",
+   "input"
+  ],
+  [
+   "blue",
+   "step"
+  ],
+  [
+   "green",
+   "files written"
+  ],
+  [
+   "purple",
+   "where you see it"
+  ]
+ ]
+}

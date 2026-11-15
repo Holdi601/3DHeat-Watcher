@@ -1,6 +1,6 @@
 ---
 title: Sources and rules
-nav_order: 6
+nav_order: 7
 ---
 
 # Sources and rules
@@ -20,7 +20,7 @@ Every adapter has a `kind`, and the kind decides what the adapter may do:
 | `telemetry` | a UDP port or shared memory the game publishes for dashboards, motion rigs and wheel bases (Forza Data Out, F1 UDP, Kunos and iRacing shared memory, SimConnect, X-Plane's UDP interface, the SCS SDK plugin) | yes - it is the game's own output |
 | `gsi` | a game-state integration or local web API the game serves to the player's own machine (Valve GSI, League's Live Client Data API, Rocket League's Stats API, War Thunder's web map) | yes, within what the API shows the player |
 | `log` | files the game writes while it runs: journals, logs, statistics, saves (Elite Dangerous, Minecraft, Path of Exile, Hearthstone, Star Citizen, EVE Online) | yes |
-| `replay` | demos and replays the game saves for its players, converted after the match (CS2, osu!, League of Legends, VALORANT, IL-2 Tacview) | yes, unless encrypted, and only the parts in the open |
+| `replay` | demos and replays the game saves for its players, converted after the match (CS2, Dota 2, osu!, War Thunder, World of Tanks, World of Warships, Squad, League of Legends, VALORANT, IL-2 Tacview) | yes, unless encrypted, and only the parts in the open |
 | `platform` | what Steam and the graphics driver keep: statistics, achievements, timelines, clips and highlights | yes |
 | `memory` | the game's memory, read only, by a profile you wrote | **never** - single-player only |
 
@@ -105,7 +105,7 @@ protection or a game's terms:
 Encrypted replays are not opened: the VALORANT reader checks the replay's encryption flag and
 declines an encrypted file ("this replay is encrypted; it is not read").
 
-Games researched but not built yet (Dota 2 and Deadlock replays, Rocket League `.replay` files,
+Games researched but not built yet (Deadlock replays, Rocket League `.replay` files,
 StarCraft II, Team Fortress 2, Rainbow Six Siege, Beat Saber, Trackmania, several racing sims) are
 listed with their sources in [All games in one table](watcher.md#researched-not-yet-built). Each one
 needs sample files to be checked against before it is shipped.

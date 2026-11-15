@@ -1,12 +1,14 @@
 ---
-title: "Hearthstone (log)"
+title: "Hearthstone (log files)"
 parent: Games
 nav_order: 25
 ---
 
-# Hearthstone (log)
+# Hearthstone (log files)
 
-Adapter `hearthstone` - kind [`log`](sources-and-rules.md) - runs while `Hearthstone.exe` is running - looks for new data every 0.5 s.
+While you play Hearthstone, the watcher reads the files the game writes and saves what happened, so you can look at it later as statistics and a timeline.
+
+*Technical details: adapter `hearthstone`, kind [`log`](sources-and-rules.md); it runs while `Hearthstone.exe` is running and looks for new data every 0.5 s.*
 
 ## What is recorded
 
@@ -23,7 +25,9 @@ Adapter `hearthstone` - kind [`log`](sources-and-rules.md) - runs while `Hearths
 
 `python -m heat3d_watch setup hearthstone --apply` adds [Power] logging to %LOCALAPPDATA%\Blizzard\Hearthstone\log.config (backup kept); restart the game
 
-`python -m heat3d_watch setup hearthstone` lists the files it would change; `python -m heat3d_watch setup hearthstone --apply` changes them, keeping the original as `<file>.heat3d-backup` (see [Commands](commands.md#setup)).
+Type the command in a terminal opened in the watcher's folder (see [Before you start](before-you-start.md)). If it fails, the last line says why; [Installing and running](installing-and-running.md) covers the usual causes.
+
+`python -m heat3d_watch setup hearthstone` lists the files it would change; `python -m heat3d_watch setup hearthstone --apply` changes them, keeping the original as `<file>.heat3d-backup` (see [Commands](commands.md#setup)). It prints `hearthstone: changed: ...` for each change, or `hearthstone: nothing to change` when it is already on.
 
 ## How it works
 
@@ -123,4 +127,4 @@ tested on synthetic Power.log lines in the game's format; untested against the g
 
 [heat3d_watch/adapters/hearthstone.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/hearthstone.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

@@ -1,12 +1,14 @@
 ---
-title: "Euro Truck Simulator 2 (telemetry)"
+title: "Euro Truck Simulator 2 (live data)"
 parent: Games
 nav_order: 19
 ---
 
-# Euro Truck Simulator 2 (telemetry)
+# Euro Truck Simulator 2 (live data)
 
-Adapter `ets2` - kind [`telemetry`](sources-and-rules.md) - runs while `eurotrucks2.exe` is running - looks for new data every 0.1 s.
+While you play Euro Truck Simulator 2, the watcher saves the data the game itself sends out, so you can look at it later on a map in the 3DHeat viewer.
+
+*Technical details: adapter `ets2`, kind [`telemetry`](sources-and-rules.md); it runs while `eurotrucks2.exe` is running and looks for new data every 0.1 s.*
 
 ## What is recorded
 
@@ -64,7 +66,7 @@ what the revision lays out after byte 4400, the trailers) is kept in the session
 `type` `SCSTelemetry` with the `revision` beside it - a page of another
 revision too, which is kept whole rather than misread.
 
-The same module also serves: [American Truck Simulator (telemetry)](game-ats.md).
+The same module also serves: [American Truck Simulator (live data)](game-ats.md).
 
 ## Positions and axes
 
@@ -116,10 +118,10 @@ The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat
 
 ## Verified
 
-tested on shared memory built from the plugin's revision 12 header layout; untested against the game (not installed on the test machine)
+tested on shared memory built from the plugin's revision 12 header layout; untested against the game
 
 ## Source
 
 [heat3d_watch/adapters/ets2.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/ets2.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

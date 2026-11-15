@@ -1,12 +1,14 @@
 ---
-title: "Minecraft (log)"
+title: "Minecraft (log files)"
 parent: Games
 nav_order: 33
 ---
 
-# Minecraft (log)
+# Minecraft (log files)
 
-Adapter `minecraft` - kind [`log`](sources-and-rules.md) - runs while `javaw.exe` or `java.exe` is running - looks for new data every 0.5 s.
+While you play Minecraft, the watcher reads the files the game writes and saves what happened, so you can look at it later on a map in the 3DHeat viewer.
+
+*Technical details: adapter `minecraft`, kind [`log`](sources-and-rules.md); it runs while `javaw.exe` or `java.exe` is running and looks for new data every 0.5 s.*
 
 ## What is recorded
 
@@ -128,4 +130,4 @@ tested on synthetic log lines, stats JSON and NBT files built from the published
 
 [heat3d_watch/adapters/minecraft.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/minecraft.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

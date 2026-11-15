@@ -1,0 +1,63 @@
+{
+ "title": "Updates: checked at start, applied between games",
+ "cols": [
+  [
+   {
+    "t": "start",
+    "s": "any command",
+    "c": "grey"
+   }
+  ],
+  [
+   {
+    "t": "release check",
+    "s": "GitHub releases, at most|every few hours"
+   }
+  ],
+  [
+   {
+    "t": "newer version?",
+    "s": "said once; offered"
+   }
+  ],
+  [
+   {
+    "t": "no game running",
+    "s": "never mid-game",
+    "c": "orange"
+   }
+  ],
+  [
+   {
+    "t": "update",
+    "s": "git pull, or the release|archive after its check",
+    "c": "green"
+   }
+  ],
+  [
+   {
+    "t": "start again",
+    "s": "recordings untouched",
+    "c": "green"
+   }
+  ]
+ ],
+ "legend": [
+  [
+   "grey",
+   "input"
+  ],
+  [
+   "blue",
+   "step"
+  ],
+  [
+   "green",
+   "files written"
+  ],
+  [
+   "orange",
+   "one file a match"
+  ]
+ ]
+}

@@ -1207,7 +1207,7 @@ ADAPTERS = [
             "playtime (minutes, last two weeks) and last played time",
         ),
         enable="",
-        verified="decoded all real stats files and schemas on this machine (local test); "
+        verified="tested on real stats files and schemas from a local install; "
         "change detection tested on files built in the binary KeyValues format",
         completeness={
             "read": (
@@ -1254,8 +1254,8 @@ ADAPTERS = [
             "Steam's own recording errors",
         ),
         enable="Steam > Settings > Game Recording: record in background or on demand (Steam writes timelines then)",
-        verified="tested on the real timeline files on this machine (local test): achievement, gamemode, error, "
-        "and one game's own event, state_description and phase entries; the file format itself is undocumented",
+        verified="tested on real timeline files from a local install: achievement, gamemode, error, "
+        "and games' own event, state_description and phase entries; the file format itself is undocumented",
         completeness={
             "read": (
                 "every entry once, as a row at its time: its type, every plain field (title, description, icon, "
@@ -1294,8 +1294,8 @@ ADAPTERS = [
             "highlight requests GfeSDK games log, even when no clip is kept",
         ),
         enable="NVIDIA App: Instant Replay or Highlights switched on, clips saved by hotkey or by the game",
-        verified="tested on the real gallery index, settings, highlight definitions and clips on this machine "
-        "(local test); GfeSDK highlight request lines and highlight ids in clips untested - none occur here",
+        verified="tested on a real gallery index, settings, highlight definitions and clips from a local install; "
+        "GfeSDK highlight request lines and highlight ids in clips are untested",
         completeness={
             "read": (
                 "each new clip and screenshot: game, file, kind, media, length (index, else the MP4 header), the "

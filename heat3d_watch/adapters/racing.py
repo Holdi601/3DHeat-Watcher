@@ -647,7 +647,7 @@ _FORZA_COMMON = dict(
     axes=Axes(up="y", units="metres; Forza's world is left-handed, drawn as sent like the lap recorder does"),
     verified=(
         "decoding is gamecapture's lap recorder's (tested on packets built from the Data Out layout); the adapter tested on "
-        "synthetic packets and on real FH Companion lap trajectories replayed as packets; untested against the game itself"
+        "synthetic packets and on recorded lap trajectories replayed as packets; untested against the game itself"
     ),
     completeness=dict(
         read=(
@@ -1208,7 +1208,7 @@ RALLY = [
         exes=("WRC.exe",),
         flavour="wrc",
         port=20777,
-        source="UDP 127.0.0.1:20777, the default `wrc` structure's session_update packet (Documents\\My Games\\WRC\\telemetry\\config.json)",
+        source="UDP 127.0.0.1:20777, the default `wrc` structure's session_update packet (Documents\\My Games\\WRC\\telemetry\\config.json); while another app holds 20777 the watcher leaves the port to it",
         records=_RALLY_RECORDS,
         enable="`python -m heat3d_watch setup ea-wrc --apply` switches the session_update packet on in config.json (backed up first)",
         axes=Axes(up="y", units="metres"),
@@ -1230,7 +1230,7 @@ RALLY = [
         exes=("dirtrally2.exe",),
         flavour="dirtrally2",
         port=20777,
-        source="UDP 127.0.0.1:20777, extradata=3 (Documents\\My Games\\DiRT Rally 2.0\\hardwaresettings\\hardware_settings_config.xml)",
+        source="UDP 127.0.0.1:20777, extradata=3 (Documents\\My Games\\DiRT Rally 2.0\\hardwaresettings\\hardware_settings_config.xml); while another app holds 20777 the watcher leaves the port to it",
         records=_RALLY_RECORDS,
         enable="`python -m heat3d_watch setup dirt-rally-2 --apply` sets <udp enabled=\"true\" extradata=\"3\"> (backed up first)",
         axes=Axes(up="y", units="metres"),

@@ -1,12 +1,14 @@
 ---
-title: "EA SPORTS WRC (telemetry)"
+title: "EA SPORTS WRC (live data)"
 parent: Games
 nav_order: 17
 ---
 
-# EA SPORTS WRC (telemetry)
+# EA SPORTS WRC (live data)
 
-Adapter `ea-wrc` - kind [`telemetry`](sources-and-rules.md) - runs while `WRC.exe` is running - looks for new data every 0.1 s.
+While you play EA SPORTS WRC, the watcher saves the data the game itself sends out, so you can look at it later on a map in the 3DHeat viewer.
+
+*Technical details: adapter `ea-wrc`, kind [`telemetry`](sources-and-rules.md); it runs while `WRC.exe` is running and looks for new data every 0.1 s.*
 
 ## What is recorded
 
@@ -17,13 +19,15 @@ Adapter `ea-wrc` - kind [`telemetry`](sources-and-rules.md) - runs while `WRC.ex
 
 ## Where it comes from
 
-UDP 127.0.0.1:20777, the default `wrc` structure's session_update packet (Documents\My Games\WRC\telemetry\config.json)
+UDP 127.0.0.1:20777, the default `wrc` structure's session_update packet (Documents\My Games\WRC\telemetry\config.json); while another app holds 20777 the watcher leaves the port to it
 
 ## How to switch it on
 
 `python -m heat3d_watch setup ea-wrc --apply` switches the session_update packet on in config.json (backed up first)
 
-`python -m heat3d_watch setup ea-wrc` lists the files it would change; `python -m heat3d_watch setup ea-wrc --apply` changes them, keeping the original as `<file>.heat3d-backup` (see [Commands](commands.md#setup)).
+Type the command in a terminal opened in the watcher's folder (see [Before you start](before-you-start.md)). If it fails, the last line says why; [Installing and running](installing-and-running.md) covers the usual causes.
+
+`python -m heat3d_watch setup ea-wrc` lists the files it would change; `python -m heat3d_watch setup ea-wrc --apply` changes them, keeping the original as `<file>.heat3d-backup` (see [Commands](commands.md#setup)). It prints `ea-wrc: changed: ...` for each change, or `ea-wrc: nothing to change` when it is already on.
 
 ## How it works
 
@@ -56,15 +60,6 @@ While it holds the port it passes every packet on unchanged to
 127.0.0.1:5301 - set FH Companion's port box (its telemetry tab) to 5301 and
 both record.
 
-#### Assetto Corsa, ACC, AC EVO, AC Rally
-
-Shared memory the game writes for apps: `Local\acpmf_physics`,
-`Local\acpmf_graphics`, `Local\acpmf_static` (AC EVO: `Local\acevo_pmf_*`).
-Opened read-only and only once the game has made it (`simracing_shm`). The
-position is the mean of the four tyre contact points, world metres, Y up.
-Laps by the game's counter (AC, ACC) or by passing the starting point again
-(AC EVO, AC Rally), as `kunos.py` does for the lap recorder.
-
 #### EA SPORTS WRC, DiRT Rally 2.0, Richard Burns Rally
 
 UDP: WRC's `Documents/My Games/WRC/telemetry/config.json` (the `wrc`
@@ -73,11 +68,6 @@ structure's `session_update` packet), DiRT's `hardware_settings_config.xml`
 (`udpTelemetry=1`, port 6776). Stages by the game's stage clock
 (`rally.StageSplitter`). RBR does not document its axes: the up axis is the
 one the stage varies least along, decided when the session closes.
-
-#### BeamNG.drive
-
-The `heat3d` protocol mod gamecapture ships (UDP 4460, Options > Other >
-Protocols > "others"); BeamNG's Z-up world turned to Y up as `beamng.py` does.
 
 #### Everything kept
 
@@ -90,7 +80,7 @@ its mapping's name (`acpmf_physics`, ...). `used` marks what also became
 rows; `meta.json`'s `selfCheck.completeness` counts each kind (3DHeat's
 converter rule).
 
-The same module also serves: [Assetto Corsa (telemetry)](game-assetto-corsa.md), [Assetto Corsa Competizione (telemetry)](game-assetto-corsa-competizione.md), [Assetto Corsa EVO (telemetry)](game-assetto-corsa-evo.md), [Assetto Corsa Rally (telemetry)](game-assetto-corsa-rally.md), [BeamNG.drive (telemetry)](game-beamng.md), [DiRT Rally 2.0 (telemetry)](game-dirt-rally-2.md), [Forza Horizon 4 (telemetry)](game-forza-horizon-4.md), [Forza Horizon 5 (telemetry)](game-forza-horizon-5.md), [Forza Horizon 6 (telemetry)](game-forza-horizon-6.md), [Forza Motorsport (telemetry)](game-forza-motorsport.md), [Richard Burns Rally (telemetry)](game-richard-burns-rally.md).
+The same module also serves: [Assetto Corsa (live data)](game-assetto-corsa.md), [Assetto Corsa Competizione (live data)](game-assetto-corsa-competizione.md), [Assetto Corsa EVO (live data)](game-assetto-corsa-evo.md), [Assetto Corsa Rally (live data)](game-assetto-corsa-rally.md), [BeamNG.drive (live data)](game-beamng.md), [DiRT Rally 2.0 (live data)](game-dirt-rally-2.md), [Forza Horizon 4 (live data)](game-forza-horizon-4.md), [Forza Horizon 5 (live data)](game-forza-horizon-5.md), [Forza Horizon 6 (live data)](game-forza-horizon-6.md), [Forza Motorsport (live data)](game-forza-motorsport.md), [Richard Burns Rally (live data)](game-richard-burns-rally.md).
 
 ## Positions and axes
 
@@ -146,4 +136,4 @@ decoding is gamecapture's lap recorder's (tested on packets built from the docum
 
 [heat3d_watch/adapters/racing.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/racing.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

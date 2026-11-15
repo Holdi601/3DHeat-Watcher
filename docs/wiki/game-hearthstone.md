@@ -1,23 +1,27 @@
+# Hearthstone (log files)
 
-# Hearthstone (log)
+While you play Hearthstone, the watcher reads the files the game writes and saves what happened, so you can look at it later as statistics and a timeline.
 
-Adapter `hearthstone` - kind [`log`](sources-and-rules) - runs while `Hearthstone.exe` is running - looks for new data every 0.5 s.
+*Technical details: adapter `hearthstone`, kind [`log`](sources-and-rules); it runs while `Hearthstone.exe` is running and looks for new data every 0.5 s.*
 
 ## What is recorded
 
 - game start and end, with the result (won, lost, tied), turns and the opponent's name
 - each turn
+- every line of Power.log and the other logs whole in heat.raw.parquet
 - games, wins, losses, ties, turns, longest game
 
 ## Where it comes from
 
-&lt;install>\Logs\Power.log (or Logs\Hearthstone_\*\Power.log), written once %LOCALAPPDATA%\Blizzard\Hearthstone\log.config has a [Power] section
+&lt;install>\Logs\Power.log (or Logs\Hearthstone_\*\Power.log), written once %LOCALAPPDATA%\Blizzard\Hearthstone\log.config has a [Power] section, and every other \*.log the game writes there
 
 ## How to switch it on
 
 `python -m heat3d_watch setup hearthstone --apply` adds [Power] logging to %LOCALAPPDATA%\Blizzard\Hearthstone\log.config (backup kept); restart the game
 
-`python -m heat3d_watch setup hearthstone` lists the files it would change; `python -m heat3d_watch setup hearthstone --apply` changes them, keeping the original as `<file>.heat3d-backup` (see [Commands](commands#setup)).
+Type the command in a terminal opened in the watcher's folder (see [Before you start](before-you-start)). If it fails, the last line says why; [Installing and running](installing-and-running) covers the usual causes.
+
+`python -m heat3d_watch setup hearthstone` lists the files it would change; `python -m heat3d_watch setup hearthstone --apply` changes them, keeping the original as `<file>.heat3d-backup` (see [Commands](commands#setup)). It prints `hearthstone: changed: ...` for each change, or `hearthstone: nothing to change` when it is already on.
 
 ## How it works
 
@@ -50,6 +54,14 @@ The player's own side is the one whose starting hand has its cards named
 "UNKNOWN HUMAN PLAYER". Lines carry only the time of day; the date is today's.
 No positions.
 
+Every line of Power.log is kept whole in the session's raw sidecar (3DHeat's
+converter rule), the `PowerTaskList` repeats, options, choices and entity
+updates included: `type` is the method that wrote it (`GameState.DebugPrintPower`,
+`PowerTaskList.DebugPrintPower`, `GameState.DebugPrintOptions`, ...). Any other
+log the game writes beside it - `LoadingScreen.log`, `Decks.log`, `Zone.log`,
+`Arena.log`, ..., each there when log.config asks for it (deck trackers often
+do) - is followed the same way and kept with its name in `log`.
+
 ## Positions and axes
 
 | | |
@@ -76,6 +88,31 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
 
+## Completeness
+
+The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the source holds is read or kept, never dropped. Besides the rows, every packet, page, line or reply the adapter receives is kept whole in the session's `heat.raw.parquet` (columns `time`, `ms`, `type`, `used`, `payload`, `text`, then any field kept by name; `used` marks what also became rows), and `meta.json`'s `selfCheck.completeness` counts each `type` - `lost` is 0.
+
+**Read**
+
+- `CREATE_GAME`, the players (entity, player id, account; account 0 is the AI) and their names (`DebugPrintGame`)
+- whose side is the player's, from the named cards of the starting hand
+- `TAG_CHANGE` of TURN, PLAYSTATE (won, lost, tied) and STATE COMPLETE: turns, result, opponent
+
+**Kept raw**
+
+- every Power.log line whole, `type` = the method that wrote it (`GameState.DebugPrintPower`, `PowerTaskList.DebugPrintPower`, `GameState.DebugPrintGame`, `GameState.DebugPrintOptions`, `GameState.SendChoices`, `GameState.DebugPrintEntityChoices`, `PowerProcessor.DoTaskListForCard`, ...), `log` `Power`, `used` where it became a row: every card played, drawn and revealed, every tag change, attack, option and choice is here, not yet in rows
+- every line of the other logs in the same folder (`LoadingScreen`, `Decks`, `Zone`, `Arena`, `Achievements`, `FullScreenFX`, ... - whatever log.config switches on), same `type`s, with the log's name in `log`
+- a line without the level and time of day as `untimed`, one without a method as `untagged`
+
+**Not available**
+
+- positions: a card game has none
+- the opponent's hidden cards: the log names a card only once it is revealed
+- logs log.config does not switch on: `setup` asks only for [Power]; the other logs come when another tool (a deck tracker) has switched them on
+- earlier launches' logs: each launch writes a new folder; those older than this run of the game are not read again
+
+**Size**: Power.log with Verbose is about 1-5 MB per game, 10-40 MB per hour of play; the other logs add little; zstd in heat.raw.parquet makes it roughly a tenth or less (the lines repeat a lot)
+
 ## Verified
 
 tested on synthetic Power.log lines in the game's format; untested against the game
@@ -84,4 +121,4 @@ tested on synthetic Power.log lines in the game's format; untested against the g
 
 [heat3d_watch/adapters/hearthstone.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/hearthstone.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

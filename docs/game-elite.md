@@ -1,12 +1,14 @@
 ---
-title: "Elite Dangerous (log)"
+title: "Elite Dangerous (log files)"
 parent: Games
 nav_order: 18
 ---
 
-# Elite Dangerous (log)
+# Elite Dangerous (log files)
 
-Adapter `elite` - kind [`log`](sources-and-rules.md) - runs while `EliteDangerous64.exe` is running - looks for new data every 0.25 s.
+While you play Elite Dangerous, the watcher reads the files the game writes and saves what happened, so you can look at it later on a map in the 3DHeat viewer.
+
+*Technical details: adapter `elite`, kind [`log`](sources-and-rules.md); it runs while `EliteDangerous64.exe` is running and looks for new data every 0.25 s.*
 
 ## What is recorded
 
@@ -120,10 +122,10 @@ The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat
 
 ## Verified
 
-parser replayed over 43 real journal files on this machine (event counts match the stats); Status.json surface fixes tested on synthetic snapshots only
+parser replayed over real journal files from a local install (event counts match the stats); Status.json surface fixes tested on synthetic snapshots only
 
 ## Source
 
 [heat3d_watch/adapters/elite.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/elite.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

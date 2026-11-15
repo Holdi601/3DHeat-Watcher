@@ -1,0 +1,57 @@
+{
+ "title": "Reading memory: every condition must hold",
+ "cols": [
+  [
+   {
+    "t": "memory = true",
+    "s": "off by default",
+    "c": "grey"
+   }
+  ],
+  [
+   {
+    "t": "single-player game",
+    "s": "never a multiplayer one"
+   }
+  ],
+  [
+   {
+    "t": "a checked profile",
+    "s": "for this exact build"
+   }
+  ],
+  [
+   {
+    "t": "no anti-cheat",
+    "s": "installed or running"
+   }
+  ],
+  [
+   {
+    "t": "no connection out",
+    "s": "the game is offline"
+   }
+  ],
+  [
+   {
+    "t": "read only",
+    "s": "nothing written, hooked|or injected",
+    "c": "green"
+   }
+  ]
+ ],
+ "legend": [
+  [
+   "grey",
+   "input"
+  ],
+  [
+   "blue",
+   "step"
+  ],
+  [
+   "green",
+   "files written"
+  ]
+ ]
+}

@@ -1,12 +1,14 @@
 ---
-title: "DCS World (telemetry)"
+title: "DCS World (live data)"
 parent: Games
 nav_order: 10
 ---
 
-# DCS World (telemetry)
+# DCS World (live data)
 
-Adapter `dcs` - kind [`telemetry`](sources-and-rules.md) - runs while `DCS.exe` is running - looks for new data every 0.1 s.
+While you play DCS World, the watcher saves the data the game itself sends out, so you can look at it later on a map in the 3DHeat viewer.
+
+*Technical details: adapter `dcs`, kind [`telemetry`](sources-and-rules.md); it runs while `DCS.exe` is running and looks for new data every 0.1 s.*
 
 ## What is recorded
 
@@ -25,7 +27,9 @@ the watcher's hook %USERPROFILE%\Saved Games\DCS\*\Scripts\Hooks\heat3d-watch.lu
 
 python -m heat3d_watch setup dcs --apply (adds Scripts\Hooks\heat3d-watch.lua), then restart DCS
 
-`python -m heat3d_watch setup dcs` lists the files it would change; `python -m heat3d_watch setup dcs --apply` changes them, keeping the original as `<file>.heat3d-backup` (see [Commands](commands.md#setup)).
+Type the command in a terminal opened in the watcher's folder (see [Before you start](before-you-start.md)). If it fails, the last line says why; [Installing and running](installing-and-running.md) covers the usual causes.
+
+`python -m heat3d_watch setup dcs` lists the files it would change; `python -m heat3d_watch setup dcs --apply` changes them, keeping the original as `<file>.heat3d-backup` (see [Commands](commands.md#setup)). It prints `dcs: changed: ...` for each change, or `dcs: nothing to change` when it is already on.
 
 ## How it works
 
@@ -151,4 +155,4 @@ line format tested with synthetic datagrams; the Lua hook is untested inside DCS
 
 [heat3d_watch/adapters/dcs.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/dcs.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

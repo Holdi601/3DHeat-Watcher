@@ -1,11 +1,14 @@
-
 # Commands
 
-Every command is run from the repository folder as
+New to the command line? Read [Before you start](before-you-start) first. Every command is typed
+in a terminal opened in the folder you unpacked or cloned (in File Explorer, type `powershell` in the
+address bar), as
 
 ```bash
 python -m heat3d_watch <command> [options]
 ```
+
+![python -m heat3d_watch --help](https://holdi601.github.io/3DHeat-Watcher/assets/img/help.svg)
 
 | Command | What it does |
 |---|---|
@@ -17,11 +20,15 @@ python -m heat3d_watch <command> [options]
 | [`stats`](#stats) | totals per game, or the tables as CSV |
 | [`table`](#table) | rebuild a session's `heat.parquet` from its `events.jsonl` |
 | [`replays`](#replays) | convert the replays already on disk |
+| [`dota-replay`](#dota-replay) | download a public Dota 2 match's replay by its id |
 | [`update`](#update) | update to the newest release |
 | [`config`](#config) | show or change the settings |
 
 Options for every command: `-h` / `--help` prints the help, and `python -m heat3d_watch --version`
 prints the version (the `VERSION` file).
+
+The pictures on this page are runs on synthetic example sessions (`Example Racer`, `Example Arena`),
+not real recordings.
 
 Every command except `update` first looks for a newer release (at most every six hours; skipped with
 `HEAT3D_NO_UPDATE=1`, see [Updates](updates)). `run` only prints a notice. The other commands ask
@@ -33,6 +40,8 @@ UTF-8, so game names in any script print in any console.
 ```bash
 python -m heat3d_watch run [--once] [-v]
 ```
+
+![run: what games publish, into files](https://holdi601.github.io/3DHeat-Watcher/assets/img/overview.svg)
 
 Watches until stopped (Ctrl+C): every `scan_seconds` it reads the process list and runs an adapter for
 each game it finds, plus the always-on adapters. Before the first look it finishes the sessions an
@@ -52,6 +61,8 @@ code 1); see [The lock file](installing-and-running#the-lock-file).
 ```bash
 python -m heat3d_watch games [--markdown]
 ```
+
+![games](https://holdi601.github.io/3DHeat-Watcher/assets/img/games.svg)
 
 Lists every adapter sorted by game: its name, id and kind, where it reads from, what it records, and
 how to switch it on. An adapter that cannot run on this machine is marked
@@ -77,6 +88,10 @@ an HTML tag in kramdown). The one piece of HTML is the `<br>` between the items 
 ```bash
 python -m heat3d_watch setup <adapter id | all> [--apply]
 ```
+
+![setup](https://holdi601.github.io/3DHeat-Watcher/assets/img/setup.svg)
+
+![setup step by step](https://holdi601.github.io/3DHeat-Watcher/assets/img/setup-flow.svg)
 
 Switches a game's own output on, where the game needs a file changed for it. Without `--apply`
 nothing is changed: each line says what would change, and when there is anything to change the last
@@ -121,7 +136,7 @@ python -m heat3d_watch status
 ```
 
 ```text
-3DHeat Watcher 1.0.1; data in C:\Users\...\AppData\Local\3DHeat\Watcher
+3DHeat Watcher 1.0.2; data in C:\Users\...\AppData\Local\3DHeat\Watcher
 Games running: EA SPORTS F1 25 (f1-25)
 Always on: il2-tacview, steam-stats, steam-timeline, nvidia-highlights, cs2-demos, osu-replays, lol-replays, valorant-replays
 ```
@@ -136,6 +151,8 @@ adapters only with `memory` on and every memory check passed. It does not start 
 python -m heat3d_watch sessions [--game NAME] [--limit N]
 ```
 
+![sessions](https://holdi601.github.io/3DHeat-Watcher/assets/img/sessions.svg)
+
 The newest sessions from `watcher.sqlite`, one line each: start (local time), game, minutes, events,
 positions, folder.
 
@@ -149,6 +166,8 @@ positions, folder.
 ```bash
 python -m heat3d_watch stats [--game NAME] [--csv DIR]
 ```
+
+![stats](https://holdi601.github.io/3DHeat-Watcher/assets/img/stats.svg)
 
 Without options: a table of every game (sessions, hours, events, positions, last played), most played
 first, then for each game its 25 most frequent events and every numeric statistic with the number of
@@ -168,6 +187,8 @@ the highest for everything else (kills, distance, top speed, a game's own counte
 python -m heat3d_watch table <session folder>
 ```
 
+![stats --csv and table](https://holdi601.github.io/3DHeat-Watcher/assets/img/csv-and-table.svg)
+
 Rebuilds `heat.parquet` in a session folder from its `events.jsonl`, with the axes from its
 `meta.json`. Prints the table's path, or `no positions in this session`. Use it for a session recorded
 while `pyarrow` was missing, or after editing `events.jsonl` by hand.
@@ -177,6 +198,8 @@ while `pyarrow` was missing, or after editing `events.jsonl` by hand.
 ```bash
 python -m heat3d_watch replays <adapter id> [folder] [-v]
 ```
+
+![replays and their converters](https://holdi601.github.io/3DHeat-Watcher/assets/img/replays.svg)
 
 Converts the replays already on disk, now, one after another, each into a session as the folder watch
 would. The first time the watcher sees a replay folder it only notes what is in it (see
@@ -191,6 +214,10 @@ convert it again. A replay that fails to convert is logged and skipped.
 | `lol-replays` | League of Legends replays (`*.rofl`) |
 | `osu-replays` | osu! replays (`*.osr`) |
 | `valorant-replays` | VALORANT replays (`*.vrf`) |
+| `warthunder-replays` | War Thunder replays (`*.wrpl`), through the external converter `heat3d-wt-replay` (exporters/ext/warthunder-replay) |
+| `wot-replays` | World of Tanks replays (`*.wotreplay`), through the external converter `heat3d-wot-replay` (exporters/ext/wot-replay) |
+| `wows-replays` | World of Warships replays (`*.wowsreplay`), through the external converter `heat3d-wows-replay` (exporters/ext/wows-replay) |
+| `dota-replays` | Dota 2 replays (`*.dem`), through gem (`pip install gem-dota`) |
 
 ```text
 osu-replays: converted 12 replay(s); `sessions --game` lists them
@@ -201,11 +228,38 @@ so does a `folder` that does not exist. An adapter that cannot run here (3DHeat 
 prints why and exits with code 1. IL-2's Tacview tracks are not in the list: that adapter converts every
 finished track it finds by itself.
 
+## dota-replay
+
+```bash
+python -m heat3d_watch dota-replay <match id> [<match id> ...] [-o FOLDER] [--convert] [-v]
+```
+
+Downloads the replay of a public Dota 2 match from Valve's replay servers. It needs internet. The
+match id is the number on the match's page in the Dota client (the match details) or on OpenDota's
+website; Valve keeps a replay for a few weeks, after which the download fails. The server and the replay's
+salt come from OpenDota's record of the match (`api.opendota.com/api/matches/<id>`, no key needed), the
+file from `replay<cluster>.valve.net/570/<id>_<salt>.dem.bz2`; it is unpacked as it arrives (Valve
+serves both bzip2 and Zstandard under that name) and saved as `<match id>.dem`. Without `-o` it goes
+to Dota's own replays folder when Dota 2 is installed - where a running watcher converts it - and to
+`<data>/replays/dota` otherwise. A file already there is kept. `--convert` converts the downloaded
+replays at once, as `replays dota-replays` would, and notes them as seen.
+
+```text
+match 9000000000: C:\Program Files (x86)\Steam\steamapps\common\dota 2 beta\game\dota\replays\9000000000.dem
+```
+
+Valve keeps replays for a few weeks; an older match prints `Valve no longer has the replay of match
+<id>` and exits with code 1. A match OpenDota has not seen yet has no salt: the message says to ask
+OpenDota for it (`curl -X POST https://api.opendota.com/api/request/<id>`) and try again a few
+minutes later. Private lobbies and matches with a hidden profile are not on the replay servers at all.
+
 ## update
 
 ```bash
 python -m heat3d_watch update [--check]
 ```
+
+![updates](https://holdi601.github.io/3DHeat-Watcher/assets/img/updates.svg)
 
 Asks GitHub for the newest release, ignoring the cached answer, and updates this copy when it is newer
 (see [Updates](updates)). `--check` only says whether a newer release is out. This command runs even
@@ -217,6 +271,8 @@ same.
 ```bash
 python -m heat3d_watch config [--set KEY=VALUE ...]
 ```
+
+![config](https://holdi601.github.io/3DHeat-Watcher/assets/img/config.svg)
 
 Prints every setting as `key = value`. With `--set`, changes the given ones first and saves
 `settings.json` (`saved <path>`). Values are read by the setting's type:

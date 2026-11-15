@@ -1,0 +1,66 @@
+{
+ "title": "Server recorder mods: a whole mission, recorded on the server",
+ "cols": [
+  [
+   {
+    "t": "Arma 3 server",
+    "s": "-serverMod=@heat3d",
+    "c": "grey"
+   },
+   {
+    "t": "Arma Reforger server",
+    "s": "Heat3DRecorder mod",
+    "c": "grey"
+   }
+  ],
+  [
+   {
+    "t": "every unit and vehicle",
+    "s": "position, direction, life state,|crew, once a second"
+   }
+  ],
+  [
+   {
+    "t": "events",
+    "s": "kills, hits, get in / out,|joins, mission end"
+   }
+  ],
+  [
+   {
+    "t": "<mission>.json",
+    "s": "Arma 3: OCAP's JSON layout",
+    "c": "green"
+   },
+   {
+    "t": "<session>.jsonl",
+    "s": "Reforger: one line per item",
+    "c": "green"
+   }
+  ],
+  [
+   {
+    "t": "3DHeat viewer",
+    "s": "Arma 3 file: drop it in;|units as figures, debrief",
+    "c": "purple"
+   }
+  ]
+ ],
+ "legend": [
+  [
+   "grey",
+   "input"
+  ],
+  [
+   "blue",
+   "step"
+  ],
+  [
+   "green",
+   "files written"
+  ],
+  [
+   "purple",
+   "where you see it"
+  ]
+ ]
+}

@@ -1,6 +1,6 @@
 ---
 title: Updates
-nav_order: 9
+nav_order: 11
 ---
 
 # Updates
@@ -20,8 +20,8 @@ The watcher keeps itself current from the releases of
   `%LOCALAPPDATA%\3DHeat\update-check-3DHeat-Watcher.json`, so most starts ask nothing. "No release
   yet" (HTTP 404) is cached like an answer. Offline, rate-limited or behind a proxy, the check fails
   quietly and the command carries on with the version it has.
-- **Versions**: the installed version is the `VERSION` file in the repository folder (`1.0.1` at the
-  time of writing). A release's tag (`v1.2.0` or `1.2.0`) is compared as numbers, part by part; anything
+- **Versions**: the installed version is the `VERSION` file in the repository folder.
+  A release's tag (`v1.2.0` or `1.2.0`) is compared as numbers, part by part; anything
   after a `-` or `+` is ignored.
 - **Off**: `HEAT3D_NO_UPDATE=1` (any value but empty, `0`, `false` or `no`) switches off both the
   check and the automatic update. Each 3DHeat tool keeps its own cache file, so one tool's answer never
@@ -30,9 +30,9 @@ The watcher keeps itself current from the releases of
 ## What happens when a newer release is out
 
 - **`run`** prints a notice when it starts, and keeps running:
-  `[heat3d_watch] 3DHeat Watcher 1.2.0 is out (this is 1.0.1). <release page>`. While it runs, with
+  `[heat3d_watch] 3DHeat Watcher 1.2.0 is out (this is 1.0.2). <release page>`. While it runs, with
   `auto_update` on (the default) and no game running, it then updates itself: the log line
-  `3DHeat Watcher 1.2.0 is out (this is 1.0.1); updating`, a Windows notification "Updating to 1.2.0",
+  `3DHeat Watcher 1.2.0 is out (this is 1.0.2); updating`, a Windows notification "Updating to 1.2.0",
   the update, every adapter stopped and its sessions closed, and the same command started again on the
   new code. The watcher never updates in the middle of a game. If the update
   cannot be applied, the notification says so ("1.2.0 is out; not updated: ...") and the watcher keeps

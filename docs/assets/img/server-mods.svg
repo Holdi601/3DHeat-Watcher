@@ -1,36 +1,43 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1378" height="226" viewBox="0 0 1378 226" font-family="Segoe UI,Helvetica,Arial,sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="848" height="432" viewBox="0 0 848 432" font-family="Segoe UI,Helvetica,Arial,sans-serif" role="img" aria-label="Server recorder mods: a whole mission, recorded on the server">
 <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5f6368"/></marker></defs>
-<rect width="1378" height="226" rx="10" fill="#ffffff" stroke="#dadce0"/>
-<text x="24" y="34" font-size="17" font-weight="600" fill="#202124">Server recorder mods: a whole mission, recorded on the server</text>
-<rect x="24" y="56.0" width="210" height="64" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
-<text x="129.0" y="84.5" text-anchor="middle" font-weight="600" font-size="14" fill="#202124">Arma 3 server</text>
-<text x="129.0" y="101.5" text-anchor="middle" font-size="12" fill="#5f6368">-serverMod=@heat3d</text>
-<rect x="24" y="138.0" width="210" height="64" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
-<text x="129.0" y="166.5" text-anchor="middle" font-weight="600" font-size="14" fill="#202124">Arma Reforger server</text>
-<text x="129.0" y="183.5" text-anchor="middle" font-size="12" fill="#5f6368">Heat3DRecorder mod</text>
-<rect x="304" y="90.5" width="210" height="77" rx="8" fill="#e8f0fe" stroke="#3b6fd8" stroke-width="1.5"/>
-<text x="409.0" y="117.0" text-anchor="middle" font-weight="600" font-size="14" fill="#202124">every unit and vehicle</text>
-<text x="409.0" y="134.0" text-anchor="middle" font-size="12" fill="#5f6368">position, direction, life state,</text>
-<text x="409.0" y="151.0" text-anchor="middle" font-size="12" fill="#5f6368">crew, once a second</text>
-<rect x="584" y="90.5" width="210" height="77" rx="8" fill="#e8f0fe" stroke="#3b6fd8" stroke-width="1.5"/>
-<text x="689.0" y="117.0" text-anchor="middle" font-weight="600" font-size="14" fill="#202124">events</text>
-<text x="689.0" y="134.0" text-anchor="middle" font-size="12" fill="#5f6368">kills, hits, get in / out,</text>
-<text x="689.0" y="151.0" text-anchor="middle" font-size="12" fill="#5f6368">joins, mission end</text>
-<rect x="864" y="56.0" width="210" height="64" rx="8" fill="#e6f4ea" stroke="#2e8b57" stroke-width="1.5"/>
-<text x="969.0" y="84.5" text-anchor="middle" font-weight="600" font-size="14" fill="#202124">&lt;mission&gt;.json</text>
-<text x="969.0" y="101.5" text-anchor="middle" font-size="12" fill="#5f6368">Arma 3: OCAP&#x27;s JSON layout</text>
-<rect x="864" y="138.0" width="210" height="64" rx="8" fill="#e6f4ea" stroke="#2e8b57" stroke-width="1.5"/>
-<text x="969.0" y="166.5" text-anchor="middle" font-weight="600" font-size="14" fill="#202124">&lt;session&gt;.jsonl</text>
-<text x="969.0" y="183.5" text-anchor="middle" font-size="12" fill="#5f6368">Reforger: one line per item</text>
-<rect x="1144" y="90.5" width="210" height="77" rx="8" fill="#f3e8fd" stroke="#8a4fd0" stroke-width="1.5"/>
-<text x="1249.0" y="117.0" text-anchor="middle" font-weight="600" font-size="14" fill="#202124">3DHeat viewer</text>
-<text x="1249.0" y="134.0" text-anchor="middle" font-size="12" fill="#5f6368">Arma 3 file: drop it in;</text>
-<text x="1249.0" y="151.0" text-anchor="middle" font-size="12" fill="#5f6368">units as figures, debrief</text>
-<line x1="234" y1="88.0" x2="302" y2="129.0" stroke="#5f6368" stroke-width="1.4" marker-end="url(#a)"/>
-<line x1="234" y1="170.0" x2="302" y2="129.0" stroke="#5f6368" stroke-width="1.4" marker-end="url(#a)"/>
-<line x1="514" y1="129.0" x2="582" y2="129.0" stroke="#5f6368" stroke-width="1.4" marker-end="url(#a)"/>
-<line x1="794" y1="129.0" x2="862" y2="88.0" stroke="#5f6368" stroke-width="1.4" marker-end="url(#a)"/>
-<line x1="794" y1="129.0" x2="862" y2="170.0" stroke="#5f6368" stroke-width="1.4" marker-end="url(#a)"/>
-<line x1="1074" y1="88.0" x2="1142" y2="129.0" stroke="#5f6368" stroke-width="1.4" marker-end="url(#a)"/>
-<line x1="1074" y1="170.0" x2="1142" y2="129.0" stroke="#5f6368" stroke-width="1.4" marker-end="url(#a)"/>
+<rect width="848" height="432" rx="10" fill="#ffffff" stroke="#dadce0"/>
+<text x="24" y="36" font-size="18" font-weight="600" fill="#202124">Server recorder mods: a whole mission, recorded on the server</text>
+<rect x="24" y="60.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
+<text x="142.0" y="86.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">Arma 3 server</text>
+<text x="142.0" y="105.0" text-anchor="middle" font-size="14" fill="#3c4043">-serverMod=@heat3d</text>
+<rect x="24" y="136.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
+<text x="142.0" y="162.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">Arma Reforger server</text>
+<text x="142.0" y="181.0" text-anchor="middle" font-size="14" fill="#3c4043">Heat3DRecorder mod</text>
+<rect x="306" y="88.5" width="236" height="79" rx="8" fill="#e8f0fe" stroke="#3b6fd8" stroke-width="1.5"/>
+<text x="424.0" y="114.5" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">every unit and vehicle</text>
+<text x="424.0" y="133.5" text-anchor="middle" font-size="14" fill="#3c4043">position, direction, life state,</text>
+<text x="424.0" y="152.5" text-anchor="middle" font-size="14" fill="#3c4043">crew, once a second</text>
+<rect x="588" y="88.5" width="236" height="79" rx="8" fill="#e8f0fe" stroke="#3b6fd8" stroke-width="1.5"/>
+<text x="706.0" y="114.5" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">events</text>
+<text x="706.0" y="133.5" text-anchor="middle" font-size="14" fill="#3c4043">kills, hits, get in / out,</text>
+<text x="706.0" y="152.5" text-anchor="middle" font-size="14" fill="#3c4043">joins, mission end</text>
+<line x1="260" y1="90.0" x2="304" y2="128.0" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="260" y1="166.0" x2="304" y2="128.0" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="542" y1="128.0" x2="586" y2="128.0" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M706.0,167.5 V219.0 H142.0 V240.0" fill="none" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="24" y="242.0" width="236" height="60" rx="8" fill="#e6f4ea" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="142.0" y="268.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">&lt;mission&gt;.json</text>
+<text x="142.0" y="287.0" text-anchor="middle" font-size="14" fill="#3c4043">Arma 3: OCAP&#x27;s JSON layout</text>
+<rect x="24" y="318.0" width="236" height="60" rx="8" fill="#e6f4ea" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="142.0" y="344.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">&lt;session&gt;.jsonl</text>
+<text x="142.0" y="363.0" text-anchor="middle" font-size="14" fill="#3c4043">Reforger: one line per item</text>
+<rect x="306" y="270.5" width="236" height="79" rx="8" fill="#f3e8fd" stroke="#8a4fd0" stroke-width="1.5"/>
+<text x="424.0" y="296.5" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">3DHeat viewer</text>
+<text x="424.0" y="315.5" text-anchor="middle" font-size="14" fill="#3c4043">Arma 3 file: drop it in;</text>
+<text x="424.0" y="334.5" text-anchor="middle" font-size="14" fill="#3c4043">units as figures, debrief</text>
+<line x1="260" y1="272.0" x2="304" y2="310.0" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="260" y1="348.0" x2="304" y2="310.0" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="24" y="398" width="18" height="18" rx="3" fill="#f1f3f4" stroke="#80868b"/>
+<text x="48" y="412" font-size="14" fill="#3c4043">input</text>
+<rect x="95.5" y="398" width="18" height="18" rx="3" fill="#e8f0fe" stroke="#3b6fd8"/>
+<text x="119.5" y="412" font-size="14" fill="#3c4043">step</text>
+<rect x="159.5" y="398" width="18" height="18" rx="3" fill="#e6f4ea" stroke="#2e8b57"/>
+<text x="183.5" y="412" font-size="14" fill="#3c4043">files written</text>
+<rect x="291.0" y="398" width="18" height="18" rx="3" fill="#f3e8fd" stroke="#8a4fd0"/>
+<text x="315.0" y="412" font-size="14" fill="#3c4043">where you see it</text>
 </svg>

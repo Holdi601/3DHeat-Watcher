@@ -1,0 +1,93 @@
+{
+ "title": "Replays: converted when they appear, or on request",
+ "cols": [
+  [
+   {
+    "t": "CS2 demos",
+    "s": ".dem",
+    "c": "grey"
+   },
+   {
+    "t": "Dota 2 replays",
+    "s": ".dem",
+    "c": "grey"
+   },
+   {
+    "t": "osu! replays",
+    "s": ".osr",
+    "c": "grey"
+   },
+   {
+    "t": "War Thunder replays",
+    "s": ".wrpl",
+    "c": "grey"
+   },
+   {
+    "t": "WoT / WoWs replays",
+    "s": ".wotreplay, .wowsreplay",
+    "c": "grey"
+   },
+   {
+    "t": "Squad demos",
+    "s": "server recordings",
+    "c": "grey"
+   },
+   {
+    "t": "LoL / VALORANT replays",
+    "s": ".rofl, .vrf",
+    "c": "grey"
+   }
+  ],
+  [
+   {
+    "t": "3DHeat CS2",
+    "s": "heat3d_cs2 (installed beside)"
+   },
+   {
+    "t": "Dota reader library",
+    "s": "gem (pip install gem-dota)"
+   },
+   {
+    "t": "read by the watcher",
+    "s": "the osu! wiki's format"
+   },
+   {
+    "t": "heat3d-wt-replay",
+    "s": "external converter, opt-in"
+   },
+   {
+    "t": "heat3d-wot/wows-replay",
+    "s": "external converters, opt-in"
+   },
+   {
+    "t": "Squad converter",
+    "s": "external converter, opt-in"
+   },
+   {
+    "t": "read by the watcher",
+    "s": "only what the file shows openly"
+   }
+  ],
+  [
+   {
+    "t": "a session per match",
+    "s": "table, match.json, sidecars,|statistics in watcher.sqlite",
+    "c": "green"
+   }
+  ]
+ ],
+ "legend": [
+  [
+   "grey",
+   "input"
+  ],
+  [
+   "blue",
+   "step"
+  ],
+  [
+   "green",
+   "files written"
+  ]
+ ]
+}

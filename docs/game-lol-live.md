@@ -1,12 +1,14 @@
 ---
-title: "League of Legends (gsi)"
+title: "League of Legends (game state)"
 parent: Games
 nav_order: 29
 ---
 
-# League of Legends (gsi)
+# League of Legends (game state)
 
-Adapter `lol-live` - kind [`gsi`](sources-and-rules.md) - runs while `League of Legends.exe` is running - looks for new data every 0.5 s.
+While you play League of Legends, the watcher saves what the game reports to programs on your own computer, so you can look at it later as statistics and a timeline.
+
+*Technical details: adapter `lol-live`, kind [`gsi`](sources-and-rules.md); it runs while `League of Legends.exe` is running and looks for new data every 0.5 s.*
 
 ## What is recorded
 
@@ -124,10 +126,10 @@ The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat
 
 ## Verified
 
-tested against a fake local server serving answers in the documented format; untested against the game (not installed here)
+tested against a fake local server serving answers in the documented format; untested against the game
 
 ## Source
 
 [heat3d_watch/adapters/lol.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/lol.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

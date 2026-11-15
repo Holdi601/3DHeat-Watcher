@@ -1,13 +1,14 @@
+# VALORANT (replays)
 
-# VALORANT (replay)
+After a match of VALORANT, the watcher turns the replay the game saved into files you can look at as statistics and a timeline.
 
-Adapter `valorant-replays` - kind [`replay`](sources-and-rules) - runs always on (it does not wait for a game to start) - looks for new data every 5 s.
+*Technical details: adapter `valorant-replays`, kind [`replay`](sources-and-rules); it runs all the time (it does not wait for a game to start) and looks for new data every 5 s.*
 
 ## What is recorded
 
-- the map, the match id and the agents picked
-- the server's event timeline: kills (killer and victim as network ids), rounds starting, spikes planted, defused and exploding, ultimates used, sides switching
-- not: positions, names or scores - they are in the obfuscated stream, which is not decoded
+- the map, the match id and the agents picked; the replay's info block (length, versions, name, recording time, compression and encryption flags)
+- the server's event timeline: kills (killer and victim as network ids), rounds starting, spikes planted, defused and exploding, ultimates used, sides switching - each with its id and metadata
+- every chunk of the file kept whole in heat.raw.parquet; not decoded: positions, names or scores - they are in the obfuscated stream
 
 ## Where it comes from
 
@@ -26,37 +27,24 @@ the moment-to-moment game data is obfuscated, and differently with every patch,
 to keep it from being used to cheat. Getting through that means taking the
 game's own code apart, which Riot's terms forbid (Terms of Service 3.1 and 7.1)
 - so it is not done here. What each file carries in the open is read, and
-nothing else.
-
-#### League of Legends (.rofl)
-
-`%USERPROFILE%\Documents\League of Legends\Replays\*.rofl`. Both container
-versions carry the end-of-game box score as plain JSON (`statsJson`): for each
-of the ten players the champion, kills, deaths, assists, gold, damage to
-champions, items, team, role, win, and their Riot ID. ROFL1 (patch 14.9 and
-before) has it after a fixed header (`RIOT\0\0`, a 256-byte signature, then
-the lengths); ROFL2 (14.11 on, `RIOT\2\0`) at the end of the file, its length in
-the last four bytes (stated by a Riot engineer, ReplayBook issue 299). Layouts
-from roflxd.cs (MIT).
-
-Positions do not come from the file. With a Riot developer key of the player's
-own (`riot_api_key` in the settings; a personal key is meant for exactly this,
-"showing (self) player stats"), the match's official timeline is fetched from
-Riot's Match-V5 API: every player's position once a minute and every kill where
-it happened, on Summoner's Rift's map coordinates. Without a key nothing is
-fetched and nothing is sent.
+the rest is kept as it is: every part of the file, whole, in the session's
+`heat.raw.parquet` (3DHeat's converter rule, docs/converters.md in the
+viewer's repository), counted in meta.json's `selfCheck.completeness`.
 
 #### Valorant (.vrf)
 
 `%LOCALAPPDATA%\VALORANT\Saved\Demos\*.vrf`, an Unreal Engine local replay
 (layout from vrfkit, Apache-2.0, and ValorantReplayParser, MIT). In the open:
-the map, the match id and the agents picked (in the header), and the server's
-own event timeline - kills (killer and victim as network ids, not names),
-rounds starting, spikes planted, defused and exploding, ultimates used, sides
-switching - each with its time. Positions, names, scores and everything else
-are in the obfuscated stream and are not read.
+the replay's info block (length, network version, changelist, its name, when it
+was recorded, whether it is compressed or encrypted), the map, the match id and
+the agents picked (in the header), and the server's own event timeline - kills
+(killer and victim as network ids, not names), rounds starting, spikes planted,
+defused and exploding, ultimates used, sides switching - each with its time,
+id and metadata. Positions, names, scores and everything else are in the
+obfuscated stream (the replay data and checkpoint chunks), which is kept whole
+and not read.
 
-The same module also serves: [League of Legends (replay)](game-lol-replays).
+The same module also serves: [League of Legends (replays)](game-lol-replays).
 
 ## Positions and axes
 
@@ -84,6 +72,27 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
 
+## Completeness
+
+The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the source holds is read or kept, never dropped. Besides the rows, every packet, page, line or reply the adapter receives is kept whole in the session's `heat.raw.parquet` (columns `time`, `ms`, `type`, `used`, `payload`, `text`, then any field kept by name; `used` marks what also became rows), and `meta.json`'s `selfCheck.completeness` counts each `type` - `lost` is 0.
+
+**Read**
+
+- the info block, every field (meta.json `vrf`): file version, custom versions, length, network version, changelist, name, live flag, recording time, compressed and encrypted flags, the key as stored
+- the header chunk: the map, the match id and the agents picked (looked up by their form)
+- every event chunk: id, group, metadata, start and end time, and of its data the event's name, its time in seconds and the numbers before it (killer and victim network ids) - a row each
+
+**Kept raw**
+
+- every chunk whole, in file order (`offset`), so the parts are the file: `info`, `header`, `event <group>`, `replay_data`, `checkpoint`, `chunk <n>` for a type the layout does not name, `trailing` for bytes after the last whole chunk
+
+**Not available**
+
+- positions, names, scores, abilities, every frame of the game: the replay data and checkpoint chunks are obfuscated; reading them means taking the client apart, which Riot's terms forbid. Kept whole, not read
+- an encrypted replay's contents: walked and kept whole, nothing read inside
+
+**Size**: the raw sidecar is about the replay's own size: the obfuscated stream does not compress
+
 ## Verified
 
 built from the container layout documented by vrfkit (Apache-2.0); untested on a real replay, none was available - checks before reading and skips what does not match
@@ -92,4 +101,4 @@ built from the container layout documented by vrfkit (Apache-2.0); untested on a
 
 [heat3d_watch/adapters/riot_replays.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/riot_replays.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

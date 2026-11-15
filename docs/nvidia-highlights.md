@@ -1,9 +1,12 @@
 ---
 title: NVIDIA Highlights
-nav_order: 7
+nav_order: 8
 ---
 
 # NVIDIA Highlights
+
+Some games ask your NVIDIA graphics driver to save a short video when something happens, like a kill.
+The watcher notes each of those moments and, when it can, puts it on the map where it happened.
 
 The `nvidia-highlights` adapter records the clips, highlights and screenshots the NVIDIA App (or
 GeForce Experience) saves, and gives each one a place on the map when it can. This page explains what

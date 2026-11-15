@@ -1,12 +1,14 @@
 ---
-title: "Automobilista 2 (telemetry)"
+title: "Automobilista 2 (live data)"
 parent: Games
 nav_order: 6
 ---
 
-# Automobilista 2 (telemetry)
+# Automobilista 2 (live data)
 
-Adapter `automobilista-2` - kind [`telemetry`](sources-and-rules.md) - runs while `AMS2AVX.exe` or `AMS2.exe` is running - looks for new data every 0.1 s.
+While you play Automobilista 2, the watcher saves the data the game itself sends out, so you can look at it later on a map in the 3DHeat viewer.
+
+*Technical details: adapter `automobilista-2`, kind [`telemetry`](sources-and-rules.md); it runs while `AMS2AVX.exe` or `AMS2.exe` is running and looks for new data every 0.1 s.*
 
 ## What is recorded
 
@@ -50,18 +52,6 @@ out of with `ctypes.string_at`.
 
 Two games are read here as well; every car on track is in their pages.
 
-#### RaceRoom Racing Experience - `$R3E`
-
-Sector3's `r3e.h` (github.com/sector3studios/r3e-api, sample-c/src/r3e.h,
-version 3.6), `#pragma pack(1)`. The header says where the drivers start
-and how big one is (`all_drivers_offset`, `driver_data_size`), so the
-per-driver part - name, slot, place, world position (float x y z, m),
-completed laps, current lap time, finish status, pit lane, speed - is read
-by those. The player's own fields (best and previous lap, race position,
-incident points, gear, pedals, track and layout names) are read at their
-3.6 offsets only when `all_drivers_offset` is the 2008 that layout puts it
-at. Y is taken as up; the header does not say.
-
 #### Automobilista 2 / Project CARS 2 - `$pcars2$`
 
 SMS's `SharedMemory.h` (shipped in the game's Support\SharedMemory folder;
@@ -82,7 +72,7 @@ session's raw sidecar under `type` `r3e` or `pcars2` - every driver slot and
 every field of the struct, also the ones not read here, so a later decoder
 needs only the sidecar.
 
-The same module also serves: [Project CARS 2 (telemetry)](game-project-cars-2.md), [RaceRoom Racing Experience (telemetry)](game-raceroom.md).
+The same module also serves: [Project CARS 2 (live data)](game-project-cars-2.md), [RaceRoom Racing Experience (live data)](game-raceroom.md).
 
 ## Positions and axes
 
@@ -134,10 +124,10 @@ The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat
 
 ## Verified
 
-tested on a page built in the test; offsets from two independent copies of SharedMemory.h that agree, not from the copy the game ships (not installed here); untested against the game
+tested on a page built in the test; offsets from two independent copies of SharedMemory.h that agree, not from the copy the game ships; untested against the game
 
 ## Source
 
 [heat3d_watch/adapters/simracing_shm.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/simracing_shm.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

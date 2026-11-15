@@ -6,7 +6,9 @@ nav_order: 34
 
 # NVIDIA highlights (platform)
 
-Adapter `nvidia-highlights` - kind [`platform`](sources-and-rules.md) - runs always on (it does not wait for a game to start) - looks for new data every 10 s.
+The watcher saves what NVIDIA highlights keeps about your games, so you can look at your history later on a map in the 3DHeat viewer.
+
+*Technical details: adapter `nvidia-highlights`, kind [`platform`](sources-and-rules.md); it runs all the time (it does not wait for a game to start) and looks for new data every 10 s.*
 
 ## What is recorded
 
@@ -30,42 +32,6 @@ achievements, playtime and timelines, and NVIDIA's highlights and clips.
 
 None of these sources needs a game to cooperate or to be running, so the three
 adapters here are always on and look at a few files every few seconds.
-
-#### Steam statistics (`steam-stats`)
-
-`<Steam>\appcache\stats\UserGameStats_<account>_<appid>.bin`, rewritten by
-the Steam client whenever a game stores its stats, decoded with the schema
-`UserGameStatsSchema_<appid>.bin` next to it (binary KeyValues, see `_steam.py`).
-Stats are integers or floats as the game defines them; achievements are bits
-with an unlock time in Unix seconds. Playtime is in
-`<Steam>\userdata\<account>\config\localconfig.vdf` under apps/&lt;appid>:
-Playtime and Playtime2wks in minutes, LastPlayed in Unix seconds.
-Steam is found through HKCU\Software\Valve\Steam SteamPath.
-Stats API: <https://partner.steamgames.com/doc/features/achievements>
-
-#### Steam Timeline (`steam-timeline`)
-
-`<Steam>\userdata\<account>\gamerecordings\timelines\timeline_<appid><yyyymmdd>_<hhmmss>.json`,
-written while Steam Game Recording is on. The file is JSON with string
-numbers: "daterecorded" (Unix seconds), "starttime"/"endtime" (ms) and
-"entries", each {"id", "time" (ms since daterecorded), "type", ...}. Types
-seen on real files:
-```text
-achievement        achievement_name - Steam adds these for every game
-gamemode           mode, an ETimelineGameMode: 1 playing, 2 staging, 3 menus,
-                   4 loading screen
-error              description - Steam's own ("#GameRecording_RecordingFailed")
-event              a game's AddInstantaneousTimelineEvent/AddRangeTimelineEvent:
-                   title, description, icon, priority, duration (ms),
-                   possible_clip - "You killed <name>" / "with the <weapon>"
-state_description  title - SetTimelineTooltip ("Round 3")
-phase              a StartGamePhase..EndGamePhase span: duration (ms), tags
-                   [{name, icon, group, priority}] (mode, map ...)
-```
-The file layout is Steam's and undocumented; the fields are the API's
-parameters. Any other type is recorded under its own name with its fields.
-<https://partner.steamgames.com/doc/api/ISteamTimeline>
-<https://partner.steamgames.com/doc/features/timeline>
 
 #### NVIDIA highlights and clips (`nvidia-highlights`)
 
@@ -166,10 +132,10 @@ The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat
 
 ## Verified
 
-tested on the real gallery index, settings, highlight definitions and clips on this machine (local test); GfeSDK highlight request lines and highlight ids in clips untested - none occur here
+tested on a real gallery index, settings, highlight definitions and clips from a local install; GfeSDK highlight request lines and highlight ids in clips are untested
 
 ## Source
 
 [heat3d_watch/adapters/platform.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/platform.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

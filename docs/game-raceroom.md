@@ -1,12 +1,14 @@
 ---
-title: "RaceRoom Racing Experience (telemetry)"
+title: "RaceRoom Racing Experience (live data)"
 parent: Games
 nav_order: 38
 ---
 
-# RaceRoom Racing Experience (telemetry)
+# RaceRoom Racing Experience (live data)
 
-Adapter `raceroom` - kind [`telemetry`](sources-and-rules.md) - runs while `RRRE64.exe` or `RRRE.exe` is running - looks for new data every 0.1 s.
+While you play RaceRoom Racing Experience, the watcher saves the data the game itself sends out, so you can look at it later on a map in the 3DHeat viewer.
+
+*Technical details: adapter `raceroom`, kind [`telemetry`](sources-and-rules.md); it runs while `RRRE64.exe` or `RRRE.exe` is running and looks for new data every 0.1 s.*
 
 ## What is recorded
 
@@ -63,27 +65,7 @@ incident points, gear, pedals, track and layout names) are read at their
 3.6 offsets only when `all_drivers_offset` is the 2008 that layout puts it
 at. Y is taken as up; the header does not say.
 
-#### Automobilista 2 / Project CARS 2 - `$pcars2$`
-
-SMS's `SharedMemory.h` (shipped in the game's Support\SharedMemory folder;
-AMS2: Options > System > Shared Memory "Project CARS 2"), `#pragma pack(4)`.
-`mParticipantInfo[64]` from byte 28, 100 bytes each: mIsActive, mName[64],
-mWorldPosition[3] (m, Y up), mCurrentLapDistance, mRacePosition,
-mLapsCompleted, mCurrentLap, mCurrentSector; mViewedParticipantIndex (20)
-is the player's car; per participant mLastLapTimes (9200), mRaceStates
-(9520), mSpeeds (10800); the player's mBestLapTime (6716), mLastLapTime
-(6720), mSpeed (6848), mBrake, mThrottle, mGear; mSequenceNumber (7320) is
-odd while the game writes. The offsets were worked out from two
-independent copies of the header (the game's own copy is not installed
-here), which agree.
-
-Both pages are kept whole besides (docs/converters.md, "Live sources"): the
-whole mapping, each read whose bytes differ from the copy kept last, in the
-session's raw sidecar under `type` `r3e` or `pcars2` - every driver slot and
-every field of the struct, also the ones not read here, so a later decoder
-needs only the sidecar.
-
-The same module also serves: [Automobilista 2 (telemetry)](game-automobilista-2.md), [Project CARS 2 (telemetry)](game-project-cars-2.md).
+The same module also serves: [Automobilista 2 (live data)](game-automobilista-2.md), [Project CARS 2 (live data)](game-project-cars-2.md).
 
 ## Positions and axes
 
@@ -142,4 +124,4 @@ tested on a page built in the test from r3e.h 3.6 (offsets worked out from the o
 
 [heat3d_watch/adapters/simracing_shm.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/simracing_shm.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

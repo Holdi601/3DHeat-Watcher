@@ -1,12 +1,14 @@
 ---
-title: "EVE Online (log)"
+title: "EVE Online (log files)"
 parent: Games
 nav_order: 20
 ---
 
-# EVE Online (log)
+# EVE Online (log files)
 
-Adapter `eve` - kind [`log`](sources-and-rules.md) - runs while `exefile.exe` is running - looks for new data every 0.5 s.
+While you play EVE Online, the watcher reads the files the game writes and saves what happened, so you can look at it later as statistics and a timeline.
+
+*Technical details: adapter `eve`, kind [`log`](sources-and-rules.md); it runs while `exefile.exe` is running and looks for new data every 0.5 s.*
 
 ## What is recorded
 
@@ -123,4 +125,4 @@ tested on synthetic gamelog lines in the format published by community parsers; 
 
 [heat3d_watch/adapters/eve.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/eve.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

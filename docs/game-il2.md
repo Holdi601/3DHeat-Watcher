@@ -1,12 +1,14 @@
 ---
-title: "IL-2 Sturmovik: Great Battles (telemetry)"
+title: "IL-2 Sturmovik: Great Battles (live data)"
 parent: Games
 nav_order: 26
 ---
 
-# IL-2 Sturmovik: Great Battles (telemetry)
+# IL-2 Sturmovik: Great Battles (live data)
 
-Adapter `il2` - kind [`telemetry`](sources-and-rules.md) - runs while `Il-2.exe` or `IL2Series.exe` is running - looks for new data every 0.1 s.
+While you play IL-2 Sturmovik: Great Battles, the watcher saves the data the game itself sends out, so you can look at it later as statistics and a timeline.
+
+*Technical details: adapter `il2`, kind [`telemetry`](sources-and-rules.md); it runs while `Il-2.exe` or `IL2Series.exe` is running and looks for new data every 0.1 s.*
 
 ## What is recorded
 
@@ -24,7 +26,9 @@ the game's telemetry UDP output to 127.0.0.1:41995 ([KEY = telemetrydevice] in &
 
 python -m heat3d_watch setup il2 --apply (adds addrN = "127.0.0.1:41995", enable = true), restart IL-2
 
-`python -m heat3d_watch setup il2` lists the files it would change; `python -m heat3d_watch setup il2 --apply` changes them, keeping the original as `<file>.heat3d-backup` (see [Commands](commands.md#setup)).
+Type the command in a terminal opened in the watcher's folder (see [Before you start](before-you-start.md)). If it fails, the last line says why; [Installing and running](installing-and-running.md) covers the usual causes.
+
+`python -m heat3d_watch setup il2` lists the files it would change; `python -m heat3d_watch setup il2 --apply` changes them, keeping the original as `<file>.heat3d-backup` (see [Commands](commands.md#setup)). It prints `il2: changed: ...` for each change, or `il2: nothing to change` when it is already on.
 
 ## How it works
 
@@ -77,7 +81,7 @@ IL-2 Sturmovik: Great Battles - the game's telemetry UDP output, and its own Tac
    point is the session's `geo`, carried in meta.json and the table's footer,
    so the viewer can lay the real world under the tracks.
 
-The same module also serves: [IL-2 Sturmovik: Great Battles (replay)](game-il2-tacview.md).
+The same module also serves: [IL-2 Sturmovik: Great Battles (replays)](game-il2-tacview.md).
 
 ## Positions and axes
 
@@ -130,10 +134,10 @@ The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat
 
 ## Verified
 
-tested on packets built from the game's own Il2_TeleOutput spec (rev 1.2); startup.cfg edits checked on a copy of a real one; untested against the running game
+tested on packets built from the game's own Il2_TeleOutput spec (rev 1.2); startup.cfg edits tested on a copy of the file; untested against the running game
 
 ## Source
 
 [heat3d_watch/adapters/il2.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/il2.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

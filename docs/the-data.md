@@ -1,13 +1,15 @@
 ---
 title: The data
-nav_order: 4
+nav_order: 5
 ---
 
 # The data
 
 All recordings are plain files in the data folder (`%LOCALAPPDATA%\3DHeat\Watcher` unless changed,
 see [Installing and running](installing-and-running.md#where-everything-is)). You can read, copy or
-delete them without the watcher.
+delete them without the watcher. A `.jsonl` file is plain text, one event a line (Notepad opens it);
+a `.parquet` file is a table that the 3DHeat viewer opens (Excel does not - `stats --csv` writes CSV
+files for spreadsheets).
 
 ## Session folders
 ![a session folder](assets/img/session-folder.svg)
@@ -152,7 +154,7 @@ those writes, so a crash can lose at most the last half minute of them.
 {
   "format": "heat3d-watch-session",
   "version": 1,
-  "watcher": "1.0.1",
+  "watcher": "1.0.2",
   "game": "EA SPORTS F1 25",
   "adapter": "f1-25",
   "source": "UDP telemetry 127.0.0.1:20777 (...)",

@@ -1,6 +1,18 @@
 # 3DHeat Watcher
 
-A background tool that records what games publish about your play - where you
+**What is it?** You play a game. This program quietly writes down where you
+went and what happened. Later you can look at it as a coloured map in the
+3DHeat viewer.
+
+**Why would I use it?** To keep your own record of every sitting - where you
+drove, flew or fought, what happened where, your totals per game - without
+any website and without changing the game.
+
+**Example:** you drive a few laps in a racing game with the watcher running;
+afterwards `sessions/<game>/<date>_<source>/heat.parquet` holds your line,
+and the viewer draws it.
+
+In more detail: a background tool that records what games publish about your play - where you
 went, what happened where, and the numbers behind it - into files on your own
 machine, for your own statistics and for the heatmaps of the
 [3DHeat viewer](https://github.com/Holdi601/3DHeat) ([documentation](https://holdi601.github.io/3DHeat/)).
@@ -10,10 +22,6 @@ outputs: a telemetry port, a game-state integration, the journal or log the
 game writes, the replay it saves after a match, the statistics Steam keeps, the
 highlights your graphics driver records. Nothing is sent anywhere.
 
-Useful for keeping your own record of every sitting - where you drove, flew or
-fought, what happened where, your totals per game - and for opening any of it in
-3DHeat as a heatmap or as route lines.
-
 **Documentation: <https://holdi601.github.io/3DHeat-Watcher/>** - a page per game
 (50 of them), per command and per output.
 
@@ -21,8 +29,12 @@ fought, what happened where, your totals per game - and for opening any of it in
 
 ## Install and quick start
 
-Windows, Python 3 (`git clone https://github.com/Holdi601/3DHeat-Watcher.git`, or unpack a release),
-then in the folder:
+New to the command line? Read [Before you start](https://holdi601.github.io/3DHeat-Watcher/before-you-start.html) first.
+
+Windows and Python 3.10 or later. Download the zip from
+[Releases](https://github.com/Holdi601/3DHeat-Watcher/releases) and unpack it (or,
+if you have Git, `git clone https://github.com/Holdi601/3DHeat-Watcher.git`), open a
+terminal in that folder (in File Explorer, type `powershell` in the address bar), then:
 
 ```bash
 pip install -r requirements.txt
@@ -36,8 +48,12 @@ python -m heat3d_watch replays warthunder-replays [folder]  # War Thunder replay
 python -m heat3d_watch replays wot-replays [folder]   # World of Tanks replays, through the external converter (see below)
 python -m heat3d_watch replays wows-replays [folder]  # World of Warships replays, likewise
 python -m heat3d_watch replays dota-replays [folder]  # Dota 2 replays (needs `pip install gem-dota`)
-python -m heat3d_watch dota-replay <match id> --convert  # fetch a public Dota 2 match's replay from Valve and convert it
+python -m heat3d_watch dota-replay <match id> --convert  # fetch a public Dota 2 match's replay from Valve and convert it (needs internet)
 ```
+
+`<...>` are placeholders. After `games` you should see a table of games, one line
+each; `run` keeps going until you press Ctrl+C or close the window. If `python` is not recognised or
+says `No module named ...`, see [Before you start](https://holdi601.github.io/3DHeat-Watcher/before-you-start.html#common-errors).
 
 ## Commands
 
@@ -143,29 +159,12 @@ installed. **CS2 demos** go through [3DHeat CS2](https://github.com/Holdi601/3DH
 ![replays and their converters](docs/assets/img/replays.svg)
 
 **Dota 2 replays** (`.dem`) are read inside the watcher, through gem
-(github.com/whanyu1212/gem-dota, MIT, `pip install gem-dota`): Valve's replays
-are plain Source 2 demos, kept public for every match for a few weeks, and read
-by OpenDota and others for a decade. Each replay in `<Dota>/game/dota/replays`
-becomes a session with every hero's track 7.5 times a second (position, height,
-health, level, facing, mana, experience, attributes, armour, speed, damage,
-items, the player's cursor), kills and deaths where they happened, towers,
-barracks, Roshan and Tormentors where they fell, every ward where it was
-planted and where it ended, the combat log's entries about the heroes (damage,
-heals, abilities, items, purchases, runes, gold, experience, modifiers, units
-killed), the chat, smokes and runes, as `dota/<match>.parquet`; every other
-unit (creeps, summons, illusions, couriers, wards, buildings) once a second as
-`<match>.units.parquet`; the whole combat log as `<match>.combatlog.parquet`;
-and the match with everything else gem extracts (draft, per-player series and
-logs, visibility, fights, advantages) as `<match>.match.json`. `dota-replay
-<match id>` downloads a public match's replay by its id (the cluster and salt
-come from OpenDota; Valve answers 404 once a replay has expired). A half-hour
-match takes about a minute and 400 MB to convert, in a process of its own.
-Checked on a 27-minute league match: kills counted from the combat log equal
-the game's own counts for all ten players, experience summed from the log
-equals each hero's total earned experience (within 2 of up to 19,720), and
-the gold in the log is each hero's earned gold less the passive income, which
-the log does not carry. Not read: projectiles, map pings, and units between
-their once-a-second samples.
+(github.com/whanyu1212/gem-dota, MIT, `pip install gem-dota`): each replay in
+`<Dota>/game/dota/replays` becomes a session with every hero's track, the kills,
+objectives, wards and combat log. `dota-replay <match id>` downloads one public
+match's replay (it needs internet; the match id is the number on the match's
+page in the Dota client or on OpenDota). Details:
+[Dota 2 replays](https://holdi601.github.io/3DHeat-Watcher/game-dota-replays.html).
 
 The watcher updates itself while no game is running and starts again - never
 in the middle of a game; `config --set auto_update=false` turns that off.
@@ -182,17 +181,23 @@ Every adapter and replay decoder keeps everything its source holds: what it read
 
 ## Part of 3DHeat
 
-3DHeat Watcher is one of the free tools around the [3DHeat](https://github.com/Holdi601/3DHeat) telemetry viewer
-([documentation](https://holdi601.github.io/3DHeat/)). Each is its
+3DHeat Watcher is one of the free tools around the 3DHeat viewer. Each is its
 own project, with its own releases and licence:
 
-| Tool | What it does |
-|---|---|
-| [3DHeat GameFiles](https://github.com/Holdi601/3DHeat-GameFiles) | courses and levels out of the archives games ship, as glTF |
-| [3DHeat GameCapture](https://github.com/Holdi601/3DHeat-GameCapture) | lap telemetry from racing games' published interfaces; levels reconstructed from gameplay video |
-| [3DHeat Unreal Exporter](https://github.com/Holdi601/3DHeat-UnrealExporter) | an Unreal Editor plugin that exports a level as glTF |
-| [3DHeat CS2](https://github.com/Holdi601/3DHeat-CS2) | Counter-Strike 2 demos into heatmap tables and match summaries; maps into geometry |
-| [3DHeat Watcher](https://github.com/Holdi601/3DHeat-Watcher) | records your play in the background from what games publish, for your own statistics |
+| Tool | What it does | Docs |
+|---|---|---|
+| [3DHeat](https://github.com/Holdi601/3DHeat) | the viewer: heatmaps, race analysis and match review in 3D | [site](https://holdi601.github.io/3DHeat/) |
+| [GameFiles](https://github.com/Holdi601/3DHeat-GameFiles) | courses and levels out of the files games ship, as 3D models | [site](https://holdi601.github.io/3DHeat-GameFiles/) |
+| [GameCapture](https://github.com/Holdi601/3DHeat-GameCapture) | lap telemetry from racing games; levels rebuilt from gameplay video | [site](https://holdi601.github.io/3DHeat-GameCapture/) |
+| [Unreal Exporter](https://github.com/Holdi601/3DHeat-UnrealExporter) | an Unreal Editor plugin that exports a level as one 3D model | [site](https://holdi601.github.io/3DHeat-UnrealExporter/) |
+| [CS2](https://github.com/Holdi601/3DHeat-CS2) | Counter-Strike 2 demos into tables and match documents; maps into 3D models | [site](https://holdi601.github.io/3DHeat-CS2/) |
+| [Watcher](https://github.com/Holdi601/3DHeat-Watcher) | records what games publish about your play, in the background | [site](https://holdi601.github.io/3DHeat-Watcher/) |
+| [Ext-WarThunder](https://github.com/Holdi601/3DHeat-Ext-WarThunder) | War Thunder replays into tables and match documents | [site](https://holdi601.github.io/3DHeat-Ext-WarThunder/) |
+| [Ext-WoT](https://github.com/Holdi601/3DHeat-Ext-WoT) | World of Tanks replays into tables and match documents | [site](https://holdi601.github.io/3DHeat-Ext-WoT/) |
+| [Ext-WoWs](https://github.com/Holdi601/3DHeat-Ext-WoWs) | World of Warships replays into tables and match documents | [site](https://holdi601.github.io/3DHeat-Ext-WoWs/) |
+| [Ext-Squad](https://github.com/Holdi601/3DHeat-Ext-Squad) | Squad server demos into tables and match documents | [site](https://holdi601.github.io/3DHeat-Ext-Squad/) |
+| [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | DCS World maps into 3D models | [site](https://holdi601.github.io/3DHeat-Ext-DCS/) |
+| [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | IL-2 Sturmovik maps into 3D models | [site](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
 ## Updates
 

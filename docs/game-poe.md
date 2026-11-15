@@ -1,12 +1,14 @@
 ---
-title: "Path of Exile (log)"
+title: "Path of Exile (log files)"
 parent: Games
 nav_order: 36
 ---
 
-# Path of Exile (log)
+# Path of Exile (log files)
 
-Adapter `poe` - kind [`log`](sources-and-rules.md) - runs while `PathOfExile.exe`, `PathOfExile_x64.exe`, `PathOfExileSteam.exe`, `PathOfExile_x64Steam.exe`, `PathOfExileEGS.exe`, `PathOfExile_x64EGS.exe`, `PathOfExile_KG.exe` or `PathOfExile_x64_KG.exe` is running - looks for new data every 0.5 s.
+While you play Path of Exile, the watcher reads the files the game writes and saves what happened, so you can look at it later as statistics and a timeline.
+
+*Technical details: adapter `poe`, kind [`log`](sources-and-rules.md); it runs while `PathOfExile.exe`, `PathOfExile_x64.exe`, `PathOfExileSteam.exe`, `PathOfExile_x64Steam.exe`, `PathOfExileEGS.exe`, `PathOfExile_x64EGS.exe`, `PathOfExile_KG.exe` or `PathOfExile_x64_KG.exe` is running and looks for new data every 0.5 s.*
 
 ## What is recorded
 
@@ -114,4 +116,4 @@ tested on synthetic Client.txt lines in the game's format; untested against the 
 
 [heat3d_watch/adapters/poe.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/poe.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

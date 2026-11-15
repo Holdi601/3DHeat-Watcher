@@ -1,11 +1,14 @@
-
 # The data
 
 All recordings are plain files in the data folder (`%LOCALAPPDATA%\3DHeat\Watcher` unless changed,
 see [Installing and running](installing-and-running#where-everything-is)). You can read, copy or
-delete them without the watcher.
+delete them without the watcher. A `.jsonl` file is plain text, one event a line (Notepad opens it);
+a `.parquet` file is a table that the 3DHeat viewer opens (Excel does not - `stats --csv` writes CSV
+files for spreadsheets).
 
 ## Session folders
+![a session folder](https://holdi601.github.io/3DHeat-Watcher/assets/img/session-folder.svg)
+
 
 A **session** is one sitting with one source: from the moment the game first says something until it
 stops (the game closes, a match ends, a drive or a flight is reset - each adapter's page says what
@@ -146,7 +149,7 @@ those writes, so a crash can lose at most the last half minute of them.
 {
   "format": "heat3d-watch-session",
   "version": 1,
-  "watcher": "1.0.1",
+  "watcher": "1.0.2",
   "game": "EA SPORTS F1 25",
   "adapter": "f1-25",
   "source": "UDP telemetry 127.0.0.1:20777 (...)",
@@ -239,6 +242,8 @@ The log says "finished N session(s) left open by an earlier run". The lock file 
 watcher from "recovering" the sessions of one that is still running.
 
 ## CSV export
+![stats --csv and table](https://holdi601.github.io/3DHeat-Watcher/assets/img/csv-and-table.svg)
+
 
 ```bash
 python -m heat3d_watch stats --csv out
@@ -249,6 +254,11 @@ writes `out\sessions.csv`, `out\events.csv` and `out\stats.csv`. Each file is on
 `--game` does not narrow the export; every session is written.
 
 ## Opening a session in the 3DHeat viewer
+
+The viewer: [github.com/Holdi601/3DHeat](https://github.com/Holdi601/3DHeat), documentation
+[holdi601.github.io/3DHeat](https://holdi601.github.io/3DHeat/) - its
+[`.3dheat` container](https://holdi601.github.io/3DHeat/container.html) page describes the one-file-a-match
+format the replay converters can write.
 
 Open a session's `heat.parquet` in the 3DHeat viewer. The footer tells the viewer which column is the
 position, the time, the player, the team and the session, and which way is up, so nothing has to be

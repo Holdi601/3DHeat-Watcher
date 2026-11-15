@@ -1,12 +1,14 @@
 ---
-title: "X-Plane (telemetry)"
+title: "X-Plane (live data)"
 parent: Games
 nav_order: 50
 ---
 
-# X-Plane (telemetry)
+# X-Plane (live data)
 
-Adapter `xplane` - kind [`telemetry`](sources-and-rules.md) - runs while `X-Plane.exe` is running - looks for new data every 0.1 s.
+While you play X-Plane, the watcher saves the data the game itself sends out, so you can look at it later on a map in the 3DHeat viewer.
+
+*Technical details: adapter `xplane`, kind [`telemetry`](sources-and-rules.md); it runs while `X-Plane.exe` is running and looks for new data every 0.1 s.*
 
 ## What is recorded
 
@@ -136,4 +138,4 @@ tested against a fake X-Plane answering RREF/RPOS per X-Plane 12's 'Exchanging D
 
 [heat3d_watch/adapters/xplane.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/xplane.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

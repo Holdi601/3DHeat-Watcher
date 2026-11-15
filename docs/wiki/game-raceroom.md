@@ -1,7 +1,8 @@
+# RaceRoom Racing Experience (live data)
 
-# RaceRoom Racing Experience (telemetry)
+While you play RaceRoom Racing Experience, the watcher saves the data the game itself sends out, so you can look at it later on a map in the 3DHeat viewer.
 
-Adapter `raceroom` - kind [`telemetry`](sources-and-rules) - runs while `RRRE64.exe` or `RRRE.exe` is running - looks for new data every 0.1 s.
+*Technical details: adapter `raceroom`, kind [`telemetry`](sources-and-rules); it runs while `RRRE64.exe` or `RRRE.exe` is running and looks for new data every 0.1 s.*
 
 ## What is recorded
 
@@ -9,6 +10,7 @@ Adapter `raceroom` - kind [`telemetry`](sources-and-rules) - runs while `RRRE64.
 - session start with the track the game names; laps per car with lap time; finishes; own pit stops
 - teleports (back to the pits, a restart): `teleport` where the car was, `spawn` where it is now
 - own laps, best lap, race position, distance, top speed
+- the game's whole shared memory page in `heat.raw.parquet`, each time it changes
 - own incident points
 
 ## Where it comes from
@@ -57,21 +59,7 @@ incident points, gear, pedals, track and layout names) are read at their
 3.6 offsets only when `all_drivers_offset` is the 2008 that layout puts it
 at. Y is taken as up; the header does not say.
 
-#### Automobilista 2 / Project CARS 2 - `$pcars2$`
-
-SMS's `SharedMemory.h` (shipped in the game's Support\SharedMemory folder;
-AMS2: Options > System > Shared Memory "Project CARS 2"), `#pragma pack(4)`.
-`mParticipantInfo[64]` from byte 28, 100 bytes each: mIsActive, mName[64],
-mWorldPosition[3] (m, Y up), mCurrentLapDistance, mRacePosition,
-mLapsCompleted, mCurrentLap, mCurrentSector; mViewedParticipantIndex (20)
-is the player's car; per participant mLastLapTimes (9200), mRaceStates
-(9520), mSpeeds (10800); the player's mBestLapTime (6716), mLastLapTime
-(6720), mSpeed (6848), mBrake, mThrottle, mGear; mSequenceNumber (7320) is
-odd while the game writes. The offsets were worked out from two
-independent copies of the header (the game's own copy is not installed
-here), which agree.
-
-The same module also serves: [Automobilista 2 (telemetry)](game-automobilista-2), [Project CARS 2 (telemetry)](game-project-cars-2).
+The same module also serves: [Automobilista 2 (live data)](game-automobilista-2), [Project CARS 2 (live data)](game-project-cars-2).
 
 ## Positions and axes
 
@@ -99,6 +87,29 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
 
+## Completeness
+
+The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the source holds is read or kept, never dropped. Besides the rows, every packet, page, line or reply the adapter receives is kept whole in the session's `heat.raw.parquet` (columns `time`, `ms`, `type`, `used`, `payload`, `text`, then any field kept by name; `used` marks what also became rows), and `meta.json`'s `selfCheck.completeness` counts each `type` - `lost` is 0.
+
+**Read**
+
+- per driver slot (by the header's own offset and size): name, slot, finish status, place, world position, completed laps, current lap time, pit lane, speed
+- the player's own fields, only when the page is the r3e.h 3.6 layout: track and layout names, session type, race position, best and previous lap, incident points, gear, throttle, brake, the player's slot
+- offsets worked out from Sector3's r3e.h 3.6 and checked on a page built from it in the tests; not yet against the game
+
+**Kept raw**
+
+- `r3e`: the whole $R3E mapping, each read whose bytes differ from the copy kept last - every field of r3e.h: the player's physics (orientation, velocities, accelerations, g-forces), engine, fuel, tyres, brakes, damage, flags, pit menu, sector times, every driver slot's whole driver data (class, model, team, sector times, gaps, penalties, tyres)
+- `used` is true for a page read into rows; false for one in the menus, paused, in a replay, of another layout, or caught mid-write (`torn` 1); `unchanged_reads` in meta.json counts the reads that were byte for byte the copy kept before
+
+**Not available**
+
+- other drivers' inputs and physics: the page gives only the player's own
+- other cars' exact lap times: a slot has only its running lap time, so a lap is the last running time seen (to about 0.1 s)
+- the player's own fields on a layout other than 3.6: kept raw, not read, until checked
+
+**Size**: the page is 44 KB (r3e.h 3.6; the mapping is rounded up to whole 4 KB pages), up to 10 times a second while driving: about 1.6 GB per hour before compression; empty driver slots and unchanging fields compress very well with zstd (not yet measured on a real session)
+
 ## Verified
 
 tested on a page built in the test from r3e.h 3.6 (offsets worked out from the official header); untested against the game; other cars' lap times are the last running lap time seen (to about 0.1 s)
@@ -107,4 +118,4 @@ tested on a page built in the test from r3e.h 3.6 (offsets worked out from the o
 
 [heat3d_watch/adapters/simracing_shm.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/simracing_shm.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

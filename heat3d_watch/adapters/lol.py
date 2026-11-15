@@ -408,7 +408,7 @@ ADAPTERS = [
         enable="",
         axes=Axes(up="z", units="none (no positions)"),
         verified="tested against a fake local server serving answers in the documented format; "
-        "untested against the game (not installed here)",
+        "untested against the game",
         completeness={
             "read": (
                 "the kill feed from eventdata: every event once, its named fields decoded (killer, victim and "

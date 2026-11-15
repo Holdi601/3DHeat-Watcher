@@ -1,12 +1,14 @@
 ---
-title: "League of Legends (replay)"
+title: "League of Legends (replays)"
 parent: Games
 nav_order: 30
 ---
 
-# League of Legends (replay)
+# League of Legends (replays)
 
-Adapter `lol-replays` - kind [`replay`](sources-and-rules.md) - runs always on (it does not wait for a game to start) - looks for new data every 5 s.
+After a match of League of Legends, the watcher turns the replay the game saved into files you can look at on a map in the 3DHeat viewer.
+
+*Technical details: adapter `lol-replays`, kind [`replay`](sources-and-rules.md); it runs all the time (it does not wait for a game to start) and looks for new data every 5 s.*
 
 ## What is recorded
 
@@ -61,20 +63,7 @@ damage statistics), and every event of the timeline - kills, buildings, elite
 monsters, wards, items, skills, levels - each a row, where it happened when it
 has a place. Without a key nothing is fetched and nothing is sent.
 
-#### Valorant (.vrf)
-
-`%LOCALAPPDATA%\VALORANT\Saved\Demos\*.vrf`, an Unreal Engine local replay
-(layout from vrfkit, Apache-2.0, and ValorantReplayParser, MIT). In the open:
-the replay's info block (length, network version, changelist, its name, when it
-was recorded, whether it is compressed or encrypted), the map, the match id and
-the agents picked (in the header), and the server's own event timeline - kills
-(killer and victim as network ids, not names), rounds starting, spikes planted,
-defused and exploding, ultimates used, sides switching - each with its time,
-id and metadata. Positions, names, scores and everything else are in the
-obfuscated stream (the replay data and checkpoint chunks), which is kept whole
-and not read.
-
-The same module also serves: [VALORANT (replay)](game-valorant-replays.md).
+The same module also serves: [VALORANT (replays)](game-valorant-replays.md).
 
 ## Positions and axes
 
@@ -133,4 +122,4 @@ the metadata reader tested on files built to the layouts in roflxd.cs (MIT); the
 
 [heat3d_watch/adapters/riot_replays.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/riot_replays.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

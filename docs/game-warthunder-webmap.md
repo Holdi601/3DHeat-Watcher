@@ -1,12 +1,14 @@
 ---
-title: "War Thunder (gsi)"
+title: "War Thunder (game state)"
 parent: Games
 nav_order: 47
 ---
 
-# War Thunder (gsi)
+# War Thunder (game state)
 
-Adapter `warthunder-webmap` - kind [`gsi`](sources-and-rules.md) - runs while `aces.exe` is running - looks for new data every 0.5 s.
+While you play War Thunder, the watcher saves what the game reports to programs on your own computer, so you can look at it later on a map in the 3DHeat viewer.
+
+*Technical details: adapter `warthunder-webmap`, kind [`gsi`](sources-and-rules.md); it runs while `aces.exe` is running and looks for new data every 0.5 s.*
 
 ## What is recorded
 
@@ -129,10 +131,10 @@ The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat
 
 ## Verified
 
-tested against a fake local server serving answers in the format of the game's web map; War Thunder is installed here but was not run
+tested against a fake local server serving answers in the format of the game's web map; untested against the running game
 
 ## Source
 
 [heat3d_watch/adapters/warthunder.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/warthunder.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

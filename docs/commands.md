@@ -1,11 +1,13 @@
 ---
 title: Commands
-nav_order: 5
+nav_order: 6
 ---
 
 # Commands
 
-Every command is run from the repository folder as
+New to the command line? Read [Before you start](before-you-start.md) first. Every command is typed
+in a terminal opened in the folder you unpacked or cloned (in File Explorer, type `powershell` in the
+address bar), as
 
 ```bash
 python -m heat3d_watch <command> [options]
@@ -139,7 +141,7 @@ python -m heat3d_watch status
 ```
 
 ```text
-3DHeat Watcher 1.0.1; data in C:\Users\...\AppData\Local\3DHeat\Watcher
+3DHeat Watcher 1.0.2; data in C:\Users\...\AppData\Local\3DHeat\Watcher
 Games running: EA SPORTS F1 25 (f1-25)
 Always on: il2-tacview, steam-stats, steam-timeline, nvidia-highlights, cs2-demos, osu-replays, lol-replays, valorant-replays
 ```
@@ -237,7 +239,9 @@ finished track it finds by itself.
 python -m heat3d_watch dota-replay <match id> [<match id> ...] [-o FOLDER] [--convert] [-v]
 ```
 
-Downloads the replay of a public Dota 2 match from Valve's replay servers. The server and the replay's
+Downloads the replay of a public Dota 2 match from Valve's replay servers. It needs internet. The
+match id is the number on the match's page in the Dota client (the match details) or on OpenDota's
+website; Valve keeps a replay for a few weeks, after which the download fails. The server and the replay's
 salt come from OpenDota's record of the match (`api.opendota.com/api/matches/<id>`, no key needed), the
 file from `replay<cluster>.valve.net/570/<id>_<salt>.dem.bz2`; it is unpacked as it arrives (Valve
 serves both bzip2 and Zstandard under that name) and saved as `<match id>.dem`. Without `-o` it goes

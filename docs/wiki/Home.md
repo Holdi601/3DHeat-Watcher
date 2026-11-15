@@ -1,7 +1,15 @@
-
 # 3DHeat Watcher
 
-3DHeat Watcher is a background program that records what games publish about your play - where you
+**What is it?** You play a game. This program quietly writes down where you went and what happened.
+Later you can look at it as a coloured map in the 3DHeat viewer.
+
+**Why would I use it?** To keep your own record of every sitting - where you drove, flew or fought,
+your totals per game - without any website and without changing the game.
+
+**Example:** you drive a lap in a racing game with the watcher running; afterwards a file in
+`sessions\<game>\` holds the line you took, and the viewer draws it.
+
+In more detail: 3DHeat Watcher is a background program that records what games publish about your play - where you
 went, what happened where, and the numbers behind it - into files on your own machine. The files are
 for your own statistics and for the heatmaps and route lines of the 3DHeat viewer.
 
@@ -11,6 +19,8 @@ game writes, the replay it saves after a match, the statistics Steam keeps, the 
 saves. Recordings stay on your machine. The program contacts only two outside services, and only in
 these cases: GitHub, to look for a newer release (see [Updates](updates)), and Riot's Match-V5 API,
 and only if you enter your own Riot API key (see [League of Legends replays](game-lol-replays)).
+
+![the watcher: what games publish, into files on your machine](https://holdi601.github.io/3DHeat-Watcher/assets/img/overview.svg)
 
 ## What it records
 
@@ -28,7 +38,9 @@ never reads their memory (see [Sources and rules](sources-and-rules)).
 
 ## Install
 
-The watcher is a Python program for Windows. Many of its sources exist only on Windows: shared
+New to the command line? Read [Before you start](before-you-start) first.
+
+The watcher is a Python program for Windows (Python 3.10 or later). Many of its sources exist only on Windows: shared
 memory, the registry, Windows notifications.
 
 ```bash
@@ -52,6 +64,9 @@ python -m heat3d_watch stats            # totals per game
 python -m heat3d_watch stats --csv out  # sessions, events and stats as CSV files
 ```
 
+You should see: after `games`, a table with one line per game; `run` keeps going until you press
+Ctrl+C or close the window.
+
 Everything is written to `%LOCALAPPDATA%\3DHeat\Watcher`. To use another folder, set the
 `HEAT3D_WATCH_HOME` environment variable or run `python -m heat3d_watch config --set data=D:\somewhere`.
 
@@ -61,29 +76,49 @@ Everything is written to `%LOCALAPPDATA%\3DHeat\Watcher`. To use another folder,
 - `watcher.sqlite` - the statistics of every session, in three plain tables
 - `watcher.log` - what the watcher did
 
+The viewer opens a session's `heat.parquet` directly, with nothing to set (its axes and units are in
+the file). Converted replays are written as tables and match documents beside it; the viewer's own
+one-file-a-match format is described in its [`.3dheat` container](https://holdi601.github.io/3DHeat/container.html)
+page, and every table's columns in [The data](the-data).
+
 ## The documentation
 
 | Page | What it covers |
 |---|---|
+| [Before you start](before-you-start) | Python, a terminal, placeholders, what success and the common errors look like |
 | [Installing and running](installing-and-running) | requirements, running in the background, starting with Windows, the lock file, the log, every setting and environment variable |
 | [Games](games) | one page per game: what is recorded, where from, how to switch it on, how it works, axes, statistics, what was verified |
 | [The data](the-data) | session folders, `events.jsonl`, `heat.parquet` and its footer, `meta.json`, `watcher.sqlite`, recovery after a crash, CSV export, opening a session in the 3DHeat viewer |
 | [Commands](commands) | every command and option of `python -m heat3d_watch` |
 | [Sources and rules](sources-and-rules) | the six kinds of source, the multiplayer rules, which games are left out and why |
 | [NVIDIA Highlights](nvidia-highlights) | what NVIDIA Highlights can and cannot deliver, and how a highlight gets a position |
+| [Server recorder mods](server-mods) | the Arma 3 and Arma Reforger server mods that record whole missions for the viewer |
 | [Reading memory](memory-reading) | single-player memory profiles: the format, the checks, how to write and verify one |
 | [Updates](updates) | how the watcher looks for new releases and updates itself |
 | [Development](development) | writing an adapter: the API, tests, an honest `verified`, regenerating the game pages |
 | [All games in one table](watcher) | every game in one table, as `games --markdown` prints it, plus the games researched but not yet built |
+| [Command reference](cli-reference) | every command's `--help`, generated from the code |
+| [Maintaining](maintaining) | the release checklist for these pages |
 
 ## Part of 3DHeat
 
-3DHeat Watcher is one of several free tools around the 3DHeat telemetry viewer. Each tool is a
-separate project with its own releases and licence: [3DHeat GameFiles](https://github.com/Holdi601/3DHeat-GameFiles),
-[3DHeat GameCapture](https://github.com/Holdi601/3DHeat-GameCapture),
-[3DHeat Unreal Exporter](https://github.com/Holdi601/3DHeat-UnrealExporter),
-[3DHeat CS2](https://github.com/Holdi601/3DHeat-CS2) (the watcher uses it to convert CS2 demos) and
-3DHeat Watcher.
+3DHeat Watcher is one of the free tools around the 3DHeat viewer (the watcher uses 3DHeat CS2
+to convert CS2 demos). Each is its own project, with its own releases and licence:
+
+| Tool | What it does | Docs |
+|---|---|---|
+| [3DHeat](https://github.com/Holdi601/3DHeat) | the viewer: heatmaps, race analysis and match review in 3D | [site](https://holdi601.github.io/3DHeat/) |
+| [GameFiles](https://github.com/Holdi601/3DHeat-GameFiles) | courses and levels out of the files games ship, as 3D models | [site](https://holdi601.github.io/3DHeat-GameFiles/) |
+| [GameCapture](https://github.com/Holdi601/3DHeat-GameCapture) | lap telemetry from racing games; levels rebuilt from gameplay video | [site](https://holdi601.github.io/3DHeat-GameCapture/) |
+| [Unreal Exporter](https://github.com/Holdi601/3DHeat-UnrealExporter) | an Unreal Editor plugin that exports a level as one 3D model | [site](https://holdi601.github.io/3DHeat-UnrealExporter/) |
+| [CS2](https://github.com/Holdi601/3DHeat-CS2) | Counter-Strike 2 demos into tables and match documents; maps into 3D models | [site](https://holdi601.github.io/3DHeat-CS2/) |
+| [Watcher](https://github.com/Holdi601/3DHeat-Watcher) | records what games publish about your play, in the background | [site](https://holdi601.github.io/3DHeat-Watcher/) |
+| [Ext-WarThunder](https://github.com/Holdi601/3DHeat-Ext-WarThunder) | War Thunder replays into tables and match documents | [site](https://holdi601.github.io/3DHeat-Ext-WarThunder/) |
+| [Ext-WoT](https://github.com/Holdi601/3DHeat-Ext-WoT) | World of Tanks replays into tables and match documents | [site](https://holdi601.github.io/3DHeat-Ext-WoT/) |
+| [Ext-WoWs](https://github.com/Holdi601/3DHeat-Ext-WoWs) | World of Warships replays into tables and match documents | [site](https://holdi601.github.io/3DHeat-Ext-WoWs/) |
+| [Ext-Squad](https://github.com/Holdi601/3DHeat-Ext-Squad) | Squad server demos into tables and match documents | [site](https://holdi601.github.io/3DHeat-Ext-Squad/) |
+| [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | DCS World maps into 3D models | [site](https://holdi601.github.io/3DHeat-Ext-DCS/) |
+| [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | IL-2 Sturmovik maps into 3D models | [site](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
 Licence: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). The licences
 of the third-party packages it uses, and what the games it reads require, are listed in

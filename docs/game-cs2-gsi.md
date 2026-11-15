@@ -1,12 +1,14 @@
 ---
-title: "Counter-Strike 2 (gsi)"
+title: "Counter-Strike 2 (game state)"
 parent: Games
 nav_order: 9
 ---
 
-# Counter-Strike 2 (gsi)
+# Counter-Strike 2 (game state)
 
-Adapter `cs2-gsi` - kind [`gsi`](sources-and-rules.md) - runs while `cs2.exe` is running - looks for new data every 0.05 s.
+While you play Counter-Strike 2, the watcher saves what the game reports to programs on your own computer, so you can look at it later on a map in the 3DHeat viewer.
+
+*Technical details: adapter `cs2-gsi`, kind [`gsi`](sources-and-rules.md); it runs while `cs2.exe` is running and looks for new data every 0.05 s.*
 
 ## What is recorded
 
@@ -24,7 +26,13 @@ Game State Integration: HTTP POSTs to 127.0.0.1:3311 configured by &lt;CS2>\game
 
 `python -m heat3d_watch setup cs2-gsi --apply`, then start CS2 (it reads the file at start)
 
-`python -m heat3d_watch setup cs2-gsi` lists the files it would change; `python -m heat3d_watch setup cs2-gsi --apply` changes them, keeping the original as `<file>.heat3d-backup` (see [Commands](commands.md#setup)).
+Type the command in a terminal opened in the watcher's folder (see [Before you start](before-you-start.md)). If it fails, the last line says why; [Installing and running](installing-and-running.md) covers the usual causes.
+
+`python -m heat3d_watch setup cs2-gsi` lists the files it would change; `python -m heat3d_watch setup cs2-gsi --apply` changes them, keeping the original as `<file>.heat3d-backup` (see [Commands](commands.md#setup)). It prints `cs2-gsi: changed: ...` for each change, or `cs2-gsi: nothing to change` when it is already on.
+
+Settings from environment variables:
+
+- `HEAT3D_CS2_GSI_PORT`: the port the game posts to (default 3311); the game's cfg file must name the same port
 
 ## How it works
 
@@ -75,7 +83,7 @@ Sources: <https://developer.valvesoftware.com/wiki/Counter-Strike:_Global_Offens
 (the format CS2 kept), <https://github.com/antonpup/CounterStrike2GSI> and
 <https://github.com/antonpup/Dota2GSI> (field lists; MIT, read for facts only).
 
-The same module also serves: [Dota 2 (gsi)](game-dota2-gsi.md).
+The same module also serves: [Dota 2 (game state)](game-dota2-gsi.md).
 
 ## Positions and axes
 
@@ -123,7 +131,7 @@ The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat
 
 **Not available**
 
-- other players (`allplayers_*`) and grenades (`allgrenades`): the game sends them only to spectators and GOTV, and the watcher does not ask for them (Sources and rules); a demo has every player - see cs2-demos
+- other players (`allplayers_*`) and grenades (`allgrenades`): the game sends them only to spectators and GOTV, and the watcher does not ask for them (Sources and rules); a demo has every player - see [Counter-Strike 2 (replays)](game-cs2-demos.md)
 - states between posts: the game posts at most every 0.1 s (`throttle`) and only on a change, every 10 s (`heartbeat`) otherwise
 - the cfg file's token, blanked in each kept document: the watcher's own secret, not game data
 - posts beyond 10,000 waiting (the watcher stalled) are counted as `dropped_packets`, not kept; a post over 4 MB is kept as `gsi-unreadable` with its length but without its bytes
@@ -132,10 +140,10 @@ The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat
 
 ## Verified
 
-tested on documents in the published GSI format posted to the running adapter; the install and cfg folder were found on this machine; untested against the running game
+tested on documents in the published GSI format posted to the running adapter; the install and cfg folder lookup tested on a local install; untested against the running game
 
 ## Source
 
 [heat3d_watch/adapters/gsi.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/gsi.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

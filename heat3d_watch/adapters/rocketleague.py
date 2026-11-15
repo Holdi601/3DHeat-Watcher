@@ -537,7 +537,7 @@ ADAPTERS = [
         "then start Rocket League",
         axes=Axes(up="z", units="Unreal units (centimetres)"),
         verified="tested on messages in the documented format sent by a fake local server; "
-        "untested against the game (not installed here)",
+        "untested against the game",
         completeness={
             "read": (
                 "BallHit (place, who, team, speeds before and after), GoalScored (impact place, scorer, assister, "

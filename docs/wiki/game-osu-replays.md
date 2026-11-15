@@ -1,12 +1,14 @@
+# osu! (replays)
 
-# osu! (replay)
+After a match of osu!, the watcher turns the replay the game saved into files you can look at on a map in the 3DHeat viewer.
 
-Adapter `osu-replays` - kind [`replay`](sources-and-rules) - runs always on (it does not wait for a game to start) - looks for new data every 5 s.
+*Technical details: adapter `osu-replays`, kind [`replay`](sources-and-rules); it runs all the time (it does not wait for a game to start) and looks for new data every 5 s.*
 
 ## What is recorded
 
 - the cursor's path over the playfield (x 0..512, y 0..384) and the keys held, every frame
-- score, combo, 300s/100s/50s/misses, accuracy, mods, full combo
+- score, combo, 300s/100s/50s/gekis/katus/misses, accuracy, mods, full combo
+- the life bar over the play, the beatmap's and the replay's hashes, the random seed, the online score id
 
 ## Where it comes from
 
@@ -15,6 +17,10 @@ replays osu! (stable) saves: %LOCALAPPDATA%/osu!/Data/r/\*.osr (every play) and 
 ## How to switch it on
 
 Nothing needs switching on: the watcher reads the source as the game or platform provides it.
+
+Settings from environment variables:
+
+- `HEAT3D_WT_REPLAY`: the converter's folder (a clone or unpacked release), when it is not installed or beside the watcher
 
 ## How it works
 
@@ -32,21 +38,15 @@ converted: a player with years of demos would otherwise find the watcher busy
 for a day. `python -m heat3d_watch replays <adapter> [folder]` converts the
 existing ones on request.
 
-#### Counter-Strike 2
+#### osu!
 
-CS2 saves the demos a player downloads from the match history (watch tab) to
-`<CS2>/game/csgo/replays/` and ones recorded with the `record` console command
-to `<CS2>/game/csgo/`. Each is converted with this repository's own CS2
-converter (3DHeat CS2, github.com/Holdi601/3DHeat-CS2: every player's position, look direction, health and
-money every eighth tick; kills, deaths, damage, grenades, plants and defuses
-where they happened; rounds, score, economy) into the session folder, as the
-`<map>/<match>.parquet` table and `<match>.match.json` summary the viewer's heat
-and match tabs read. The match's scoreboard becomes the session's statistics:
-for the player whose Steam account is signed in on this machine (from Steam's
-`loginusers.vdf`) under its plain names - kills, deaths, assists, ADR, KAST,
-headshot percentage, opening kills, clutches - and the score and rounds.
+osu! (stable) saves every play to `osu!/Data/r/*.osr` and exported ones to
+`osu!/Replays/`. The watcher reads them itself, to the format the osu! wiki
+publishes: the cursor's path and keys every frame, the score line, the life
+bar, the seed and the score id; the file is kept whole beside, part by part,
+in the session's `heat.raw.parquet`.
 
-The same module also serves: [Counter-Strike 2 (replay)](game-cs2-demos).
+The same module also serves: [Counter-Strike 2 (replays)](game-cs2-demos), [Dota 2 (replays)](game-dota-replays), [Squad (replays)](game-squad-demos), [War Thunder (replays)](game-warthunder-replays), [World of Tanks (replays)](game-wot-replays), [World of Warships (replays)](game-wows-replays).
 
 ## Positions and axes
 
@@ -74,6 +74,28 @@ Statistic keys this adapter's code sets by name (each session's `stats` in `meta
 
 A key in braces is completed at run time (`score.{team}` is one key per team). Keys the code takes from a table of the game's fields or from the game's own stat names are not in this list; "What is recorded" above names them.
 
+## Completeness
+
+The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md): what the source holds is read or kept, never dropped. Besides the rows, every packet, page, line or reply the adapter receives is kept whole in the session's `heat.raw.parquet` (columns `time`, `ms`, `type`, `used`, `payload`, `text`, then any field kept by name; `used` marks what also became rows), and `meta.json`'s `selfCheck.completeness` counts each `type` - `lost` is 0.
+
+**Read**
+
+- every frame: a row at its time (milliseconds summed), x and y on the playfield, `keys` the key bits (mouse 1 and 2, keys 1 and 2, smoke); in mania x holds the keys held instead of a place
+- the header, every field: mode, version, the beatmap's MD5 (the file names the beatmap only by it), the player, the replay's MD5, 300s, 100s, 50s, gekis, katus, misses, score, max combo, full combo, mods (by name in meta.json `osu.modNames`), the play's time - as statistics and in meta.json `osu`
+- the life bar graph: a `life` row per point (time, life 0..1)
+- the frame `-12345`: the random seed (`osu.seed`); the online score id (`osu.scoreId`); with Target Practice, its accuracy (`osu.targetPracticeAccuracy`)
+
+**Kept raw**
+
+- the file whole, part by part, in heat.raw.parquet (`offset` where each starts, so the parts are the file): `header`, `replay_data` (the LZMA-compressed frames as stored), `score_id`, `mod_info`, and `trailing` for whatever follows the parts the format describes (osu!lazer's exports add data there) - kept, not read
+
+**Not available**
+
+- the beatmap itself (hit objects, timing): not in a replay; it is named only by its MD5
+- osu!lazer's own replays: kept in its database, not as files
+
+**Size**: the raw sidecar is about the replay's size (tens to hundreds of kilobytes)
+
 ## Verified
 
 tested on replays built to the published .osr format; osu!lazer keeps replays in its own store and is not read
@@ -82,4 +104,4 @@ tested on replays built to the published .osr format; osu!lazer keeps replays in
 
 [heat3d_watch/adapters/replays.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/replays.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

@@ -1,9 +1,12 @@
 ---
 title: Reading memory
-nav_order: 8
+nav_order: 9
 ---
 
 # Reading memory
+
+Some single-player games tell nothing to other programs. For those, the watcher can - if you switch it
+on and write a profile yourself - look up where you are in the game's memory, read only.
 
 For single-player games that publish nothing, the watcher can read positions and values from the
 game's memory, through a **profile** you write for your own build of the game. Of all the sources this

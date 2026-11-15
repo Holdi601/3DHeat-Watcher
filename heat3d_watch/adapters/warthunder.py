@@ -617,7 +617,7 @@ ADAPTERS = [
         enable="",
         axes=Axes(up="y", flip_z=True, units="metres (map east/north; height only for the own aircraft)"),
         verified="tested against a fake local server serving answers in the format of the game's web map; "
-        "War Thunder is installed here but was not run",
+        "untested against the running game",
         completeness={
             "read": (
                 "/map_info.json: the map's extent and grid (metres, the map id) into meta.json; an invalid one ends "

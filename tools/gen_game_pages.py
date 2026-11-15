@@ -1,7 +1,8 @@
 """
 Writes one documentation page per game adapter, and the games overview, from the adapters themselves.
 
-    python tools/gen_game_pages.py        (from the repository's root)
+    python tools/gen_game_pages.py          (from the repository's root)
+    python tools/gen_game_pages.py --check  (exit 1 when a page is out of date; writes nothing)
 
 For every adapter `heat3d_watch.adapters.load()` returns, `docs/game-<adapter id>.md`
 gets what the adapter declares - what it records, where from, how to switch it
@@ -44,6 +45,83 @@ KIND_TEXT = {
 
 
 # ----------------------------------------------------------------------------- Markdown
+
+
+#: A plain name for each kind of source, for page titles.
+KIND_LABEL = {
+    "telemetry": "live data",
+    "gsi": "game state",
+    "log": "log files",
+    "replay": "replays",
+    "platform": "platform",
+    "memory": "memory",
+}
+
+#: What an environment variable an adapter reads does (names are found in the code).
+ENV_MEANING = {
+    "HEAT3D_CS2": "the folder of 3DHeat CS2, when it is not beside the watcher or installed",
+    "HEAT3D_CS2_GSI_PORT": "the port the game posts to (default 3311); the game's cfg file must name the same port",
+    "HEAT3D_DOTA_GSI_PORT": "the port the game posts to (default 3312); the game's cfg file must name the same port",
+    "HEAT3D_WT_REPLAY": "the converter's folder (a clone or unpacked release), when it is not installed or beside the watcher",
+    "HEAT3D_WOT_REPLAY": "the converter's folder (a clone or unpacked release), when it is not installed or beside the watcher",
+    "HEAT3D_WOWS_REPLAY": "the converter's folder (a clone or unpacked release), when it is not installed or beside the watcher",
+    "HEAT3D_SQUAD_DEMO": "the converter's folder (a clone or unpacked release), when it is not installed or beside the watcher",
+}
+
+
+def lead(adapter, has: str) -> str:
+    """One plain sentence on what the page's source gives, before any technical word."""
+    seen = "on a map in the 3DHeat viewer" if has != "no" else "as statistics and a timeline"
+    game = adapter.game
+    return {
+        "telemetry": f"While you play {game}, the watcher saves the data the game itself sends out, so you can look at it later {seen}.",
+        "gsi": f"While you play {game}, the watcher saves what the game reports to programs on your own computer, so you can look at it later {seen}.",
+        "log": f"While you play {game}, the watcher reads the files the game writes and saves what happened, so you can look at it later {seen}.",
+        "replay": f"After a match of {game}, the watcher turns the replay the game saved into files you can look at {seen}.",
+        "platform": f"The watcher saves what {game} keeps about your games, so you can look at your history later {seen}.",
+    }.get(adapter.kind, f"The watcher records {game}, so you can look at it later {seen}.")
+
+
+def env_vars(adapter, module, source: str) -> list[str]:
+    """`HEAT3D_*` variables this adapter's code, or its entry in the module's list, reads."""
+    text = source
+    whole = inspect.getsource(module)
+    at = whole.find(f'id="{adapter.id}"')
+    if at >= 0:
+        end = whole.find('id="', at + 4)
+        text += whole[at : end if end > 0 else len(whole)]
+    names = sorted(set(re.findall(r"HEAT3D_[A-Z0-9_]+", text)) - {"HEAT3D_NO_UPDATE"})
+    return [n for n in names if n in ENV_MEANING]
+
+
+def own_sections(md: str, adapter, siblings: list) -> str:
+    """
+    A module docstring shared by several games, cut to this game: the opening
+    paragraphs, this game's sections, and the sections that name no game of the module.
+    """
+    parts = re.split(r"(?m)^(?=#### )", md)
+    if len(parts) < 2 or len(siblings) < 2:
+        return md
+    games = {s.game.lower() for s in siblings}
+    mine = adapter.game.lower()
+    kept = [parts[0]]
+    for p in parts[1:]:
+        head = p.split("\n", 1)[0].lower()
+        hit = {g for g in games if g in head}
+        if not hit or mine in hit:
+            kept.append(p)
+    return "".join(kept)
+
+
+def _codeish(text: str) -> str:
+    """Words holding `<`, a backslash or `*` (paths, globs) as code, so a table cell shows them as they are."""
+    out = []
+    for i, piece in enumerate(text.split("`")):
+        if i % 2:
+            out.append(piece)
+            continue
+        out.append(re.sub(r"[^\s`]*[<\\*][^\s`,;)]*", lambda m: f"`{m.group(0)}`", piece))
+    return "`".join(out)
 
 
 _URL = re.compile(r"https?://[^\s<>()\[\]`'\"]+")
@@ -292,12 +370,12 @@ def page_name(adapter) -> str:
 
 
 def title_of(adapter) -> str:
-    return f"{adapter.game} ({adapter.kind})"
+    return f"{adapter.game} ({KIND_LABEL.get(adapter.kind, adapter.kind)})"
 
 
 def runs_when(adapter) -> str:
     if not adapter.exes:
-        return "always on (it does not wait for a game to start)"
+        return "all the time (it does not wait for a game to start)"
     names = [f"`{e}`" for e in adapter.exes]
     listed = names[0] if len(names) == 1 else ", ".join(names[:-1]) + " or " + names[-1]
     return f"while {listed} is running"
@@ -379,8 +457,10 @@ def game_page(adapter, module, nav: int, siblings: list) -> str:
         "",
         f"# {inline(title_of(adapter))}",
         "",
-        f"Adapter `{adapter.id}` - kind [`{adapter.kind}`](sources-and-rules.md) - runs {runs_when(adapter)} - "
-        f"looks for new data every {adapter.interval:g} s.",
+        inline(lead(adapter, has)),
+        "",
+        f"*Technical details: adapter `{adapter.id}`, kind [`{adapter.kind}`](sources-and-rules.md); it runs "
+        f"{runs_when(adapter)} and looks for new data every {adapter.interval:g} s.*",
         "",
         "## What is recorded",
         "",
@@ -395,6 +475,10 @@ def game_page(adapter, module, nav: int, siblings: list) -> str:
     ]
     if adapter.enable:
         parts.append(inline(adapter.enable))
+        if "python -m heat3d_watch" in adapter.enable:
+            parts += ["", "Type the command in a terminal opened in the watcher's folder (see "
+                      "[Before you start](before-you-start.md)). If it fails, the last line says why; "
+                      "[Installing and running](installing-and-running.md) covers the usual causes."]
     else:
         parts.append("Nothing needs switching on: the watcher reads the source as the game or platform provides it.")
     if adapter.can_setup and f"setup {adapter.id}" in adapter.enable:
@@ -402,11 +486,18 @@ def game_page(adapter, module, nav: int, siblings: list) -> str:
             "",
             f"`python -m heat3d_watch setup {adapter.id}` lists the files it would change; "
             f"`python -m heat3d_watch setup {adapter.id} --apply` changes them, keeping the original as "
-            "`<file>.heat3d-backup` (see [Commands](commands.md#setup)).",
+            "`<file>.heat3d-backup` (see [Commands](commands.md#setup)). It prints "
+            f"`{adapter.id}: changed: ...` for each change, or `{adapter.id}: nothing to change` when it is "
+            "already on.",
         ]
+    env = env_vars(adapter, module, source)
+    if env:
+        parts += ["", "Settings from environment variables:", ""]
+        parts += [f"- `{n}`: {ENV_MEANING[n]}" for n in env]
     parts += ["", "## How it works", ""]
     doc = module.__doc__ or ""
-    parts.append(docstring_markdown(doc).rstrip() if doc.strip() else "The module has no description.")
+    parts.append(own_sections(docstring_markdown(doc), adapter, siblings).rstrip() if doc.strip()
+                 else "The module has no description.")
     others = [s for s in siblings if s.id != adapter.id]
     if others:
         links = ", ".join(f"[{inline(title_of(s))}]({page_name(s)})" for s in others)
@@ -459,8 +550,8 @@ def game_page(adapter, module, nav: int, siblings: list) -> str:
         "",
         f"[{rel}]({BLOB}{rel})",
         "",
-        "*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather "
-        "than editing this page.*",
+        "<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again "
+        "rather than editing this page. -->",
         "",
     ]
     return "\n".join(parts)
@@ -470,12 +561,13 @@ def overview(adapters: list, modules: dict[str, object]) -> str:
     rows = []
     for a in adapters:
         has = positions(a, reachable_source(a, modules[a.id]))
-        rows.append(f"| [{inline(a.game, table=True)}]({page_name(a)}) | {a.kind} | {has} | {inline(a.source, table=True)} |")
+        rows.append(f"| [{inline(title_of(a), table=True)}]({page_name(a)}) | {a.kind} | {has} | "
+                    f"{inline(_codeish(a.source), table=True)} |")
     return "\n".join(
         [
             "---",
             "title: Games",
-            "nav_order: 3",
+            "nav_order: 4",
             "has_children: true",
             "---",
             "",
@@ -499,17 +591,45 @@ def overview(adapters: list, modules: dict[str, object]) -> str:
             "Everything in one table, as `python -m heat3d_watch games --markdown` prints it: "
             "[All games in one table](watcher.md).",
             "",
-            "*Generated by `tools/gen_game_pages.py`; run it again after changing an adapter.*",
+            "<!-- Generated by tools/gen_game_pages.py; run it again after changing an adapter. -->",
             "",
         ]
     )
 
 
-def main(only: list[str] | None = None) -> int:
+MARK = "<!-- games table: generated by `python -m heat3d_watch games --markdown` -->"
+
+
+def watcher_table(text: str) -> str:
+    """docs/watcher.md with its games table replaced by what `games --markdown` prints now."""
+    import subprocess
+
+    table = subprocess.run([sys.executable, "-m", "heat3d_watch", "games", "--markdown"], cwd=ROOT, env=os.environ,
+                           capture_output=True, text=True, encoding="utf-8", check=True).stdout.strip()
+    head, sep, rest = text.partition(MARK)
+    if not sep:
+        return text
+    body = rest.lstrip("\n")
+    end = body.find("\n\n")
+    tail = body[end:] if end >= 0 else "\n"
+    return head + MARK + "\n\n" + table + tail
+
+
+def main(only: list[str] | None = None, check: bool = False) -> int:
     """
     Every page and the overview; given adapter ids (`python tools/gen_game_pages.py dcs il2`),
-    only those pages, leaving every other page and the overview as they are.
+    only those pages, leaving every other page and the overview as they are. With `check`,
+    nothing is written: the exit code is 1 when any page differs from what the code gives.
     """
+    stale: list[str] = []
+
+    def put(path: Path, text: str) -> None:
+        old = path.read_text(encoding="utf-8") if path.exists() else None
+        if check:
+            if old != text:
+                stale.append(path.name)
+            return
+        path.write_text(text, encoding="utf-8", newline="\n")
     home = tempfile.mkdtemp(prefix="heat3d-docs-")
     # An empty data folder: the player's profiles and settings stay out of the pages.
     os.environ["HEAT3D_WATCH_HOME"] = home
@@ -543,21 +663,30 @@ def main(only: list[str] | None = None) -> int:
                 continue
             module = modules[a.id]
             path = DOCS / page_name(a)
-            path.write_text(game_page(a, module, nav, by_module[module.__name__]), encoding="utf-8", newline="\n")
+            put(path, game_page(a, module, nav, by_module[module.__name__]))
             written.add(path.name)
-        if only:
+        if only and not check:
             print(f"wrote {len(written)} game pages to {DOCS}")
             return 0
         for old in DOCS.glob("game-*.md"):
             if old.name not in written:
+                if check:
+                    stale.append(old.name)
+                    continue
                 old.unlink()
                 print(f"removed {old.name}")
-        (DOCS / "games.md").write_text(overview(adapters, modules), encoding="utf-8", newline="\n")
-        print(f"wrote games.md and {len(written)} game pages to {DOCS}")
+        put(DOCS / "games.md", overview(adapters, modules))
+        put(DOCS / "watcher.md", watcher_table((DOCS / "watcher.md").read_text(encoding="utf-8")))
+        if check:
+            for name in stale:
+                print(f"out of date: docs/{name}")
+            return 1 if stale else 0
+        print(f"wrote games.md, watcher.md's table and {len(written)} game pages to {DOCS}")
         return 0
     finally:
         shutil.rmtree(home, ignore_errors=True)
 
 
 if __name__ == "__main__":
-    raise SystemExit(main(sys.argv[1:] or None))
+    args = [a for a in sys.argv[1:] if a != "--check"]
+    raise SystemExit(main(args or None, check="--check" in sys.argv[1:]))

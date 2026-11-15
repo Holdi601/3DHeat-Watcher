@@ -1,12 +1,14 @@
 ---
-title: "Rocket League (gsi)"
+title: "Rocket League (game state)"
 parent: Games
 nav_order: 40
 ---
 
-# Rocket League (gsi)
+# Rocket League (game state)
 
-Adapter `rocketleague-stats` - kind [`gsi`](sources-and-rules.md) - runs while `RocketLeague.exe` is running - looks for new data every 0.05 s.
+While you play Rocket League, the watcher saves what the game reports to programs on your own computer, so you can look at it later on a map in the 3DHeat viewer.
+
+*Technical details: adapter `rocketleague-stats`, kind [`gsi`](sources-and-rules.md); it runs while `RocketLeague.exe` is running and looks for new data every 0.05 s.*
 
 ## What is recorded
 
@@ -26,7 +28,9 @@ Stats API: TCP JSON stream from 127.0.0.1:49123 (Port in &lt;RL>\TAGame\Config\T
 
 `python -m heat3d_watch setup rocketleague-stats --apply` (sets PacketSendRate=30), then start Rocket League
 
-`python -m heat3d_watch setup rocketleague-stats` lists the files it would change; `python -m heat3d_watch setup rocketleague-stats --apply` changes them, keeping the original as `<file>.heat3d-backup` (see [Commands](commands.md#setup)).
+Type the command in a terminal opened in the watcher's folder (see [Before you start](before-you-start.md)). If it fails, the last line says why; [Installing and running](installing-and-running.md) covers the usual causes.
+
+`python -m heat3d_watch setup rocketleague-stats` lists the files it would change; `python -m heat3d_watch setup rocketleague-stats --apply` changes them, keeping the original as `<file>.heat3d-backup` (see [Commands](commands.md#setup)). It prints `rocketleague-stats: changed: ...` for each change, or `rocketleague-stats: nothing to change` when it is already on.
 
 ## How it works
 
@@ -128,10 +132,10 @@ The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat
 
 ## Verified
 
-tested on messages in the documented format sent by a fake local server; untested against the game (not installed here)
+tested on messages in the documented format sent by a fake local server; untested against the game
 
 ## Source
 
 [heat3d_watch/adapters/rocketleague.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/rocketleague.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

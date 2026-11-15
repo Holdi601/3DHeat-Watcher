@@ -357,8 +357,7 @@ def _adapter(id: str, game: str, exe: str) -> ScsAdapter:
         interval=0.1,
         axes=Axes(up="y", units="metres (SCS world: x east, y up, z south)"),
         verified=(
-            "tested on shared memory built from the plugin's revision 12 header layout; untested against the game "
-            "(not installed on the test machine)"
+            "tested on shared memory built from the plugin's revision 12 header layout; untested against the game"
         ),
         completeness=_COMPLETENESS,
     )

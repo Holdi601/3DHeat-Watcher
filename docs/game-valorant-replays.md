@@ -1,12 +1,14 @@
 ---
-title: "VALORANT (replay)"
+title: "VALORANT (replays)"
 parent: Games
 nav_order: 45
 ---
 
-# VALORANT (replay)
+# VALORANT (replays)
 
-Adapter `valorant-replays` - kind [`replay`](sources-and-rules.md) - runs always on (it does not wait for a game to start) - looks for new data every 5 s.
+After a match of VALORANT, the watcher turns the replay the game saved into files you can look at as statistics and a timeline.
+
+*Technical details: adapter `valorant-replays`, kind [`replay`](sources-and-rules.md); it runs all the time (it does not wait for a game to start) and looks for new data every 5 s.*
 
 ## What is recorded
 
@@ -35,31 +37,6 @@ the rest is kept as it is: every part of the file, whole, in the session's
 `heat.raw.parquet` (3DHeat's converter rule, docs/converters.md in the
 viewer's repository), counted in meta.json's `selfCheck.completeness`.
 
-#### League of Legends (.rofl)
-
-`%USERPROFILE%\Documents\League of Legends\Replays\*.rofl`. Both container
-versions carry the end-of-game box score as plain JSON (`statsJson`): for each
-of the ten players the champion, kills, deaths, assists, gold, damage to
-champions, items, team, role, win, their Riot ID, and every other number the
-game totals (over a hundred per player); all of them become the player's
-`player_result` row. ROFL1 (patch 14.9 and before) has it after a fixed header
-(`RIOT\0\0`, a 256-byte signature, then the lengths); ROFL2 (14.11 on,
-`RIOT\2\0`) at the end of the file, its length in the last four bytes (stated
-by a Riot engineer, ReplayBook issue 299). ROFL1's payload header (game id,
-length, chunk and keyframe counts, the chunk key's length) and its table of
-chunks (id, type, length, next chunk, offset) are in the open and read; the
-chunks themselves are encrypted, and kept whole unread. Layouts from
-roflxd.cs (MIT).
-
-Positions do not come from the file. With a Riot developer key of the player's
-own (`riot_api_key` in the settings; a personal key is meant for exactly this,
-"showing (self) player stats"), the match's official timeline is fetched from
-Riot's Match-V5 API: every player's position once a minute with everything the
-minute's frame says of them (gold, experience, level, minions, champion and
-damage statistics), and every event of the timeline - kills, buildings, elite
-monsters, wards, items, skills, levels - each a row, where it happened when it
-has a place. Without a key nothing is fetched and nothing is sent.
-
 #### Valorant (.vrf)
 
 `%LOCALAPPDATA%\VALORANT\Saved\Demos\*.vrf`, an Unreal Engine local replay
@@ -73,7 +50,7 @@ id and metadata. Positions, names, scores and everything else are in the
 obfuscated stream (the replay data and checkpoint chunks), which is kept whole
 and not read.
 
-The same module also serves: [League of Legends (replay)](game-lol-replays.md).
+The same module also serves: [League of Legends (replays)](game-lol-replays.md).
 
 ## Positions and axes
 
@@ -130,4 +107,4 @@ built from the container layout documented by vrfkit (Apache-2.0); untested on a
 
 [heat3d_watch/adapters/riot_replays.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/riot_replays.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

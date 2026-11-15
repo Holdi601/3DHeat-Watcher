@@ -6,7 +6,9 @@ nav_order: 43
 
 # Steam statistics (platform)
 
-Adapter `steam-stats` - kind [`platform`](sources-and-rules.md) - runs always on (it does not wait for a game to start) - looks for new data every 30 s.
+The watcher saves what Steam statistics keeps about your games, so you can look at your history later as statistics and a timeline.
+
+*Technical details: adapter `steam-stats`, kind [`platform`](sources-and-rules.md); it runs all the time (it does not wait for a game to start) and looks for new data every 30 s.*
 
 ## What is recorded
 
@@ -42,74 +44,6 @@ with an unlock time in Unix seconds. Playtime is in
 Playtime and Playtime2wks in minutes, LastPlayed in Unix seconds.
 Steam is found through HKCU\Software\Valve\Steam SteamPath.
 Stats API: <https://partner.steamgames.com/doc/features/achievements>
-
-#### Steam Timeline (`steam-timeline`)
-
-`<Steam>\userdata\<account>\gamerecordings\timelines\timeline_<appid><yyyymmdd>_<hhmmss>.json`,
-written while Steam Game Recording is on. The file is JSON with string
-numbers: "daterecorded" (Unix seconds), "starttime"/"endtime" (ms) and
-"entries", each {"id", "time" (ms since daterecorded), "type", ...}. Types
-seen on real files:
-```text
-achievement        achievement_name - Steam adds these for every game
-gamemode           mode, an ETimelineGameMode: 1 playing, 2 staging, 3 menus,
-                   4 loading screen
-error              description - Steam's own ("#GameRecording_RecordingFailed")
-event              a game's AddInstantaneousTimelineEvent/AddRangeTimelineEvent:
-                   title, description, icon, priority, duration (ms),
-                   possible_clip - "You killed <name>" / "with the <weapon>"
-state_description  title - SetTimelineTooltip ("Round 3")
-phase              a StartGamePhase..EndGamePhase span: duration (ms), tags
-                   [{name, icon, group, priority}] (mode, map ...)
-```
-The file layout is Steam's and undocumented; the fields are the API's
-parameters. Any other type is recorded under its own name with its fields.
-<https://partner.steamgames.com/doc/api/ISteamTimeline>
-<https://partner.steamgames.com/doc/features/timeline>
-
-#### NVIDIA highlights and clips (`nvidia-highlights`)
-
-What NVIDIA App / GeForce Experience keeps, all under
-`%LOCALAPPDATA%\NVIDIA Corporation\NVIDIA Overlay`:
-```text
-UGCTracker.json      the gallery index: {"UGC": [{id, path, type (video,
-                     image), subType (InstantReplay, Normal, ...), date
-                     (UTC, when the file was written), profileName, drsName
-                     (the exe), shortName, msDuration, ...}], "apps", "info"}
-GallerySettings.json settings.currentDirectoryV2 (where clips are saved),
-                     settings.tempDirectory (highlights wait in
-                     <temp>\Highlights\<game> until saved)
-Highlights\<game>\config.json  the highlight kinds a game registered:
-                     {"highlights": {id: {significance, highlightTags,
-                     name: {locale: text}}}, profileName, drsName, shortName}
-```
-and the clip files themselves, `<capture folder>\<Game>\<Game> yyyy.mm.dd -
-hh.mm.ss.ff.DVR.mp4` (screenshots: `<Game> Screenshot yyyy.mm.dd - ...png`), the
-name's time being the local time the clip was saved. GfeSDK games also log
-their highlight calls in `%LOCALAPPDATA%\NVIDIA Corporation\GfeSDK\<exe>_<pid>.log`.
-
-What this can and cannot deliver: a game that supports NVIDIA Highlights
-(GfeSDK) registers highlight kinds once - an id like "kill", a
-significance, tags, a display name - and later says only "highlight &lt;id>,
-from &lt;ms> before now to &lt;ms> after". There are no positions, no match or
-round, no opponent, no custom data: the SDK has no field for any of it. A
-saved clip adds a file, a game name, a length and a time. So what is
-recorded is "this kind of moment, in this game, at this time" - and a place
-only by looking the time up in another adapter's recording of the same game
-(`position_at`), which this adapter does for every clip it records.
-<https://developer.nvidia.com/highlights>
-
-Each adapter keeps what it has already seen in `<data>\state\<id>.json`, so a
-restart records nothing twice.
-
-Each session also keeps what its rows came from, whole (3DHeat's converter
-rule, docs/converters.md in the viewer's repository), in `heat.raw.parquet`:
-the stats file's and its schema's bytes and the game's localconfig block
-(steam-stats; a stats file the decoder cannot read gets a session holding only
-its bytes), the timeline file's header and every entry as JSON
-(steam-timeline), each clip's gallery index entry, the game's highlight
-definitions and every GfeSDK log line, the ones that are not highlight
-requests too (nvidia-highlights).
 
 The same module also serves: [NVIDIA highlights (platform)](game-nvidia-highlights.md), [Steam Timeline (platform)](game-steam-timeline.md).
 
@@ -165,10 +99,10 @@ The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat
 
 ## Verified
 
-decoded all real stats files and schemas on this machine (local test); change detection tested on files built in the binary KeyValues format
+tested on real stats files and schemas from a local install; change detection tested on files built in the binary KeyValues format
 
 ## Source
 
 [heat3d_watch/adapters/platform.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/platform.py)
 
-*Generated from the adapter by `tools/gen_game_pages.py`; change the adapter and run it again rather than editing this page.*
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

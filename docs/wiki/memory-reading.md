@@ -1,5 +1,7 @@
-
 # Reading memory
+
+Some single-player games tell nothing to other programs. For those, the watcher can - if you switch it
+on and write a profile yourself - look up where you are in the game's memory, read only.
 
 For single-player games that publish nothing, the watcher can read positions and values from the
 game's memory, through a **profile** you write for your own build of the game. Of all the sources this
@@ -14,6 +16,8 @@ a profile that was right before reads garbage, and garbage looks just like numbe
 be checked on the build a player has, by that player.
 
 ## The checks, in order
+![every condition must hold](https://holdi601.github.io/3DHeat-Watcher/assets/img/memory-rules.svg)
+
 
 Every check below must pass. The first four are made **before** the game is opened, because opening a
 protected game for reading is itself what an anti-cheat notices, and refusing afterwards would be too
