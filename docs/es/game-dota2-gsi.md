@@ -1,7 +1,7 @@
 ---
 title: "Dota 2 (estado de juego)"
 nav_order: 13
-lang: es
+lang: "es"
 source: game-dota2-gsi.md
 source_hash: "100a0d704bbe"
 nav_exclude: true

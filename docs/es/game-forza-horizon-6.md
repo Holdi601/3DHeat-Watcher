@@ -1,7 +1,7 @@
 ---
 title: "Forza Horizon 6 (datos en vivo)"
 nav_order: 23
-lang: es
+lang: "es"
 source: game-forza-horizon-6.md
 source_hash: "164d188cb521"
 nav_exclude: true

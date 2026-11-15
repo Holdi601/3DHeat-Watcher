@@ -1,7 +1,7 @@
 ---
 title: "EVE Online (archivos de registro)"
 nav_order: 20
-lang: es
+lang: "es"
 source: game-eve.md
 source_hash: "a5ab6c312c86"
 nav_exclude: true

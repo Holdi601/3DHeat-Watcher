@@ -1,7 +1,7 @@
 ---
 title: "War Thunder (estado de juego)"
 nav_order: 47
-lang: es
+lang: "es"
 source: game-warthunder-webmap.md
 source_hash: "d6026c277030"
 nav_exclude: true

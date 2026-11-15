@@ -1,7 +1,7 @@
 ---
 title: "Microsoft Flight Simulator 2020 (Live-Daten)"
 nav_order: 31
-lang: de
+lang: "de"
 source: game-msfs2020.md
 source_hash: "9b9e8389114b"
 nav_exclude: true

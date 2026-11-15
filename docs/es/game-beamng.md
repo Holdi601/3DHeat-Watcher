@@ -1,7 +1,7 @@
 ---
 title: "BeamNG.drive (datos en vivo)"
 nav_order: 7
-lang: es
+lang: "es"
 source: game-beamng.md
 source_hash: "1c23a869a62f"
 nav_exclude: true

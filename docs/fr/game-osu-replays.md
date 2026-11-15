@@ -1,7 +1,7 @@
 ---
 title: "osu! (replays)"
 nav_order: 35
-lang: fr
+lang: "fr"
 source: game-osu-replays.md
 source_hash: "9a1c74c4d5e0"
 nav_exclude: true

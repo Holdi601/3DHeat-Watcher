@@ -1,7 +1,7 @@
 ---
 title: "Domov"
 nav_order: 1
-lang: sk
+lang: "sk"
 source: index.md
 source_hash: "ffd13e9431c3"
 nav_exclude: true

@@ -1,7 +1,7 @@
 ---
 title: "IL-2 Sturmovik: Great Battles (Wiederholungen)"
 nav_order: 27
-lang: de
+lang: "de"
 source: game-il2-tacview.md
 source_hash: "0bb23bddee03"
 nav_exclude: true

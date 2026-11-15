@@ -1,7 +1,7 @@
 ---
 title: "War Thunder (replays)"
 nav_order: 46
-lang: fr
+lang: "fr"
 source: game-warthunder-replays.md
 source_hash: "81f03926431d"
 nav_exclude: true

@@ -1,7 +1,7 @@
 ---
 title: "Star Citizen (archivos de registro)"
 nav_order: 42
-lang: es
+lang: "es"
 source: game-starcitizen.md
 source_hash: "6528f948d2e5"
 nav_exclude: true

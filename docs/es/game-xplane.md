@@ -1,7 +1,7 @@
 ---
 title: "X-Plane (datos en vivo)"
 nav_order: 50
-lang: es
+lang: "es"
 source: game-xplane.md
 source_hash: "4e7246cce10c"
 nav_exclude: true

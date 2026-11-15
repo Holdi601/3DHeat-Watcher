@@ -1,7 +1,7 @@
 ---
 title: "Path of Exile (Logdateien)"
 nav_order: 36
-lang: de
+lang: "de"
 source: game-poe.md
 source_hash: "9facfd5a1551"
 nav_exclude: true

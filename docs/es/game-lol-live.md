@@ -1,7 +1,7 @@
 ---
 title: "League of Legends (estado de la partida)"
 nav_order: 29
-lang: es
+lang: "es"
 source: game-lol-live.md
 source_hash: "75c67c6fe84f"
 nav_exclude: true

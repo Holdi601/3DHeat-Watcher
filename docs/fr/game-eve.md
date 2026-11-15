@@ -1,7 +1,7 @@
 ---
 title: "EVE Online (fichiers journal)"
 nav_order: 20
-lang: fr
+lang: "fr"
 source: game-eve.md
 source_hash: "a5ab6c312c86"
 nav_exclude: true

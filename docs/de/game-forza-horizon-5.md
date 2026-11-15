@@ -1,7 +1,7 @@
 ---
 title: "Forza Horizon 5 (Live-Daten)"
 nav_order: 22
-lang: de
+lang: "de"
 source: game-forza-horizon-5.md
 source_hash: "0083724478e7"
 nav_exclude: true

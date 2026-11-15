@@ -1,7 +1,7 @@
 ---
 title: "X-Plane (Live-Daten)"
 nav_order: 50
-lang: de
+lang: "de"
 source: game-xplane.md
 source_hash: "4e7246cce10c"
 nav_exclude: true

@@ -1,7 +1,7 @@
 ---
 title: "Counter-Strike 2 (estado de juego)"
 nav_order: 9
-lang: es
+lang: "es"
 source: game-cs2-gsi.md
 source_hash: "2eda1106e11f"
 nav_exclude: true

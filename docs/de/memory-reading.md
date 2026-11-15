@@ -1,7 +1,7 @@
 ---
 title: "Speicher lesen"
 nav_order: 9
-lang: de
+lang: "de"
 source: memory-reading.md
 source_hash: "ce7885e40d4f"
 nav_exclude: true

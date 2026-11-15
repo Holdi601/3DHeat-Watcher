@@ -1,7 +1,7 @@
 ---
 title: "League of Legends (repeticiones)"
 nav_order: 30
-lang: es
+lang: "es"
 source: game-lol-replays.md
 source_hash: "216b88922360"
 nav_exclude: true

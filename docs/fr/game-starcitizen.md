@@ -1,7 +1,7 @@
 ---
 title: "Star Citizen (fichiers journal)"
 nav_order: 42
-lang: fr
+lang: "fr"
 source: game-starcitizen.md
 source_hash: "6528f948d2e5"
 nav_exclude: true

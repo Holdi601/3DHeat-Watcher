@@ -1,7 +1,7 @@
 ---
 title: Sākums
 nav_order: 1
-lang: lv
+lang: "lv"
 source: index.md
 source_hash: "ffd13e9431c3"
 nav_exclude: true

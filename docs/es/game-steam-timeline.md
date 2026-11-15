@@ -1,7 +1,7 @@
 ---
 title: "Línea de tiempo de Steam (plataforma)"
 nav_order: 44
-lang: es
+lang: "es"
 source: game-steam-timeline.md
 source_hash: "3878efe0d7f1"
 nav_exclude: true

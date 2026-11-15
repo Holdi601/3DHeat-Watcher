@@ -1,7 +1,7 @@
 ---
 title: Quellen und Regeln
 nav_order: 7
-lang: de
+lang: "de"
 source: sources-and-rules.md
 source_hash: "9ec43cafc724"
 nav_exclude: true

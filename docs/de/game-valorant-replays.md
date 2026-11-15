@@ -1,7 +1,7 @@
 ---
 title: "VALORANT (Wiederholungen)"
 nav_order: 45
-lang: de
+lang: "de"
 source: game-valorant-replays.md
 source_hash: "10a648aabdf1"
 nav_exclude: true

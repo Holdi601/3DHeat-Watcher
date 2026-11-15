@@ -1,7 +1,7 @@
 ---
 title: "Lecture de la mémoire"
 nav_order: 9
-lang: fr
+lang: "fr"
 source: memory-reading.md
 source_hash: "ce7885e40d4f"
 nav_exclude: true

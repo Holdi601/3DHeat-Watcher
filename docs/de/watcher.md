@@ -1,7 +1,7 @@
 ---
 title: "Alle Spiele in einer Tabelle"
 nav_order: 13
-lang: de
+lang: "de"
 source: watcher.md
 source_hash: "e5724f185220"
 nav_exclude: true

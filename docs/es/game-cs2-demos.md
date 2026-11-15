@@ -1,7 +1,7 @@
 ---
 title: "Counter-Strike 2 (repeticiones)"
 nav_order: 8
-lang: es
+lang: "es"
 source: game-cs2-demos.md
 source_hash: "d115f9085302"
 nav_exclude: true

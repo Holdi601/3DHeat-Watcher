@@ -1,7 +1,7 @@
 ---
 title: "Dota 2 (Spielstand)"
 nav_order: 13
-lang: de
+lang: "de"
 source: game-dota2-gsi.md
 source_hash: "100a0d704bbe"
 nav_exclude: true

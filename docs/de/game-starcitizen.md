@@ -1,7 +1,7 @@
 ---
 title: "Star Citizen (Logdateien)"
 nav_order: 42
-lang: de
+lang: "de"
 source: game-starcitizen.md
 source_hash: "6528f948d2e5"
 nav_exclude: true

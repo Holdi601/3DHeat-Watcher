@@ -1,7 +1,7 @@
 ---
 title: "Installieren und Starten"
 nav_order: 3
-lang: de
+lang: "de"
 source: installing-and-running.md
 source_hash: "ceb60cbb49b7"
 nav_exclude: true

@@ -1,7 +1,7 @@
 ---
 title: "Dota 2 (repeticiones)"
 nav_order: 12
-lang: es
+lang: "es"
 source: game-dota-replays.md
 source_hash: "958b1e1855e8"
 nav_exclude: true

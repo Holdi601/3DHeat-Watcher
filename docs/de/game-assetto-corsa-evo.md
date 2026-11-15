@@ -1,7 +1,7 @@
 ---
 title: "Assetto Corsa EVO (Live-Daten)"
 nav_order: 4
-lang: de
+lang: "de"
 source: game-assetto-corsa-evo.md
 source_hash: "b14d46c10e85"
 nav_exclude: true

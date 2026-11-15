@@ -1,7 +1,7 @@
 ---
 title: "League of Legends (Wiederholungen)"
 nav_order: 30
-lang: de
+lang: "de"
 source: game-lol-replays.md
 source_hash: "216b88922360"
 nav_exclude: true

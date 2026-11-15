@@ -1,7 +1,7 @@
 ---
 title: "Mods grabadores de servidor"
 nav_order: 10
-lang: es
+lang: "es"
 source: server-mods.md
 source_hash: "ae12fa8cdcbd"
 nav_exclude: true

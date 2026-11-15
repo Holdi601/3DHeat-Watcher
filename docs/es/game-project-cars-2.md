@@ -1,7 +1,7 @@
 ---
 title: "Project CARS 2 (datos en vivo)"
 nav_order: 37
-lang: es
+lang: "es"
 source: game-project-cars-2.md
 source_hash: "a1990b93b7d1"
 nav_exclude: true

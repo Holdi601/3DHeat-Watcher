@@ -1,7 +1,7 @@
 ---
 title: "Automobilista 2 (datos en vivo)"
 nav_order: 6
-lang: es
+lang: "es"
 source: game-automobilista-2.md
 source_hash: "5e3ca1507524"
 nav_exclude: true

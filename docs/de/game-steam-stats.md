@@ -1,7 +1,7 @@
 ---
 title: "Steam-Statistiken (Plattform)"
 nav_order: 43
-lang: de
+lang: "de"
 source: game-steam-stats.md
 source_hash: "24fa6512bd6d"
 nav_exclude: true

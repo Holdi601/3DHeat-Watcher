@@ -1,7 +1,7 @@
 ---
 title: "World of Warships (replays)"
 nav_order: 49
-lang: fr
+lang: "fr"
 source: game-wows-replays.md
 source_hash: "c822aca3f6fe"
 nav_exclude: true

@@ -1,7 +1,7 @@
 ---
 title: "RaceRoom Racing Experience (données en direct)"
 nav_order: 38
-lang: fr
+lang: "fr"
 source: game-raceroom.md
 source_hash: "ffd0499ca059"
 nav_exclude: true

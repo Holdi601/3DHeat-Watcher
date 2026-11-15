@@ -1,7 +1,7 @@
 ---
 title: "EVE Online (Logdateien)"
 nav_order: 20
-lang: de
+lang: "de"
 source: game-eve.md
 source_hash: "a5ab6c312c86"
 nav_exclude: true

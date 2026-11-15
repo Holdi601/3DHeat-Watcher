@@ -1,7 +1,7 @@
 ---
 title: "Path of Exile (archivos de registro)"
 nav_order: 36
-lang: es
+lang: "es"
 source: game-poe.md
 source_hash: "9facfd5a1551"
 nav_exclude: true

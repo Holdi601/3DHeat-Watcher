@@ -1,7 +1,7 @@
 ---
 title: "Steam Timeline (plateforme)"
 nav_order: 44
-lang: fr
+lang: "fr"
 source: game-steam-timeline.md
 source_hash: "3878efe0d7f1"
 nav_exclude: true

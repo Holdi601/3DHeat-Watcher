@@ -1,7 +1,7 @@
 ---
 title: "osu! (Wiederholungen)"
 nav_order: 35
-lang: de
+lang: "de"
 source: game-osu-replays.md
 source_hash: "9a1c74c4d5e0"
 nav_exclude: true

@@ -1,7 +1,7 @@
 ---
 title: "Elite Dangerous (Logdateien)"
 nav_order: 18
-lang: de
+lang: "de"
 source: game-elite.md
 source_hash: "bb5bcf75553a"
 nav_exclude: true

@@ -1,7 +1,7 @@
 ---
 title: "Counter-Strike 2 (replays)"
 nav_order: 8
-lang: fr
+lang: "fr"
 source: game-cs2-demos.md
 source_hash: "d115f9085302"
 nav_exclude: true

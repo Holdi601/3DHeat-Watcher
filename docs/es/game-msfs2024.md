@@ -1,7 +1,7 @@
 ---
 title: "Microsoft Flight Simulator 2024 (datos en vivo)"
 nav_order: 32
-lang: es
+lang: "es"
 source: game-msfs2024.md
 source_hash: "011c18a23252"
 nav_exclude: true

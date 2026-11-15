@@ -1,7 +1,7 @@
 ---
 title: "World of Tanks (repeticiones)"
 nav_order: 48
-lang: es
+lang: "es"
 source: game-wot-replays.md
 source_hash: "4cff18c29936"
 nav_exclude: true

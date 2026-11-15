@@ -1,7 +1,7 @@
 ---
 title: "EA SPORTS F1 24 (Live-Daten)"
 nav_order: 15
-lang: de
+lang: "de"
 source: game-f1-24.md
 source_hash: "a189298930fc"
 nav_exclude: true

@@ -19,7 +19,7 @@
 <text x="142.0" y="409.0" text-anchor="middle" font-size="14" fill="#3c4043">.wotreplay, .wowsreplay</text>
 <rect x="24" y="440.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
 <text x="142.0" y="466.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">demo di Squad</text>
-<text x="142.0" y="485.0" text-anchor="middle" font-size="14" fill="#3c4043">registrazioni del server</text>
+<text x="142.0" y="485.0" text-anchor="middle" font-size="14" fill="#3c4043">registrazioni server</text>
 <rect x="24" y="516.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
 <text x="142.0" y="542.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">replay di LoL / VALORANT</text>
 <text x="142.0" y="561.0" text-anchor="middle" font-size="14" fill="#3c4043">.rofl, .vrf</text>
@@ -27,11 +27,11 @@
 <text x="424.0" y="86.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">3DHeat CS2</text>
 <text x="424.0" y="105.0" text-anchor="middle" font-size="14" fill="#3c4043">heat3d_cs2 (installato accanto)</text>
 <rect x="306" y="136.0" width="236" height="60" rx="8" fill="#e8f0fe" stroke="#3b6fd8" stroke-width="1.5"/>
-<text x="424.0" y="162.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">libreria di lettura di Dota</text>
+<text x="424.0" y="162.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">libreria di lettura Dota</text>
 <text x="424.0" y="181.0" text-anchor="middle" font-size="14" fill="#3c4043">gem (pip install gem-dota)</text>
 <rect x="306" y="212.0" width="236" height="60" rx="8" fill="#e8f0fe" stroke="#3b6fd8" stroke-width="1.5"/>
 <text x="424.0" y="238.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">letto dal watcher</text>
-<text x="424.0" y="257.0" text-anchor="middle" font-size="14" fill="#3c4043">il formato della wiki di osu!</text>
+<text x="424.0" y="257.0" text-anchor="middle" font-size="14" fill="#3c4043">formato della wiki osu!</text>
 <rect x="306" y="288.0" width="236" height="60" rx="8" fill="#e8f0fe" stroke="#3b6fd8" stroke-width="1.5"/>
 <text x="424.0" y="314.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">heat3d-wt-replay</text>
 <text x="424.0" y="333.0" text-anchor="middle" font-size="14" fill="#3c4043">convertitore esterno, su richiesta</text>
@@ -39,7 +39,7 @@
 <text x="424.0" y="390.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">heat3d-wot/wows-replay</text>
 <text x="424.0" y="409.0" text-anchor="middle" font-size="14" fill="#3c4043">convertitori esterni, su richiesta</text>
 <rect x="306" y="440.0" width="236" height="60" rx="8" fill="#e8f0fe" stroke="#3b6fd8" stroke-width="1.5"/>
-<text x="424.0" y="466.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">convertitore di Squad</text>
+<text x="424.0" y="466.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">convertitore Squad</text>
 <text x="424.0" y="485.0" text-anchor="middle" font-size="14" fill="#3c4043">convertitore esterno, su richiesta</text>
 <rect x="306" y="516.0" width="236" height="60" rx="8" fill="#e8f0fe" stroke="#3b6fd8" stroke-width="1.5"/>
 <text x="424.0" y="542.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">letto dal watcher</text>

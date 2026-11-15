@@ -1,7 +1,7 @@
 ---
 title: NVIDIA Highlights
 nav_order: 8
-lang: es
+lang: "es"
 source: nvidia-highlights.md
 source_hash: "a3b769ab065c"
 nav_exclude: true

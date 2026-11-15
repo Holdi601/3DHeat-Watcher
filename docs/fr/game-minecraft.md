@@ -1,7 +1,7 @@
 ---
 title: "Minecraft (fichiers journaux)"
 nav_order: 33
-lang: fr
+lang: "fr"
 source: game-minecraft.md
 source_hash: "35cfea9d36a0"
 nav_exclude: true

@@ -1,7 +1,7 @@
 ---
 title: "Hearthstone (Logdateien)"
 nav_order: 25
-lang: de
+lang: "de"
 source: game-hearthstone.md
 source_hash: "e79c19776947"
 nav_exclude: true

@@ -1,7 +1,7 @@
 ---
 title: "Hearthstone (fichiers journal)"
 nav_order: 25
-lang: fr
+lang: "fr"
 source: game-hearthstone.md
 source_hash: "e79c19776947"
 nav_exclude: true

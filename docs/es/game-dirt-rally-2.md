@@ -1,7 +1,7 @@
 ---
 title: "DiRT Rally 2.0 (datos en vivo)"
 nav_order: 11
-lang: es
+lang: "es"
 source: game-dirt-rally-2.md
 source_hash: "367131ff990b"
 nav_exclude: true

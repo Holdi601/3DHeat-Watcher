@@ -1,7 +1,7 @@
 ---
 title: "World of Tanks (replays)"
 nav_order: 48
-lang: fr
+lang: "fr"
 source: game-wot-replays.md
 source_hash: "4cff18c29936"
 nav_exclude: true

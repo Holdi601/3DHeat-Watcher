@@ -1,7 +1,7 @@
 ---
 title: "Momentos destacados de NVIDIA (plataforma)"
 nav_order: 34
-lang: es
+lang: "es"
 source: game-nvidia-highlights.md
 source_hash: "5d45211c0e37"
 nav_exclude: true

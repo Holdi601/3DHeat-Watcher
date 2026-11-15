@@ -1,7 +1,7 @@
 ---
 title: "EA SPORTS F1 23 (datos en vivo)"
 nav_order: 14
-lang: es
+lang: "es"
 source: game-f1-23.md
 source_hash: "d7b523188e51"
 nav_exclude: true

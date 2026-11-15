@@ -1,7 +1,7 @@
 ---
 title: "RaceRoom Racing Experience (datos en vivo)"
 nav_order: 38
-lang: es
+lang: "es"
 source: game-raceroom.md
 source_hash: "ffd0499ca059"
 nav_exclude: true

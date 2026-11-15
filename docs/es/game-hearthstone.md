@@ -1,7 +1,7 @@
 ---
 title: "Hearthstone (archivos de registro)"
 nav_order: 25
-lang: es
+lang: "es"
 source: game-hearthstone.md
 source_hash: "e79c19776947"
 nav_exclude: true

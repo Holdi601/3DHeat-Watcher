@@ -1,7 +1,7 @@
 ---
 title: "Richard Burns Rally (Live-Daten)"
 nav_order: 39
-lang: de
+lang: "de"
 source: game-richard-burns-rally.md
 source_hash: "1b9866f5a1f6"
 nav_exclude: true

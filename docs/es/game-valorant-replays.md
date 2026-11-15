@@ -1,7 +1,7 @@
 ---
 title: "VALORANT (repeticiones)"
 nav_order: 45
-lang: es
+lang: "es"
 source: game-valorant-replays.md
 source_hash: "10a648aabdf1"
 nav_exclude: true

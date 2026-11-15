@@ -1,7 +1,7 @@
 ---
 title: Αρχική
 nav_order: 1
-lang: el
+lang: "el"
 source: index.md
 source_hash: "ffd13e9431c3"
 nav_exclude: true

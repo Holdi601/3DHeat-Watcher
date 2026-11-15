@@ -1,7 +1,7 @@
 ---
 title: "Rocket League (estado de juego)"
 nav_order: 40
-lang: es
+lang: "es"
 source: game-rocketleague-stats.md
 source_hash: "3da6ea772068"
 nav_exclude: true

@@ -1,7 +1,7 @@
 ---
 title: "iRacing (données en direct)"
 nav_order: 28
-lang: fr
+lang: "fr"
 source: game-iracing.md
 source_hash: "894d9bc4081f"
 nav_exclude: true

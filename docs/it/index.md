@@ -1,7 +1,7 @@
 ---
 title: Home
 nav_order: 1
-lang: it
+lang: "it"
 source: index.md
 source_hash: "ffd13e9431c3"
 nav_exclude: true
@@ -28,8 +28,8 @@ Lavora in silenzio, nota quale gioco hai avviato, e legge gli output propri di q
 telemetria o una memoria condivisa che il gioco pubblica per le dashboard, un'integrazione dello stato di gioco,
 il giornale o il log che il gioco scrive, il replay che salva dopo una partita, le statistiche che Steam conserva,
 le clip che salva NVIDIA App. Le registrazioni restano sul tuo computer. Il programma contatta solo due servizi
-esterni, e solo in questi casi: GitHub, per cercare una release più recente (vedi [Aggiornamenti](../updates.md)), e
-l'API Match-V5 di Riot, e solo se inserisci la tua chiave API Riot (vedi [Replay di League of Legends](../game-lol-replays.md)).
+esterni, e solo in questi casi: GitHub, per cercare una release più recente (vedi [Aggiornamenti](updates.md)), e
+l'API Match-V5 di Riot, e solo se inserisci la tua chiave API Riot (vedi [Replay di League of Legends](game-lol-replays.md)).
 
 ![il watcher: ciò che i giochi pubblicano, in file sul tuo computer](../assets/img/it/overview.svg)
 
@@ -43,9 +43,9 @@ l'API Match-V5 di Riot, e solo se inserisci la tua chiave API Riot (vedi [Replay
 - **Statistiche per sessione**: uccisioni, morti, giri, miglior giro, distanza, velocità massima, tempo di
   gioco, e le statistiche proprie del gioco dove le conserva.
 
-Ciò che ogni gioco fornisce, e da dove, è nella sua pagina sotto [Giochi](../games.md). Una sola fonte non può
+Ciò che ogni gioco fornisce, e da dove, è nella sua pagina sotto [Giochi](games.md). Una sola fonte non può
 registrare tutto: i giochi multigiocatore vengono registrati solo attraverso ciò che pubblicano, e il watcher
-non legge mai la loro memoria (vedi [Fonti e regole](../sources-and-rules.md)).
+non legge mai la loro memoria (vedi [Fonti e regole](sources-and-rules.md)).
 
 ## Installazione {#install}
 
@@ -62,7 +62,7 @@ pip install -r requirements.txt
 
 Un archivio di release scaricato funziona allo stesso modo: decomprimilo, poi esegui `pip install -r requirements.txt`
 dentro la cartella. I dettagli, e le estensioni che alcuni giochi richiedono, sono in
-[Installazione ed esecuzione](../installing-and-running.md).
+[Installazione ed esecuzione](installing-and-running.md).
 
 ## Avvio rapido {#quick-start}
 
@@ -91,26 +91,26 @@ Il visualizzatore apre direttamente il `heat.parquet` di una sessione, senza imp
 unità sono nel file). I replay convertiti sono scritti come tabelle e documenti di partita accanto ad esso; il
 formato del visualizzatore con un file per partita è descritto nella sua pagina
 [contenitore `.3dheat`](https://holdi601.github.io/3DHeat/container.html), e le colonne di ogni tabella in
-[I dati](../the-data.md).
+[I dati](the-data.md).
 
 ## La documentazione {#the-documentation}
 
 | Pagina | Cosa contiene |
 |---|---|
 | [Prima di iniziare](before-you-start.md) | Python, un terminale, i segnaposto, come sono il successo e gli errori comuni |
-| [Installazione ed esecuzione](../installing-and-running.md) | requisiti, esecuzione in background, avvio con Windows, il file di blocco, il log, ogni impostazione e variabile d'ambiente |
-| [Giochi](../games.md) | una pagina per gioco: cosa viene registrato, da dove, come attivarlo, come funziona, assi, statistiche, cosa è stato verificato |
-| [I dati](../the-data.md) | cartelle di sessione, `events.jsonl`, `heat.parquet` e il suo footer, `meta.json`, `watcher.sqlite`, recupero dopo un arresto anomalo, esportazione CSV, apertura di una sessione nel visualizzatore 3DHeat |
-| [Comandi](../commands.md) | ogni comando e opzione di `python -m heat3d_watch` |
-| [Fonti e regole](../sources-and-rules.md) | i sei tipi di fonte, le regole per il multigiocatore, quali giochi sono esclusi e perché |
-| [NVIDIA Highlights](../nvidia-highlights.md) | cosa NVIDIA Highlights può e non può fornire, e come un momento saliente ottiene una posizione |
-| [Mod per server registratori](../server-mods.md) | le mod per server di Arma 3 e Arma Reforger che registrano intere missioni per il visualizzatore |
-| [Lettura della memoria](../memory-reading.md) | profili di memoria per giocatore singolo: il formato, i controlli, come scriverne e verificarne uno |
-| [Aggiornamenti](../updates.md) | come il watcher cerca nuove release e si aggiorna da solo |
-| [Sviluppo](../development.md) | come scrivere un adattatore: l'API, i test, un `verified` onesto, la rigenerazione delle pagine dei giochi |
-| [Tutti i giochi in una tabella](../watcher.md) | ogni gioco in una tabella, come la stampa `games --markdown`, più i giochi studiati ma non ancora realizzati |
+| [Installazione ed esecuzione](installing-and-running.md) | requisiti, esecuzione in background, avvio con Windows, il file di blocco, il log, ogni impostazione e variabile d'ambiente |
+| [Giochi](games.md) | una pagina per gioco: cosa viene registrato, da dove, come attivarlo, come funziona, assi, statistiche, cosa è stato verificato |
+| [I dati](the-data.md) | cartelle di sessione, `events.jsonl`, `heat.parquet` e il suo footer, `meta.json`, `watcher.sqlite`, recupero dopo un arresto anomalo, esportazione CSV, apertura di una sessione nel visualizzatore 3DHeat |
+| [Comandi](commands.md) | ogni comando e opzione di `python -m heat3d_watch` |
+| [Fonti e regole](sources-and-rules.md) | i sei tipi di fonte, le regole per il multigiocatore, quali giochi sono esclusi e perché |
+| [NVIDIA Highlights](nvidia-highlights.md) | cosa NVIDIA Highlights può e non può fornire, e come un momento saliente ottiene una posizione |
+| [Mod per server registratori](server-mods.md) | le mod per server di Arma 3 e Arma Reforger che registrano intere missioni per il visualizzatore |
+| [Lettura della memoria](memory-reading.md) | profili di memoria per giocatore singolo: il formato, i controlli, come scriverne e verificarne uno |
+| [Aggiornamenti](updates.md) | come il watcher cerca nuove release e si aggiorna da solo |
+| [Sviluppo](development.md) | come scrivere un adattatore: l'API, i test, un `verified` onesto, la rigenerazione delle pagine dei giochi |
+| [Tutti i giochi in una tabella](watcher.md) | ogni gioco in una tabella, come la stampa `games --markdown`, più i giochi studiati ma non ancora realizzati |
 | [Riferimento dei comandi](../cli-reference.md) | il `--help` di ogni comando, generato dal codice |
-| [Manutenzione](../maintaining.md) | la lista di controllo del rilascio per queste pagine |
+| [Manutenzione](maintaining.md) | la lista di controllo del rilascio per queste pagine |
 
 ## Parte di 3DHeat {#part-of-3dheat}
 

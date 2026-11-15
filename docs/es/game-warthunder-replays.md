@@ -1,7 +1,7 @@
 ---
 title: "War Thunder (repeticiones)"
 nav_order: 46
-lang: es
+lang: "es"
 source: game-warthunder-replays.md
 source_hash: "81f03926431d"
 nav_exclude: true

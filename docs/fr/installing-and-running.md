@@ -1,7 +1,7 @@
 ---
 title: "Installation et lancement"
 nav_order: 3
-lang: fr
+lang: "fr"
 source: installing-and-running.md
 source_hash: "ceb60cbb49b7"
 nav_exclude: true

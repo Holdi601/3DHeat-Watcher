@@ -1,7 +1,7 @@
 ---
 title: "Assetto Corsa Rally (données en direct)"
 nav_order: 5
-lang: fr
+lang: "fr"
 source: game-assetto-corsa-rally.md
 source_hash: "09b8a6d66e31"
 nav_exclude: true

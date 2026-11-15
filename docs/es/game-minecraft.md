@@ -1,7 +1,7 @@
 ---
 title: "Minecraft (archivos de registro)"
 nav_order: 33
-lang: es
+lang: "es"
 source: game-minecraft.md
 source_hash: "35cfea9d36a0"
 nav_exclude: true

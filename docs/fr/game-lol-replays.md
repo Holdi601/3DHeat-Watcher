@@ -1,7 +1,7 @@
 ---
 title: "League of Legends (replays)"
 nav_order: 30
-lang: fr
+lang: "fr"
 source: game-lol-replays.md
 source_hash: "216b88922360"
 nav_exclude: true

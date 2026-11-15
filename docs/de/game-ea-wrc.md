@@ -1,7 +1,7 @@
 ---
 title: "EA SPORTS WRC (Live-Daten)"
 nav_order: 17
-lang: de
+lang: "de"
 source: game-ea-wrc.md
 source_hash: "c97300f65c43"
 nav_exclude: true

@@ -1,7 +1,7 @@
 ---
 title: "Assetto Corsa Competizione (datos en vivo)"
 nav_order: 3
-lang: es
+lang: "es"
 source: game-assetto-corsa-competizione.md
 source_hash: "08033208b212"
 nav_exclude: true

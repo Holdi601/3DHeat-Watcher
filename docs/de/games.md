@@ -1,7 +1,7 @@
 ---
 title: Spiele
 nav_order: 4
-lang: de
+lang: "de"
 source: games.md
 source_hash: "dcee7fc45a5b"
 nav_exclude: true

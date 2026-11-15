@@ -1,7 +1,7 @@
 ---
 title: Lectura de memoria
 nav_order: 9
-lang: es
+lang: "es"
 source: memory-reading.md
 source_hash: "ce7885e40d4f"
 nav_exclude: true

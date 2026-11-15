@@ -1,7 +1,7 @@
 ---
 title: "Squad (replays)"
 nav_order: 41
-lang: fr
+lang: "fr"
 source: game-squad-demos.md
 source_hash: "82c24e6df01c"
 nav_exclude: true

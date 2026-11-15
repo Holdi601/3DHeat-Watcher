@@ -1,7 +1,7 @@
 ---
 title: "Pradžia"
 nav_order: 1
-lang: lt
+lang: "lt"
 source: index.md
 source_hash: "ffd13e9431c3"
 nav_exclude: true

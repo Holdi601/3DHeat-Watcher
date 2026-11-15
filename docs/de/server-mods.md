@@ -1,7 +1,7 @@
 ---
 title: Server-Aufzeichnungsmods
 nav_order: 10
-lang: de
+lang: "de"
 source: server-mods.md
 source_hash: "ae12fa8cdcbd"
 nav_exclude: true

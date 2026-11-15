@@ -1,7 +1,7 @@
 ---
 title: "Les données"
 nav_order: 5
-lang: fr
+lang: "fr"
 source: the-data.md
 source_hash: "6150cdc022fc"
 nav_exclude: true

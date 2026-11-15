@@ -1,7 +1,7 @@
 ---
 title: "IL-2 Sturmovik: Great Battles (données en direct)"
 nav_order: 26
-lang: fr
+lang: "fr"
 source: game-il2.md
 source_hash: "b6c4de7dcc14"
 nav_exclude: true

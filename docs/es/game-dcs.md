@@ -1,7 +1,7 @@
 ---
 title: "DCS World (datos en vivo)"
 nav_order: 10
-lang: es
+lang: "es"
 source: game-dcs.md
 source_hash: "87cba160674e"
 nav_exclude: true

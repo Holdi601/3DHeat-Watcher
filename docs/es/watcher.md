@@ -1,7 +1,7 @@
 ---
 title: Todos los juegos en una tabla
 nav_order: 13
-lang: es
+lang: "es"
 source: watcher.md
 source_hash: "e5724f185220"
 nav_exclude: true

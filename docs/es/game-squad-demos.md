@@ -1,7 +1,7 @@
 ---
 title: "Squad (repeticiones)"
 nav_order: 41
-lang: es
+lang: "es"
 source: game-squad-demos.md
 source_hash: "82c24e6df01c"
 nav_exclude: true

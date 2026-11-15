@@ -1,7 +1,7 @@
 ---
 title: "Développement"
 nav_order: 12
-lang: fr
+lang: "fr"
 source: development.md
 source_hash: "cb213e22ddea"
 nav_exclude: true

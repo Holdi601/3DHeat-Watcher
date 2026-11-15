@@ -1,7 +1,7 @@
 ---
 title: "Euro Truck Simulator 2 (données en direct)"
 nav_order: 19
-lang: fr
+lang: "fr"
 source: game-ets2.md
 source_hash: "537f0daeedbf"
 nav_exclude: true

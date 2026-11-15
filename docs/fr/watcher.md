@@ -1,7 +1,7 @@
 ---
 title: "Tous les jeux dans un seul tableau"
 nav_order: 13
-lang: fr
+lang: "fr"
 source: watcher.md
 source_hash: "e5724f185220"
 nav_exclude: true

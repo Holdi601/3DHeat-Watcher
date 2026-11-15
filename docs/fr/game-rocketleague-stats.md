@@ -1,7 +1,7 @@
 ---
 title: "Rocket League (état de la partie)"
 nav_order: 40
-lang: fr
+lang: "fr"
 source: game-rocketleague-stats.md
 source_hash: "3da6ea772068"
 nav_exclude: true

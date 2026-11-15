@@ -1,7 +1,7 @@
 ---
 title: "NVIDIA highlights (plateforme)"
 nav_order: 34
-lang: fr
+lang: "fr"
 source: game-nvidia-highlights.md
 source_hash: "5d45211c0e37"
 nav_exclude: true

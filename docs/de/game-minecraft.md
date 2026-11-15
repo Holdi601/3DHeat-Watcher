@@ -1,7 +1,7 @@
 ---
 title: "Minecraft (Logdateien)"
 nav_order: 33
-lang: de
+lang: "de"
 source: game-minecraft.md
 source_hash: "35cfea9d36a0"
 nav_exclude: true

@@ -1,7 +1,7 @@
 ---
 title: "Forza Motorsport (Live-Daten)"
 nav_order: 24
-lang: de
+lang: "de"
 source: game-forza-motorsport.md
 source_hash: "d411fbb6ebea"
 nav_exclude: true

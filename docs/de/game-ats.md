@@ -1,7 +1,7 @@
 ---
 title: "American Truck Simulator (Live-Daten)"
 nav_order: 1
-lang: de
+lang: "de"
 source: game-ats.md
 source_hash: "974252b355da"
 nav_exclude: true

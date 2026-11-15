@@ -1,7 +1,7 @@
 ---
 title: "Elite Dangerous (fichiers journaux)"
 nav_order: 18
-lang: fr
+lang: "fr"
 source: game-elite.md
 source_hash: "bb5bcf75553a"
 nav_exclude: true

@@ -1,7 +1,7 @@
 ---
 title: "Forza Horizon 4 (Live-Daten)"
 nav_order: 21
-lang: de
+lang: "de"
 source: game-forza-horizon-4.md
 source_hash: "ac1890f4d62c"
 nav_exclude: true

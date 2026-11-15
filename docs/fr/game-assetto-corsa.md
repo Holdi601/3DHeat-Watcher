@@ -1,7 +1,7 @@
 ---
 title: "Assetto Corsa (données en direct)"
 nav_order: 2
-lang: fr
+lang: "fr"
 source: game-assetto-corsa.md
 source_hash: "9132272cc104"
 nav_exclude: true
