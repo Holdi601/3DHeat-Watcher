@@ -26,6 +26,7 @@ python -m heat3d_watch <command> [options]
 | [`table`](#table) | rebuild a session's `heat.parquet` from its `events.jsonl` |
 | [`replays`](#replays) | convert the replays already on disk |
 | [`dota-replay`](#dota-replay) | download a public Dota 2 match's replay by its id |
+| [`dota-map`](#dota-map) | the Dota 2 map from your install as a 3D level for the viewer |
 | [`update`](#update) | update to the newest release |
 | [`config`](#config) | show or change the settings |
 
@@ -257,6 +258,20 @@ Valve keeps replays for a few weeks; an older match prints `Valve no longer has 
 <id>` and exits with code 1. A match OpenDota has not seen yet has no salt: the message says to ask
 OpenDota for it (`curl -X POST https://api.opendota.com/api/request/<id>`) and try again a few
 minutes later. Private lobbies and matches with a hidden profile are not on the replay servers at all.
+
+## dota-map
+
+```bash
+python -m heat3d_watch dota-map [<map>] -o <file.glb> [--game FOLDER] [--source2viewer EXE] [--detail UNITS]
+```
+
+Writes the Dota 2 map - ground, cliffs, water, trees and buildings - as a `.glb` level in the frame
+the Dota replay tables are drawn in, from your own Dota 2 install, read by Source2Viewer's command
+line. Nothing is downloaded. `<map>` is `dota` by default; `--game` is the Dota 2 folder when it is
+not in a Steam library; `--source2viewer` the CLI's path when it is neither in `HEAT3D_SOURCE2VIEWER`
+nor on `PATH`; `--detail` the vertex clustering cell for buildings in game units (default 8, 0 keeps
+every triangle). Exits with code 1 and `dota-map: <why>` when Dota 2, the map or Source2Viewer is not
+found. Every step, the file's parts and how it was checked: [Dota 2 map](dota-map.md).
 
 ## update
 

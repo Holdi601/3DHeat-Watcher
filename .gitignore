@@ -67,6 +67,10 @@ courses/
 *.ter
 *.zip
 *.7z
+*.vpk
+*.vents
+*.vmdl_c
+*.vwnod_c
 
 # Media, by type: gameplay video, screenshots, map images.
 *.mp4

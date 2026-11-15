@@ -10,6 +10,7 @@
     table      rebuild a session's heat.parquet from its events.jsonl
     replays    convert the replays already on disk for one adapter (or a folder of them)
     dota-replay  download a public Dota 2 match's replay by its id (--convert to convert it now)
+    dota-map   the Dota 2 map from your install as a level (.glb) under the replay tables
     update     update the tools to the newest release (--check to only ask)
     config     show the settings, or change them (--set key=value ...)
 """
@@ -297,6 +298,23 @@ def cmd_dota_replay(args: argparse.Namespace, s: Settings) -> int:
     return 0
 
 
+def cmd_dota_map(args: argparse.Namespace, s: Settings) -> int:
+    """
+    The Dota 2 map as level geometry, from the installed game's own files, in
+    the frame the Dota replay tables are drawn in (decoders/dota_map.py).
+    """
+    from .decoders.dota_map import export_map
+
+    try:
+        line = export_map(args.map, args.out, game=args.game, source2viewer=args.source2viewer, detail=args.detail,
+                          say=lambda text: print(text, file=sys.stderr))
+    except (FileNotFoundError, RuntimeError, ValueError) as e:
+        print(f"dota-map: {e}", file=sys.stderr)
+        return 1
+    print(line)
+    return 0
+
+
 def cmd_update(args: argparse.Namespace, s: Settings) -> int:
     import heat3d_update.__main__ as up
 
@@ -364,6 +382,13 @@ def main(argv: list[str] | None = None) -> int:
     dr.add_argument("-o", "--out", help="the folder to save to (default: Dota's own replays folder)")
     dr.add_argument("--convert", action="store_true", help="convert the folder's replays now")
     dr.add_argument("-v", "--verbose", action="store_true")
+    dm = sub.add_parser("dota-map", help="the Dota 2 map from your install as a level (.glb)")
+    dm.add_argument("map", nargs="?", default="dota", help="the map's name (default: dota) or the path to its .vpk")
+    dm.add_argument("-o", "--out", required=True, help="the .glb to write")
+    dm.add_argument("--game", help="the Dota 2 folder (default: found in your Steam libraries)")
+    dm.add_argument("--source2viewer", help="Source2Viewer-CLI's path (default: HEAT3D_SOURCE2VIEWER, then PATH)")
+    dm.add_argument("--detail", type=float, default=8.0,
+                    help="buildings' vertex clustering cell in game units (default 8; 0 keeps every triangle)")
     u = sub.add_parser("update", help="update to the newest release")
     u.add_argument("--check", action="store_true")
     c = sub.add_parser("config", help="show or change the settings")
@@ -395,6 +420,7 @@ def main(argv: list[str] | None = None) -> int:
         "table": cmd_table,
         "replays": cmd_replays,
         "dota-replay": cmd_dota_replay,
+        "dota-map": cmd_dota_map,
         "update": cmd_update,
         "config": cmd_config,
     }[args.command]

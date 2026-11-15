@@ -25,6 +25,7 @@ source is what counts, not this file.
 | numpy | BSD-3-Clause | |
 | pytest | MIT | Development only |
 | gem-dota | MIT | Optional: Dota 2 replays (`requirements-optional.txt`); github.com/whanyu1212/gem-dota |
+| Source2Viewer CLI (ValveResourceFormat) | MIT | Optional, not bundled: run by `dota-map` to read the installed Dota 2's map; github.com/ValveResourceFormat/ValveResourceFormat |
 | pandas, protobuf, protoc-wheel-0, python-snappy, zstandard | BSD-3-Clause | Optional: what gem-dota brings |
 | cramjam, rich | MIT | Optional: what gem-dota brings |
 
