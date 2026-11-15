@@ -74,4 +74,4 @@ Trebali biste vidjeti broj verzije, na primjer `1.0.2`.
 | `No module named ...` | korak 4 je preskočen ili je pokrenut u drugoj mapi: `cd` u mapu alata i pokrenite ga ponovno. |
 | `pip is not recognized` | umjesto `pip ...` upotrijebite `python -m pip ...`. |
 | `No such file or directory` / `can't open file` | terminal je u krivoj mapi, ili je put krivo upisan: provjerite ga, a putove s razmacima stavite u navodnike. |
-| crveni tekst koji završava redom `error:` | pročitajte zadnji redak: kaže što nedostaje. Stranica [Naredbe](../commands.md) navodi poruke. |
+| crveni tekst koji završava redom `error:` | pročitajte zadnji redak: kaže što nedostaje. Stranica [Naredbe](commands.md) navodi poruke. |

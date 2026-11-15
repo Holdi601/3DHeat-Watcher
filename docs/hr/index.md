@@ -27,8 +27,8 @@ Radi tiho, primijeti koju ste igru pokrenuli i čita izlaze te igre: priključak
 ili dijeljenu memoriju koju igra objavljuje za nadzorne ploče, integraciju stanja igre, dnevnik ili zapisnik koji
 igra piše, replay koji sprema nakon utakmice, statistiku koju čuva Steam, i isječke koje sprema
 NVIDIA App. Snimke ostaju na vašem računalu. Program se javlja samo dvjema vanjskim
-službama, i to samo u ovim slučajevima: GitHubu, da potraži noviju verziju (vidi [Ažuriranja](../updates.md)), i
-Riotovu Match-V5 API-ju, i to samo ako unesete vlastiti Riot API ključ (vidi [Replay-i League of Legends](../game-lol-replays.md)).
+službama, i to samo u ovim slučajevima: GitHubu, da potraži noviju verziju (vidi [Ažuriranja](updates.md)), i
+Riotovu Match-V5 API-ju, i to samo ako unesete vlastiti Riot API ključ (vidi [Replay-i League of Legends](game-lol-replays.md)).
 
 ![watcher: što igre objavljuju, u datoteke na vašem računalu](../assets/img/hr/overview.svg)
 
@@ -36,15 +36,15 @@ Riotovu Match-V5 API-ju, i to samo ako unesete vlastiti Riot API ključ (vidi [R
 
 - **Položaji**: automobil, zrakoplov, heroj ili igrač, nekoliko puta u sekundi gdje ih igra objavljuje,
   s brzinom, smjerom i svime što igra šalje uz to.
-- **Događaji**: pojave, smrti, ubojstva, krugovi, dionice, runde, golovi, poslovi, polijetanja i slijetanja, promjene
+- **Događaji**: pojave, smrti, ubojstva, krugovi, etape, runde, golovi, poslovi, polijetanja i slijetanja, promjene
   zone, postignuća, istaknuti trenuci. Svaki događaj se sprema s vremenom i, kad ga igra
   dade, mjestom.
 - **Statistika po sesiji**: ubojstva, smrti, krugovi, najbolji krug, udaljenost, najveća brzina, vrijeme igranja, i
   vlastita statistika igre tamo gdje je vodi.
 
-Što svaka igra daje i odakle, nalazi se na vlastitoj stranici pod [Igre](../games.md). Jedan izvor ne može
+Što svaka igra daje i odakle, nalazi se na vlastitoj stranici pod [Igre](games.md). Jedan izvor ne može
 zabilježiti sve: višekorisničke igre bilježe se samo kroz ono što objavljuju, a watcher
-nikad ne čita njihovu memoriju (vidi [Izvori i pravila](../sources-and-rules.md)).
+nikad ne čita njihovu memoriju (vidi [Izvori i pravila](sources-and-rules.md)).
 
 ## Instalacija {#install}
 
@@ -61,7 +61,7 @@ pip install -r requirements.txt
 
 Preuzeti arhiv izdanja radi jednako: raspakirajte ga, zatim u mapi pokrenite `pip install -r requirements.txt`.
 Detalji i dodaci koje neke igre trebaju nalaze se u
-[Instalacija i pokretanje](../installing-and-running.md).
+[Instalacija i pokretanje](installing-and-running.md).
 
 ## Brzi početak {#quick-start}
 
@@ -90,26 +90,26 @@ Preglednik izravno otvara `heat.parquet` sesije, bez ikakvog podešavanja (njego
 datoteci). Pretvoreni replay-i zapisuju se kao tablice i dokumenti meča uz nju; vlastiti format preglednika
 s jednom datotekom po meču opisan je na njegovoj stranici
 [`.3dheat` spremnik](https://holdi601.github.io/3DHeat/container.html), a stupci svake tablice na
-[Podaci](../the-data.md).
+[Podaci](the-data.md).
 
 ## Dokumentacija {#the-documentation}
 
 | Stranica | Što obuhvaća |
 |---|---|
 | [Prije nego što počnete](before-you-start.md) | Python, terminal, mjesta za upis, kako izgledaju uspjeh i česte greške |
-| [Instalacija i pokretanje](../installing-and-running.md) | zahtjevi, pokretanje u pozadini, pokretanje sa sustavom Windows, datoteka zaključavanja, zapisnik, svaka postavka i varijabla okruženja |
-| [Igre](../games.md) | jedna stranica po igri: što se bilježi, odakle, kako se uključuje, kako radi, osi, statistika, što je provjereno |
-| [Podaci](../the-data.md) | mape sesija, `events.jsonl`, `heat.parquet` i njegovo podnožje, `meta.json`, `watcher.sqlite`, oporavak nakon rušenja, izvoz CSV-a, otvaranje sesije u pregledniku 3DHeat |
-| [Naredbe](../commands.md) | svaka naredba i opcija `python -m heat3d_watch` |
-| [Izvori i pravila](../sources-and-rules.md) | šest vrsta izvora, pravila za višekorisničke igre, koje su igre izostavljene i zašto |
-| [NVIDIA Highlights](../nvidia-highlights.md) | što NVIDIA Highlights može i ne može isporučiti, i kako isječak dobiva položaj |
-| [Serverski snimački modovi](../server-mods.md) | modovi Arma 3 i Arma Reforger servera koji snimaju cijele misije za preglednik |
-| [Čitanje memorije](../memory-reading.md) | profili memorije za jednoigračke igre: format, provjere, kako napisati i provjeriti jedan |
-| [Ažuriranja](../updates.md) | kako watcher traži nova izdanja i sam se ažurira |
-| [Razvoj](../development.md) | pisanje adaptera: API, testovi, iskreno `verified`, ponovno generiranje stranica o igrama |
-| [Sve igre u jednoj tablici](../watcher.md) | svaka igra u jednoj tablici, kako je ispisuje `games --markdown`, plus igre istražene ali još nisu izrađene |
+| [Instalacija i pokretanje](installing-and-running.md) | zahtjevi, pokretanje u pozadini, pokretanje sa sustavom Windows, datoteka zaključavanja, zapisnik, svaka postavka i varijabla okruženja |
+| [Igre](games.md) | jedna stranica po igri: što se bilježi, odakle, kako se uključuje, kako radi, osi, statistika, što je provjereno |
+| [Podaci](the-data.md) | mape sesija, `events.jsonl`, `heat.parquet` i njegovo podnožje, `meta.json`, `watcher.sqlite`, oporavak nakon ruševine, izvoz CSV-a, otvaranje sesije u pregledniku 3DHeat |
+| [Naredbe](commands.md) | svaka naredba i opcija `python -m heat3d_watch` |
+| [Izvori i pravila](sources-and-rules.md) | šest vrsta izvora, pravila za višekorisničke igre, koje su igre izostavljene i zašto |
+| [NVIDIA Highlights](nvidia-highlights.md) | što NVIDIA Highlights može i ne može isporučiti, i kako isječak dobiva položaj |
+| [Serverski snimački modovi](server-mods.md) | modovi Arma 3 i Arma Reforger servera koji snimaju cijele misije za preglednik |
+| [Čitanje memorije](memory-reading.md) | profili memorije za jednoigračke igre: format, provjere, kako napisati i provjeriti jedan |
+| [Ažuriranja](updates.md) | kako watcher traži nova izdanja i sam se ažurira |
+| [Razvoj](development.md) | pisanje adaptera: API, testovi, iskreno `verified`, ponovno generiranje stranica o igrama |
+| [Sve igre u jednoj tablici](watcher.md) | svaka igra u jednoj tablici, kako je ispisuje `games --markdown`, plus igre istražene ali još nisu izrađene |
 | [Referenca naredbi](../cli-reference.md) | `--help` svake naredbe, generirano iz koda |
-| [Održavanje](../maintaining.md) | popis za izdavanje ovih stranica |
+| [Održavanje](maintaining.md) | popis za izdavanje ovih stranica |
 
 ## Dio 3DHeata {#part-of-3dheat}
 

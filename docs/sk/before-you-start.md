@@ -62,7 +62,7 @@ Mali by ste vidieť: `1.0.2 (the version number)`.
   bez zátvoriek. `python -m heat3d_watch sessions --game <name>` znamená,
   že nahradíte časť v zátvorkách.
 - Cesta s medzerami patrí do úvodzoviek: `"C:\My Games\my file"`.
-- Riadky začínajúce na `#` v príkladoch sú komentáre; nepíšete ich.
+- Riadky začínajúce na `#` v príkladoch sú komentáre; nepíšte ich.
 - Úspech vyzerá takto: po `python -m heat3d_watch games` tabuľka s jedným riadkom na hru.
 
 ## Bežné chyby {#common-errors}
@@ -73,4 +73,4 @@ Mali by ste vidieť: `1.0.2 (the version number)`.
 | `No module named ...` | krok 4 sa preskočil alebo sa spustil v inom priečinku: `cd` do priečinka nástroja a spustite ho znova. |
 | `pip is not recognized` | použite `python -m pip ...` namiesto `pip ...`. |
 | `No such file or directory` / `can't open file` | terminál je v zlom priečinku, alebo je cesta zle napísaná: skontrolujte ju a cesty s medzerami dajte do úvodzoviek. |
-| červený text končiaci riadkom `error:` | prečítajte posledný riadok: hovorí, čo chýba. Stránka [Príkazy](../commands.md) uvádza hlásenia. |
+| červený text končiaci riadkom `error:` | prečítajte posledný riadok: hovorí, čo chýba. Stránka [Príkazy](commands.md) uvádza hlásenia. |

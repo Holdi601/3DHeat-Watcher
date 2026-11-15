@@ -27,8 +27,8 @@ Beží potichu, zistí, ktorú hru ste spustili, a číta výstupy tejto hry: te
 alebo zdieľanú pamäť, ktorú hra zverejňuje pre dashboardy, integráciu herného stavu, denník alebo záznam, ktorý hra
 zapisuje, replay, ktorý uloží po zápase, štatistiky, ktoré vedie Steam, klipy, ktoré ukladá
 NVIDIA App. Nahrávky zostávajú na vašom počítači. Program kontaktuje len dve vonkajšie služby, a to len
-v týchto prípadoch: GitHub, kvôli hľadaniu novšieho vydania (pozri [Aktualizácie](../updates.md)), a Riot Match-V5 API,
-a to len vtedy, ak zadáte svoj vlastný kľúč API Riot (pozri [Replaye League of Legends](../game-lol-replays.md)).
+v týchto prípadoch: GitHub, kvôli hľadaniu novšieho vydania (pozrite [Aktualizácie](updates.md)), a Riot Match-V5 API,
+a to len vtedy, ak zadáte svoj vlastný kľúč API Riot (pozrite [Replaye League of Legends](game-lol-replays.md)).
 
 ![watcher: čo hry zverejňujú, do súborov na vašom počítači](../assets/img/sk/overview.svg)
 
@@ -41,9 +41,9 @@ a to len vtedy, ak zadáte svoj vlastný kľúč API Riot (pozri [Replaye League
 - **Štatistiky pre každé sedenie**: zabitia, smrti, kolá, najlepšie kolo, vzdialenosť, najvyššia rýchlosť, čas hrania a
   vlastné štatistiky hry, kde ich vedie.
 
-Čo každá hra dáva a odkiaľ, je na jej vlastnej stránke v časti [Hry](../games.md). Jeden zdroj nedokáže
+Čo každá hra dáva a odkiaľ, je na jej vlastnej stránke v časti [Hry](games.md). Jeden zdroj nedokáže
 zaznamenať všetko: hry pre viacerých hráčov sa zaznamenávajú len cez to, čo zverejňujú, a
-watcher nikdy nečíta ich pamäť (pozri [Zdroje a pravidlá](../sources-and-rules.md)).
+watcher nikdy nečíta ich pamäť (pozrite [Zdroje a pravidlá](sources-and-rules.md)).
 
 ## Inštalácia {#install}
 
@@ -60,7 +60,7 @@ pip install -r requirements.txt
 
 Stiahnutý archív vydania funguje rovnako: rozbaľte ho a potom spustite `pip install -r requirements.txt`
 vnútri priečinka. Podrobnosti a doplnky, ktoré niektoré hry potrebujú, sú v
-[Inštalácia a spúšťanie](../installing-and-running.md).
+[Inštalácia a spúšťanie](installing-and-running.md).
 
 ## Rýchly štart {#quick-start}
 
@@ -68,7 +68,7 @@ vnútri priečinka. Podrobnosti a doplnky, ktoré niektoré hry potrebujú, sú 
 python -m heat3d_watch games            # čo každá hra dáva a odkiaľ
 python -m heat3d_watch setup all        # čo by sa muselo zapnúť (nič sa nemení)
 python -m heat3d_watch setup f1-25 --apply   # zapne výstup jednej hry (pôvodný súbor sa zálohuje)
-python -m heat3d_watch run              # sleduj; nechaj bežať, kým hráte
+python -m heat3d_watch run              # sledujte; nechajte bežať, kým hráte
 python -m heat3d_watch stats            # súčty pre každú hru
 python -m heat3d_watch stats --csv out  # sedenia, udalosti a štatistiky ako súbory CSV
 ```
@@ -89,26 +89,26 @@ Prehliadač otvorí `heat.parquet` sedenia priamo, bez akéhokoľvek nastavenia 
 súbore). Prevedené replaye sa zapisujú ako tabuľky a dokumenty zápasov vedľa neho; vlastný
 formát prehliadača jeden súbor na zápas je opísaný na jeho stránke
 [`.3dheat` kontajner](https://holdi601.github.io/3DHeat/container.html) a stĺpce každej tabuľky na stránke
-[Dáta](../the-data.md).
+[Dáta](the-data.md).
 
 ## Dokumentácia {#the-documentation}
 
 | Stránka | Čo obsahuje |
 |---|---|
 | [Ako začať](before-you-start.md) | Python, terminál, zástupné znaky, ako vyzerá úspech a bežné chyby |
-| [Inštalácia a spúšťanie](../installing-and-running.md) | požiadavky, beh na pozadí, spustenie so systémom Windows, zámkový súbor, záznam, každé nastavenie a premenná prostredia |
-| [Hry](../games.md) | jedna stránka pre každú hru: čo sa zaznamenáva, odkiaľ, ako ju zapnúť, ako funguje, osi, štatistiky, čo bolo overené |
-| [Dáta](../the-data.md) | priečinky sedení, `events.jsonl`, `heat.parquet` a jeho pätička, `meta.json`, `watcher.sqlite`, obnova po páde, export CSV, otvorenie sedenia v prehliadači 3DHeat |
-| [Príkazy](../commands.md) | každý príkaz a možnosť `python -m heat3d_watch` |
-| [Zdroje a pravidlá](../sources-and-rules.md) | šesť druhov zdrojov, pravidlá pre hry pre viacerých hráčov, ktoré hry sú vynechané a prečo |
-| [NVIDIA Highlights](../nvidia-highlights.md) | čo NVIDIA Highlights dokáže a nedokáže dodať a ako highlight dostane polohu |
-| [Serverové nahrávacie mody](../server-mods.md) | mody serverov Arma 3 a Arma Reforger, ktoré nahrávajú celé misie pre prehliadač |
-| [Čítanie pamäte](../memory-reading.md) | profily pamäte pre jedného hráča: formát, kontroly, ako napísať a overiť jeden |
-| [Aktualizácie](../updates.md) | ako watcher hľadá nové vydania a ako sa sám aktualizuje |
-| [Vývoj](../development.md) | písanie adaptéra: API, testy, poctivý `verified`, regenerovanie stránok hier |
-| [Všetky hry v jednej tabuľke](../watcher.md) | každá hra v jednej tabuľke, tak ako ju vypisuje `games --markdown`, plus hry preskúmané, ale zatiaľ nezostavené |
+| [Inštalácia a spúšťanie](installing-and-running.md) | požiadavky, beh na pozadí, spustenie so systémom Windows, zámkový súbor, záznam, každé nastavenie a premenná prostredia |
+| [Hry](games.md) | jedna stránka pre každú hru: čo sa zaznamenáva, odkiaľ, ako ju zapnúť, ako funguje, osi, štatistiky, čo bolo overené |
+| [Dáta](the-data.md) | priečinky sedení, `events.jsonl`, `heat.parquet` a jeho pätička, `meta.json`, `watcher.sqlite`, obnova po páde, export CSV, otvorenie sedenia v prehliadači 3DHeat |
+| [Príkazy](commands.md) | každý príkaz a možnosť `python -m heat3d_watch` |
+| [Zdroje a pravidlá](sources-and-rules.md) | šesť druhov zdrojov, pravidlá pre hry pre viacerých hráčov, ktoré hry sú vynechané a prečo |
+| [NVIDIA Highlights](nvidia-highlights.md) | čo NVIDIA Highlights dokáže a nedokáže dodať a ako highlight dostane polohu |
+| [Serverové nahrávacie mody](server-mods.md) | mody serverov Arma 3 a Arma Reforger, ktoré nahrávajú celé misie pre prehliadač |
+| [Čítanie pamäte](memory-reading.md) | profily pamäte pre jedného hráča: formát, kontroly, ako napísať a overiť jeden |
+| [Aktualizácie](updates.md) | ako watcher hľadá nové vydania a ako sa sám aktualizuje |
+| [Vývoj](development.md) | písanie adaptéra: API, testy, poctivý `verified`, regenerovanie stránok hier |
+| [Všetky hry v jednej tabuľke](watcher.md) | každá hra v jednej tabuľke, tak ako ju vypisuje `games --markdown`, plus hry preskúmané, ale zatiaľ nezostavené |
 | [Referencia príkazov](../cli-reference.md) | `--help` každého príkazu, generované z kódu |
-| [Údržba](../maintaining.md) | kontrolný zoznam vydania pre tieto stránky |
+| [Údržba](maintaining.md) | kontrolný zoznam vydania pre tieto stránky |
 
 ## Súčasť 3DHeat {#part-of-3dheat}
 

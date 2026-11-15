@@ -1,5 +1,5 @@
 ---
-title: "Prije nego počneš"
+title: "Prije nego počnete"
 nav_order: 2
 lang: "bs"
 source: before-you-start.md
@@ -7,72 +7,72 @@ source_hash: "0bf5e50d8593"
 nav_exclude: true
 search_exclude: true
 ---
-# Prije nego počneš {#before-you-start}
+# Prije nego počnete {#before-you-start}
 
-Komandna linija ti je nova? Ova stranica te za desetak minuta vodi od ničega do
-3DHeat Watchera koji radi. Naredbe upisuješ u *terminal*, prozor
-u kojem napišeš red i pritisneš Enter.
+Komandna linija vam je nova? Ova stranica vas za desetak minuta vodi od ničega do
+3DHeat Watchera koji radi. Komande upisujete u *terminal*, prozor
+u kojem napišete red i pritisnete Enter.
 
-## 1. Instaliraj Python {#install-python}
+## 1. Instalirajte Python {#install-python}
 
-1. Preuzmi Python 3.10 ili noviji sa <https://www.python.org/downloads/>.
-2. Pokreni instalacijski program. Na prvom ekranu označi **Add python.exe to PATH**,
-   pa klikni **Install Now**.
-3. Provjeri: otvori terminal (korak 3) i upiši `python --version`. Trebao bi
+1. Preuzmite Python 3.10 ili noviji sa <https://www.python.org/downloads/>.
+2. Pokrenite instalacijski program. Na prvom ekranu označite **Add python.exe to PATH**,
+   pa kliknite **Install Now**.
+3. Provjerite: otvorite terminal (korak 3) i upišite `python --version`. Trebali biste
    vidjeti `Python 3.` i broj 10 ili veći.
 
-Na Linuxu ili macOS-u Python je obično već instaliran: koristi `python3` gdje
+Na Linuxu ili macOS-u Python je obično već instaliran: koristite `python3` gdje
 ove stranice kažu `python`.
 
-## 2. Nabavi 3DHeat Watcher {#get-3dheat-watcher}
+## 2. Nabavite 3DHeat Watcher {#get-3dheat-watcher}
 
-Preuzmi zip sa
-[stranice Releases](https://github.com/Holdi601/3DHeat-Watcher/releases) i raspakuj ga, na
-primjer u `C:\Tools\3DHeat-Watcher`. (Ako imaš Git, radi i `git clone`.)
+Preuzmite zip sa
+[stranice Releases](https://github.com/Holdi601/3DHeat-Watcher/releases) i raspakujte ga, na
+primjer u `C:\Tools\3DHeat-Watcher`. (Ako imate Git, radi i `git clone`.)
 
-## 3. Otvori terminal u tom folderu {#open-a-terminal-in-that-folder}
+## 3. Otvorite terminal u tom folderu {#open-a-terminal-in-that-folder}
 
-- **Windows:** otvori folder u File Exploreru, klikni u adresnu traku, upiši
-  `powershell` i pritisni Enter. Otvara se plavi ili crni prozor, već u
+- **Windows:** otvorite folder u File Exploreru, kliknite u adresnu traku, upišite
+  `powershell` i pritisnite Enter. Otvara se plavi ili crni prozor, već u
   tom folderu.
-- **macOS / Linux:** otvori *Terminal* i upiši `cd ` (s razmakom), prevuci
-  folder u prozor, pritisni Enter.
+- **macOS / Linux:** otvorite *Terminal* i upišite `cd ` (s razmakom), prevucite
+  folder u prozor, pritisnite Enter.
 
-`cd <folder>` premješta terminal u drugi folder. Sve naredbe na ovim
+`cd <folder>` premješta terminal u drugi folder. Sve komande na ovim
 stranicama upisuju se u folderu samog alata.
 
-## 4. Instaliraj ono što treba {#install-what-it-needs}
+## 4. Instalirajte ono što treba {#install-what-it-needs}
 
 ```bash
 python -m pip install -r requirements.txt
 ```
 
-Na kraju bi trebao vidjeti `Successfully installed ...` (ili `Requirement
+Na kraju biste trebali vidjeti `Successfully installed ...` (ili `Requirement
 already satisfied`).
 
-## 5. Provjeri radi li {#check-it-works}
+## 5. Provjerite radi li {#check-it-works}
 
 ```bash
 python -m heat3d_watch --version
 ```
 
-Trebao bi vidjeti: `1.0.2 (the version number)`.
+Trebali biste vidjeti: `1.0.2 (the version number)`.
 
-## Kako čitati naredbe na ovim stranicama {#how-to-read-the-commands-on-these-pages}
+## Kako čitati komande na ovim stranicama {#how-to-read-the-commands-on-these-pages}
 
-- Riječi u `<špicastim zagradama>` su rezervirana mjesta: upiši vlastitu datoteku ili folder
+- Riječi u `<špicastim zagradama>` su rezervirana mjesta: upišite vlastitu datoteku ili folder
   umjesto toga, bez zagrada. `python -m heat3d_watch sessions --game <name>` znači da
-  zamijeniš dio u zagradama.
+  zamijenite dio u zagradama.
 - Putanja s razmacima ide u navodnike: `"C:\My Games\my file"`.
-- Redovi koji počinju s `#` u primjerima su komentari; ne upisuješ ih.
+- Redovi koji počinju s `#` u primjerima su komentari; ne upisujete ih.
 - Uspjeh izgleda ovako: poslije `python -m heat3d_watch games` tabela s po jednim redom za svaku igru.
 
 ## Česte greške {#common-errors}
 
-| Vidiš | Uradi ovo |
+| Vidite | Uradite ovo |
 |---|---|
-| `'python' is not recognized` ili `command not found` | Python nije na PATH-u: ponovo pokreni instalacijski program i označi **Add python.exe to PATH**, pa otvori novi terminal. Na macOS-u/Linuxu probaj `python3`. |
-| `No module named ...` | korak 4 je preskočen ili pokrenut u drugom folderu: uradi `cd` u folder alata i pokreni ga ponovo. |
-| `pip is not recognized` | koristi `python -m pip ...` umjesto `pip ...`. |
-| `No such file or directory` / `can't open file` | terminal je u pogrešnom folderu ili je putanja pogrešno ukucana: provjeri je i stavi putanje s razmacima u navodnike. |
-| crveni tekst koji završava redom `error:` | pročitaj zadnji red: kaže šta nedostaje. Stranica [Naredbe](../commands.md) navodi poruke. |
+| `'python' is not recognized` ili `command not found` | Python nije na PATH-u: ponovo pokrenite instalacijski program i označite **Add python.exe to PATH**, pa otvorite novi terminal. Na macOS-u/Linuxu probajte `python3`. |
+| `No module named ...` | korak 4 je preskočen ili pokrenut u drugom folderu: uradite `cd` u folder alata i pokrenite ga ponovo. |
+| `pip is not recognized` | koristite `python -m pip ...` umjesto `pip ...`. |
+| `No such file or directory` / `can't open file` | terminal je u pogrešnom folderu ili je putanja pogrešno ukucana: provjerite je i stavite putanje s razmacima u navodnike. |
+| crveni tekst koji završava redom `error:` | pročitajte zadnji red: kaže šta nedostaje. Stranica [Komande](commands.md) navodi poruke. |
