@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="848" height="318" viewBox="0 0 848 318" font-family="Segoe UI,Helvetica,Arial,sans-serif" role="img" aria-label="Updates: checked at start, applied between games">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5f6368"/></marker></defs>
+<rect width="848" height="318" rx="10" fill="#ffffff" stroke="#dadce0"/>
+<text x="24" y="36" font-size="18" font-weight="600" fill="#202124">Aktualizácie: kontrola pri štarte, použitie medzi hrami</text>
+<rect x="24" y="69.5" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
+<text x="142.0" y="95.5" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">štart</text>
+<text x="142.0" y="114.5" text-anchor="middle" font-size="14" fill="#3c4043">každý príkaz</text>
+<rect x="306" y="60.0" width="236" height="79" rx="8" fill="#e8f0fe" stroke="#3b6fd8" stroke-width="1.5"/>
+<text x="424.0" y="86.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">kontrola vydania</text>
+<text x="424.0" y="105.0" text-anchor="middle" font-size="14" fill="#3c4043">vydania GitHub, najviac</text>
+<text x="424.0" y="124.0" text-anchor="middle" font-size="14" fill="#3c4043">každých pár hodín</text>
+<rect x="588" y="69.5" width="236" height="60" rx="8" fill="#e8f0fe" stroke="#3b6fd8" stroke-width="1.5"/>
+<text x="706.0" y="95.5" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">novšia verzia?</text>
+<text x="706.0" y="114.5" text-anchor="middle" font-size="14" fill="#3c4043">povedané raz; ponúknuté</text>
+<line x1="260" y1="99.5" x2="304" y2="99.5" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="542" y1="99.5" x2="586" y2="99.5" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M706.0,129.5 V162.0 H142.0 V192.5" fill="none" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="24" y="194.5" width="236" height="60" rx="8" fill="#fff1e0" stroke="#d9822b" stroke-width="1.5"/>
+<text x="142.0" y="220.5" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">žiadna hra nebeží</text>
+<text x="142.0" y="239.5" text-anchor="middle" font-size="14" fill="#3c4043">nikdy počas hry</text>
+<rect x="306" y="185.0" width="236" height="79" rx="8" fill="#e6f4ea" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="424.0" y="211.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">aktualizácia</text>
+<text x="424.0" y="230.0" text-anchor="middle" font-size="14" fill="#3c4043">git pull, alebo vydanie</text>
+<text x="424.0" y="249.0" text-anchor="middle" font-size="14" fill="#3c4043">archivovať po kontrole</text>
+<rect x="588" y="194.5" width="236" height="60" rx="8" fill="#e6f4ea" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="706.0" y="220.5" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">spustiť znova</text>
+<text x="706.0" y="239.5" text-anchor="middle" font-size="14" fill="#3c4043">nahrávky nedotknuté</text>
+<line x1="260" y1="224.5" x2="304" y2="224.5" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="542" y1="224.5" x2="586" y2="224.5" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="24" y="284" width="18" height="18" rx="3" fill="#f1f3f4" stroke="#80868b"/>
+<text x="48" y="298" font-size="14" fill="#3c4043">vstup</text>
+<rect x="95.5" y="284" width="18" height="18" rx="3" fill="#e8f0fe" stroke="#3b6fd8"/>
+<text x="119.5" y="298" font-size="14" fill="#3c4043">krok</text>
+<rect x="159.5" y="284" width="18" height="18" rx="3" fill="#e6f4ea" stroke="#2e8b57"/>
+<text x="183.5" y="298" font-size="14" fill="#3c4043">zapísané súbory</text>
+<rect x="291.0" y="284" width="18" height="18" rx="3" fill="#fff1e0" stroke="#d9822b"/>
+<text x="315.0" y="298" font-size="14" fill="#3c4043">jeden súbor na zápas</text>
+</svg>

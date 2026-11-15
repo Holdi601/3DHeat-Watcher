@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="848" height="660" viewBox="0 0 848 660" font-family="Segoe UI,Helvetica,Arial,sans-serif" role="img" aria-label="The watcher: what games publish, into files on your machine">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5f6368"/></marker></defs>
+<rect width="848" height="660" rx="10" fill="#ffffff" stroke="#dadce0"/>
+<text x="24" y="36" font-size="18" font-weight="600" fill="#202124">Watcher: co hry zveřejňují, do souborů na vašem počítači</text>
+<rect x="24" y="60.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
+<text x="142.0" y="86.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">telemetrie</text>
+<text x="142.0" y="105.0" text-anchor="middle" font-size="14" fill="#3c4043">porty UDP, sdílená paměť</text>
+<rect x="24" y="136.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
+<text x="142.0" y="162.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">integrace herního stavu</text>
+<text x="142.0" y="181.0" text-anchor="middle" font-size="14" fill="#3c4043">místní API, webové mapy</text>
+<rect x="24" y="212.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
+<text x="142.0" y="238.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">logy a deníky</text>
+<text x="142.0" y="257.0" text-anchor="middle" font-size="14" fill="#3c4043">soubory, které hra zapisuje</text>
+<rect x="24" y="288.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
+<text x="142.0" y="314.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">replaye</text>
+<text x="142.0" y="333.0" text-anchor="middle" font-size="14" fill="#3c4043">uloženo po zápase</text>
+<rect x="24" y="364.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
+<text x="142.0" y="390.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">Steam, NVIDIA</text>
+<text x="142.0" y="409.0" text-anchor="middle" font-size="14" fill="#3c4043">statistiky, časová osa, zvýraznění</text>
+<rect x="306" y="202.5" width="236" height="79" rx="8" fill="#e8f0fe" stroke="#3b6fd8" stroke-width="1.5"/>
+<text x="424.0" y="228.5" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">běh</text>
+<text x="424.0" y="247.5" text-anchor="middle" font-size="14" fill="#3c4043">všimne si běžící hry,</text>
+<text x="424.0" y="266.5" text-anchor="middle" font-size="14" fill="#3c4043">spustí svůj adaptér</text>
+<rect x="588" y="164.5" width="236" height="79" rx="8" fill="#e6f4ea" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="706.0" y="190.5" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">složka sezení</text>
+<text x="706.0" y="209.5" text-anchor="middle" font-size="14" fill="#3c4043">events.jsonl, heat.parquet,</text>
+<text x="706.0" y="228.5" text-anchor="middle" font-size="14" fill="#3c4043">meta.json, heat.raw.parquet</text>
+<rect x="588" y="259.5" width="236" height="60" rx="8" fill="#e6f4ea" stroke="#2e8b57" stroke-width="1.5"/>
+<text x="706.0" y="285.5" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">watcher.sqlite</text>
+<text x="706.0" y="304.5" text-anchor="middle" font-size="14" fill="#3c4043">sezení, události, statistiky</text>
+<line x1="260" y1="90.0" x2="304" y2="242.0" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="260" y1="166.0" x2="304" y2="242.0" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="260" y1="242.0" x2="304" y2="242.0" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="260" y1="318.0" x2="304" y2="242.0" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="260" y1="394.0" x2="304" y2="242.0" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="542" y1="242.0" x2="586" y2="204.0" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="542" y1="242.0" x2="586" y2="289.5" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M706.0,319.5 V447.0 H142.0 V468.0" fill="none" stroke="#5f6368" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="24" y="470.0" width="236" height="60" rx="8" fill="#f3e8fd" stroke="#8a4fd0" stroke-width="1.5"/>
+<text x="142.0" y="496.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">prohlížeč 3DHeat</text>
+<text x="142.0" y="515.0" text-anchor="middle" font-size="14" fill="#3c4043">teplotní mapy, čáry tras</text>
+<rect x="24" y="546.0" width="236" height="60" rx="8" fill="#f3e8fd" stroke="#8a4fd0" stroke-width="1.5"/>
+<text x="142.0" y="572.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">statistiky, sezení, --csv</text>
+<text x="142.0" y="591.0" text-anchor="middle" font-size="14" fill="#3c4043">součty podle hry, soubory CSV</text>
+<rect x="24" y="626" width="18" height="18" rx="3" fill="#f1f3f4" stroke="#80868b"/>
+<text x="48" y="640" font-size="14" fill="#3c4043">vstup</text>
+<rect x="95.5" y="626" width="18" height="18" rx="3" fill="#e8f0fe" stroke="#3b6fd8"/>
+<text x="119.5" y="640" font-size="14" fill="#3c4043">krok</text>
+<rect x="159.5" y="626" width="18" height="18" rx="3" fill="#e6f4ea" stroke="#2e8b57"/>
+<text x="183.5" y="640" font-size="14" fill="#3c4043">zapsané soubory</text>
+<rect x="291.0" y="626" width="18" height="18" rx="3" fill="#f3e8fd" stroke="#8a4fd0"/>
+<text x="315.0" y="640" font-size="14" fill="#3c4043">kde to uvidíte</text>
+</svg>
