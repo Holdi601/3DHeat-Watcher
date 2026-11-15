@@ -20,7 +20,7 @@ Every adapter has a `kind`, and the kind decides what the adapter may do:
 | `telemetry` | a UDP port or shared memory the game publishes for dashboards, motion rigs and wheel bases (Forza Data Out, F1 UDP, Kunos and iRacing shared memory, SimConnect, X-Plane's UDP interface, the SCS SDK plugin) | yes - it is the game's own output |
 | `gsi` | a game-state integration or local web API the game serves to the player's own machine (Valve GSI, League's Live Client Data API, Rocket League's Stats API, War Thunder's web map) | yes, within what the API shows the player |
 | `log` | files the game writes while it runs: journals, logs, statistics, saves (Elite Dangerous, Minecraft, Path of Exile, Hearthstone, Star Citizen, EVE Online) | yes |
-| `replay` | demos and replays the game saves for its players, converted after the match (CS2, Dota 2, osu!, War Thunder, World of Tanks, World of Warships, Squad, League of Legends, VALORANT, IL-2 Tacview) | yes, unless encrypted, and only the parts in the open |
+| `replay` | demos and replays the game saves for its players, converted after the match (CS2, Dota 2, War Thunder, World of Tanks, World of Warships, Squad, League of Legends, VALORANT, IL-2 Tacview) | yes, unless encrypted, and only the parts in the open |
 | `platform` | what Steam and the graphics driver keep: statistics, achievements, timelines, clips and highlights | yes |
 | `memory` | the game's memory, read only, by a profile you wrote | **never** - single-player only |
 
@@ -99,7 +99,7 @@ protection or a game's terms:
 | Apex Legends | everything | Its LiveAPI sends full events only in private and custom lobbies; nothing is available locally otherwise. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | live data | No local replay, log or game-state output to read. Their statistics come in where Steam keeps them ([Steam statistics](game-steam-stats.md), [Steam Timeline](game-steam-timeline.md)), and their clips as [NVIDIA highlights](nvidia-highlights.md). |
 | Star Citizen | anything beyond `Game.log` | Runs Easy Anti-Cheat; the watcher reads only the log file the game writes and never goes near the game's process. |
-| osu!lazer | replays | Kept in the game's own store; only osu! (stable) `.osr` files are read. |
+| osu! | replays | Out of scope: a 2D game, with nothing to place on a map. |
 | Any multiplayer game | memory | Never. Single-player games whose mode runs under an anti-cheat (GTA V, Elden Ring through its launcher) are not read either. |
 
 Encrypted replays are not opened: the VALORANT reader checks the replay's encryption flag and

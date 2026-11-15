@@ -77,7 +77,7 @@ match was won. A new Dota patch can change the replay's entities before gem
 follows; a replay gem cannot read to the end is converted as far as it goes
 and marked `incomplete` in its summary.
 
-The same module also serves: [Counter-Strike 2 (replays)](game-cs2-demos), [osu! (replays)](game-osu-replays), [Squad (replays)](game-squad-demos), [War Thunder (replays)](game-warthunder-replays), [World of Tanks (replays)](game-wot-replays), [World of Warships (replays)](game-wows-replays).
+The same module also serves: [Counter-Strike 2 (replays)](game-cs2-demos), [Squad (replays)](game-squad-demos), [War Thunder (replays)](game-warthunder-replays), [World of Tanks (replays)](game-wot-replays), [World of Warships (replays)](game-wows-replays).
 
 ## Positions and axes
 

@@ -48,7 +48,6 @@ python -m heat3d_watch replays warthunder-replays [folder]  # War Thunder replay
 python -m heat3d_watch replays wot-replays [folder]   # World of Tanks replays, through the external converter (see below)
 python -m heat3d_watch replays wows-replays [folder]  # World of Warships replays, likewise
 python -m heat3d_watch replays dota-replays [folder]  # Dota 2 replays, through the 3DHeat-Ext-DotaReplay reader (see below)
-python -m heat3d_watch replays osu-replays [folder]   # osu! replays, through the 3DHeat-Ext-Osu reader
 python -m heat3d_watch replays lol-replays [folder]   # League of Legends replays, through the 3DHeat-Ext-Riot reader
 python -m heat3d_watch dota-replay <match id> --convert  # fetch a public Dota 2 match's replay from Valve and convert it (needs internet)
 python -m heat3d_watch dota-map -o dota.glb      # the Dota 2 map from your install as a 3D level (needs the 3DHeat-Ext-Dota tool)
@@ -157,10 +156,8 @@ game versions, and what they do not.
 
 **Squad demos** (server recordings) are read the same way by
 [3DHeat-Ext-Squad](https://github.com/Holdi601/3DHeat-Ext-Squad) (`heat3d-squad-demo`), when it is
-installed. **CS2 demos** go through [3DHeat CS2](https://github.com/Holdi601/3DHeat-CS2), and
-**osu! replays** (`.osr`) through [3DHeat-Ext-Osu](https://github.com/Holdi601/3DHeat-Ext-Osu)
-(`heat3d-osu-replays`), to the format the osu! wiki publishes. **League of Legends and VALORANT
-replays** (`.rofl`, `.vrf`) go through [3DHeat-Ext-Riot](https://github.com/Holdi601/3DHeat-Ext-Riot)
+installed. **CS2 demos** go through [3DHeat CS2](https://github.com/Holdi601/3DHeat-CS2). **League of
+Legends and VALORANT replays** (`.rofl`, `.vrf`) go through [3DHeat-Ext-Riot](https://github.com/Holdi601/3DHeat-Ext-Riot)
 (`heat3d-riot-replays`), which reads only what each file carries in the open - never the encrypted,
 obfuscated game data; the watcher adds a League match's official timeline from Riot's API when you give
 it your own Riot developer key.
@@ -214,7 +211,6 @@ own project, with its own releases and licence:
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | IL-2 Sturmovik maps into 3D models | [site](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 | [Ext-DotaReplay](https://github.com/Holdi601/3DHeat-Ext-DotaReplay) | Dota 2 replays into tables and match documents | [site](https://holdi601.github.io/3DHeat-Ext-DotaReplay/) |
 | [Ext-Riot](https://github.com/Holdi601/3DHeat-Ext-Riot) | what League of Legends and VALORANT replays carry in the open | [site](https://holdi601.github.io/3DHeat-Ext-Riot/) |
-| [Ext-Osu](https://github.com/Holdi601/3DHeat-Ext-Osu) | osu! replays: the cursor's path and the score | [site](https://holdi601.github.io/3DHeat-Ext-Osu/) |
 
 ## Updates
 

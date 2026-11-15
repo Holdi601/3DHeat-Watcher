@@ -1,7 +1,7 @@
 ---
 title: "X-Plane (live data)"
 parent: Games
-nav_order: 50
+nav_order: 49
 ---
 
 # X-Plane (live data)

@@ -11,7 +11,7 @@ from pathlib import Path
 import pytest
 
 from heat3d_watch.adapters.base import Context
-from heat3d_watch.adapters.replays import OSU_REPLAY, SETTLE_SECONDS, ReplayAdapter, record_match
+from heat3d_watch.adapters.replays import SETTLE_SECONDS, ReplayAdapter, record_match
 from heat3d_watch.config import Settings
 from heat3d_watch.session import Session
 
@@ -111,170 +111,30 @@ def test_a_real_demo_converts_into_a_session(tmp_path):
     assert list(sessions[0].parent.glob("*/*.parquet"))
 
 
-def _osr_string(text: str) -> bytes:
-    if not text:
-        return b"\x00"
-    raw = text.encode("utf-8")
-    n, out = len(raw), bytearray()
-    while True:
-        b = n & 0x7F
-        n >>= 7
-        out.append(b | (0x80 if n else 0))
-        if not n:
-            break
-    return b"\x0b" + bytes(out) + raw
-
-
-def _osr(frames: str, player: str = "someone", mods: int = 72) -> bytes:
-    """An .osr built field by field to the layout on the osu! wiki."""
-    import lzma
-    import struct
-
-    data = lzma.compress(frames.encode("ascii"), format=lzma.FORMAT_ALONE)
-    ticks = int((1_700_000_000 + 62135596800) * 1e7)
-    return (
-        struct.pack("<Bi", 0, 20240101)
-        + _osr_string("b" * 32)
-        + _osr_string(player)
-        + _osr_string("r" * 32)
-        + struct.pack("<6h", 90, 8, 2, 30, 4, 1)
-        + struct.pack("<ihBi", 1234567, 250, 0, mods)
-        + _osr_string("0/1,1000/0.9")
-        + struct.pack("<qi", ticks, len(data))
-        + data
-        + struct.pack("<q", 0)
-    )
-
-
-#: The osu! replays are read by the external reader (heat3d-osu-replays, exporters/ext/osu-replays); where it is not
-#: beside the watcher or installed, the tests that run it are skipped and the stand-in below still checks the hook.
-needs_reader = pytest.mark.skipif(OSU_REPLAY.command_line() is None,
-                                  reason="the osu! replay reader (3DHeat-Ext-Osu) is not installed")
-
-
-@needs_reader
-def test_an_osu_replay_becomes_a_session_with_its_path(tmp_path):
-    from heat3d_watch.adapters.replays import ADAPTERS
-
-    a = next(x for x in ADAPTERS if x.id == "osu-replays")
-    replay = tmp_path / "play.osr"
-    replay.write_bytes(_osr("0|10|20|0,16|30|40|1,16|50|60|0"))
-    ctx = Context(Settings(data=str(tmp_path / "data")), tmp_path / "data")
-    a.convert(replay, ctx)
-    meta = json.loads(next((tmp_path / "data" / "sessions").rglob("meta.json")).read_text(encoding="utf-8"))
-    assert meta["events"] == {"session_start": 1, "position": 1, "finish": 1, "life": 2}
-    assert meta["stats"]["score"] == 1234567 and meta["stats"]["full_combo"] == 0
-    import pyarrow.parquet as pq
-
-    t = pq.read_table(next((tmp_path / "data" / "sessions").rglob("heat.parquet")))
-    assert t.column("x").to_pylist() == [10.0, 30.0, 50.0]
-    assert t.column("z").to_pylist() == [20.0, 40.0, 60.0]
-    assert t.column("time").to_pylist() == [0.0, 0.016, 0.032]
-
-
-@needs_reader
-def test_everything_an_osu_replay_holds_is_read_or_kept(tmp_path):
-    """Every part of the file kept whole in heat.raw.parquet, the self-check with nothing lost - lazer's extra too."""
-    import struct
-
-    import pyarrow.parquet as pq
-
-    from heat3d_watch.adapters.replays import ADAPTERS
-
-    # Target Practice on (bit 23): its accuracy follows the score id; then bytes the format does not describe.
-    buf = _osr("0|10|20|0,16|30|40|1,-12345|0|0|4242,bad", mods=72 | 1 << 23) + struct.pack("<d", 0.97) + b"lazer"
-    a = next(x for x in ADAPTERS if x.id == "osu-replays")
-    replay = tmp_path / "play.osr"
-    replay.write_bytes(buf)
-    ctx = Context(Settings(data=str(tmp_path / "data")), tmp_path / "data")
-    a.convert(replay, ctx)
-    folder = next((tmp_path / "data" / "sessions").rglob("meta.json")).parent
-    meta = json.loads((folder / "meta.json").read_text(encoding="utf-8"))
-    c = meta["selfCheck"]["completeness"]
-    assert c["lost"] == 0 and c["sidecars"] == ["heat.raw.parquet"]
-    assert c["types"]["trailing"] == {"seen": 1, "decoded": 0, "partial": 0, "raw": 1, "lost": 0}
-    assert c["types"]["replay_data"]["partial"] == 1 and c["types"]["header"]["partial"] == 1
-    osu = meta["osu"]
-    assert osu["modNames"] == ["Hidden", "DoubleTime", "TargetPractice"] and osu["seed"] == 4242
-    assert osu["modeName"] == "osu" and osu["targetPracticeAccuracy"] == 0.97 and osu["replay_md5"] == "r" * 32
-    raw = pq.read_table(folder / "heat.raw.parquet").to_pylist()
-    # The parts, put back together, are the file.
-    assert b"".join(row["payload"] for row in sorted(raw, key=lambda row: row["offset"])) == buf
-    assert json.loads(next(row for row in raw if row["type"] == "header")["text"])["player"] == "someone"
-
-
-@needs_reader
-def test_the_replays_command_converts_what_is_already_on_disk_once(tmp_path, capsys):
+def test_the_replays_command_converts_what_is_already_on_disk_once(tmp_path, capsys, monkeypatch):
     from heat3d_watch import cli
-    from heat3d_watch.adapters.replays import ADAPTERS
 
-    a = next(x for x in ADAPTERS if x.id == "osu-replays")
+    a = _Counting(tmp_path / "watched")
+    counted = a.convert
+
+    def convert(path, ctx):
+        if path.name == "broken.rep":
+            raise ValueError("not a replay")
+        counted(path, ctx)
+
+    a.convert = convert
+    monkeypatch.setattr(cli, "load", lambda: {a.id: a})
     folder = tmp_path / "old replays"
     folder.mkdir()
-    for name in ("first.osr", "second.osr"):
-        (folder / name).write_bytes(_osr("0|10|20|0,16|30|40|1,16|50|60|0"))
-    (folder / "broken.osr").write_bytes(b"not a replay")
+    for name in ("first.rep", "second.rep", "broken.rep"):
+        (folder / name).write_bytes(b"x")
     data = Path(os.environ["HEAT3D_WATCH_HOME"])  # the settings' default data folder in this test
-    assert cli.main(["replays", "osu-replays", str(folder)]) == 0
+    assert cli.main(["replays", a.id, str(folder)]) == 0
     assert "converted 2 replay(s)" in capsys.readouterr().out
-    assert len(list((data / "sessions").glob("*/*/heat.parquet"))) == 2
-    # Noted as seen: the folder watch does not convert them a second time.
-    seen = json.loads((data / "state" / "replays-osu-replays.json").read_text(encoding="utf-8"))
-    assert {Path(k).name for k in seen} == {"first.osr", "second.osr"}
+    assert sorted(a.converted) == ["first.rep", "second.rep"]
+    # Noted as seen: the folder watch does not convert them a second time; the broken one is tried again.
+    seen = json.loads((data / "state" / f"replays-{a.id}.json").read_text(encoding="utf-8"))
+    assert {Path(k).name for k in seen} == {"first.rep", "second.rep"}
     assert cli.main(["replays", "cs2-gsi"]) == 2  # not a replay adapter
-    assert cli.main(["replays", "osu-replays", str(tmp_path / "nowhere")]) == 2
+    assert cli.main(["replays", a.id, str(tmp_path / "nowhere")]) == 2
     assert a.convert_existing(Context(Settings(data=str(data)), data), folder / "none") == 0
-
-
-def test_osu_without_the_reader_says_where_to_get_it(tmp_path, monkeypatch, capsys):
-    from heat3d_watch import cli
-    from heat3d_watch.adapters import replays
-
-    monkeypatch.setattr(replays.OSU_REPLAY, "command_line", lambda: None)
-    a = next(x for x in replays.ADAPTERS if x.id == "osu-replays")
-    assert "3DHeat-Ext-Osu" in a.missing() and "heat3d-osu-replays" in a.missing()
-    folder = tmp_path / "r"
-    folder.mkdir()
-    (folder / "play.osr").write_bytes(_osr("0|10|20|0"))
-    assert cli.main(["replays", "osu-replays", str(folder)]) == 1
-    assert "3DHeat-Ext-Osu" in capsys.readouterr().err
-
-
-def test_a_stand_in_reader_s_reading_becomes_the_session(tmp_path, monkeypatch):
-    """The hook alone: a stand-in plays heat3d-osu-replays, writing `<file>.json` where `-o` says."""
-    import sys
-
-    from heat3d_watch.adapters import replays
-
-    reading = {
-        "format": "heat3d-osu-replay/1", "file": "play.osr", "mode": 0, "version": 20240101, "beatmap": "b" * 32,
-        "player": "someone", "replay_md5": "r" * 32, "count_300": 90, "count_100": 8, "count_50": 2, "count_geki": 30,
-        "count_katu": 4, "misses": 1, "score": 1234567, "max_combo": 250, "perfect": 0, "mods": 72,
-        "life_text": "0/1,1000/0.9", "life": [[0, 1.0], [1000, 0.9]], "played_at": 1_700_000_000.0, "ticks": 1,
-        "accuracy": 0.9, "frames": [[0, 10.0, 20.0, 0], [16, 30.0, 40.0, 1]], "seed": 7, "frames_unread": 0,
-        "score_id": 0, "mod_info": None, "sections": [["header", 0, 3], ["replay_data", 3, 5]],
-        "modeName": "osu", "modNames": ["Hidden", "DoubleTime"],
-    }
-    script = tmp_path / "stand_in.py"
-    script.write_text(
-        "import json, pathlib, sys\n"
-        "args = sys.argv[1:]\n"
-        "assert args[0] == 'convert' and pathlib.Path(args[1]).is_absolute()\n"
-        "out = pathlib.Path(args[args.index('-o') + 1])\n"
-        f"(out / (pathlib.Path(args[1]).name + '.json')).write_text(json.dumps({reading!r}))\n",
-        encoding="utf-8",
-    )
-    monkeypatch.setattr(replays.OSU_REPLAY, "command_line", lambda: [sys.executable, str(script)])
-    a = next(x for x in replays.ADAPTERS if x.id == "osu-replays")
-    replay = tmp_path / "play.osr"
-    replay.write_bytes(b"12345")
-    ctx = Context(Settings(data=str(tmp_path / "data")), tmp_path / "data")
-    a.convert(replay, ctx)
-    meta = json.loads(next((tmp_path / "data" / "sessions").rglob("meta.json")).read_text(encoding="utf-8"))
-    assert meta["events"] == {"session_start": 1, "finish": 1, "life": 2}
-    assert meta["stats"]["score"] == 1234567 and meta["stats"]["accuracy"] == 0.9
-    assert meta["osu"]["modNames"] == ["Hidden", "DoubleTime"] and meta["osu"]["seed"] == 7
-    # A file the reader refuses: no session, and the reason raised.
-    monkeypatch.setattr(replays.OSU_REPLAY, "command_line", lambda: [sys.executable, "-c", "raise SystemExit(2)"])
-    with pytest.raises(ValueError, match="could not read"):
-        a.convert(replay, ctx)

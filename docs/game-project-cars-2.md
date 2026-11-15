@@ -1,7 +1,7 @@
 ---
 title: "Project CARS 2 (live data)"
 parent: Games
-nav_order: 37
+nav_order: 36
 ---
 
 # Project CARS 2 (live data)

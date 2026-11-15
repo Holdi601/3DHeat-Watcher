@@ -1,7 +1,7 @@
 ---
 title: "Richard Burns Rally (live data)"
 parent: Games
-nav_order: 39
+nav_order: 38
 ---
 
 # Richard Burns Rally (live data)

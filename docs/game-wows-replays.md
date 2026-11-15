@@ -1,7 +1,7 @@
 ---
 title: "World of Warships (replays)"
 parent: Games
-nav_order: 49
+nav_order: 48
 ---
 
 # World of Warships (replays)
@@ -61,7 +61,7 @@ whether they survived, and the result (World of Tanks) - becomes the
 session's statistics. What each converter reads, and what it does not, is in
 its README.
 
-The same module also serves: [Counter-Strike 2 (replays)](game-cs2-demos.md), [Dota 2 (replays)](game-dota-replays.md), [osu! (replays)](game-osu-replays.md), [Squad (replays)](game-squad-demos.md), [War Thunder (replays)](game-warthunder-replays.md), [World of Tanks (replays)](game-wot-replays.md).
+The same module also serves: [Counter-Strike 2 (replays)](game-cs2-demos.md), [Dota 2 (replays)](game-dota-replays.md), [Squad (replays)](game-squad-demos.md), [War Thunder (replays)](game-warthunder-replays.md), [World of Tanks (replays)](game-wot-replays.md).
 
 ## Positions and axes
 

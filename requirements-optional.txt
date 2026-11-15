@@ -7,5 +7,4 @@ zstandard>=0.22
 # Replays the watcher does not read itself: install the reader of each game you play from its own
 # repository (`python -m pip install -e .` in its folder), and the watcher runs it.
 #   Dota 2 replays (dota-replays):           https://github.com/Holdi601/3DHeat-Ext-DotaReplay  (brings gem-dota)
-#   osu! replays (osu-replays):              https://github.com/Holdi601/3DHeat-Ext-Osu
 #   League of Legends / VALORANT replays:    https://github.com/Holdi601/3DHeat-Ext-Riot

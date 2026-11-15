@@ -341,15 +341,15 @@ def test_config_set_reads_each_value_by_the_setting_s_type(capsys):
         "config", "--set",
         'replay_folders={"cs2-demos": ["D:/Demos"], "lol-replays": "E:/League"}',
         "scan_seconds=3", "memory=yes", "disabled=a, b", "player_names.warthunder-webmap=Someone",
-        "replay_folders.osu-replays=F:/One,F:/Two",
+        "replay_folders.lol-replays=F:/One,F:/Two",
     ]) == 0
     s = load()
     assert s.replay_folders == {"cs2-demos": ["D:/Demos"], "lol-replays": ["E:/League"],
-                                "osu-replays": ["F:/One", "F:/Two"]}
+                                "lol-replays": ["F:/One", "F:/Two"]}
     assert s.scan_seconds == 3.0 and s.memory is True and s.disabled == ["a", "b"]
     assert s.player_names == {"warthunder-webmap": "Someone"}
-    assert cli.main(["config", "--set", "replay_folders.osu-replays="]) == 0  # an empty value removes the entry
-    assert "osu-replays" not in load().replay_folders
+    assert cli.main(["config", "--set", "replay_folders.lol-replays="]) == 0  # an empty value removes the entry
+    assert "lol-replays" not in load().replay_folders
     # Refused, and nothing saved: a dictionary that is not one, a number that is not one, an unknown key.
     for bad in ("replay_folders=D:/Demos", "scan_seconds=often", "memory=perhaps", "nonsense=1"):
         assert cli.main(["config", "--set", bad]) == 2

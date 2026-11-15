@@ -260,3 +260,40 @@ def test_without_the_reader_it_says_where_to_get_it(tmp_path, monkeypatch):
     with pytest.raises(FileNotFoundError, match="pip install -e"):
         ADAPTERS[1].convert(replay, Context(Settings(data=str(data)), data))
     assert not (data / "sessions").exists()
+
+
+def test_a_stand_in_reader_s_reading_becomes_the_session(tmp_path, monkeypatch):
+    """The hook alone: a stand-in plays heat3d-riot-replays, writing `<file>.json` where `-o` says."""
+    import sys
+
+    reading = {
+        "format": "heat3d-riot-replay/1", "file": "match.vrf", "game": "VALORANT", "kind": "vrf", "file_version": 7,
+        "length_ms": 2100000, "name": "Valorant replay", "recorded_unix": 1_700_000_000.0, "encrypted": False,
+        "info": {"changelist": 999}, "map": "/Game/Maps/Ascent/Ascent", "match_id": "m-1", "agents": [],
+        "events": [{"group": "characterDeath", "event": "kill", "time_ms": 32500, "end_ms": 32500, "seconds": 31.5,
+                    "words": [11, 22], "chunk_group": "characterDeath", "id": "ev-1", "metadata": ""}],
+        "sections": [["info", 0, 3, {"changelist": 999}], ["replay_data", 3, 5, None]],
+    }
+    script = tmp_path / "stand_in.py"
+    script.write_text(
+        "import json, pathlib, sys\n"
+        "args = sys.argv[1:]\n"
+        "assert args[0] == 'convert' and pathlib.Path(args[1]).is_absolute()\n"
+        "out = pathlib.Path(args[args.index('-o') + 1])\n"
+        f"(out / (pathlib.Path(args[1]).name + '.json')).write_text(json.dumps({reading!r}))\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(RIOT_REPLAY, "command_line", lambda: [sys.executable, str(script)])
+    replay = tmp_path / "match.vrf"
+    replay.write_bytes(b"12345")
+    data = tmp_path / "data"
+    ctx = Context(Settings(data=str(data)), data)
+    ADAPTERS[1].convert(replay, ctx)
+    meta = json.loads(next((data / "sessions").rglob("meta.json")).read_text(encoding="utf-8"))
+    assert meta["stats"]["kills_in_match"] == 1 and meta["stats"]["map"] == "Ascent" and meta["vrf"]["changelist"] == 999
+    raw = pq.read_table(next((data / "sessions").rglob("heat.raw.parquet"))).to_pylist()
+    assert b"".join(row["payload"] for row in sorted(raw, key=lambda row: row["offset"])) == b"12345"
+    # A file the reader refuses: no second session, and the reason raised.
+    monkeypatch.setattr(RIOT_REPLAY, "command_line", lambda: [sys.executable, "-c", "raise SystemExit(2)"])
+    with pytest.raises(ValueError, match="could not read"):
+        ADAPTERS[1].convert(replay, ctx)

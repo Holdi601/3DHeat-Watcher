@@ -1,7 +1,7 @@
 ---
 title: "Star Citizen (log files)"
 parent: Games
-nav_order: 42
+nav_order: 41
 ---
 
 # Star Citizen (log files)

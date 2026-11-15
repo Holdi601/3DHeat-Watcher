@@ -1,7 +1,7 @@
 ---
 title: "Rocket League (game state)"
 parent: Games
-nav_order: 40
+nav_order: 39
 ---
 
 # Rocket League (game state)

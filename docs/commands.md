@@ -144,7 +144,7 @@ python -m heat3d_watch status
 ```text
 3DHeat Watcher 1.0.2; data in C:\Users\...\AppData\Local\3DHeat\Watcher
 Games running: EA SPORTS F1 25 (f1-25)
-Always on: il2-tacview, steam-stats, steam-timeline, nvidia-highlights, cs2-demos, osu-replays, lol-replays, valorant-replays
+Always on: il2-tacview, steam-stats, steam-timeline, nvidia-highlights, cs2-demos, lol-replays, valorant-replays
 ```
 
 Says which adapters a `run` would start now, by the same rules: the game's process is running, the
@@ -218,7 +218,6 @@ convert it again. A replay that fails to convert is logged and skipped.
 |---|---|
 | `cs2-demos` | Counter-Strike 2 demos (`*.dem`), through 3DHeat CS2 |
 | `lol-replays` | League of Legends replays (`*.rofl`), through the external reader `heat3d-riot-replays` (3DHeat-Ext-Riot) |
-| `osu-replays` | osu! replays (`*.osr`), through the external reader `heat3d-osu-replays` (3DHeat-Ext-Osu) |
 | `valorant-replays` | VALORANT replays (`*.vrf`), through the external reader `heat3d-riot-replays` (3DHeat-Ext-Riot) |
 | `warthunder-replays` | War Thunder replays (`*.wrpl`), through the external converter `heat3d-wt-replay` (exporters/ext/warthunder-replay) |
 | `wot-replays` | World of Tanks replays (`*.wotreplay`), through the external converter `heat3d-wot-replay` (exporters/ext/wot-replay) |
@@ -226,7 +225,7 @@ convert it again. A replay that fails to convert is logged and skipped.
 | `dota-replays` | Dota 2 replays (`*.dem`), through the external reader `heat3d-dota-replay` (3DHeat-Ext-DotaReplay) |
 
 ```text
-osu-replays: converted 12 replay(s); `sessions --game` lists them
+lol-replays: converted 12 replay(s); `sessions --game` lists them
 ```
 
 An id that is not one of these prints `no replay adapter '<id>'` with the list and exits with code 2;

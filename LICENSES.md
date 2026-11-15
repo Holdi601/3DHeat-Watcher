@@ -35,11 +35,10 @@ documents, Tacview's ACMI format, Frontier's journal manual, and the file
 layouts of Steam and the NVIDIA App as they are on disk. No code was taken from GPL or unlicensed projects; where such a project
 was consulted, only facts about a format were.
 
-Replay files of Dota 2, osu!, League of Legends and VALORANT are not read by
-the watcher: separate tools with their own licence files read them
+Replay files of Dota 2, League of Legends and VALORANT are not read by the
+watcher: separate tools with their own licence files read them
 ([3DHeat-Ext-DotaReplay](https://github.com/Holdi601/3DHeat-Ext-DotaReplay),
-which brings gem-dota; [3DHeat-Ext-Osu](https://github.com/Holdi601/3DHeat-Ext-Osu);
-[3DHeat-Ext-Riot](https://github.com/Holdi601/3DHeat-Ext-Riot)), and the watcher
+which brings gem-dota; [3DHeat-Ext-Riot](https://github.com/Holdi601/3DHeat-Ext-Riot)), and the watcher
 only runs them as programs. OpenDota's public API is asked only for a match's
 replay server and salt, for `dota-replay`'s download.
 

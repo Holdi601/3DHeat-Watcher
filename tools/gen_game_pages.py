@@ -67,7 +67,6 @@ ENV_MEANING = {
     "HEAT3D_WOWS_REPLAY": "the converter's folder (a clone or unpacked release), when it is not installed or beside the watcher",
     "HEAT3D_SQUAD_DEMO": "the converter's folder (a clone or unpacked release), when it is not installed or beside the watcher",
     "HEAT3D_DOTA_REPLAY": "the reader's folder (a clone or unpacked release), when it is not installed or beside the watcher",
-    "HEAT3D_OSU_REPLAYS": "the reader's folder (a clone or unpacked release), when it is not installed or beside the watcher",
     "HEAT3D_RIOT_REPLAYS": "the reader's folder (a clone or unpacked release), when it is not installed or beside the watcher",
 }
 

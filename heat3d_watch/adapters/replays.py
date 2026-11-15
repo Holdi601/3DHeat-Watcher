@@ -62,17 +62,6 @@ match was won. A new Dota patch can change the replay's entities before gem
 follows; a replay gem cannot read to the end is converted as far as it goes
 and marked `incomplete` in its summary.
 
-osu!
-----
-osu! (stable) saves every play to `osu!/Data/r/*.osr` and exported ones to
-`osu!/Replays/`. The watcher does not read them itself: an external reader
-does (3DHeat osu!, github.com/Holdi601/3DHeat-Ext-Osu, `exporters/ext/osu-replays`,
-command `heat3d-osu-replays`), to the format the osu! wiki publishes, found on
-PATH, installed, or beside the watcher; missing, the watcher says once how to
-install it. What it reads becomes the session: the cursor's path and keys
-every frame, the score line, the life bar, the seed and the score id; the file
-is kept whole beside, part by part, in the session's `heat.raw.parquet`.
-
 War Thunder
 -----------
 War Thunder saves a replay of each battle to `<War Thunder>/Replays/*.wrpl`
@@ -532,9 +521,6 @@ class ExtReader:
 #: The Dota 2 replay reader (exporters/ext/dota-replay, repository 3DHeat-Ext-DotaReplay).
 DOTA_REPLAY = ExtReader("the Dota 2 replay reader", "heat3d-dota-replay", "heat3d_ext_dota_replay", "dota-replay",
                         "3DHeat-Ext-DotaReplay", "HEAT3D_DOTA_REPLAY")
-#: The osu! replay reader (exporters/ext/osu-replays, repository 3DHeat-Ext-Osu).
-OSU_REPLAY = ExtReader("the osu! replay reader", "heat3d-osu-replays", "heat3d_ext_osu", "osu-replays",
-                       "3DHeat-Ext-Osu", "HEAT3D_OSU_REPLAYS")
 
 
 def dota_replay_folders() -> list[Path]:
@@ -631,74 +617,6 @@ def record_dota_match(session, match: dict, me: set[str]) -> None:
             session.stat("won", 1 if match["winner"] == p.get("team") else 0)
 
 
-#: What of each part of an .osr goes into the rows and meta.json (the parts are kept whole besides).
-_OSR_HEADER = ("mode", "version", "beatmap", "player", "replay_md5", "count_300", "count_100", "count_50", "count_geki",
-               "count_katu", "misses", "score", "max_combo", "perfect", "mods", "life_text", "ticks")
-
-
-@dataclass
-class OsuReplays(ReplayAdapter):
-    """
-    osu!'s .osr replays, read by the external reader `heat3d-osu-replays`
-    (3DHeat-Ext-Osu; `HEAT3D_OSU_REPLAYS` may name its source folder); what it
-    reads is recorded here as the session.
-    """
-
-    def folders(self, ctx: Context) -> list[Path]:
-        base = Path(os.environ.get("LOCALAPPDATA", "")) / "osu!"
-        return [base / "Data" / "r", base / "Replays"] + super().folders(ctx)
-
-    def missing(self) -> str | None:
-        return OSU_REPLAY.missing(self.id)
-
-    def convert(self, path: Path, ctx: Context) -> None:
-        # Read by the external reader (heat3d-osu-replays); the bytes here only to keep the file's parts whole.
-        r = OSU_REPLAY.read(path)
-        buf = path.read_bytes()
-        session = ctx.open(self, when=r["played_at"] or path.stat().st_mtime, meta={"replay": str(path)})
-        try:
-            play = r["beatmap"] or path.stem
-            frames = r["frames"]
-            # The playfield drawn on the ground: x across, its y away from the viewer.
-            for i, (t, x, y, keys) in enumerate(frames):
-                event = "session_start" if i == 0 else "finish" if i == len(frames) - 1 else "position"
-                session.event(event, t=t / 1000.0, x=x, y=0.0, z=y, player=r["player"] or "me", session=play, keys=keys)
-            # The life bar, as the replay keeps it: a point every few seconds.
-            for ms, value in r["life"]:
-                session.event("life", t=ms / 1000.0, player=r["player"] or "me", session=play, life=value)
-            for key in ("score", "max_combo", "count_300", "count_100", "count_50", "count_geki", "count_katu", "misses",
-                        "mode", "mods"):
-                session.stat(key, r[key])
-            if r["accuracy"] is not None:
-                session.stat("accuracy", round(r["accuracy"], 5))
-            session.stat("full_combo", 1 if r["perfect"] else 0)
-            header = {k: r[k] for k in _OSR_HEADER}
-            session.meta["osu"] = {
-                **{k: v for k, v in header.items() if k != "life_text"},
-                "modeName": r["modeName"],
-                "modNames": r["modNames"],
-                "lifePoints": len(r["life"]),
-                "frames": len(frames),
-                "framesUnread": r["frames_unread"],
-                "seed": r["seed"],
-                "scoreId": r["score_id"],
-                "targetPracticeAccuracy": r["mod_info"],
-            }
-            # The file whole, part by part (docs/converters.md in the viewer's repository): what each part holds is
-            # also in the rows and meta.json above - all but whatever follows the parts the format describes.
-            read = {
-                "header": header,
-                "replay_data": {"frames": len(frames), "seed": r["seed"], "unread": r["frames_unread"]},
-                "score_id": {"score_id": r["score_id"]},
-                "mod_info": {"accuracy": r["mod_info"]},
-            }
-            for kind, start, end in r["sections"]:
-                text = json.dumps(read[kind], ensure_ascii=False) if kind in read else None
-                session.raw(kind, buf[start:end], text=text, used=kind in read, t=0.0, offset=start)
-        finally:
-            ctx.close(session)
-
-
 ADAPTERS = [
     Cs2Demos(
         id="cs2-demos",
@@ -785,47 +703,6 @@ ADAPTERS = [
             ),
             "size": "the sidecars together are somewhat larger than the replay itself, the packets and the entities the biggest; "
             "a whole match takes a minute or two in one process",
-        },
-    ),
-    OsuReplays(
-        id="osu-replays",
-        game="osu!",
-        patterns=("*.osr",),
-        source="replays osu! (stable) saves: %LOCALAPPDATA%/osu!/Data/r/*.osr (every play) and osu!/Replays/*.osr "
-        "(exported), read by the external reader `heat3d-osu-replays` (exporters/ext/osu-replays)",
-        records=(
-            "the cursor's path over the playfield (x 0..512, y 0..384) and the keys held, every frame",
-            "score, combo, 300s/100s/50s/gekis/katus/misses, accuracy, mods, full combo",
-            "the life bar over the play, the beatmap's and the replay's hashes, the random seed, the online score id",
-        ),
-        enable="play in osu! (stable): it saves every play; install the reader: github.com/Holdi601/3DHeat-Ext-Osu "
-        "(`heat3d-osu-replays`)",
-        axes=Axes(up="y", flip_z=True, units="osu! pixels (playfield 512 x 384)"),
-        verified="the reader is tested on replays built to the published .osr format; this hook by tests with the reader "
-        "and a stand-in; osu!lazer keeps replays in its own store and is not read",
-        multiplayer=True,
-        completeness={
-            "read": (
-                "every frame: a row at its time (milliseconds summed), x and y on the playfield, `keys` the key bits "
-                "(mouse 1 and 2, keys 1 and 2, smoke); in mania x holds the keys held instead of a place",
-                "the header, every field: mode, version, the beatmap's MD5 (the file names the beatmap only by it), the "
-                "player, the replay's MD5, 300s, 100s, 50s, gekis, katus, misses, score, max combo, full combo, mods (by "
-                "name in meta.json `osu.modNames`), the play's time - as statistics and in meta.json `osu`",
-                "the life bar graph: a `life` row per point (time, life 0..1)",
-                "the frame `-12345`: the random seed (`osu.seed`); the online score id (`osu.scoreId`); with Target "
-                "Practice, its accuracy (`osu.targetPracticeAccuracy`)",
-            ),
-            "raw": (
-                "the file whole, part by part, in heat.raw.parquet (`offset` where each starts, so the parts are the "
-                "file): `header`, `replay_data` (the LZMA-compressed frames as stored), `score_id`, `mod_info`, and "
-                "`trailing` for whatever follows the parts the format describes (osu!lazer's exports add data there) - "
-                "kept, not read",
-            ),
-            "missing": (
-                "the beatmap itself (hit objects, timing): not in a replay; it is named only by its MD5",
-                "osu!lazer's own replays: kept in its database, not as files",
-            ),
-            "size": "the raw sidecar is about the replay's size (tens to hundreds of kilobytes)",
         },
     ),
 ]

@@ -53,7 +53,7 @@ alone. What the converter reads, and what it does not, is in its README. The
 replay's author's line of the results - kills, ground kills, deaths, assists,
 score, captures - becomes the session's statistics.
 
-The same module also serves: [Counter-Strike 2 (replays)](game-cs2-demos), [Dota 2 (replays)](game-dota-replays), [osu! (replays)](game-osu-replays), [Squad (replays)](game-squad-demos), [World of Tanks (replays)](game-wot-replays), [World of Warships (replays)](game-wows-replays).
+The same module also serves: [Counter-Strike 2 (replays)](game-cs2-demos), [Dota 2 (replays)](game-dota-replays), [Squad (replays)](game-squad-demos), [World of Tanks (replays)](game-wot-replays), [World of Warships (replays)](game-wows-replays).
 
 ## Positions and axes
 

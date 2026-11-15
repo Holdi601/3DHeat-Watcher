@@ -55,7 +55,7 @@ whether they survived, and the result (World of Tanks) - becomes the
 session's statistics. What each converter reads, and what it does not, is in
 its README.
 
-The same module also serves: [Counter-Strike 2 (replays)](game-cs2-demos), [Dota 2 (replays)](game-dota-replays), [osu! (replays)](game-osu-replays), [Squad (replays)](game-squad-demos), [War Thunder (replays)](game-warthunder-replays), [World of Tanks (replays)](game-wot-replays).
+The same module also serves: [Counter-Strike 2 (replays)](game-cs2-demos), [Dota 2 (replays)](game-dota-replays), [Squad (replays)](game-squad-demos), [War Thunder (replays)](game-warthunder-replays), [World of Tanks (replays)](game-wot-replays).
 
 ## Positions and axes
 

@@ -52,7 +52,7 @@ for demos copied off a rented server, into the session folder as
 `<map>/<match>.parquet` and `<match>.match.json`. The layer, the map, the
 number of players and the match length become the session's statistics.
 
-The same module also serves: [Counter-Strike 2 (replays)](game-cs2-demos), [Dota 2 (replays)](game-dota-replays), [osu! (replays)](game-osu-replays), [War Thunder (replays)](game-warthunder-replays), [World of Tanks (replays)](game-wot-replays), [World of Warships (replays)](game-wows-replays).
+The same module also serves: [Counter-Strike 2 (replays)](game-cs2-demos), [Dota 2 (replays)](game-dota-replays), [War Thunder (replays)](game-warthunder-replays), [World of Tanks (replays)](game-wot-replays), [World of Warships (replays)](game-wows-replays).
 
 ## Positions and axes
 

@@ -6,7 +6,7 @@ has_children: true
 
 # Games
 
-The watcher knows 50 sources in 45 games and platforms. Each has a page of its own, generated from its adapter: what it records, where from, how to switch it on, how it works, its axes, what was verified.
+The watcher knows 49 sources in 44 games and platforms. Each has a page of its own, generated from its adapter: what it records, where from, how to switch it on, how it works, its axes, what was verified.
 
 Kinds: `telemetry`, `gsi`, `log`, `replay` and `platform` - see [Sources and rules](sources-and-rules.md). Positions: *yes* when the adapter writes rows with a place, *borrowed* when it takes the place from another recording of the same game (see [NVIDIA Highlights](nvidia-highlights.md)), *no* when the source has none. Memory profiles are not listed: none ship, and each player writes their own (see [Reading memory](memory-reading.md)).
 
@@ -46,7 +46,6 @@ Kinds: `telemetry`, `gsi`, `log`, `replay` and `platform` - see [Sources and rul
 | [Microsoft Flight Simulator 2024 (live data)](game-msfs2024.md) | telemetry | yes | SimConnect through the player's own SimConnect.dll (the sim folder, or `%MSFS2024_SDK%\SimConnect` `SDK\lib`) |
 | [Minecraft (log files)](game-minecraft.md) | log | yes | `%APPDATA%\.minecraft\logs\latest.log` (followed), `saves\<world>\stats\<uuid>.json` and `saves\<world>\playerdata\<uuid>.dat` / level.dat (gzip NBT), read when the game saves them |
 | [NVIDIA highlights (platform)](game-nvidia-highlights.md) | platform | borrowed | `%LOCALAPPDATA%\NVIDIA` `Corporation\NVIDIA` `Overlay\UGCTracker.json`, GallerySettings.json, `Highlights\<game>\config.json`; clips in the capture folder `(%USERPROFILE%\Videos\NVIDIA\<Game>\*.mp4`) and `<temp>\Highlights\<game>`; `%LOCALAPPDATA%\NVIDIA` `Corporation\GfeSDK\<exe>_<pid>.log` |
-| [osu! (replays)](game-osu-replays.md) | replay | yes | replays osu! (stable) saves: `%LOCALAPPDATA%/osu!/Data/r/*.osr` (every play) and `osu!/Replays/*.osr` (exported), read by the external reader `heat3d-osu-replays` (exporters/ext/osu-replays) |
 | [Path of Exile (log files)](game-poe.md) | log | no | `<install>\logs\Client.txt` of Path of Exile or Path of Exile 2 (followed; the install folder is the running executable's) |
 | [Project CARS 2 (live data)](game-project-cars-2.md) | telemetry | yes | shared memory $pcars2$ (SMS SharedMemory.h) |
 | [RaceRoom Racing Experience (live data)](game-raceroom.md) | telemetry | yes | shared memory $R3E (Sector3's r3e.h, version 3) |

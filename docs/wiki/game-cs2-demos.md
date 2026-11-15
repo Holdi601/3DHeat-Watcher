@@ -52,7 +52,7 @@ for the player whose Steam account is signed in on this machine (from Steam's
 `loginusers.vdf`) under its plain names - kills, deaths, assists, ADR, KAST,
 headshot percentage, opening kills, clutches - and the score and rounds.
 
-The same module also serves: [Dota 2 (replays)](game-dota-replays), [osu! (replays)](game-osu-replays), [Squad (replays)](game-squad-demos), [War Thunder (replays)](game-warthunder-replays), [World of Tanks (replays)](game-wot-replays), [World of Warships (replays)](game-wows-replays).
+The same module also serves: [Dota 2 (replays)](game-dota-replays), [Squad (replays)](game-squad-demos), [War Thunder (replays)](game-warthunder-replays), [World of Tanks (replays)](game-wot-replays), [World of Warships (replays)](game-wows-replays).
 
 ## Positions and axes
 

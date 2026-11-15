@@ -13,11 +13,6 @@
     "c": "grey"
    },
    {
-    "t": "osu! replays",
-    "s": ".osr",
-    "c": "grey"
-   },
-   {
     "t": "War Thunder replays",
     "s": ".wrpl",
     "c": "grey"
@@ -46,10 +41,6 @@
    {
     "t": "heat3d-dota-replay",
     "s": "external reader, opt-in (gem-dota)"
-   },
-   {
-    "t": "heat3d-osu-replays",
-    "s": "external reader, opt-in"
    },
    {
     "t": "heat3d-wt-replay",

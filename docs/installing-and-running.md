@@ -103,7 +103,7 @@ request with [`replays`](commands.md#replays):
 
 ```bash
 python -m heat3d_watch replays cs2-demos              # every demo in CS2's folders and replay_folders
-python -m heat3d_watch replays osu-replays D:\Old     # the replays in one folder
+python -m heat3d_watch replays lol-replays D:\Old     # the replays in one folder
 ```
 
 ### Running in the background
@@ -199,7 +199,7 @@ starts, so restart `run` after changing them.
 | `auto_update` | `true` | While no game is running, install a newer release and restart (see [Updates](updates.md)). `false`: only a notice in the log. |
 | `scan_seconds` | `2.0` | Seconds between looks at the process list. |
 | `memory` | `false` | Allow memory adapters (single-player games with a profile you wrote) to run. Off by default; see [Reading memory](memory-reading.md). |
-| `replays` | `true` | Run the `replay` adapters: all of them (see `python -m heat3d_watch replays` and [Games](games.md)) - CS2 demos, Dota 2, osu!, War Thunder, World of Tanks, World of Warships, Squad, League of Legends and VALORANT replays, IL-2 Tacview recordings. |
+| `replays` | `true` | Run the `replay` adapters: all of them (see `python -m heat3d_watch replays` and [Games](games.md)) - CS2 demos, Dota 2, War Thunder, World of Tanks, World of Warships, Squad, League of Legends and VALORANT replays, IL-2 Tacview recordings. |
 | `replay_folders` | `{}` | Extra folders by adapter id, for example `{"cs2-demos": ["D:\\Demos"]}`. Replay adapters watch them in addition to the game's own folders; `il2-tacview` also accepts install folders (it then looks in their `data\Tracks`); for `elite`, the first folder replaces the journal folder. Set one adapter's folders with `config --set replay_folders.cs2-demos=D:\Demos,E:\More`, or the whole dictionary as JSON. |
 | `riot_id` | `""` | Your Riot ID (`Name#TAG`), so your own line in a League of Legends replay becomes your statistics. Empty: every player's line is kept, none is marked as yours. |
 | `riot_api_key` | `""` | Your own Riot developer API key, to fetch each replayed League match's official timeline (positions each minute, kills where they happened). Empty: nothing is fetched. |

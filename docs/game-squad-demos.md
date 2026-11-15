@@ -1,7 +1,7 @@
 ---
 title: "Squad (replays)"
 parent: Games
-nav_order: 41
+nav_order: 40
 ---
 
 # Squad (replays)
@@ -58,7 +58,7 @@ for demos copied off a rented server, into the session folder as
 `<map>/<match>.parquet` and `<match>.match.json`. The layer, the map, the
 number of players and the match length become the session's statistics.
 
-The same module also serves: [Counter-Strike 2 (replays)](game-cs2-demos.md), [Dota 2 (replays)](game-dota-replays.md), [osu! (replays)](game-osu-replays.md), [War Thunder (replays)](game-warthunder-replays.md), [World of Tanks (replays)](game-wot-replays.md), [World of Warships (replays)](game-wows-replays.md).
+The same module also serves: [Counter-Strike 2 (replays)](game-cs2-demos.md), [Dota 2 (replays)](game-dota-replays.md), [War Thunder (replays)](game-warthunder-replays.md), [World of Tanks (replays)](game-wot-replays.md), [World of Warships (replays)](game-wows-replays.md).
 
 ## Positions and axes
 
