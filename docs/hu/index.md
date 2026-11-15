@@ -27,9 +27,9 @@ Csendben fut, észreveszi, melyik játékot indította el, és az adott játék 
 a műszerfalaknak közzétett telemetriai portot vagy megosztott memóriát, egy játékállapot-integrációt, a játék által
 írt naplót vagy journalt, a meccs után mentett visszajátszást, a Steam által vezetett statisztikákat, az NVIDIA
 App által mentett klipeket. A felvételek a saját gépén maradnak. A program csak két külső szolgáltatással
-kommunikál, és csak ezekben az esetekben: a GitHubbal, újabb kiadás keresésére (lásd: [Frissítések](../updates.md)),
+kommunikál, és csak ezekben az esetekben: a GitHubbal, újabb kiadás keresésére (lásd: [Frissítések](updates.md)),
 és a Riot Match-V5 API-jával, de csak akkor, ha megadod a saját Riot API-kulcsodat (lásd:
-[League of Legends visszajátszások](../game-lol-replays.md)).
+[League of Legends visszajátszások](game-lol-replays.md)).
 
 ![a watcher: amit a játékok közzétesznek, fájlokba a saját gépén](../assets/img/hu/overview.svg)
 
@@ -43,9 +43,9 @@ kommunikál, és csak ezekben az esetekben: a GitHubbal, újabb kiadás keresés
 - **Statisztikák munkamenetenként**: ölések, halálok, körök, legjobb kör, távolság, csúcssebesség, játékidő, és
   a játék saját statisztikái, ahol vezeti őket.
 
-Hogy melyik játék mit ad, és honnan, az a [Játékok](../games.md) oldalán található játékonként. Egy forrás nem mindent
+Hogy melyik játék mit ad, és honnan, az a [Játékok](games.md) oldalán található játékonként. Egy forrás nem mindent
 képes rögzíteni: a többjátékos játékokat csak azon keresztül rögzítjük, amit közzétesznek, a watcher pedig soha nem
-olvassa a memóriájukat (lásd: [Források és szabályok](../sources-and-rules.md)).
+olvassa a memóriájukat (lásd: [Források és szabályok](sources-and-rules.md)).
 
 ## Telepítés {#install}
 
@@ -62,7 +62,7 @@ pip install -r requirements.txt
 
 Egy letöltött kiadási archívum ugyanígy működik: csomagold ki, majd futtasd a `pip install -r requirements.txt`
 parancsot a mappában. A részletek és néhány játékhoz szükséges extrák a
-[Telepítés és futtatás](../installing-and-running.md) oldalon vannak.
+[Telepítés és futtatás](installing-and-running.md) oldalon vannak.
 
 ## Gyors kezdés {#quick-start}
 
@@ -91,26 +91,26 @@ parancsot.
 A megjelenítő egy munkamenet `heat.parquet` fájlját közvetlenül megnyitja, semmit nem kell beállítani (a tengelyek és
 mértékegységek a fájlban vannak). A konvertált visszajátszások mellette táblázatként és meccsdokumentumként íródnak;
 a megjelenítő saját egy-fájl-egy-meccs formátumát a [`.3dheat` tároló](https://holdi601.github.io/3DHeat/container.html)
-oldal írja le, minden táblázat oszlopait pedig az [Adatok](../the-data.md) oldalon.
+oldal írja le, minden táblázat oszlopait pedig az [Adatok](the-data.md) oldalon.
 
 ## A dokumentáció {#the-documentation}
 
 | Oldal | Mit tartalmaz |
 |---|---|
 | [Mielőtt elkezded](before-you-start.md) | Python, egy terminál, helyőrzők, mit jelent a siker és a gyakori hibák |
-| [Telepítés és futtatás](../installing-and-running.md) | követelmények, futtatás a háttérben, indítás a Windows-szal, a zárfájl, a napló, minden beállítás és környezeti változó |
-| [Játékok](../games.md) | játékonként egy oldal: mit rögzít, honnan, hogyan kapcsold be, hogyan működik, tengelyek, statisztikák, mit ellenőriztünk |
-| [Az adatok](../the-data.md) | munkamenet-mappák, `events.jsonl`, `heat.parquet` és lábléce, `meta.json`, `watcher.sqlite`, helyreállítás összeomlás után, CSV-export, munkamenet megnyitása a 3DHeat megjelenítőben |
-| [Parancsok](../commands.md) | a `python -m heat3d_watch` minden parancsa és kapcsolója |
-| [Források és szabályok](../sources-and-rules.md) | a hatféle forrás, a többjátékos szabályok, mely játékok maradnak ki, és miért |
-| [NVIDIA Highlights](../nvidia-highlights.md) | mit tud és mit nem tud az NVIDIA Highlights, és hogyan kap egy kiemelés pozíciót |
-| [Szerver-rögzítő modok](../server-mods.md) | az Arma 3 és Arma Reforger szerver-modok, amelyek egész küldetéseket rögzítenek a megjelenítőnek |
-| [Memória olvasása](../memory-reading.md) | egyjátékos memóriaprofilok: a formátum, az ellenőrzések, hogyan írj és ellenőrizz egyet |
-| [Frissítések](../updates.md) | hogyan keresi a watcher az új kiadásokat, és hogyan frissíti magát |
-| [Fejlesztés](../development.md) | adapter írása: az API, tesztek, egy becsületes `verified`, a játékoldalak újragenerálása |
-| [Minden játék egy táblázatban](../watcher.md) | minden játék egy táblázatban, ahogy a `games --markdown` kiírja, plusz a kutatott, de még el nem készült játékok |
+| [Telepítés és futtatás](installing-and-running.md) | követelmények, futtatás a háttérben, indítás a Windows-szal, a zárfájl, a napló, minden beállítás és környezeti változó |
+| [Játékok](games.md) | játékonként egy oldal: mit rögzít, honnan, hogyan kapcsold be, hogyan működik, tengelyek, statisztikák, mit ellenőriztünk |
+| [Az adatok](the-data.md) | munkamenet-mappák, `events.jsonl`, `heat.parquet` és lábléce, `meta.json`, `watcher.sqlite`, helyreállítás összeomlás után, CSV-export, munkamenet megnyitása a 3DHeat megjelenítőben |
+| [Parancsok](commands.md) | a `python -m heat3d_watch` minden parancsa és kapcsolója |
+| [Források és szabályok](sources-and-rules.md) | a hatféle forrás, a többjátékos szabályok, mely játékok maradnak ki, és miért |
+| [NVIDIA Highlights](nvidia-highlights.md) | mit tud és mit nem tud az NVIDIA Highlights, és hogyan kap egy kiemelés pozíciót |
+| [Szerver-rögzítő modok](server-mods.md) | az Arma 3 és Arma Reforger szerver-modok, amelyek egész küldetéseket rögzítenek a megjelenítőnek |
+| [Memória olvasása](memory-reading.md) | egyjátékos memóriaprofilok: a formátum, az ellenőrzések, hogyan írj és ellenőrizz egyet |
+| [Frissítések](updates.md) | hogyan keresi a watcher az új kiadásokat, és hogyan frissíti magát |
+| [Fejlesztés](development.md) | adapter írása: az API, tesztek, egy becsületes `verified`, a játékoldalak újragenerálása |
+| [Minden játék egy táblázatban](watcher.md) | minden játék egy táblázatban, ahogy a `games --markdown` kiírja, plusz a kutatott, de még el nem készült játékok |
 | [Parancsleírás](../cli-reference.md) | minden parancs `--help` kimenete, a kódból generálva |
-| [Karbantartás](../maintaining.md) | ezekhez az oldalakhoz tartozó kiadási ellenőrzőlista |
+| [Karbantartás](maintaining.md) | ezekhez az oldalakhoz tartozó kiadási ellenőrzőlista |
 
 ## A 3DHeat része {#part-of-3dheat}
 

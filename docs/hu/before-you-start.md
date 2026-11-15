@@ -69,4 +69,4 @@ Ezt kell látnod: `1.0.2 (a verziószám)`.
 | `No module named ...` | a 4. lépés kimaradt, vagy másik mappában futott: lépj az eszköz mappájába a `cd` paranccsal, és futtasd újra. |
 | `pip is not recognized` | a `pip ...` helyett használd a `python -m pip ...`-t. |
 | `No such file or directory` / `can't open file` | a terminál rossz mappában van, vagy az útvonal elgépelt: ellenőrizd, és a szóközös útvonalakat tedd idézőjelbe. |
-| piros szöveg, amely `error:` sorral végződik | olvasd el az utolsó sort: megmondja, mi hiányzik. A [Parancsok](../commands.md) oldal felsorolja az üzeneteket. |
+| piros szöveg, amely `error:` sorral végződik | olvasd el az utolsó sort: megmondja, mi hiányzik. A [Parancsok](commands.md) oldal felsorolja az üzeneteket. |
