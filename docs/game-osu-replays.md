@@ -24,10 +24,6 @@ replays osu! (stable) saves: %LOCALAPPDATA%/osu!/Data/r/\*.osr (every play) and 
 
 Nothing needs switching on: the watcher reads the source as the game or platform provides it.
 
-Settings from environment variables:
-
-- `HEAT3D_WT_REPLAY`: the converter's folder (a clone or unpacked release), when it is not installed or beside the watcher
-
 ## How it works
 
 Replays and demos: what a game saves of a match, converted once the match is over.

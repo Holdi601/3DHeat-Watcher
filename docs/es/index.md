@@ -29,8 +29,8 @@ telemetría o memoria compartida que el juego publica para paneles, una integrac
 diario o el registro que escribe el juego, la repetición que guarda tras una partida, las estadísticas que
 guarda Steam, los clips que guarda NVIDIA App. Las grabaciones se quedan en tu equipo. El programa solo
 contacta con dos servicios externos, y únicamente en estos casos: GitHub, para buscar una versión nueva
-(ver [Actualizaciones](../updates.md)), y la API Match-V5 de Riot, y solo si introduces tu propia clave de API
-de Riot (ver [Repeticiones de League of Legends](../game-lol-replays.md)).
+(ver [Actualizaciones](updates.md)), y la API Match-V5 de Riot, y solo si introduces tu propia clave de API
+de Riot (ver [Repeticiones de League of Legends](game-lol-replays.md)).
 
 ![el watcher: lo que publican los juegos, en archivos de tu equipo](../assets/img/es/overview.svg)
 
@@ -44,9 +44,9 @@ de Riot (ver [Repeticiones de League of Legends](../game-lol-replays.md)).
 - **Estadísticas por sesión**: bajas, muertes, vueltas, mejor vuelta, distancia, velocidad máxima, tiempo
   de juego, y las estadísticas propias del juego cuando las guarda.
 
-Lo que da cada juego, y de dónde, está en su propia página dentro de [Juegos](../games.md). Una sola fuente no
+Lo que da cada juego, y de dónde, está en su propia página dentro de [Juegos](games.md). Una sola fuente no
 puede registrarlo todo: los juegos multijugador solo se registran por lo que publican, y el watcher nunca
-lee su memoria (ver [Fuentes y normas](../sources-and-rules.md)).
+lee su memoria (ver [Fuentes y normas](sources-and-rules.md)).
 
 ## Instalación {#install}
 
@@ -63,7 +63,7 @@ pip install -r requirements.txt
 
 Una versión descargada en archivo funciona igual: descomprímela y ejecuta `pip install -r requirements.txt`
 dentro de la carpeta. Los detalles, y los extras que necesitan algunos juegos, están en
-[Instalación y ejecución](../installing-and-running.md).
+[Instalación y ejecución](installing-and-running.md).
 
 ## Inicio rápido {#quick-start}
 
@@ -92,26 +92,26 @@ El visor abre directamente el `heat.parquet` de una sesión, sin configurar nada
 en el archivo). Las repeticiones convertidas se escriben como tablas y documentos de partida junto a él;
 el formato de un archivo por partida del visor está descrito en su página
 [contenedor `.3dheat`](https://holdi601.github.io/3DHeat/container.html), y las columnas de cada tabla en
-[Los datos](../the-data.md).
+[Los datos](the-data.md).
 
 ## La documentación {#the-documentation}
 
 | Página | Qué cubre |
 |---|---|
 | [Antes de empezar](before-you-start.md) | Python, una terminal, marcadores, cómo se ven el éxito y los errores habituales |
-| [Instalación y ejecución](../installing-and-running.md) | requisitos, ejecución en segundo plano, arranque con Windows, el archivo de bloqueo, el registro, cada ajuste y variable de entorno |
-| [Juegos](../games.md) | una página por juego: qué se registra, de dónde, cómo activarlo, cómo funciona, ejes, estadísticas, qué se ha verificado |
-| [Los datos](../the-data.md) | carpetas de sesión, `events.jsonl`, `heat.parquet` y su pie, `meta.json`, `watcher.sqlite`, recuperación tras un fallo, exportación CSV, abrir una sesión en el visor 3DHeat |
-| [Comandos](../commands.md) | cada comando y opción de `python -m heat3d_watch` |
-| [Fuentes y normas](../sources-and-rules.md) | los seis tipos de fuente, las normas multijugador, qué juegos quedan fuera y por qué |
-| [NVIDIA Highlights](../nvidia-highlights.md) | lo que NVIDIA Highlights puede y no puede dar, y cómo un momento destacado obtiene una posición |
-| [Mods de servidor grabador](../server-mods.md) | los mods de servidor de Arma 3 y Arma Reforger que graban misiones completas para el visor |
-| [Lectura de memoria](../memory-reading.md) | perfiles de memoria de un jugador: el formato, las comprobaciones, cómo escribir y verificar uno |
-| [Actualizaciones](../updates.md) | cómo busca el watcher versiones nuevas y se actualiza solo |
-| [Desarrollo](../development.md) | escribir un adaptador: la API, las pruebas, un `verified` honesto, regenerar las páginas de juegos |
-| [Todos los juegos en una tabla](../watcher.md) | cada juego en una tabla, tal como lo imprime `games --markdown`, más los juegos investigados pero aún no construidos |
+| [Instalación y ejecución](installing-and-running.md) | requisitos, ejecución en segundo plano, arranque con Windows, el archivo de bloqueo, el registro, cada ajuste y variable de entorno |
+| [Juegos](games.md) | una página por juego: qué se registra, de dónde, cómo activarlo, cómo funciona, ejes, estadísticas, qué se ha verificado |
+| [Los datos](the-data.md) | carpetas de sesión, `events.jsonl`, `heat.parquet` y su pie, `meta.json`, `watcher.sqlite`, recuperación tras un fallo, exportación CSV, abrir una sesión en el visor 3DHeat |
+| [Comandos](commands.md) | cada comando y opción de `python -m heat3d_watch` |
+| [Fuentes y normas](sources-and-rules.md) | los seis tipos de fuente, las normas multijugador, qué juegos quedan fuera y por qué |
+| [NVIDIA Highlights](nvidia-highlights.md) | lo que NVIDIA Highlights puede y no puede dar, y cómo un momento destacado obtiene una posición |
+| [Mods de servidor grabador](server-mods.md) | los mods de servidor de Arma 3 y Arma Reforger que graban misiones completas para el visor |
+| [Lectura de memoria](memory-reading.md) | perfiles de memoria de un jugador: el formato, las comprobaciones, cómo escribir y verificar uno |
+| [Actualizaciones](updates.md) | cómo busca el watcher versiones nuevas y se actualiza solo |
+| [Desarrollo](development.md) | escribir un adaptador: la API, las pruebas, un `verified` honesto, regenerar las páginas de juegos |
+| [Todos los juegos en una tabla](watcher.md) | cada juego en una tabla, tal como lo imprime `games --markdown`, más los juegos investigados pero aún no construidos |
 | [Referencia de comandos](../cli-reference.md) | el `--help` de cada comando, generado desde el código |
-| [Mantenimiento](../maintaining.md) | la lista de comprobación de cada versión de estas páginas |
+| [Mantenimiento](maintaining.md) | la lista de comprobación de cada versión de estas páginas |
 
 ## Parte de 3DHeat {#part-of-3dheat}
 

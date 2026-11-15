@@ -67,5 +67,5 @@
 <rect x="95.5" y="596" width="18" height="18" rx="3" fill="#e8f0fe" stroke="#3b6fd8"/>
 <text x="119.5" y="610" font-size="14" fill="#3c4043">Schritt</text>
 <rect x="159.5" y="596" width="18" height="18" rx="3" fill="#e6f4ea" stroke="#2e8b57"/>
-<text x="183.5" y="610" font-size="14" fill="#3c4043">geschriebene Dateien</text>
+<text x="183.5" y="610" font-size="14" fill="#3c4043">Ausgabedateien</text>
 </svg>

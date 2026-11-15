@@ -74,4 +74,4 @@ Vous devez voir : `1.0.2 (le numéro de version)`.
 | `No module named ...` | l'étape 4 a été sautée ou lancée dans un autre dossier : `cd` jusqu'au dossier de l'outil et relancez-la. |
 | `pip is not recognized` | utilisez `python -m pip ...` au lieu de `pip ...`. |
 | `No such file or directory` / `can't open file` | le terminal est dans le mauvais dossier, ou le chemin est mal tapé : vérifiez, et mettez les chemins contenant des espaces entre guillemets. |
-| du texte rouge se terminant par une ligne `error:` | lisez la dernière ligne : elle indique ce qui manque. La page [Commandes](../commands.md) liste les messages. |
+| du texte rouge se terminant par une ligne `error:` | lisez la dernière ligne : elle indique ce qui manque. La page [Commandes](commands.md) liste les messages. |

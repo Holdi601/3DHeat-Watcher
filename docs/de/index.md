@@ -19,17 +19,17 @@ oder gekämpft bist, deine Summen pro Spiel - ohne Webseite und ohne das Spiel z
 **Beispiel:** Du fährst in einem Rennspiel eine Runde, während der Watcher läuft; danach hält eine Datei in
 `sessions\<game>\` die Linie fest, die du gefahren bist, und der Viewer zeichnet sie.
 
-Genauer: 3DHeat Watcher ist ein Hintergrundprogramm, das aufzeichnet, was Spiele über das veröffentlichen, was du spielst, -
-wohin du gegangen bist, was wo passiert ist und die Zahlen dahinter - in Dateien auf deinem eigenen Rechner. Die
+Genauer: 3DHeat Watcher ist ein Hintergrundprogramm. Es zeichnet auf, was Spiele über dein Spiel veröffentlichen -
+wohin du gegangen bist, was wo passiert ist und die Zahlen dahinter -, und legt es in Dateien auf deinem eigenen Rechner ab. Die
 Dateien dienen deiner eigenen Statistik sowie den Heatmaps und Routenlinien des 3DHeat-Viewers.
 
 Es läuft unauffällig, bemerkt, welches Spiel du gestartet hast, und liest die eigenen Ausgaben dieses Spiels: einen
 Telemetrie-Port oder Shared Memory, das das Spiel für Dashboards veröffentlicht, eine Spielzustands-Integration, das
 Journal oder Protokoll, das das Spiel schreibt, das Replay, das es nach einem Match speichert, die Statistiken, die Steam
 führt, die Clips, die die NVIDIA App speichert. Aufnahmen bleiben auf deinem Rechner. Das Programm kontaktiert nur zwei
-externe Dienste, und nur in diesen Fällen: GitHub, um nach einem neueren Release zu suchen (siehe [Updates](../updates.md)),
+externe Dienste, und nur in diesen Fällen: GitHub, um nach einem neueren Release zu suchen (siehe [Updates](updates.md)),
 und Riots Match-V5-API, und nur, wenn du deinen eigenen Riot-API-Schlüssel eingibst (siehe
-[League-of-Legends-Replays](../game-lol-replays.md)).
+[League-of-Legends-Replays](game-lol-replays.md)).
 
 ![Der Watcher: was Spiele veröffentlichen, in Dateien auf deinem Rechner](../assets/img/de/overview.svg)
 
@@ -43,9 +43,9 @@ und Riots Match-V5-API, und nur, wenn du deinen eigenen Riot-API-Schlüssel eing
 - **Statistiken pro Sitzung**: Kills, Tode, Runden, beste Runde, Strecke, Höchstgeschwindigkeit, Spielzeit und die
   eigenen Statistiken des Spiels, wo es sie führt.
 
-Was jedes Spiel liefert und woher, steht auf einer eigenen Seite unter [Spiele](../games.md). Eine Quelle kann nicht alles
+Was jedes Spiel liefert und woher, steht auf einer eigenen Seite unter [Spiele](games.md). Eine Quelle kann nicht alles
 aufzeichnen: Mehrspielerspiele werden nur über das aufgezeichnet, was sie veröffentlichen, und der Watcher liest nie
-ihren Speicher (siehe [Quellen und Regeln](../sources-and-rules.md)).
+ihren Speicher (siehe [Quellen und Regeln](sources-and-rules.md)).
 
 ## Installation {#install}
 
@@ -62,7 +62,7 @@ pip install -r requirements.txt
 
 Ein heruntergeladenes Release-Archiv funktioniert genauso: entpacken, dann `pip install -r requirements.txt`
 im Ordner ausführen. Die Einzelheiten und die Zusatzteile, die manche Spiele brauchen, stehen in
-[Installieren und Ausführen](../installing-and-running.md).
+[Installieren und Ausführen](installing-and-running.md).
 
 ## Schnellstart {#quick-start}
 
@@ -90,26 +90,26 @@ Umgebungsvariable `HEAT3D_WATCH_HOME` oder führe `python -m heat3d_watch config
 Der Viewer öffnet die `heat.parquet` einer Sitzung direkt, ohne Einstellung (ihre Achsen und Einheiten stehen in
 der Datei). Umgewandelte Replays werden daneben als Tabellen und Match-Dokumente geschrieben; das Ein-Datei-pro-Match-
 Format des Viewers steht auf seiner Seite zum [`.3dheat`-Container](https://holdi601.github.io/3DHeat/container.html),
-und die Spalten jeder Tabelle in [Die Daten](../the-data.md).
+und die Spalten jeder Tabelle in [Die Daten](the-data.md).
 
 ## Die Dokumentation {#the-documentation}
 
 | Seite | Was sie behandelt |
 |---|---|
 | [Bevor du anfängst](before-you-start.md) | Python, ein Terminal, Platzhalter, wie Erfolg und die häufigen Fehler aussehen |
-| [Installieren und Ausführen](../installing-and-running.md) | Anforderungen, Betrieb im Hintergrund, Start mit Windows, die Sperrdatei, das Protokoll, jede Einstellung und Umgebungsvariable |
-| [Spiele](../games.md) | eine Seite pro Spiel: was aufgezeichnet wird, woher, wie man es einschaltet, wie es funktioniert, Achsen, Statistiken, was geprüft wurde |
-| [Die Daten](../the-data.md) | Sitzungsordner, `events.jsonl`, `heat.parquet` und sein Footer, `meta.json`, `watcher.sqlite`, Wiederherstellung nach einem Absturz, CSV-Export, das Öffnen einer Sitzung im 3DHeat-Viewer |
-| [Befehle](../commands.md) | jeder Befehl und jede Option von `python -m heat3d_watch` |
-| [Quellen und Regeln](../sources-and-rules.md) | die sechs Arten von Quellen, die Mehrspielerregeln, welche Spiele ausgelassen werden und warum |
-| [NVIDIA Highlights](../nvidia-highlights.md) | was NVIDIA Highlights liefern kann und nicht, und wie ein Highlight eine Position bekommt |
-| [Server-Recorder-Mods](../server-mods.md) | die Server-Mods für Arma 3 und Arma Reforger, die ganze Missionen für den Viewer aufzeichnen |
-| [Speicher auslesen](../memory-reading.md) | Einzelspielerprofile des Speichers: das Format, die Prüfungen, wie man eines schreibt und prüft |
-| [Updates](../updates.md) | wie der Watcher nach neuen Releases sucht und sich selbst aktualisiert |
-| [Entwicklung](../development.md) | einen Adapter schreiben: die API, Tests, ein ehrliches `verified`, Neuerzeugen der Spielseiten |
-| [Alle Spiele in einer Tabelle](../watcher.md) | jedes Spiel in einer Tabelle, so wie `games --markdown` sie ausgibt, plus die Spiele, die untersucht, aber noch nicht gebaut sind |
+| [Installieren und Ausführen](installing-and-running.md) | Anforderungen, Betrieb im Hintergrund, Start mit Windows, die Sperrdatei, das Protokoll, jede Einstellung und Umgebungsvariable |
+| [Spiele](games.md) | eine Seite pro Spiel: was aufgezeichnet wird, woher, wie man es einschaltet, wie es funktioniert, Achsen, Statistiken, was geprüft wurde |
+| [Die Daten](the-data.md) | Sitzungsordner, `events.jsonl`, `heat.parquet` und sein Footer, `meta.json`, `watcher.sqlite`, Wiederherstellung nach einem Absturz, CSV-Export, das Öffnen einer Sitzung im 3DHeat-Viewer |
+| [Befehle](commands.md) | jeder Befehl und jede Option von `python -m heat3d_watch` |
+| [Quellen und Regeln](sources-and-rules.md) | die sechs Arten von Quellen, die Mehrspielerregeln, welche Spiele ausgelassen werden und warum |
+| [NVIDIA Highlights](nvidia-highlights.md) | was NVIDIA Highlights liefern kann und nicht, und wie ein Highlight eine Position bekommt |
+| [Server-Recorder-Mods](server-mods.md) | die Server-Mods für Arma 3 und Arma Reforger, die ganze Missionen für den Viewer aufzeichnen |
+| [Speicher auslesen](memory-reading.md) | Einzelspielerprofile des Speichers: das Format, die Prüfungen, wie man eines schreibt und prüft |
+| [Updates](updates.md) | wie der Watcher nach neuen Releases sucht und sich selbst aktualisiert |
+| [Entwicklung](development.md) | einen Adapter schreiben: die API, Tests, ein ehrliches `verified`, Neuerzeugen der Spielseiten |
+| [Alle Spiele in einer Tabelle](watcher.md) | jedes Spiel in einer Tabelle, so wie `games --markdown` sie ausgibt, plus die Spiele, die untersucht, aber noch nicht gebaut sind |
 | [Befehlsreferenz](../cli-reference.md) | das `--help` jedes Befehls, aus dem Code erzeugt |
-| [Pflege](../maintaining.md) | die Release-Checkliste für diese Seiten |
+| [Pflege](maintaining.md) | die Release-Checkliste für diese Seiten |
 
 ## Teil von 3DHeat {#part-of-3dheat}
 

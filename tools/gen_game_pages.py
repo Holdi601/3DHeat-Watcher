@@ -91,7 +91,11 @@ def env_vars(adapter, module, source: str) -> list[str]:
         end = whole.find('id="', at + 4)
         text += whole[at : end if end > 0 else len(whole)]
     names = sorted(set(re.findall(r"HEAT3D_[A-Z0-9_]+", text)) - {"HEAT3D_NO_UPDATE"})
-    return [n for n in names if n in ENV_MEANING]
+    # A converter's folder variable belongs to that game's adapter only, though the shared
+    # replay code that reads it is in every replay adapter's source.
+    owner = {"HEAT3D_WT_REPLAY": "warthunder", "HEAT3D_WOT_REPLAY": "wot", "HEAT3D_WOWS_REPLAY": "wows",
+             "HEAT3D_SQUAD_DEMO": "squad", "HEAT3D_CS2": "cs2"}
+    return [n for n in names if n in ENV_MEANING and (n not in owner or owner[n] in adapter.id)]
 
 
 def own_sections(md: str, adapter, siblings: list) -> str:

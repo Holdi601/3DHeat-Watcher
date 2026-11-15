@@ -94,7 +94,7 @@
   "setup <id> | all": "setup <id> | all",
   "setup: switching a game's own output on": "setup : activer la sortie propre à un jeu",
   "single-player game": "jeu solo",
-  "start": "démarrage",
+  "start": "début",
   "start again": "redémarrer",
   "starts its adapter": "lance son adaptateur",
   "statistics in watcher.sqlite": "statistiques dans watcher.sqlite",
@@ -108,7 +108,7 @@
   "the osu! wiki's format": "le format du wiki d'osu!",
   "totals per game, CSV files": "totaux par jeu, fichiers CSV",
   "units as figures, debrief": "unités en chiffres, débriefing",
-  "update": "mise à jour",
+  "update": "MAJ",
   "watcher.sqlite": "watcher.sqlite",
   "where you see it": "où vous le voyez",
   "would change ...": "modifierait ..."
