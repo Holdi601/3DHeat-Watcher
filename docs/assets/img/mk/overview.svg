@@ -13,7 +13,7 @@
 <text x="142.0" y="257.0" text-anchor="middle" font-size="14" fill="#3c4043">датотеки што ги пишува играта</text>
 <rect x="24" y="288.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
 <text x="142.0" y="314.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">снимки</text>
-<text x="142.0" y="333.0" text-anchor="middle" font-size="14" fill="#3c4043">зачувано по меч</text>
+<text x="142.0" y="333.0" text-anchor="middle" font-size="14" fill="#3c4043">зачувано по натпревар</text>
 <rect x="24" y="364.0" width="236" height="60" rx="8" fill="#f1f3f4" stroke="#80868b" stroke-width="1.5"/>
 <text x="142.0" y="390.0" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">Steam, NVIDIA</text>
 <text x="142.0" y="409.0" text-anchor="middle" font-size="14" fill="#3c4043">статистики, временска линија, нагласени моменти</text>

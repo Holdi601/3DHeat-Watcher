@@ -72,4 +72,4 @@ Ar trebui să vedeți: `1.0.2 (numărul versiunii)`.
 | `No module named ...` | pasul 4 a fost sărit sau a rulat într-un alt dosar: `cd` în dosarul instrumentului și rulați din nou. |
 | `pip is not recognized` | folosiți `python -m pip ...` în loc de `pip ...`. |
 | `No such file or directory` / `can't open file` | terminalul este în alt dosar, sau calea este greșit scrisă: verificați-o și puneți între ghilimele căile cu spații. |
-| text roșu care se termină cu o linie `error:` | citiți ultima linie: spune ce lipsește. Pagina [Comenzi](../commands.md) listează mesajele. |
+| text roșu care se termină cu o linie `error:` | citiți ultima linie: spune ce lipsește. Pagina [Comenzi](commands.md) listează mesajele. |
