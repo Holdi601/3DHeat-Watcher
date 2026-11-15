@@ -212,21 +212,22 @@ convert it again. A replay that fails to convert is logged and skipped.
 | Adapter | Replays |
 |---|---|
 | `cs2-demos` | Counter-Strike 2 demos (`*.dem`), through 3DHeat CS2 |
-| `lol-replays` | League of Legends replays (`*.rofl`) |
-| `osu-replays` | osu! replays (`*.osr`) |
-| `valorant-replays` | VALORANT replays (`*.vrf`) |
+| `lol-replays` | League of Legends replays (`*.rofl`), through the external reader `heat3d-riot-replays` (3DHeat-Ext-Riot) |
+| `osu-replays` | osu! replays (`*.osr`), through the external reader `heat3d-osu-replays` (3DHeat-Ext-Osu) |
+| `valorant-replays` | VALORANT replays (`*.vrf`), through the external reader `heat3d-riot-replays` (3DHeat-Ext-Riot) |
 | `warthunder-replays` | War Thunder replays (`*.wrpl`), through the external converter `heat3d-wt-replay` (exporters/ext/warthunder-replay) |
 | `wot-replays` | World of Tanks replays (`*.wotreplay`), through the external converter `heat3d-wot-replay` (exporters/ext/wot-replay) |
 | `wows-replays` | World of Warships replays (`*.wowsreplay`), through the external converter `heat3d-wows-replay` (exporters/ext/wows-replay) |
-| `dota-replays` | Dota 2 replays (`*.dem`), through gem (`pip install gem-dota`) |
+| `dota-replays` | Dota 2 replays (`*.dem`), through the external reader `heat3d-dota-replay` (3DHeat-Ext-DotaReplay) |
 
 ```text
 osu-replays: converted 12 replay(s); `sessions --game` lists them
 ```
 
 An id that is not one of these prints `no replay adapter '<id>'` with the list and exits with code 2;
-so does a `folder` that does not exist. An adapter that cannot run here (3DHeat CS2 not installed)
-prints why and exits with code 1. IL-2's Tacview tracks are not in the list: that adapter converts every
+so does a `folder` that does not exist. An adapter that cannot run here (3DHeat CS2 or the game's
+reader not installed) prints why - where to get the reader and how to install it - and exits with
+code 1. IL-2's Tacview tracks are not in the list: that adapter converts every
 finished track it finds by itself.
 
 ## dota-replay
@@ -243,7 +244,10 @@ file from `replay<cluster>.valve.net/570/<id>_<salt>.dem.bz2`; it is unpacked as
 serves both bzip2 and Zstandard under that name) and saved as `<match id>.dem`. Without `-o` it goes
 to Dota's own replays folder when Dota 2 is installed - where a running watcher converts it - and to
 `<data>/replays/dota` otherwise. A file already there is kept. `--convert` converts the downloaded
-replays at once, as `replays dota-replays` would, and notes them as seen.
+replays at once, as `replays dota-replays` would, and notes them as seen; it needs the Dota 2 replay
+reader ([3DHeat-Ext-DotaReplay](https://github.com/Holdi601/3DHeat-Ext-DotaReplay), `heat3d-dota-replay`)
+and, without it, says where to get it and exits with code 1 before downloading anything. The download
+itself needs only the watcher.
 
 ```text
 match 9000000000: C:\Program Files (x86)\Steam\steamapps\common\dota 2 beta\game\dota\replays\9000000000.dem

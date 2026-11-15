@@ -12,11 +12,15 @@ After a match of osu!, the watcher turns the replay the game saved into files yo
 
 ## Where it comes from
 
-replays osu! (stable) saves: %LOCALAPPDATA%/osu!/Data/r/\*.osr (every play) and osu!/Replays/\*.osr (exported)
+replays osu! (stable) saves: %LOCALAPPDATA%/osu!/Data/r/\*.osr (every play) and osu!/Replays/\*.osr (exported), read by the external reader `heat3d-osu-replays` (exporters/ext/osu-replays)
 
 ## How to switch it on
 
-Nothing needs switching on: the watcher reads the source as the game or platform provides it.
+play in osu! (stable): it saves every play; install the reader: github.com/Holdi601/3DHeat-Ext-Osu (`heat3d-osu-replays`)
+
+Settings from environment variables:
+
+- `HEAT3D_OSU_REPLAYS`: the reader's folder (a clone or unpacked release), when it is not installed or beside the watcher
 
 ## How it works
 
@@ -37,10 +41,13 @@ existing ones on request.
 #### osu!
 
 osu! (stable) saves every play to `osu!/Data/r/*.osr` and exported ones to
-`osu!/Replays/`. The watcher reads them itself, to the format the osu! wiki
-publishes: the cursor's path and keys every frame, the score line, the life
-bar, the seed and the score id; the file is kept whole beside, part by part,
-in the session's `heat.raw.parquet`.
+`osu!/Replays/`. The watcher does not read them itself: an external reader
+does (3DHeat osu!, github.com/Holdi601/3DHeat-Ext-Osu, `exporters/ext/osu-replays`,
+command `heat3d-osu-replays`), to the format the osu! wiki publishes, found on
+PATH, installed, or beside the watcher; missing, the watcher says once how to
+install it. What it reads becomes the session: the cursor's path and keys
+every frame, the score line, the life bar, the seed and the score id; the file
+is kept whole beside, part by part, in the session's `heat.raw.parquet`.
 
 The same module also serves: [Counter-Strike 2 (replays)](game-cs2-demos), [Dota 2 (replays)](game-dota-replays), [Squad (replays)](game-squad-demos), [War Thunder (replays)](game-warthunder-replays), [World of Tanks (replays)](game-wot-replays), [World of Warships (replays)](game-wows-replays).
 
@@ -94,7 +101,7 @@ The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat
 
 ## Verified
 
-tested on replays built to the published .osr format; osu!lazer keeps replays in its own store and is not read
+the reader is tested on replays built to the published .osr format; this hook by tests with the reader and a stand-in; osu!lazer keeps replays in its own store and is not read
 
 ## Source
 

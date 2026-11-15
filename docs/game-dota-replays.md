@@ -24,9 +24,13 @@ replays Dota 2 saves: &lt;Dota>/game/dota/replays/&lt;match id>.dem (downloaded 
 
 ## How to switch it on
 
-download a match's replay in Dota 2, or fetch a public one: `python -m heat3d_watch dota-replay <match id>`; needs `pip install gem-dota`
+download a match's replay in Dota 2, or fetch a public one: `python -m heat3d_watch dota-replay <match id>`; install the reader: github.com/Holdi601/3DHeat-Ext-DotaReplay (`heat3d-dota-replay`, brings gem-dota)
 
 Type the command in a terminal opened in the watcher's folder (see [Before you start](before-you-start.md)). If it fails, the last line says why; [Installing and running](installing-and-running.md) covers the usual causes.
+
+Settings from environment variables:
+
+- `HEAT3D_DOTA_REPLAY`: the reader's folder (a clone or unpacked release), when it is not installed or beside the watcher
 
 ## How it works
 
@@ -49,9 +53,13 @@ existing ones on request.
 Dota 2 saves the replays a player downloads (a match's details, or Watch >
 Replays) to `<Dota>/game/dota/replays/<match id>.dem`; Valve keeps every public
 match's replay on its servers for a few weeks, and `python -m heat3d_watch
-dota-replay <match id>` fetches one by its id through OpenDota. Each is read with
-gem (github.com/whanyu1212/gem-dota, MIT, `pip install gem-dota`) in a process
-of its own (`heat3d_watch/decoders/dota_replay.py`): every hero's position,
+dota-replay <match id>` fetches one by its id through OpenDota. The watcher
+does not read them itself: an external reader does (3DHeat Dota Replay,
+github.com/Holdi601/3DHeat-Ext-DotaReplay, `exporters/ext/dota-replay`, command
+`heat3d-dota-replay`, reading through gem-dota, MIT), kept apart so that a
+problem with it touches nothing else, and run in a process of its own on each
+new replay when it is on PATH, installed, or beside the watcher; missing, the
+watcher says once how to install it. It writes every hero's position,
 height, health, level, facing, mana, experience, attributes and items 7.5
 times a second while alive, kills and deaths where they happened, towers,
 barracks, Roshan and Tormentors where they fell, every ward where it was

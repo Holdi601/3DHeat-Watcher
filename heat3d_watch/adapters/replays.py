@@ -32,9 +32,13 @@ Dota 2
 Dota 2 saves the replays a player downloads (a match's details, or Watch >
 Replays) to `<Dota>/game/dota/replays/<match id>.dem`; Valve keeps every public
 match's replay on its servers for a few weeks, and `python -m heat3d_watch
-dota-replay <match id>` fetches one by its id through OpenDota. Each is read with
-gem (github.com/whanyu1212/gem-dota, MIT, `pip install gem-dota`) in a process
-of its own (`heat3d_watch/decoders/dota_replay.py`): every hero's position,
+dota-replay <match id>` fetches one by its id through OpenDota. The watcher
+does not read them itself: an external reader does (3DHeat Dota Replay,
+github.com/Holdi601/3DHeat-Ext-DotaReplay, `exporters/ext/dota-replay`, command
+`heat3d-dota-replay`, reading through gem-dota, MIT), kept apart so that a
+problem with it touches nothing else, and run in a process of its own on each
+new replay when it is on PATH, installed, or beside the watcher; missing, the
+watcher says once how to install it. It writes every hero's position,
 height, health, level, facing, mana, experience, attributes and items 7.5
 times a second while alive, kills and deaths where they happened, towers,
 barracks, Roshan and Tormentors where they fell, every ward where it was
@@ -61,10 +65,13 @@ and marked `incomplete` in its summary.
 osu!
 ----
 osu! (stable) saves every play to `osu!/Data/r/*.osr` and exported ones to
-`osu!/Replays/`. The watcher reads them itself, to the format the osu! wiki
-publishes: the cursor's path and keys every frame, the score line, the life
-bar, the seed and the score id; the file is kept whole beside, part by part,
-in the session's `heat.raw.parquet`.
+`osu!/Replays/`. The watcher does not read them itself: an external reader
+does (3DHeat osu!, github.com/Holdi601/3DHeat-Ext-Osu, `exporters/ext/osu-replays`,
+command `heat3d-osu-replays`), to the format the osu! wiki publishes, found on
+PATH, installed, or beside the watcher; missing, the watcher says once how to
+install it. What it reads becomes the session: the cursor's path and keys
+every frame, the score line, the life bar, the seed and the score id; the file
+is kept whole beside, part by part, in the session's `heat.raw.parquet`.
 
 War Thunder
 -----------
@@ -438,6 +445,98 @@ def count_events(session, table: Path) -> None:
         session.positions += len(events)
 
 
+@dataclass
+class ExtReader:
+    """
+    A replay reader kept outside the watcher, in a repository of its own
+    (`3DHeat-Ext-<Name>`, `exporters/ext/<folder>`), so that a licensing or
+    takedown problem with it touches nothing else. It is found as its command
+    on PATH, else run as `python -m <module>` when the package is installed or
+    its source folder is found - in the environment variable `env`, or beside
+    the watcher (`ext/<folder>`, `3DHeat-Ext-<Name>`). Nothing of it is
+    imported here; it is only run, with absolute paths, from the watcher's own
+    working folder.
+    """
+
+    #: What it is called in messages, its command, its package, its folder under ext/, its repository, the variable.
+    title: str
+    command: str
+    module: str
+    folder: str
+    repo: str
+    env: str
+    _said: bool = False
+
+    @property
+    def install(self) -> str:
+        return (f"{self.title} is not installed: get it from https://github.com/Holdi601/{self.repo} and run "
+                f"`python -m pip install -e .` in its folder (it installs the `{self.command}` command); "
+                f"its docs: https://holdi601.github.io/{self.repo}/")
+
+    def source_folder(self) -> Path | None:
+        """The reader's source folder, when it is not installed: `env`, or beside the watcher."""
+        candidates = [Path(os.environ[self.env])] if os.environ.get(self.env) else []
+        candidates += [ROOT.parent / "ext" / self.folder, ROOT.parent / self.repo]
+        return next((c for c in candidates if (c / self.module / "__init__.py").is_file()), None)
+
+    def command_line(self) -> list[str] | None:
+        """How to run the reader: its command on PATH, else `python -m <module>`; None when it is nowhere."""
+        import importlib.util
+        import shutil
+
+        found = shutil.which(self.command)
+        if found:
+            return [found]
+        if self.source_folder() is not None or importlib.util.find_spec(self.module) is not None:
+            return [sys.executable, "-m", self.module]
+        return None
+
+    def missing(self, adapter: str) -> str | None:
+        """Why the reader cannot run here, said once in the log; None when it can."""
+        if self.command_line() is not None:
+            return None
+        if not self._said:
+            log.info("%s: %s", adapter, self.install)
+            self._said = True
+        return self.install
+
+    def run(self, args: list[str], timeout: float = 3600) -> subprocess.CompletedProcess:
+        """The reader run with `args`, in a process of its own; its output captured."""
+        command = self.command_line()
+        if command is None:
+            raise FileNotFoundError(self.install)
+        env = {**os.environ, "HEAT3D_NO_UPDATE": "1", "PYTHONIOENCODING": "utf-8"}
+        folder = self.source_folder()
+        if folder is not None and command[0] == sys.executable:
+            env["PYTHONPATH"] = os.pathsep.join(p for p in (str(folder), env.get("PYTHONPATH", "")) if p)
+        return subprocess.run([*command, *args], capture_output=True, text=True, encoding="utf-8", errors="replace",
+                              timeout=timeout, env=env)
+
+    def read(self, path: Path) -> dict:
+        """
+        One replay read by the reader (`convert <replay> -o <folder>`): the
+        `<file>.json` it writes, which holds everything it read. A replay it
+        cannot read raises, as reading it here did.
+        """
+        import tempfile
+
+        with tempfile.TemporaryDirectory(prefix="heat3d-") as tmp:
+            out = self.run(["convert", str(Path(path).resolve()), "-o", tmp])
+            doc = Path(tmp) / f"{Path(path).name}.json"
+            if out.returncode != 0 or not doc.is_file():
+                said = (out.stdout + out.stderr).strip()[-2000:]
+                raise ValueError(f"{self.command} could not read {Path(path).name}: {said or f'exit {out.returncode}'}")
+            return json.loads(doc.read_text(encoding="utf-8"))
+
+
+#: The Dota 2 replay reader (exporters/ext/dota-replay, repository 3DHeat-Ext-DotaReplay).
+DOTA_REPLAY = ExtReader("the Dota 2 replay reader", "heat3d-dota-replay", "heat3d_ext_dota_replay", "dota-replay",
+                        "3DHeat-Ext-DotaReplay", "HEAT3D_DOTA_REPLAY")
+#: The osu! replay reader (exporters/ext/osu-replays, repository 3DHeat-Ext-Osu).
+OSU_REPLAY = ExtReader("the osu! replay reader", "heat3d-osu-replays", "heat3d_ext_osu", "osu-replays",
+                       "3DHeat-Ext-Osu", "HEAT3D_OSU_REPLAYS")
+
+
 def dota_replay_folders() -> list[Path]:
     """`<Dota>/game/dota/replays` in every Steam library Dota 2 is installed in."""
     out = []
@@ -450,30 +549,34 @@ def dota_replay_folders() -> list[Path]:
 
 @dataclass
 class DotaReplays(ReplayAdapter):
+    """
+    Dota 2's .dem replays, read by the external reader `heat3d-dota-replay`
+    (3DHeat-Ext-DotaReplay; `HEAT3D_DOTA_REPLAY` may name its source folder)
+    into the session's `dota/` folder.
+    """
+
     def folders(self, ctx: Context) -> list[Path]:
         return dota_replay_folders() + super().folders(ctx)
 
     def missing(self) -> str | None:
-        try:
-            import gem  # noqa: F401
-        except ImportError:
-            return "pip install gem-dota (the Dota 2 replay parser, MIT)"
-        return None
+        why = DOTA_REPLAY.missing(self.id)
+        command = DOTA_REPLAY.command_line()
+        if why is None and command and command[0] == sys.executable:
+            # Run with this Python: the parser it reads through must be here too.
+            import importlib.util
+
+            if importlib.util.find_spec("gem") is None:
+                return "pip install gem-dota (the Dota 2 replay parser, MIT), which heat3d-dota-replay reads through"
+        return why
 
     def convert(self, path: Path, ctx: Context) -> None:
+        if DOTA_REPLAY.command_line() is None:
+            raise FileNotFoundError(DOTA_REPLAY.install)
         session = ctx.open(self, when=path.stat().st_mtime, meta={"replay": str(path)})
         try:
-            # A process of its own: a long match's parse takes several hundred megabytes, given back when it ends.
-            out = subprocess.run(
-                [sys.executable, "-m", "heat3d_watch.decoders.dota_replay", str(path), "-o", str(session.folder / "dota")],
-                cwd=ROOT,
-                capture_output=True,
-                text=True,
-                encoding="utf-8",
-                errors="replace",
-                timeout=3600,
-                env={**os.environ, "HEAT3D_NO_UPDATE": "1", "PYTHONIOENCODING": "utf-8"},
-            )
+            # The external reader, in a process of its own: a long match's parse takes several hundred megabytes,
+            # given back when it ends.
+            out = DOTA_REPLAY.run(["convert", str(path.resolve()), "-o", str((session.folder / "dota").resolve())])
             session.meta["converter"] = (out.stdout + out.stderr).strip()[-2000:]
             summaries = sorted((session.folder / "dota").glob("*.match.json"))
             if out.returncode != 0 or not summaries:
@@ -528,155 +631,6 @@ def record_dota_match(session, match: dict, me: set[str]) -> None:
             session.stat("won", 1 if match["winner"] == p.get("team") else 0)
 
 
-#: Seconds from 0001-01-01 (the start of .NET's ticks) to the Unix epoch.
-_TICKS_TO_UNIX = 62135596800
-
-
-def _osr_string(buf: bytes, at: int) -> tuple[str, int]:
-    """An .osr string: 0x00 for none, or 0x0b, a ULEB128 length and that many UTF-8 bytes."""
-    kind = buf[at]
-    at += 1
-    if kind == 0x00:
-        return "", at
-    if kind != 0x0B:
-        raise ValueError(f"not an osu! string at {at - 1}")
-    length = shift = 0
-    while True:
-        b = buf[at]
-        at += 1
-        length |= (b & 0x7F) << shift
-        shift += 7
-        if not b & 0x80:
-            break
-    return buf[at : at + length].decode("utf-8", errors="replace"), at + length
-
-
-#: osu!'s game modes, by the replay's mode byte.
-OSU_MODES = {0: "osu", 1: "taiko", 2: "catch", 3: "mania"}
-#: Mod bits, as the osu! wiki lists them (https://osu.ppy.sh/wiki/en/Client/File_formats/osr_(file_format)).
-OSU_MODS = (
-    "NoFail", "Easy", "TouchDevice", "Hidden", "HardRock", "SuddenDeath", "DoubleTime", "Relax", "HalfTime",
-    "Nightcore", "Flashlight", "Autoplay", "SpunOut", "Autopilot", "Perfect", "Key4", "Key5", "Key6", "Key7", "Key8",
-    "FadeIn", "Random", "Cinema", "TargetPractice", "Key9", "KeyCoop", "Key1", "Key3", "Key2", "ScoreV2", "Mirror",
-)  # fmt: skip
-#: The first version whose online score id is 8 bytes long (4 before).
-_OSR_LONG_SCORE_ID = 20140721
-#: The frame that carries the replay's random seed instead of a cursor position.
-_OSR_SEED = "-12345"
-
-
-def osu_mods(mods: int) -> list[str]:
-    """A replay's mod bits by name; a bit the wiki does not list as `bit<n>`."""
-    return [OSU_MODS[i] if i < len(OSU_MODS) else f"bit{i}" for i in range(32) if mods >> i & 1]
-
-
-def parse_osr(buf: bytes) -> dict:
-    """
-    An osu! replay (.osr), per the file format on the osu! wiki
-    (https://osu.ppy.sh/wiki/en/Client/File_formats/osr_(file_format)):
-    the header, and the cursor frames - milliseconds since the previous frame,
-    x 0..512, y 0..384 on the playfield, and the keys held.
-
-    Everything else the file holds is read too: the beatmap's and the
-    replay's MD5, the life bar graph (milliseconds, life 0..1), the random
-    seed (the frame `-12345`), the online score id, Target Practice's
-    accuracy. `sections` names the file's parts by their byte ranges (the
-    header, the compressed frames, the score id, the mod data, and whatever
-    follows that the format does not describe), so each can be kept whole.
-    """
-    import lzma
-    import struct as st
-
-    at = 0
-    mode, version = st.unpack_from("<Bi", buf, at)
-    at += 5
-    beatmap, at = _osr_string(buf, at)
-    player, at = _osr_string(buf, at)
-    replay_hash, at = _osr_string(buf, at)
-    n300, n100, n50, geki, katu, miss = st.unpack_from("<6h", buf, at)
-    at += 12
-    score, combo, perfect, mods = st.unpack_from("<ihBi", buf, at)
-    at += 11
-    life_text, at = _osr_string(buf, at)
-    ticks, length = st.unpack_from("<qi", buf, at)
-    at += 12
-    sections = [("header", 0, at)]
-    data = lzma.decompress(buf[at : at + length]) if length > 0 else b""
-    sections.append(("replay_data", at, at + max(0, length)))
-    at += max(0, length)
-    frames = []
-    seed = None
-    unread = 0
-    t = 0
-    for part in data.decode("ascii", errors="replace").split(","):
-        fields = part.split("|")
-        if len(fields) != 4:
-            unread += bool(part.strip())
-            continue
-        w, x, y, z = fields
-        if w == _OSR_SEED:
-            seed = int(float(z))  # the RNG seed, not a frame
-            continue
-        try:
-            t += int(w)
-            frames.append((t, float(x), float(y), int(float(z))))
-        except ValueError:
-            unread += 1
-    score_id = None
-    size = 8 if version >= _OSR_LONG_SCORE_ID else 4
-    if at + size <= len(buf):
-        (score_id,) = st.unpack_from("<q" if size == 8 else "<i", buf, at)
-        sections.append(("score_id", at, at + size))
-        at += size
-    mod_info = None
-    if mods & (1 << 23) and at + 8 <= len(buf):
-        # Target Practice: the total accuracy of all hits.
-        (mod_info,) = st.unpack_from("<d", buf, at)
-        sections.append(("mod_info", at, at + 8))
-        at += 8
-    if at < len(buf):
-        sections.append(("trailing", at, len(buf)))
-    life = []
-    for pair in life_text.split(","):
-        # `ms|life` in the files the game writes; the wiki writes the pair as `u/v`.
-        ms, _, value = pair.partition("|" if "|" in pair else "/")
-        try:
-            life.append((int(ms), float(value)))
-        except ValueError:
-            pass
-    hits = n300 + n100 + n50 + miss
-    return {
-        "mode": mode,
-        "version": version,
-        # The beatmap's MD5 (the format names the beatmap only by its hash).
-        "beatmap": beatmap,
-        "player": player,
-        "replay_md5": replay_hash,
-        "count_300": n300,
-        "count_100": n100,
-        "count_50": n50,
-        "count_geki": geki,
-        "count_katu": katu,
-        "misses": miss,
-        "score": score,
-        "max_combo": combo,
-        "perfect": perfect,
-        "mods": mods,
-        "life_text": life_text,
-        "life": life,
-        "played_at": ticks / 1e7 - _TICKS_TO_UNIX if ticks > 0 else None,
-        "ticks": ticks,
-        # Standard mode's accuracy; the other modes weigh their judgements differently.
-        "accuracy": (300 * n300 + 100 * n100 + 50 * n50) / (300 * hits) if mode == 0 and hits else None,
-        "frames": frames,
-        "seed": seed,
-        "frames_unread": unread,
-        "score_id": score_id,
-        "mod_info": mod_info,
-        "sections": sections,
-    }
-
-
 #: What of each part of an .osr goes into the rows and meta.json (the parts are kept whole besides).
 _OSR_HEADER = ("mode", "version", "beatmap", "player", "replay_md5", "count_300", "count_100", "count_50", "count_geki",
                "count_katu", "misses", "score", "max_combo", "perfect", "mods", "life_text", "ticks")
@@ -684,13 +638,23 @@ _OSR_HEADER = ("mode", "version", "beatmap", "player", "replay_md5", "count_300"
 
 @dataclass
 class OsuReplays(ReplayAdapter):
+    """
+    osu!'s .osr replays, read by the external reader `heat3d-osu-replays`
+    (3DHeat-Ext-Osu; `HEAT3D_OSU_REPLAYS` may name its source folder); what it
+    reads is recorded here as the session.
+    """
+
     def folders(self, ctx: Context) -> list[Path]:
         base = Path(os.environ.get("LOCALAPPDATA", "")) / "osu!"
         return [base / "Data" / "r", base / "Replays"] + super().folders(ctx)
 
+    def missing(self) -> str | None:
+        return OSU_REPLAY.missing(self.id)
+
     def convert(self, path: Path, ctx: Context) -> None:
+        # Read by the external reader (heat3d-osu-replays); the bytes here only to keep the file's parts whole.
+        r = OSU_REPLAY.read(path)
         buf = path.read_bytes()
-        r = parse_osr(buf)
         session = ctx.open(self, when=r["played_at"] or path.stat().st_mtime, meta={"replay": str(path)})
         try:
             play = r["beatmap"] or path.stem
@@ -711,8 +675,8 @@ class OsuReplays(ReplayAdapter):
             header = {k: r[k] for k in _OSR_HEADER}
             session.meta["osu"] = {
                 **{k: v for k, v in header.items() if k != "life_text"},
-                "modeName": OSU_MODES.get(r["mode"], str(r["mode"])),
-                "modNames": osu_mods(r["mods"]),
+                "modeName": r["modeName"],
+                "modNames": r["modNames"],
                 "lifePoints": len(r["life"]),
                 "frames": len(frames),
                 "framesUnread": r["frames_unread"],
@@ -764,7 +728,8 @@ ADAPTERS = [
             "the score and every player's line; the signed-in player's as statistics",
             "everything else the replay holds, kept whole beside the table: every frame and network message, every entity property change, every string table entry",
         ),
-        enable="download a match's replay in Dota 2, or fetch a public one: `python -m heat3d_watch dota-replay <match id>`; needs `pip install gem-dota`",
+        enable="download a match's replay in Dota 2, or fetch a public one: `python -m heat3d_watch dota-replay <match id>`; "
+        "install the reader: github.com/Holdi601/3DHeat-Ext-DotaReplay (`heat3d-dota-replay`, brings gem-dota)",
         # As the converter's table says in its footer, and the Dota game-state adapter: Source 2 world units.
         axes=Axes(up="z", flip_y=True, units="Dota world units (Hammer units; the map is about 16400 across)"),
         verified="checked on a public match's replay: kills, deaths, assists, level, last hits and denies match the game's own "
@@ -826,14 +791,18 @@ ADAPTERS = [
         id="osu-replays",
         game="osu!",
         patterns=("*.osr",),
-        source="replays osu! (stable) saves: %LOCALAPPDATA%/osu!/Data/r/*.osr (every play) and osu!/Replays/*.osr (exported)",
+        source="replays osu! (stable) saves: %LOCALAPPDATA%/osu!/Data/r/*.osr (every play) and osu!/Replays/*.osr "
+        "(exported), read by the external reader `heat3d-osu-replays` (exporters/ext/osu-replays)",
         records=(
             "the cursor's path over the playfield (x 0..512, y 0..384) and the keys held, every frame",
             "score, combo, 300s/100s/50s/gekis/katus/misses, accuracy, mods, full combo",
             "the life bar over the play, the beatmap's and the replay's hashes, the random seed, the online score id",
         ),
+        enable="play in osu! (stable): it saves every play; install the reader: github.com/Holdi601/3DHeat-Ext-Osu "
+        "(`heat3d-osu-replays`)",
         axes=Axes(up="y", flip_z=True, units="osu! pixels (playfield 512 x 384)"),
-        verified="tested on replays built to the published .osr format; osu!lazer keeps replays in its own store and is not read",
+        verified="the reader is tested on replays built to the published .osr format; this hook by tests with the reader "
+        "and a stand-in; osu!lazer keeps replays in its own store and is not read",
         multiplayer=True,
         completeness={
             "read": (

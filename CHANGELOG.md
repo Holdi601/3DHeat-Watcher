@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- Dota 2, osu!, League of Legends and VALORANT replays are read by tools of their own, so a licensing or
+  takedown problem with one touches nothing else: [3DHeat-Ext-DotaReplay](https://github.com/Holdi601/3DHeat-Ext-DotaReplay)
+  (`heat3d-dota-replay`, which brings gem-dota), [3DHeat-Ext-Osu](https://github.com/Holdi601/3DHeat-Ext-Osu)
+  (`heat3d-osu-replays`) and [3DHeat-Ext-Riot](https://github.com/Holdi601/3DHeat-Ext-Riot)
+  (`heat3d-riot-replays`). The `dota-replays`, `osu-replays`, `lol-replays` and `valorant-replays` adapters,
+  `replays <adapter>` and `dota-replay --convert` run them when they are on PATH, installed, or beside the
+  watcher (`HEAT3D_DOTA_REPLAY`, `HEAT3D_OSU_REPLAYS`, `HEAT3D_RIOT_REPLAYS` name a source folder), and
+  record the same sessions as before; without one they say where to get it. The `dota-replay` download and
+  the League timeline from Riot's API stay in the watcher. gem-dota leaves the watcher's optional
+  requirements ([Replays](docs/commands.md#replays)).
 - `dota-map`: the Dota 2 map from your own install as a 3D level for the viewer - ground, cliffs,
   water, trees and buildings in the Dota replay tables' frame. The reader of the game's files lives in
   its own tool, [3DHeat-Ext-Dota](https://github.com/Holdi601/3DHeat-Ext-Dota) (`heat3d-dota-maps`);

@@ -16,7 +16,11 @@ replays VALORANT saves: %LOCALAPPDATA%/VALORANT/Saved/Demos/\*.vrf (only the par
 
 ## How to switch it on
 
-save a replay in VALORANT (career > match > download replay)
+save a replay in VALORANT (career > match > download replay) and install the reader: github.com/Holdi601/3DHeat-Ext-Riot (`heat3d-riot-replays`)
+
+Settings from environment variables:
+
+- `HEAT3D_RIOT_REPLAYS`: the reader's folder (a clone or unpacked release), when it is not installed or beside the watcher
 
 ## How it works
 
@@ -26,15 +30,22 @@ Both games save replays to the player's disk, and both protect what is inside:
 the moment-to-moment game data is obfuscated, and differently with every patch,
 to keep it from being used to cheat. Getting through that means taking the
 game's own code apart, which Riot's terms forbid (Terms of Service 3.1 and 7.1)
-- so it is not done here. What each file carries in the open is read, and
-the rest is kept as it is: every part of the file, whole, in the session's
-`heat.raw.parquet` (3DHeat's converter rule, docs/converters.md in the
-viewer's repository), counted in meta.json's `selfCheck.completeness`.
+- so it is not done anywhere in 3DHeat. What each file carries in the open
+is read, and the rest is kept as it is: every part of the file, whole, in the
+session's `heat.raw.parquet` (3DHeat's converter rule, docs/converters.md in
+the viewer's repository), counted in meta.json's `selfCheck.completeness`.
+
+The watcher does not read the files itself: an external reader does (3DHeat
+Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`,
+command `heat3d-riot-replays`), kept apart so that a problem with Riot's terms
+touches only that reader. Found on PATH, installed, or beside the watcher, it
+reads each new replay; missing, the watcher says once how to install it. What
+it reads, the watcher records into the session; the Match-V5 timeline below is
+fetched by the watcher itself, as it is not in the file.
 
 #### Valorant (.vrf)
 
-`%LOCALAPPDATA%\VALORANT\Saved\Demos\*.vrf`, an Unreal Engine local replay
-(layout from vrfkit, Apache-2.0, and ValorantReplayParser, MIT). In the open:
+`%LOCALAPPDATA%\VALORANT\Saved\Demos\*.vrf`, an Unreal Engine local replay. In the open:
 the replay's info block (length, network version, changelist, its name, when it
 was recorded, whether it is compressed or encrypted), the map, the match id and
 the agents picked (in the header), and the server's own event timeline - kills
@@ -95,7 +106,7 @@ The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat
 
 ## Verified
 
-built from the container layout documented by vrfkit (Apache-2.0); untested on a real replay, none was available - checks before reading and skips what does not match
+the reader (heat3d-riot-replays) is built from the container layout documented by vrfkit (Apache-2.0); untested on a real replay, none was available - checks before reading and skips what does not match
 
 ## Source
 

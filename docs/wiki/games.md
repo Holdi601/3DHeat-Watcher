@@ -40,7 +40,7 @@ Kinds: `telemetry`, `gsi`, `log`, `replay` and `platform` - see [Sources and rul
 | [Microsoft Flight Simulator 2024 (live data)](game-msfs2024) | telemetry | yes | SimConnect through the player's own SimConnect.dll (the sim folder, or `%MSFS2024_SDK%\SimConnect` `SDK\lib`) |
 | [Minecraft (log files)](game-minecraft) | log | yes | `%APPDATA%\.minecraft\logs\latest.log` (followed), `saves\<world>\stats\<uuid>.json` and `saves\<world>\playerdata\<uuid>.dat` / level.dat (gzip NBT), read when the game saves them |
 | [NVIDIA highlights (platform)](game-nvidia-highlights) | platform | borrowed | `%LOCALAPPDATA%\NVIDIA` `Corporation\NVIDIA` `Overlay\UGCTracker.json`, GallerySettings.json, `Highlights\<game>\config.json`; clips in the capture folder `(%USERPROFILE%\Videos\NVIDIA\<Game>\*.mp4`) and `<temp>\Highlights\<game>`; `%LOCALAPPDATA%\NVIDIA` `Corporation\GfeSDK\<exe>_<pid>.log` |
-| [osu! (replays)](game-osu-replays) | replay | yes | replays osu! (stable) saves: `%LOCALAPPDATA%/osu!/Data/r/*.osr` (every play) and `osu!/Replays/*.osr` (exported) |
+| [osu! (replays)](game-osu-replays) | replay | yes | replays osu! (stable) saves: `%LOCALAPPDATA%/osu!/Data/r/*.osr` (every play) and `osu!/Replays/*.osr` (exported), read by the external reader `heat3d-osu-replays` (exporters/ext/osu-replays) |
 | [Path of Exile (log files)](game-poe) | log | no | `<install>\logs\Client.txt` of Path of Exile or Path of Exile 2 (followed; the install folder is the running executable's) |
 | [Project CARS 2 (live data)](game-project-cars-2) | telemetry | yes | shared memory $pcars2$ (SMS SharedMemory.h) |
 | [RaceRoom Racing Experience (live data)](game-raceroom) | telemetry | yes | shared memory $R3E (Sector3's r3e.h, version 3) |

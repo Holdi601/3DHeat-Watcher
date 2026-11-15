@@ -44,12 +44,12 @@
     "s": "heat3d_cs2 (installed beside)"
    },
    {
-    "t": "Dota reader library",
-    "s": "gem (pip install gem-dota)"
+    "t": "heat3d-dota-replay",
+    "s": "external reader, opt-in (gem-dota)"
    },
    {
-    "t": "read by the watcher",
-    "s": "the osu! wiki's format"
+    "t": "heat3d-osu-replays",
+    "s": "external reader, opt-in"
    },
    {
     "t": "heat3d-wt-replay",
@@ -64,8 +64,8 @@
     "s": "external converter, opt-in"
    },
    {
-    "t": "read by the watcher",
-    "s": "only what the file shows openly"
+    "t": "heat3d-riot-replays",
+    "s": "external reader: only the open parts"
    }
   ],
   [

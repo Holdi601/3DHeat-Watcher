@@ -23,7 +23,11 @@ replays the League client saves: %USERPROFILE%/Documents/League of Legends/Repla
 
 ## How to switch it on
 
-save a replay in the League client (match history > download); for positions set riot_api_key and riot_platform with `config --set`
+save a replay in the League client (match history > download) and install the reader: github.com/Holdi601/3DHeat-Ext-Riot (`heat3d-riot-replays`); for positions set riot_api_key and riot_platform with `config --set`
+
+Settings from environment variables:
+
+- `HEAT3D_RIOT_REPLAYS`: the reader's folder (a clone or unpacked release), when it is not installed or beside the watcher
 
 ## How it works
 
@@ -33,10 +37,18 @@ Both games save replays to the player's disk, and both protect what is inside:
 the moment-to-moment game data is obfuscated, and differently with every patch,
 to keep it from being used to cheat. Getting through that means taking the
 game's own code apart, which Riot's terms forbid (Terms of Service 3.1 and 7.1)
-- so it is not done here. What each file carries in the open is read, and
-the rest is kept as it is: every part of the file, whole, in the session's
-`heat.raw.parquet` (3DHeat's converter rule, docs/converters.md in the
-viewer's repository), counted in meta.json's `selfCheck.completeness`.
+- so it is not done anywhere in 3DHeat. What each file carries in the open
+is read, and the rest is kept as it is: every part of the file, whole, in the
+session's `heat.raw.parquet` (3DHeat's converter rule, docs/converters.md in
+the viewer's repository), counted in meta.json's `selfCheck.completeness`.
+
+The watcher does not read the files itself: an external reader does (3DHeat
+Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`,
+command `heat3d-riot-replays`), kept apart so that a problem with Riot's terms
+touches only that reader. Found on PATH, installed, or beside the watcher, it
+reads each new replay; missing, the watcher says once how to install it. What
+it reads, the watcher records into the session; the Match-V5 timeline below is
+fetched by the watcher itself, as it is not in the file.
 
 #### League of Legends (.rofl)
 
@@ -51,8 +63,7 @@ game totals (over a hundred per player); all of them become the player's
 by a Riot engineer, ReplayBook issue 299). ROFL1's payload header (game id,
 length, chunk and keyframe counts, the chunk key's length) and its table of
 chunks (id, type, length, next chunk, offset) are in the open and read; the
-chunks themselves are encrypted, and kept whole unread. Layouts from
-roflxd.cs (MIT).
+chunks themselves are encrypted, and kept whole unread.
 
 Positions do not come from the file. With a Riot developer key of the player's
 own (`riot_api_key` in the settings; a personal key is meant for exactly this,
@@ -116,7 +127,7 @@ The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat
 
 ## Verified
 
-the metadata reader tested on files built to the layouts in roflxd.cs (MIT); the timeline on Match-V5's documented JSON; no real replay was available to check against
+the reader (heat3d-riot-replays) tested on files built to the layouts in roflxd.cs (MIT); the timeline on Match-V5's documented JSON; no real replay was available to check against
 
 ## Source
 

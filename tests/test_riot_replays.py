@@ -1,4 +1,8 @@
-"""League of Legends and Valorant replays: only what each file carries in the open."""
+"""League of Legends and Valorant replays: only what each file carries in the open.
+
+The files are read by the external reader (heat3d-riot-replays, exporters/ext/riot-replays), tested there; here the
+sessions made of its reading, and the timeline. Where the reader is not beside the watcher or installed, the
+tests that run it are skipped."""
 
 from __future__ import annotations
 
@@ -10,14 +14,13 @@ import pyarrow.parquet as pq
 import pytest
 
 from heat3d_watch.adapters.base import Context
-from heat3d_watch.adapters.riot_replays import (
-    ADAPTERS,
-    VRF_MAGIC,
-    match_id,
-    read_rofl,
-    read_vrf,
-)
+from heat3d_watch.adapters.riot_replays import ADAPTERS, RIOT_REPLAY, match_id
 from heat3d_watch.config import Settings
+
+#: An Unreal replay's first four bytes.
+VRF_MAGIC = 0x43F4EFDD
+needs_reader = pytest.mark.skipif(RIOT_REPLAY.command_line() is None,
+                                  reason="the League and VALORANT replay reader (3DHeat-Ext-Riot) is not installed")
 
 PLAYERS = [
     {"RIOT_ID_GAME_NAME": "Someone", "RIOT_ID_TAG_LINE": "EUW", "PUUID": "p1", "SKIN": "Ahri", "TEAM": "100",
@@ -48,17 +51,6 @@ def rofl2() -> bytes:
     return head + b"\x28\xb5\x2f\xfd" + bytes(64) + meta + struct.pack("<i", len(meta))
 
 
-def test_both_league_containers_give_the_box_score():
-    for buf, version in ((rofl1(), "14.9.580.2108"), (rofl2(), "15.3.659.6012")):
-        r = read_rofl(buf)
-        assert r["version"] == version
-        assert r["length_ms"] == 1800000
-        assert [p["SKIN"] for p in r["players"]] == ["Ahri", "Zed"]
-    assert read_rofl(rofl1())["game_id"] == 7123456789
-    with pytest.raises(ValueError):
-        read_rofl(b"not a replay" + bytes(300))
-
-
 def test_the_match_id_comes_from_the_client_s_file_name(tmp_path):
     assert match_id(tmp_path / "EUW1-7123456789.rofl", {}, "NA1") == "EUW1_7123456789"
     assert match_id(tmp_path / "renamed.rofl", {"game_id": 42}, "eun1") == "EUN1_42"
@@ -72,6 +64,7 @@ class _Response(io.BytesIO):
         return False
 
 
+@needs_reader
 def test_a_league_replay_becomes_a_session_and_the_timeline_gives_positions(tmp_path):
     a = next(x for x in ADAPTERS if x.id == "lol-replays")
     timeline = {
@@ -115,6 +108,7 @@ def test_a_league_replay_becomes_a_session_and_the_timeline_gives_positions(tmp_
     assert meta["player"] == "Someone#EUW"
 
 
+@needs_reader
 def test_without_a_key_nothing_is_fetched(tmp_path):
     a = next(x for x in ADAPTERS if x.id == "lol-replays")
     a.opener = lambda *args, **kw: pytest.fail("fetched without a key")
@@ -153,18 +147,8 @@ def vrf(encrypted: int = 0) -> bytes:
     return info + chunks
 
 
+@needs_reader
 def test_a_valorant_replay_gives_its_open_facts_and_timeline(tmp_path):
-    r = read_vrf(vrf())
-    assert r["map"] == "/Game/Maps/Ascent/Ascent"
-    assert r["match_id"] == "0a1b2c3d-1111-2222-3333-444455556666"
-    assert r["agents"] == ["add6443a-41bd-e414-f6ad-e58d267f4e95"]
-    assert [e["event"] for e in r["events"]] == ["round_start", "kill", "spike_planted", "round_start"]
-    kill = r["events"][1]
-    assert kill["words"] == [11, 22] and kill["seconds"] == pytest.approx(31.5)
-    # An encrypted replay is walked and kept whole, nothing read inside.
-    locked = read_vrf(vrf(encrypted=1))
-    assert locked["encrypted"] and locked["events"] == [] and locked["map"] is None
-    assert [x[0] for x in locked["sections"]] == ["info", "header", "event", "event", "event", "event", "replay_data"]
     a = next(x for x in ADAPTERS if x.id == "valorant-replays")
     replay = tmp_path / "match.vrf"
     replay.write_bytes(vrf())
@@ -172,6 +156,12 @@ def test_a_valorant_replay_gives_its_open_facts_and_timeline(tmp_path):
     a.convert(replay, Context(Settings(data=str(data)), data))
     meta = json.loads(next((data / "sessions").rglob("meta.json")).read_text(encoding="utf-8"))
     assert meta["stats"]["rounds"] == 2 and meta["stats"]["kills_in_match"] == 1 and meta["stats"]["map"] == "Ascent"
+    assert meta["match_id"] == "0a1b2c3d-1111-2222-3333-444455556666"
+    assert meta["agents"] == ["add6443a-41bd-e414-f6ad-e58d267f4e95"]
+    t = [json.loads(line) for line in next((data / "sessions").rglob("events.jsonl")).read_text(
+        encoding="utf-8").splitlines()]
+    kill = next(e for e in t if e["event"] == "kill")
+    assert kill["words"] == [11, 22] and kill["time"] == pytest.approx(31.5) and kill["victim"] == "netguid 22"
 
 
 def _raw(data):
@@ -180,6 +170,7 @@ def _raw(data):
     return meta, pq.read_table(folder / "heat.raw.parquet").to_pylist()
 
 
+@needs_reader
 def test_every_part_of_a_league_replay_is_kept_and_the_timeline_whole(tmp_path):
     """The file's parts tile it; every timeline event and frame is a row and kept; the self-check loses nothing."""
     import struct as st
@@ -194,13 +185,6 @@ def test_every_part_of_a_league_replay_is_kept_and_the_timeline_whole(tmp_path):
     data = b"KEYFR" + b"CHK"
     lengths = st.pack("<HIIIIII", 288, 0, meta_off, len(meta), ph_off, len(ph), payload_off)
     buf = b"RIOT\x00\x00" + bytes(256) + lengths + meta + ph + table + data + b"??"
-    r = read_rofl(buf)
-    kinds = [x[0] for x in r["sections"]]
-    assert kinds == ["magic", "signature", "lengths", "metadata", "payload_header", "chunk_header", "chunk_header",
-                     "keyframe", "chunk", "unknown"]
-    assert r["payload"]["keyframe_interval"] == 60000 and r["payload"]["encryption_key"] == "QUJD"
-    assert r["chunks"] == [{"id": 1, "type": "keyframe", "length": 5, "next_chunk_id": 0, "offset": 0},
-                           {"id": 1, "type": "chunk", "length": 3, "next_chunk_id": 2, "offset": 5}]
 
     a = next(x for x in ADAPTERS if x.id == "lol-replays")
     timeline = {
@@ -248,13 +232,9 @@ def test_every_part_of_a_league_replay_is_kept_and_the_timeline_whole(tmp_path):
     assert any(e["event"] == "ward_placed" and e["player"] == "Other#EUW" for e in results)
 
 
+@needs_reader
 def test_every_chunk_of_a_valorant_replay_is_kept(tmp_path):
     buf = vrf() + b"\x09\x00\x00\x00\xff\x00\x00\x00cut"  # a chunk cut short at the end
-    r = read_vrf(buf)
-    assert [x[0] for x in r["sections"]] == ["info", "header", "event roundStarted", "event characterDeath",
-                                              "event spikePlanted", "event roundStarted", "replay_data", "trailing"]
-    assert r["info"]["network_version"] == 21 and r["info"]["name"] == "Valorant replay"
-    assert r["events"][1]["id"] == "ev-32500" and r["events"][1]["time_ms"] == 32500
     a = next(x for x in ADAPTERS if x.id == "valorant-replays")
     replay = tmp_path / "match.vrf"
     replay.write_bytes(buf)
@@ -267,3 +247,16 @@ def test_every_chunk_of_a_valorant_replay_is_kept(tmp_path):
     assert c["types"]["event characterDeath"]["partial"] == 1 and c["types"]["trailing"]["raw"] == 1
     assert b"".join(row["payload"] for row in sorted(raw, key=lambda row: row["offset"])) == buf
     assert meta["vrf"]["changelist"] == 999
+    assert meta["vrf"]["network_version"] == 21 and meta["vrf"]["name"] == "Valorant replay"
+
+
+def test_without_the_reader_it_says_where_to_get_it(tmp_path, monkeypatch):
+    monkeypatch.setattr(RIOT_REPLAY, "command_line", lambda: None)
+    for a in ADAPTERS:
+        assert "3DHeat-Ext-Riot" in a.missing() and "heat3d-riot-replays" in a.missing()
+    replay = tmp_path / "match.vrf"
+    replay.write_bytes(vrf())
+    data = tmp_path / "data"
+    with pytest.raises(FileNotFoundError, match="pip install -e"):
+        ADAPTERS[1].convert(replay, Context(Settings(data=str(data)), data))
+    assert not (data / "sessions").exists()

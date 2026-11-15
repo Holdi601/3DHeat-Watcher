@@ -11,7 +11,7 @@ from pathlib import Path
 import pytest
 
 from heat3d_watch.adapters.base import Context
-from heat3d_watch.adapters.replays import SETTLE_SECONDS, ReplayAdapter, record_match
+from heat3d_watch.adapters.replays import OSU_REPLAY, SETTLE_SECONDS, ReplayAdapter, record_match
 from heat3d_watch.config import Settings
 from heat3d_watch.session import Session
 
@@ -146,18 +146,13 @@ def _osr(frames: str, player: str = "someone", mods: int = 72) -> bytes:
     )
 
 
-def test_an_osu_replay_is_read_to_the_published_format(tmp_path):
-    from heat3d_watch.adapters.replays import parse_osr
-
-    r = parse_osr(_osr("0|256|192|0,16|260|190|1,17|270.5|180.25|5,-12345|0|0|99"))
-    assert r["player"] == "someone" and r["score"] == 1234567 and r["max_combo"] == 250
-    assert (r["count_300"], r["count_100"], r["count_50"], r["misses"]) == (90, 8, 2, 1)
-    assert r["mods"] == 72 and r["played_at"] == pytest.approx(1_700_000_000)
-    # Times accumulate; the seed frame is not a frame.
-    assert r["frames"] == [(0, 256.0, 192.0, 0), (16, 260.0, 190.0, 1), (33, 270.5, 180.25, 5)]
-    assert r["accuracy"] == pytest.approx((300 * 90 + 100 * 8 + 50 * 2) / (300 * 101))
+#: The osu! replays are read by the external reader (heat3d-osu-replays, exporters/ext/osu-replays); where it is not
+#: beside the watcher or installed, the tests that run it are skipped and the stand-in below still checks the hook.
+needs_reader = pytest.mark.skipif(OSU_REPLAY.command_line() is None,
+                                  reason="the osu! replay reader (3DHeat-Ext-Osu) is not installed")
 
 
+@needs_reader
 def test_an_osu_replay_becomes_a_session_with_its_path(tmp_path):
     from heat3d_watch.adapters.replays import ADAPTERS
 
@@ -177,24 +172,17 @@ def test_an_osu_replay_becomes_a_session_with_its_path(tmp_path):
     assert t.column("time").to_pylist() == [0.0, 0.016, 0.032]
 
 
+@needs_reader
 def test_everything_an_osu_replay_holds_is_read_or_kept(tmp_path):
     """Every part of the file kept whole in heat.raw.parquet, the self-check with nothing lost - lazer's extra too."""
     import struct
 
     import pyarrow.parquet as pq
 
-    from heat3d_watch.adapters.replays import ADAPTERS, parse_osr
+    from heat3d_watch.adapters.replays import ADAPTERS
 
     # Target Practice on (bit 23): its accuracy follows the score id; then bytes the format does not describe.
     buf = _osr("0|10|20|0,16|30|40|1,-12345|0|0|4242,bad", mods=72 | 1 << 23) + struct.pack("<d", 0.97) + b"lazer"
-    r = parse_osr(buf)
-    assert (r["seed"], r["frames_unread"], r["score_id"], r["mod_info"]) == (4242, 1, 0, 0.97)
-    assert r["replay_md5"] == "r" * 32 and r["life"] == [(0, 1.0), (1000, 0.9)]
-    assert [s[0] for s in r["sections"]] == ["header", "replay_data", "score_id", "mod_info", "trailing"]
-    assert r["sections"][-1][1:] == (len(buf) - 5, len(buf)) and r["sections"][0][1] == 0
-    # The parts tile the file: nothing between or after them is left out.
-    assert all(a[2] == b[1] for a, b in zip(r["sections"], r["sections"][1:])) and r["sections"][-1][2] == len(buf)
-
     a = next(x for x in ADAPTERS if x.id == "osu-replays")
     replay = tmp_path / "play.osr"
     replay.write_bytes(buf)
@@ -215,6 +203,7 @@ def test_everything_an_osu_replay_holds_is_read_or_kept(tmp_path):
     assert json.loads(next(row for row in raw if row["type"] == "header")["text"])["player"] == "someone"
 
 
+@needs_reader
 def test_the_replays_command_converts_what_is_already_on_disk_once(tmp_path, capsys):
     from heat3d_watch import cli
     from heat3d_watch.adapters.replays import ADAPTERS
@@ -235,3 +224,57 @@ def test_the_replays_command_converts_what_is_already_on_disk_once(tmp_path, cap
     assert cli.main(["replays", "cs2-gsi"]) == 2  # not a replay adapter
     assert cli.main(["replays", "osu-replays", str(tmp_path / "nowhere")]) == 2
     assert a.convert_existing(Context(Settings(data=str(data)), data), folder / "none") == 0
+
+
+def test_osu_without_the_reader_says_where_to_get_it(tmp_path, monkeypatch, capsys):
+    from heat3d_watch import cli
+    from heat3d_watch.adapters import replays
+
+    monkeypatch.setattr(replays.OSU_REPLAY, "command_line", lambda: None)
+    a = next(x for x in replays.ADAPTERS if x.id == "osu-replays")
+    assert "3DHeat-Ext-Osu" in a.missing() and "heat3d-osu-replays" in a.missing()
+    folder = tmp_path / "r"
+    folder.mkdir()
+    (folder / "play.osr").write_bytes(_osr("0|10|20|0"))
+    assert cli.main(["replays", "osu-replays", str(folder)]) == 1
+    assert "3DHeat-Ext-Osu" in capsys.readouterr().err
+
+
+def test_a_stand_in_reader_s_reading_becomes_the_session(tmp_path, monkeypatch):
+    """The hook alone: a stand-in plays heat3d-osu-replays, writing `<file>.json` where `-o` says."""
+    import sys
+
+    from heat3d_watch.adapters import replays
+
+    reading = {
+        "format": "heat3d-osu-replay/1", "file": "play.osr", "mode": 0, "version": 20240101, "beatmap": "b" * 32,
+        "player": "someone", "replay_md5": "r" * 32, "count_300": 90, "count_100": 8, "count_50": 2, "count_geki": 30,
+        "count_katu": 4, "misses": 1, "score": 1234567, "max_combo": 250, "perfect": 0, "mods": 72,
+        "life_text": "0/1,1000/0.9", "life": [[0, 1.0], [1000, 0.9]], "played_at": 1_700_000_000.0, "ticks": 1,
+        "accuracy": 0.9, "frames": [[0, 10.0, 20.0, 0], [16, 30.0, 40.0, 1]], "seed": 7, "frames_unread": 0,
+        "score_id": 0, "mod_info": None, "sections": [["header", 0, 3], ["replay_data", 3, 5]],
+        "modeName": "osu", "modNames": ["Hidden", "DoubleTime"],
+    }
+    script = tmp_path / "stand_in.py"
+    script.write_text(
+        "import json, pathlib, sys\n"
+        "args = sys.argv[1:]\n"
+        "assert args[0] == 'convert' and pathlib.Path(args[1]).is_absolute()\n"
+        "out = pathlib.Path(args[args.index('-o') + 1])\n"
+        f"(out / (pathlib.Path(args[1]).name + '.json')).write_text(json.dumps({reading!r}))\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(replays.OSU_REPLAY, "command_line", lambda: [sys.executable, str(script)])
+    a = next(x for x in replays.ADAPTERS if x.id == "osu-replays")
+    replay = tmp_path / "play.osr"
+    replay.write_bytes(b"12345")
+    ctx = Context(Settings(data=str(tmp_path / "data")), tmp_path / "data")
+    a.convert(replay, ctx)
+    meta = json.loads(next((tmp_path / "data" / "sessions").rglob("meta.json")).read_text(encoding="utf-8"))
+    assert meta["events"] == {"session_start": 1, "finish": 1, "life": 2}
+    assert meta["stats"]["score"] == 1234567 and meta["stats"]["accuracy"] == 0.9
+    assert meta["osu"]["modNames"] == ["Hidden", "DoubleTime"] and meta["osu"]["seed"] == 7
+    # A file the reader refuses: no session, and the reason raised.
+    monkeypatch.setattr(replays.OSU_REPLAY, "command_line", lambda: [sys.executable, "-c", "raise SystemExit(2)"])
+    with pytest.raises(ValueError, match="could not read"):
+        a.convert(replay, ctx)
