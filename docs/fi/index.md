@@ -3,7 +3,7 @@ title: "Etusivu"
 nav_order: 1
 lang: "fi"
 source: index.md
-source_hash: "ffd13e9431c3"
+source_hash: "d74a4eae2685"
 nav_exclude: true
 search_exclude: true
 permalink: /fi/
@@ -27,8 +27,8 @@ Se toimii hiljaa, huomaa, mitä peliä aloitit, ja lukee sen pelin omia tulostei
 jaetun muistin, jonka peli julkaisee kojelautoja varten, pelitilaintegraation, pelin kirjoittaman lokin
 tai päiväkirjan, ottelun jälkeen tallentamansa toiston, Steamin keräämät tilastot, NVIDIA Appin tallentamat
 klipit. Tallenteet pysyvät koneellasi. Ohjelma ottaa yhteyttä ulkopuolisiin palveluihin vain näissä
-tapauksissa: GitHub, uuden julkaisun etsimiseksi (katso [Päivitykset](../updates.md)), ja Riotin Match-V5-rajapinta,
-ja vain jos syötät oman Riot-API-avaimesi (katso [League of Legends -toistot](../game-lol-replays.md)).
+tapauksissa: GitHub, uuden julkaisun etsimiseksi (katso [Päivitykset](updates.md)), ja Riotin Match-V5-rajapinta,
+ja vain jos syötät oman Riot-API-avaimesi (katso [League of Legends -toistot](game-lol-replays.md)).
 
 ![watcher: mitä pelit julkaisevat, tiedostoiksi koneellesi](../assets/img/fi/overview.svg)
 
@@ -42,9 +42,9 @@ ja vain jos syötät oman Riot-API-avaimesi (katso [League of Legends -toistot](
 - **Tilastot sessiota kohden**: tapot, kuolemat, kierrokset, paras kierros, matka, huippunopeus, pelitunnit
   ja pelin omat tilastot siellä, missä peli niitä pitää.
 
-Mitä kukin peli antaa ja mistä, on omalla sivullaan kohdassa [Pelit](../games.md). Yksi lähde ei voi tallentaa
+Mitä kukin peli antaa ja mistä, on omalla sivullaan kohdassa [Pelit](games.md). Yksi lähde ei voi tallentaa
 kaikkea: moninpelejä tallennetaan vain niiden julkaisemien tietojen kautta, eikä watcher lue niiden muistia
-koskaan (katso [Lähteet ja säännöt](../sources-and-rules.md)).
+koskaan (katso [Lähteet ja säännöt](sources-and-rules.md)).
 
 ## Asennus {#install}
 
@@ -61,7 +61,7 @@ pip install -r requirements.txt
 
 Julkaisuarkisto toimii samalla tavalla: pura se ja aja `pip install -r requirements.txt`
 kansiossa. Yksityiskohdat ja joidenkin pelien tarvitsemat lisät ovat kohdassa
-[Asennus ja ajo](../installing-and-running.md).
+[Asennus ja ajo](installing-and-running.md).
 
 ## Pikaohje {#quick-start}
 
@@ -89,26 +89,26 @@ Kaikki kirjoitetaan kansioon `%LOCALAPPDATA%\3DHeat\Watcher`. Jos haluat toisen 
 Katselin avaa session `heat.parquet`-tiedoston suoraan, ilman asetuksia (sen akselit ja yksiköt ovat tiedostossa).
 Muunnetut toistot kirjoitetaan taulukoina ja ottelun asiakirjoina sen viereen. Katselimen oma yhden ottelun
 yhden tiedoston muoto on kuvattu sen [`.3dheat`-säiliö](https://holdi601.github.io/3DHeat/container.html)-sivulla,
-ja jokaisen taulukon sarakkeet kohdassa [Tiedot](../the-data.md).
+ja jokaisen taulukon sarakkeet kohdassa [Tiedot](the-data.md).
 
 ## Dokumentaatio {#the-documentation}
 
 | Sivu | Mitä se kattaa |
 |---|---|
 | [Ennen aloittamista](before-you-start.md) | Python, pääte, paikanpitäjät, miltä onnistuminen ja yleiset virheet näyttävät |
-| [Asennus ja ajo](../installing-and-running.md) | vaatimukset, ajo taustalla, käynnistys Windowsin mukana, lukitustiedosto, loki, jokainen asetus ja ympäristömuuttuja |
-| [Pelit](../games.md) | sivu per peli: mitä tallennetaan, mistä, miten se kytketään päälle, miten se toimii, akselit, tilastot, mitä on todennettu |
-| [Tiedot](../the-data.md) | sessiokansiot, `events.jsonl`, `heat.parquet` ja sen alatunniste, `meta.json`, `watcher.sqlite`, palautuminen kaatumisen jälkeen, CSV-vienti, session avaaminen 3DHeat-katselimessa |
-| [Komennot](../commands.md) | jokainen komento ja asetus `python -m heat3d_watch` -komennolle |
-| [Lähteet ja säännöt](../sources-and-rules.md) | kuusi lähdetyyppiä, moninpelisäännöt, mitkä pelit jätetään pois ja miksi |
-| [NVIDIA Highlights](../nvidia-highlights.md) | mitä NVIDIA Highlights voi ja ei voi toimittaa, ja miten kohokohta saa sijainnin |
-| [Palvelinrekorderimodit](../server-mods.md) | Arma 3 ja Arma Reforger -palvelinmodit, jotka tallentavat koko tehtävät katselimelle |
-| [Muistin lukeminen](../memory-reading.md) | yksinpelin muistiprofiilit: muoto, tarkistukset, miten profiili kirjoitetaan ja varmistetaan |
-| [Päivitykset](../updates.md) | miten watcher etsii uusia julkaisuja ja päivittää itsensä |
-| [Kehitys](../development.md) | adapterin kirjoittaminen: rajapinta, testit, rehellinen `verified`, pelisivujen uudelleenluonti |
-| [Kaikki pelit yhdessä taulukossa](../watcher.md) | jokainen peli yhdessä taulukossa, kuten `games --markdown` sen tulostaa, sekä tutkitut mutta vielä rakentamattomat pelit |
+| [Asennus ja ajo](installing-and-running.md) | vaatimukset, ajo taustalla, käynnistys Windowsin mukana, lukitustiedosto, loki, jokainen asetus ja ympäristömuuttuja |
+| [Pelit](games.md) | sivu per peli: mitä tallennetaan, mistä, miten se kytketään päälle, miten se toimii, akselit, tilastot, mitä on todennettu |
+| [Tiedot](the-data.md) | sessiokansiot, `events.jsonl`, `heat.parquet` ja sen alatunniste, `meta.json`, `watcher.sqlite`, palautuminen kaatumisen jälkeen, CSV-vienti, session avaaminen 3DHeat-katselimessa |
+| [Komennot](commands.md) | jokainen komento ja asetus `python -m heat3d_watch` -komennolle |
+| [Lähteet ja säännöt](sources-and-rules.md) | kuusi lähdetyyppiä, moninpelisäännöt, mitkä pelit jätetään pois ja miksi |
+| [NVIDIA Highlights](nvidia-highlights.md) | mitä NVIDIA Highlights voi ja ei voi toimittaa, ja miten kohokohta saa sijainnin |
+| [Palvelinrekorderimodit](server-mods.md) | Arma 3 ja Arma Reforger -palvelinmodit, jotka tallentavat koko tehtävät katselimelle |
+| [Muistin lukeminen](memory-reading.md) | yksinpelin muistiprofiilit: muoto, tarkistukset, miten profiili kirjoitetaan ja varmistetaan |
+| [Päivitykset](updates.md) | miten watcher etsii uusia julkaisuja ja päivittää itsensä |
+| [Kehitys](development.md) | adapterin kirjoittaminen: rajapinta, testit, rehellinen `verified`, pelisivujen uudelleenluonti |
+| [Kaikki pelit yhdessä taulukossa](watcher.md) | jokainen peli yhdessä taulukossa, kuten `games --markdown` sen tulostaa, sekä tutkitut mutta vielä rakentamattomat pelit |
 | [Komentoviite](../cli-reference.md) | jokaisen komennon `--help`, luotu koodista |
-| [Ylläpito](../maintaining.md) | julkaisun tarkistuslista näille sivuille |
+| [Ylläpito](maintaining.md) | julkaisun tarkistuslista näille sivuille |
 
 ## Osa 3DHeatia {#part-of-3dheat}
 
@@ -129,6 +129,15 @@ CS2-demojen muuntamiseen). Jokainen on oma projektinsa, omilla julkaisuillaan ja
 | [Ext-Squad](https://github.com/Holdi601/3DHeat-Ext-Squad) | Squad-palvelindemot taulukoiksi ja ottelutiedostoiksi | [sivusto](https://holdi601.github.io/3DHeat-Ext-Squad/) |
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | DCS World -kartat 3D-malleiksi | [sivusto](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | IL-2 Sturmovik -kartat 3D-malleiksi | [sivusto](https://holdi601.github.io/3DHeat-Ext-IL2/) |
+| [Ext-Dota](https://github.com/Holdi601/3DHeat-Ext-Dota) | Dota 2 -kartta omasta asennuksestasi 3D-kenttänä | [sivusto](https://holdi601.github.io/3DHeat-Ext-Dota/) |
+| [Ext-DotaReplay](https://github.com/Holdi601/3DHeat-Ext-DotaReplay) | Dota 2 -tallenteet | [sivusto](https://holdi601.github.io/3DHeat-Ext-DotaReplay/) |
+| [Ext-Riot](https://github.com/Holdi601/3DHeat-Ext-Riot) | League of Legends- ja VALORANT-tallenteet (mitä ne sisältävät salaamattomana) | [sivusto](https://holdi601.github.io/3DHeat-Ext-Riot/) |
+| [Ext-Forza](https://github.com/Holdi601/3DHeat-Ext-Forza) | Forza-radat, kisat ja autot omasta asennuksestasi | [sivusto](https://holdi601.github.io/3DHeat-Ext-Forza/) |
+| [Ext-Battlefield](https://github.com/Holdi601/3DHeat-Ext-Battlefield) | Battlefield-kentät (Frostbite) 3D-kenttinä | [sivusto](https://holdi601.github.io/3DHeat-Ext-Battlefield/) |
+| [Ext-BeamNG](https://github.com/Holdi601/3DHeat-Ext-BeamNG) | BeamNG.drive -radat | [sivusto](https://holdi601.github.io/3DHeat-Ext-BeamNG/) |
+| [Ext-ACRally](https://github.com/Holdi601/3DHeat-Ext-ACRally) | Assetto Corsa Rally -osuudet radoiksi | [sivusto](https://holdi601.github.io/3DHeat-Ext-ACRally/) |
+| [Ext-Reforger](https://github.com/Holdi601/3DHeat-Ext-Reforger) | Arma Reforger -maailmat (Enfusion) 3D-kenttinä | [sivusto](https://holdi601.github.io/3DHeat-Ext-Reforger/) |
+| [Ext-R6](https://github.com/Holdi601/3DHeat-Ext-R6) | Rainbow Six Siege -ottelutallenteet | [sivusto](https://holdi601.github.io/3DHeat-Ext-R6/) |
 
 Lisenssi: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Käyttämiensä kolmansien
 osapuolten pakettien lisenssit ja lukemiensa pelien vaatimukset on lueteltu tiedostossa

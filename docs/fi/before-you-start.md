@@ -68,4 +68,4 @@ Pitäisi näkyä: `1.0.2 (versionumero)`.
 | `No module named ...` | vaihe 4 jäi väliin tai ajettiin toisessa kansiossa: `cd` työkalun kansioon ja aja se uudelleen. |
 | `pip is not recognized` | käytä `python -m pip ...` komennon `pip ...` sijaan. |
 | `No such file or directory` / `can't open file` | pääte on väärässä kansiossa tai polku on kirjoitettu väärin: tarkista se, ja laita välilyöntejä sisältävät polut lainausmerkkeihin. |
-| punaista tekstiä, joka päättyy `error:`-riviin | lue viimeinen rivi: se kertoo, mitä puuttuu. [Komennot](../commands.md)-sivu luettelee viestit. |
+| punaista tekstiä, joka päättyy `error:`-riviin | lue viimeinen rivi: se kertoo, mitä puuttuu. [Komennot](commands.md)-sivu luettelee viestit. |

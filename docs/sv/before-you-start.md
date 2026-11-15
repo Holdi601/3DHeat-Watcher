@@ -74,4 +74,4 @@ Du bör se: `1.0.2 (versionsnumret)`.
 | `No module named ...` | steg 4 hoppades över eller kördes i en annan mapp: `cd` till verktygets mapp och kör igen. |
 | `pip is not recognized` | använd `python -m pip ...` i stället för `pip ...`. |
 | `No such file or directory` / `can't open file` | terminalen står i fel mapp, eller sökvägen är felstavad: kontrollera den, och sätt sökvägar med mellanslag inom citattecken. |
-| röd text som slutar med en `error:`-rad | läs sista raden: den säger vad som saknas. Sidan [Kommandon](../commands.md) listar meddelandena. |
+| röd text som slutar med en `error:`-rad | läs sista raden: den säger vad som saknas. Sidan [Kommandon](commands.md) listar meddelandena. |

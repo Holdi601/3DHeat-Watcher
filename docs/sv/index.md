@@ -27,8 +27,8 @@ Det körs tyst, märker vilket spel du startade, och läser det spelets egna utd
 eller delat minne som spelet publicerar för instrumentpaneler, en spel-tillståndsintegration, journalen eller loggen
 spelet skriver, repriset det sparar efter en match, statistiken Steam för, klippen
 NVIDIA-appen sparar. Inspelningar stannar på din dator. Programmet kontaktar bara två externa tjänster, och bara i
-dessa fall: GitHub, för att leta efter en nyare utgåva (se [Uppdateringar](../updates.md)), och Riots Match-V5 API,
-och bara om du anger din egen Riot API-nyckel (se [League of Legends-repriser](../game-lol-replays.md)).
+dessa fall: GitHub, för att leta efter en nyare utgåva (se [Uppdateringar](updates.md)), och Riots Match-V5 API,
+och bara om du anger din egen Riot API-nyckel (se [League of Legends-repriser](game-lol-replays.md)).
 
 ![watchern: vad spel publicerar, in i filer på din dator](../assets/img/sv/overview.svg)
 
@@ -41,9 +41,9 @@ och bara om du anger din egen Riot API-nyckel (se [League of Legends-repriser](.
 - **Statistik per session**: dödanden, dödsfall, varv, bästa varv, sträcka, högsta fart, speltid, och spelets egen
   statistik där den förs.
 
-Vad varje spel ger, och varifrån, står på dess egen sida under [Spel](../games.md). En källa kan inte
+Vad varje spel ger, och varifrån, står på dess egen sida under [Spel](games.md). En källa kan inte
 spela in allt: multiplayerspel spelas bara in genom vad de publicerar, och watchern läser aldrig deras minne
-(se [Källor och regler](../sources-and-rules.md)).
+(se [Källor och regler](sources-and-rules.md)).
 
 ## Installation {#install}
 
@@ -60,7 +60,7 @@ pip install -r requirements.txt
 
 En nedladdad utgivningsarkiv fungerar likadant: packa upp den, kör sedan `pip install -r requirements.txt`
 i mappen. Detaljerna, och de tillägg vissa spel behöver, finns i
-[Installera och köra](../installing-and-running.md).
+[Installera och köra](installing-and-running.md).
 
 ## Snabbstart {#quick-start}
 
@@ -87,26 +87,26 @@ miljövariabeln `HEAT3D_WATCH_HOME` eller kör `python -m heat3d_watch config --
 Visaren öppnar en sessions `heat.parquet` direkt, utan att du behöver ställa in något (dess axlar och enheter finns i
 filen). Konverterade repriser skrivs som tabeller och matchdokument bredvid den; visarens egna
 format med en fil per match beskrivs på dess sida [`.3dheat`-behållaren](https://holdi601.github.io/3DHeat/container.html),
-och varje tabells kolumner i [Datan](../the-data.md).
+och varje tabells kolumner i [Datan](the-data.md).
 
 ## Dokumentationen {#the-documentation}
 
 | Sida | Vad den täcker |
 |---|---|
 | [Innan du börjar](before-you-start.md) | Python, en terminal, platshållare, hur lyckat och de vanliga felen ser ut |
-| [Installera och köra](../installing-and-running.md) | krav, körning i bakgrunden, start med Windows, låsfilen, loggen, alla inställningar och miljövariabler |
-| [Spel](../games.md) | en sida per spel: vad som spelas in, varifrån, hur man slår på det, hur det fungerar, axlar, statistik, vad som verifierats |
-| [Datan](../the-data.md) | sessionsmappar, `events.jsonl`, `heat.parquet` och dess sidfot, `meta.json`, `watcher.sqlite`, återställning efter krasch, CSV-export, öppna en session i 3DHeat-visaren |
-| [Kommandon](../commands.md) | varje kommando och alternativ i `python -m heat3d_watch` |
-| [Källor och regler](../sources-and-rules.md) | de sex sorternas källor, reglerna för multiplayer, vilka spel som utelämnas och varför |
-| [NVIDIA Highlights](../nvidia-highlights.md) | vad NVIDIA Highlights kan och inte kan leverera, och hur en höjdpunkt får en position |
-| [Server-inspelningsmoder](../server-mods.md) | Arma 3- och Arma Reforger-servermoderna som spelar in hela uppdrag för visaren |
-| [Läsa minne](../memory-reading.md) | enspelarprofiler för minne: formatet, kontrollerna, hur man skriver och verifierar en |
-| [Uppdateringar](../updates.md) | hur watchern söker efter nya utgåvor och uppdaterar sig själv |
-| [Utveckling](../development.md) | att skriva en adapter: API:et, tester, en ärlig `verified`, att generera spelsidorna på nytt |
-| [Alla spel i en tabell](../watcher.md) | varje spel i en tabell, som `games --markdown` skriver ut, plus spelen som undersökts men ännu inte byggts |
+| [Installera och köra](installing-and-running.md) | krav, körning i bakgrunden, start med Windows, låsfilen, loggen, alla inställningar och miljövariabler |
+| [Spel](games.md) | en sida per spel: vad som spelas in, varifrån, hur man slår på det, hur det fungerar, axlar, statistik, vad som verifierats |
+| [Datan](the-data.md) | sessionsmappar, `events.jsonl`, `heat.parquet` och dess sidfot, `meta.json`, `watcher.sqlite`, återställning efter krasch, CSV-export, öppna en session i 3DHeat-visaren |
+| [Kommandon](commands.md) | varje kommando och alternativ i `python -m heat3d_watch` |
+| [Källor och regler](sources-and-rules.md) | de sex sorternas källor, reglerna för multiplayer, vilka spel som utelämnas och varför |
+| [NVIDIA Highlights](nvidia-highlights.md) | vad NVIDIA Highlights kan och inte kan leverera, och hur en höjdpunkt får en position |
+| [Server-inspelningsmoder](server-mods.md) | Arma 3- och Arma Reforger-servermoderna som spelar in hela uppdrag för visaren |
+| [Läsa minne](memory-reading.md) | enspelarprofiler för minne: formatet, kontrollerna, hur man skriver och verifierar en |
+| [Uppdateringar](updates.md) | hur watchern söker efter nya utgåvor och uppdaterar sig själv |
+| [Utveckling](development.md) | att skriva en adapter: API:et, tester, en ärlig `verified`, att generera spelsidorna på nytt |
+| [Alla spel i en tabell](watcher.md) | varje spel i en tabell, som `games --markdown` skriver ut, plus spelen som undersökts men ännu inte byggts |
 | [Kommandoreferens](../cli-reference.md) | varje kommandos `--help`, genererat från koden |
-| [Underhålla](../maintaining.md) | utgivningschecklistan för de här sidorna |
+| [Underhålla](maintaining.md) | utgivningschecklistan för de här sidorna |
 
 ## En del av 3DHeat {#part-of-3dheat}
 
