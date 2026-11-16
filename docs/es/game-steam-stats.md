@@ -1,9 +1,9 @@
 ---
 title: "Estadísticas de Steam (plataforma)"
-nav_order: 43
+nav_order: 42
 lang: "es"
 source: game-steam-stats.md
-source_hash: "24fa6512bd6d"
+source_hash: "09ecf3611c02"
 nav_exclude: true
 search_exclude: true
 ---
@@ -56,8 +56,8 @@ El mismo módulo sirve también a: [Destacados de NVIDIA (plataforma)](game-nvid
 
 | | |
 |---|---|
-| Posiciones registradas | no |
-| Eje vertical | `y` |
+| Posiciones grabadas | no |
+| Eje hacia arriba | `y` |
 | Unidades | metros |
 | Reflejado para el visor | ninguno |
 | Escala de unidades (`scale`: el visor multiplica las posiciones por ella) | 1 |

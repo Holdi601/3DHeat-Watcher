@@ -3,13 +3,13 @@ title: Juegos
 nav_order: 4
 lang: "es"
 source: games.md
-source_hash: "dcee7fc45a5b"
+source_hash: "c601550fbb4e"
 nav_exclude: true
 search_exclude: true
 ---
 # Juegos {#games}
 
-El watcher conoce 50 fuentes en 45 juegos y plataformas. Cada una tiene su propia página, generada a partir de su adaptador: qué graba, de dónde lo toma, cómo activarla, cómo funciona, sus ejes y lo que está verificado.
+El watcher conoce 49 fuentes en 44 juegos y plataformas. Cada una tiene su propia página, generada a partir de su adaptador: qué graba, de dónde lo toma, cómo activarla, cómo funciona, sus ejes y lo que está verificado.
 
 Tipos: `telemetry`, `gsi`, `log`, `replay` y `platform`; véase [Fuentes y reglas](sources-and-rules.md). Posiciones: *sí* cuando el adaptador escribe filas con un lugar, *prestada* cuando toma el lugar de otra grabación del mismo juego (véase [NVIDIA Highlights](nvidia-highlights.md)), *no* cuando la fuente no tiene ninguno. Los perfiles de memoria no se listan: ninguno se incluye, y cada jugador escribe el suyo (véase [Lectura de memoria](memory-reading.md)).
 
@@ -26,7 +26,7 @@ Tipos: `telemetry`, `gsi`, `log`, `replay` y `platform`; véase [Fuentes y regla
 | [Counter-Strike 2 (estado de juego)](game-cs2-gsi.md) | gsi | sí | Game State Integration: envíos HTTP (POST) a 127.0.0.1:3311 configurados por `<CS2>\game\csgo\cfg\gamestate_integration_heat3d.cfg` |
 | [DCS World (datos en vivo)](game-dcs.md) | telemetry | sí | el hook del watcher `%USERPROFILE%\Saved` `Games\DCS*\Scripts\Hooks\heat3d-watch.lua`, líneas UDP a 127.0.0.1:41993 |
 | [DiRT Rally 2.0 (datos en vivo)](game-dirt-rally-2.md) | telemetry | sí | UDP 127.0.0.1:20777, extradata=3 `(Documents\My` `Games\DiRT` Rally `2.0\hardwaresettings\hardware_settings_config.xml`); mientras otra aplicación tenga el 20777, el watcher deja el puerto a esa aplicación |
-| [Dota 2 (repeticiones)](game-dota-replays.md) | replay | sí | repeticiones que guarda Dota 2: `<Dota>/game/dota/replays/<match` id>.dem (descargadas en el cliente, o con `dota-replay <id de partida>`) |
+| [Dota 2 (repeticiones)](game-dota-replays.md) | replay | sí | repeticiones que guarda Dota 2: `<Dota>/game/dota/replays/<id de partida>.dem` (descargadas en el cliente, o con `dota-replay <id de partida>`) |
 | [Dota 2 (estado de juego)](game-dota2-gsi.md) | gsi | sí | Game State Integration: envíos HTTP (POST) a 127.0.0.1:3312 configurados por `<Dota>\game\dota\cfg\gamestate_integration\gamestate_integration_heat3d.cfg` |
 | [EA SPORTS F1 23 (datos en vivo)](game-f1-23.md) | telemetry | sí | telemetría UDP 127.0.0.1:20777 `(Documents\My` `Games\F1` `23\hardwaresettings\hardware_settings_config.xml`) |
 | [EA SPORTS F1 24 (datos en vivo)](game-f1-24.md) | telemetry | sí | telemetría UDP 127.0.0.1:20777 `(Documents\My` `Games\F1` `24\hardwaresettings\hardware_settings_config.xml`) |
@@ -49,21 +49,20 @@ Tipos: `telemetry`, `gsi`, `log`, `replay` y `platform`; véase [Fuentes y regla
 | [Microsoft Flight Simulator 2024 (datos en vivo)](game-msfs2024.md) | telemetry | sí | SimConnect a través de la SimConnect.dll propia del jugador (la carpeta del simulador, o `%MSFS2024_SDK%\SimConnect` `SDK\lib`) |
 | [Minecraft (archivos de registro)](game-minecraft.md) | log | sí | `%APPDATA%\.minecraft\logs\latest.log` (seguido), `saves\<world>\stats\<uuid>.json` y `saves\<world>\playerdata\<uuid>.dat` / level.dat (NBT comprimido con gzip), leídos cuando el juego los guarda |
 | [NVIDIA highlights (plataforma)](game-nvidia-highlights.md) | platform | prestada | `%LOCALAPPDATA%\NVIDIA` `Corporation\NVIDIA` `Overlay\UGCTracker.json`, GallerySettings.json, `Highlights\<game>\config.json`; clips en la carpeta de captura `(%USERPROFILE%\Videos\NVIDIA\<Game>\*.mp4`) y `<temp>\Highlights\<game>`; `%LOCALAPPDATA%\NVIDIA` `Corporation\GfeSDK\<exe>_<pid>.log` |
-| [osu! (repeticiones)](game-osu-replays.md) | replay | sí | repeticiones que guarda osu! (estable): `%LOCALAPPDATA%/osu!/Data/r/*.osr` (cada partida) y `osu!/Replays/*.osr` (exportadas) |
 | [Path of Exile (archivos de registro)](game-poe.md) | log | no | `<install>\logs\Client.txt` de Path of Exile o Path of Exile 2 (seguido; la carpeta de instalación es la del ejecutable en marcha) |
 | [Project CARS 2 (datos en vivo)](game-project-cars-2.md) | telemetry | sí | memoria compartida $pcars2$ (SMS SharedMemory.h) |
 | [RaceRoom Racing Experience (datos en vivo)](game-raceroom.md) | telemetry | sí | memoria compartida $R3E (r3e.h de Sector3, versión 3) |
 | [Richard Burns Rally (datos en vivo)](game-richard-burns-rally.md) | telemetry | sí | telemetría UDP del plugin NGP, 127.0.0.1:6776 (RichardBurnsRally.ini [NGP] udpTelemetry=1) |
 | [Rocket League (estado de juego)](game-rocketleague-stats.md) | gsi | sí | API de estadísticas: flujo JSON TCP desde 127.0.0.1:49123 (puerto en `<RL>\TAGame\Config\TAStatsAPI.ini` o DefaultStatsAPI.ini) |
 | [Squad (repeticiones)](game-squad-demos.md) | replay | sí | demos de servidor que Squad graba con el comando de administrador AdminDemoRec: `<server>/SquadGame/Saved/Demos/*.replay`, leídas por el lector externo `heat3d-squad-demo` (exporters/ext/squad-demo) |
-| [Star Citizen (archivos de registro)](game-starcitizen.md) | log | no | `<install>\StarCitizen\LIVE\Game.log` (la carpeta de compilación del StarCitizen.exe en marcha), solo el archivo de registro que escribe el juego - un juego con Easy Anti-Cheat: nada toca su proceso |
+| [Star Citizen (archivos de registro)](game-starcitizen.md) | log | no | `<install>\StarCitizen\LIVE\Game.log` (la carpeta de la versión del StarCitizen.exe en marcha), solo el archivo de registro que escribe el juego - un juego con Easy Anti-Cheat: nada toca su proceso |
 | [Estadísticas de Steam (plataforma)](game-steam-stats.md) | platform | no | la caché local de estadísticas de Steam `%STEAM%\appcache\stats\UserGameStats_<account>_<appid>.bin` con `UserGameStatsSchema_<appid>.bin`; tiempo de juego desde `%STEAM%\userdata\<account>\config\localconfig.vdf` (%STEAM% desde `HKCU\Software\Valve\Steam` SteamPath) |
 | [Steam Timeline (plataforma)](game-steam-timeline.md) | platform | no | `%STEAM%\userdata\<account>\gamerecordings\timelines\timeline_<appid><date>_<time>.json` |
 | [VALORANT (repeticiones)](game-valorant-replays.md) | replay | no | repeticiones que guarda VALORANT: `%LOCALAPPDATA%/VALORANT/Saved/Demos/*.vrf` (solo las partes que no están ofuscadas) |
-| [War Thunder (repeticiones)](game-warthunder-replays.md) | replay | sí | repeticiones que guarda War Thunder: `<War` `Thunder>/Replays/*.wrpl` (con el guardado de repeticiones activado), convertidas por el conversor externo `heat3d-wt-replay` (exporters/ext/warthunder-replay) |
+| [War Thunder (repeticiones)](game-warthunder-replays.md) | replay | sí | repeticiones que guarda War Thunder: `<War Thunder>/Replays/*.wrpl` (con el guardado de repeticiones activado), convertidas por el conversor externo `heat3d-wt-replay` (exporters/ext/warthunder-replay) |
 | [War Thunder (estado de juego)](game-warthunder-webmap.md) | gsi | sí | el mapa web local del juego, <http://127.0.0.1:8111> (/map_info.json, /map_obj.json, /state, /indicators, /hudmsg, /gamechat, /mission.json, /map.img) |
-| [World of Tanks (repeticiones)](game-wot-replays.md) | replay | sí | repeticiones que guarda World of Tanks: `<World` of `Tanks>/replays/*.wotreplay` (con la grabación de batallas activada), convertidas por el conversor externo `heat3d-wot-replay` (exporters/ext/wot-replay) |
-| [World of Warships (repeticiones)](game-wows-replays.md) | replay | sí | repeticiones que guarda World of Warships: `<World` of `Warships>/replays/*.wowsreplay` (con las repeticiones activadas), convertidas por el conversor externo `heat3d-wows-replay` (exporters/ext/wows-replay) |
+| [World of Tanks (repeticiones)](game-wot-replays.md) | replay | sí | repeticiones que guarda World of Tanks: `<World of Tanks>/replays/*.wotreplay` (con la grabación de batallas activada), convertidas por el conversor externo `heat3d-wot-replay` (exporters/ext/wot-replay) |
+| [World of Warships (repeticiones)](game-wows-replays.md) | replay | sí | repeticiones que guarda World of Warships: `<World of Warships>/replays/*.wowsreplay` (con las repeticiones activadas), convertidas por el conversor externo `heat3d-wows-replay` (exporters/ext/wows-replay) |
 | [X-Plane (datos en vivo)](game-xplane.md) | telemetry | sí | la interfaz UDP de X-Plane en 127.0.0.1:49000 (datarefs RREF y RPOS, respondidos al watcher) |
 
 Juegos que no se graban, y por qué: [Fuentes y reglas](sources-and-rules.md#what-is-declined-and-why). Todo en una sola tabla, tal como lo muestra `python -m heat3d_watch games --markdown`: [Todos los juegos en una tabla](watcher.md).

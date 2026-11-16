@@ -1,15 +1,15 @@
 ---
 title: "RaceRoom Racing Experience (données en direct)"
-nav_order: 38
+nav_order: 37
 lang: "fr"
 source: game-raceroom.md
-source_hash: "ffd0499ca059"
+source_hash: "f3879cd40a67"
 nav_exclude: true
 search_exclude: true
 ---
 # RaceRoom Racing Experience (données en direct) {#raceroom-racing-experience-live-data}
 
-Pendant que vous jouez à RaceRoom Racing Experience, le watcher enregistre les données que le jeu envoie lui-même, pour que vous puissiez les regarder plus tard sur une carte dans la visionneuse 3DHeat.
+Pendant que vous jouez à RaceRoom Racing Experience, le watcher enregistre les données que le jeu envoie lui-même, pour que vous puissiez les regarder plus tard sur une carte dans le visualiseur 3DHeat.
 
 *Détails techniques : adaptateur `raceroom`, type [`telemetry`](sources-and-rules.md) ; il tourne pendant que `RRRE64.exe` ou `RRRE.exe` est lancé et cherche de nouvelles données toutes les 0,1 s.*
 
@@ -55,10 +55,10 @@ Le même module sert aussi : [Automobilista 2 (données en direct)](game-automob
 | Positions enregistrées | oui |
 | Axe vertical | `y` |
 | Unités | mètres ; Y vers le haut supposé (r3e.h ne le précise pas) |
-| Miroir pour la visionneuse | aucun |
-| Échelle des unités (`scale` : la visionneuse multiplie les positions par cette valeur) | 1 |
+| Miroir pour le visualiseur | aucun |
+| Échelle des unités (`scale` : le visualiseur multiplie les positions par cette valeur) | 1 |
 
-Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des positions, dans le pied de `heat.parquet`, pour que la visionneuse 3DHeat tourne et mette à l'échelle les lignes toute seule : voir [Les données](the-data.md).
+Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des positions, dans le pied de `heat.parquet`, pour que le visualiseur 3DHeat tourne et mette à l'échelle les lignes tout seul : voir [Les données](the-data.md).
 
 ## Multijoueur {#multiplayer}
 
@@ -99,7 +99,7 @@ Le watcher suit la [règle du convertisseur](https://github.com/Holdi601/3DHeat/
 
 ## Vérifié {#verified}
 
-testé sur une page construite dans le test à partir de r3e.h 3.6 (décalages établis d'après l'en-tête officiel) ; non testé contre le jeu ; les temps au tour des autres voitures sont dernier temps de tour en cours vu (à environ 0,1 s près)
+testé sur une page construite dans le test à partir de r3e.h 3.6 (décalages établis d'après l'en-tête officiel) ; non testé contre le jeu ; les temps au tour des autres voitures sont le dernier temps de tour en cours vu (à environ 0,1 s près)
 
 ## Source {#source}
 

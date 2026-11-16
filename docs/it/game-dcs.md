@@ -9,7 +9,7 @@ search_exclude: true
 ---
 # DCS World (dati in tempo reale) {#dcs-world-live-data}
 
-Mentre giochi a DCS World, il watcher salva i dati che il gioco stesso invia all'esterno, così puoi guardarli più tardi su una mappa nel visualizzatore di 3DHeat.
+Mentre giochi a DCS World, il watcher salva i dati che il gioco stesso invia all'esterno, così puoi guardarli più tardi su una mappa nel visualizzatore 3DHeat.
 
 *Dettagli tecnici: adattatore `dcs`, tipo [`telemetry`](sources-and-rules.md); gira mentre `DCS.exe` è in esecuzione e cerca nuovi dati ogni 0,1 s.*
 
@@ -66,12 +66,12 @@ Un server multigiocatore può vietare l'esportazione del proprio velivolo (LoIsO
 | | |
 |---|---|
 | Posizioni registrate | sì |
-| Asse verso l'alto | `y` |
+| Asse verticale | `y` |
 | Unità | metri (est, altitudine, nord dall'origine del teatro) |
 | Specchiato per il visualizzatore | `z` |
 | Scala delle unità (`scale`: il visualizzatore moltiplica le posizioni per questo valore) | 1 |
 
-Questi valori finiscono in `meta.json` (`axes`) di ogni sessione e, quando la sessione ha delle posizioni, nel footer di `heat.parquet`, così il visualizzatore di 3DHeat ruota e scala le righe da solo - vedi [I dati](the-data.md).
+Questi valori finiscono in `meta.json` (`axes`) di ogni sessione e, quando la sessione ha delle posizioni, nel footer di `heat.parquet`, così il visualizzatore 3DHeat ruota e scala le righe da solo - vedi [I dati](the-data.md).
 
 ## Multigiocatore {#multiplayer}
 
@@ -93,7 +93,7 @@ Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat
 
 **Letto**
 
-- `p` (10 Hz): posizione, LatLongAlt, assetto, IAS, AGL, g (x/y/z), tipo di velivolo, e TAS, Mach, velocità verticale, AoA, angolo di derapata, prua magnetica, altezza radar, velocità nel mondo, velocità di rotazione, in volo e punto/direzione della camera dell'hook 2 - tutti come colonne delle righe (unità come le dà Export.lua)
+- `p` (10 Hz): posizione, LatLongAlt, assetto, IAS, AGL, g (x/y/z), tipo di velivolo, e (dalla versione 2 dell'hook) TAS, Mach, velocità verticale, AoA, angolo di derapata, prua magnetica, altezza radar, velocità nel mondo, velocità di rotazione, in volo e punto/direzione della camera - tutti come colonne delle righe (unità come le dà Export.lua)
 - `start`: missione, teatro, id e nome del proprio giocatore, multigiocatore, file della missione, server; `mis`: data e ora di inizio della missione in meta.json
 - `ev`: ogni onGameEvent come riga (takeoff, landing, crash, eject, pilot_death, kill, self_kill, change_slot, connect, disconnect, friendly_fire, mission_end, qualsiasi altro nome come fornito)
 - `noexport` e `stop` come righe e in meta.json
@@ -118,7 +118,7 @@ Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat
 
 formato delle righe testato con datagrammi sintetici; l'hook Lua non è testato dentro DCS (scritto dall'API hook/export di DCS e dall'elenco delle funzioni Lo\* in `Scripts\Export.lua`, non eseguito)
 
-## Sorgente {#source}
+## Fonte {#source}
 
 [heat3d_watch/adapters/dcs.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/dcs.py)
 

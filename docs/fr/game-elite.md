@@ -16,7 +16,7 @@ Pendant que vous jouez à Elite Dangerous, le watcher lit les fichiers que le je
 ## Ce qui est enregistré {#what-is-recorded}
 
 - chaque événement du journal, sous son nom de journal, avec ses champs simples
-- la position galactique (StarPos, en années-lumière) lors des sauts, des positions, des apparitions, des morts, des amarrages, des atterrissages
+- la position galactique (StarPos, en années-lumière) lors des sauts, des localisations, des apparitions, des morts, des amarrages, des atterrissages
 - apparition à LoadGame/Resurrect, mort à Died, amarré/désamarré, posé/décollé, saut, session_end
 - le tracé à la surface d'une planète d'après Status.json : latitude, longitude, altitude, cap, et des mètres dans un plan tangent par corps (session = nom du corps), avec les autres champs simples de Status.json (Flags, Flags2, GuiFocus, LegalState, ...)
 - chaque ligne du journal et chaque annexe en entier dans heat.raw.parquet

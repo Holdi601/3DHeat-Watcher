@@ -3,7 +3,7 @@ title: "Installation et lancement"
 nav_order: 3
 lang: "fr"
 source: installing-and-running.md
-source_hash: "ceb60cbb49b7"
+source_hash: "2b03b0eda49e"
 nav_exclude: true
 search_exclude: true
 ---
@@ -107,7 +107,7 @@ chaque nouveau replay est converti une fois que le jeu a fini de l'écrire. Les 
 
 ```bash
 python -m heat3d_watch replays cs2-demos              # every demo in CS2's folders and replay_folders
-python -m heat3d_watch replays osu-replays D:\Old     # the replays in one folder
+python -m heat3d_watch replays lol-replays D:\Old     # the replays in one folder
 ```
 
 ### Lancer en arrière-plan {#running-in-the-background}
@@ -161,7 +161,7 @@ l'heure, le niveau et un message :
 
 Les adaptateurs journalisent ce qu'ils ne peuvent pas faire et pourquoi : « UDP 20777 is in use by ...; not taking it from that program »,
 « not reading memory: the game is played online », « could not start », « poll failed (3) » avec la trace d'erreur.
-`run -v` ajoute des lignes de débogage. Le fichier est complété en fin et n'est jamais tourné ni vidé par le
+`run -v` ajoute des lignes de débogage. Le fichier est complété à la fin et n'est jamais tourné ni vidé par le
 watcher ; supprimez-le quand vous voulez. Les mêmes lignes vont aussi dans la console.
 
 ## Où se trouve tout {#where-everything-is}
@@ -202,12 +202,12 @@ d'une commande, donc relancez `run` après les avoir modifiés.
 | `auto_update` | `true` | Tant qu'aucun jeu ne tourne, installe une version plus récente et redémarre (voir [Mises à jour](updates.md)). `false` : seulement un avis dans le journal. |
 | `scan_seconds` | `2.0` | Secondes entre deux regards sur la liste des processus. |
 | `memory` | `false` | Autorise les adaptateurs de mémoire (jeux solo avec un profil que vous avez écrit) à tourner. Désactivé par défaut ; voir [Lecture de la mémoire](memory-reading.md). |
-| `replays` | `true` | Fait tourner les adaptateurs `replay` : tous (voir `python -m heat3d_watch replays` et [Jeux](games.md)) - démos CS2, Dota 2, osu!, War Thunder, World of Tanks, World of Warships, Squad, replays de League of Legends et de VALORANT, enregistrements Tacview d'IL-2. |
+| `replays` | `true` | Fait tourner les adaptateurs `replay` : tous (voir `python -m heat3d_watch replays` et [Jeux](games.md)) - démos CS2, Dota 2, War Thunder, World of Tanks, World of Warships, Squad, replays de League of Legends et de VALORANT, enregistrements Tacview d'IL-2. |
 | `replay_folders` | `{}` | Dossiers supplémentaires par identifiant d'adaptateur, par exemple `{"cs2-demos": ["D:\\Demos"]}`. Les adaptateurs de replays les surveillent en plus des propres dossiers du jeu ; `il2-tacview` accepte aussi des dossiers d'installation (il cherche alors dans leur `data\Tracks`) ; pour `elite`, le premier dossier remplace le dossier du journal. Réglez les dossiers d'un adaptateur avec `config --set replay_folders.cs2-demos=D:\Demos,E:\More`, ou le dictionnaire entier en JSON. |
 | `riot_id` | `""` | Votre Riot ID (`Name#TAG`), pour que votre propre ligne dans un replay de League of Legends devienne vos statistiques. Vide : la ligne de chaque joueur est gardée, aucune n'est marquée comme la vôtre. |
 | `riot_api_key` | `""` | Votre propre clé d'API développeur Riot, pour récupérer la chronologie officielle de chaque match de League rejoué (positions chaque minute, éliminations à l'endroit où elles ont eu lieu). Vide : rien n'est récupéré. |
 | `riot_platform` | `"EUW1"` | L'identifiant de plateforme de votre serveur League (`EUW1`, `EUN1`, `NA1`, `KR`, ...), utilisé pour trouver l'hôte régional Match-V5. |
-| `player_names` | `{}` | Votre nom dans les jeux dont l'interface nomme chaque joueur mais ne dit pas lequel vous êtes, par identifiant d'adaptateur : `warthunder-webmap` (les lignes du fil d'éliminations qui vous concernent deviennent vos éliminations et morts) et `rocketleague-stats` (vos lignes deviennent `me` ; sans lui, le joueur que suit la caméra du jeu). Réglez-le avec `config --set player_names.warthunder-webmap=Name`. |
+| `player_names` | `{}` | Votre nom dans les jeux dont l'interface nomme chaque joueur mais ne dit pas lequel vous êtes, par identifiant d'adaptateur : `warthunder-webmap` (les lignes du fil des frags qui vous concernent deviennent vos frags et vos morts) et `rocketleague-stats` (vos lignes deviennent `me` ; sans lui, le joueur que suit la caméra du jeu). Réglez-le avec `config --set player_names.warthunder-webmap=Name`. |
 
 Un `settings.json` avec toutes les valeurs par défaut :
 

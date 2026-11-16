@@ -44,7 +44,7 @@ gamecapture in
 `heat3d_capture/telemetry` di 3DHeat GameCapture, copiati in `heat3d_watch/decoders` (testati lì con pacchetti costruiti
 dai layout pubblicati). Questo modulo trasforma i loro fotogrammi nelle righe del
 watcher: la posizione dell'auto alcune volte al secondo con velocità, marcia e pedali,
-un evento per ogni giro o tappa, e i numeri che un pilota tiene d'occhio: giri, miglior giro,
+un evento per ogni giro o tappa, e i numeri che un pilota tiene d'occhio: giri, giro migliore,
 distanza, velocità massima.
 
 #### Forza (Horizon 4/5/6, Motorsport) {#forza-horizon-456-motorsport}
@@ -100,7 +100,7 @@ Questi valori finiscono in `meta.json` di ogni sessione (`axes`) e, quando la se
 ## Multigiocatore {#multiplayer}
 
 - Segnato come giocato online (`multiplayer`): **sì**. `games --markdown` lo mostra come "consentito (legge solo ciò che il gioco pubblica)".
-- Tipo `telemetry`: legge solo ciò che il gioco o la piattaforma rende disponibile (una porta UDP o la memoria condivisa che il gioco pubblica), quindi registra anche nel gioco online oltre che offline; il contrassegno decide solo se la memoria può mai essere letta.
+- Tipo `telemetry`: legge solo ciò che il gioco o la piattaforma rende disponibile (una porta UDP o la memoria condivisa che il gioco pubblica), quindi registra anche nel gioco online oltre che offline; il flag decide solo se la memoria può mai essere letta.
 - Memoria: **mai** letta da questo adattatore. Solo gli adattatori `memory` leggono la memoria, e mai per un gioco segnato come giocato online: vedi [Fonti e regole](sources-and-rules.md).
 
 ## Statistiche registrate {#statistics-recorded}
@@ -113,15 +113,15 @@ Una chiave tra parentesi graffe viene completata durante l'esecuzione (`score.{t
 
 ## Completezza {#completeness}
 
-Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md) di 3DHeat: ciò che la sorgente contiene viene letto o conservato, mai scartato. Oltre alle righe, ogni pacchetto, pagina, riga o risposta che l'adattatore riceve viene conservato intero in `heat.raw.parquet` della sessione (colonne `time`, `ms`, `type`, `used`, `payload`, `text`, poi ogni campo conservato per nome; `used` segna ciò che è diventato anche riga), e `selfCheck.completeness` in `meta.json` conta ogni `type`: `lost` è 0.
+Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md) di 3DHeat: ciò che la fonte contiene viene letto o conservato, mai scartato. Oltre alle righe, ogni pacchetto, pagina, riga o risposta che l'adattatore riceve viene conservato intero in `heat.raw.parquet` della sessione (colonne `time`, `ms`, `type`, `used`, `payload`, `text`, poi ogni campo conservato per nome; `used` segna ciò che è diventato anche riga), e `selfCheck.completeness` in `meta.json` conta ogni `type`: `lost` è 0.
 
 **Letto**
 
-- righe a 10 Hz: posizione, velocità, marcia, acceleratore, freno, distanza nella tappa, imbardata, giri motore, sterzo; inizio tappa, arrivo con il tempo della tappa, riavvii
+- righe a 10 Hz: posizione, velocità, marcia, acceleratore, freno, distanza nella tappa, imbardata, giri al minuto, sterzo; inizio tappa, arrivo con il tempo della tappa, riavvii
 
 **Conservato grezzo**
 
-- ogni pacchetto che raggiunge la porta, intero, alla frequenza del gioco (uno per tick della simulazione), sotto il suo formato: `extradata3` (66 float, 264 byte), `extradata3-64` (64 di DiRT Rally), `<n>-byte` negli altri casi
+- ogni pacchetto che raggiunge la porta, intero, alla frequenza del gioco, sotto il suo formato: `extradata3` (66 float, 264 byte), `extradata3-64` (64 di DiRT Rally), `<n>-byte` negli altri casi
 - nel pacchetto oltre alle righe: tutti i 66 float: velocità del mondo, vettori laterale e frontale, posizione e velocità della sospensione di ogni ruota, velocità dell'impronta e temperatura dei freni, accelerazioni g, giri, lunghezza della tappa; i float senza un nome stabilito sono nei file dei giri come `float<i>`
 
 **Non disponibile**
@@ -135,7 +135,7 @@ Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat
 
 decodifica del registratore di giri di gamecapture (testata su pacchetti costruiti dai layout documentati); l'adattatore testato su pacchetti costruiti nel test, inviati via UDP; non ancora testato con il gioco
 
-## Sorgente {#source}
+## Fonte {#source}
 
 [heat3d_watch/adapters/racing.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/racing.py)
 

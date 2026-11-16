@@ -3,7 +3,7 @@ title: "Counter-Strike 2 (Replays)"
 nav_order: 8
 lang: "de"
 source: game-cs2-demos.md
-source_hash: "d115f9085302"
+source_hash: "82fe00f0f2f0"
 nav_exclude: true
 search_exclude: true
 ---
@@ -43,7 +43,7 @@ Beim ersten Sehen eines Ordners werden die dort vorhandenen Replays nur vermerkt
 
 CS2 speichert die Demos, die ein Spieler im Reiter Watch aus dem Spielverlauf herunterlädt, unter `<CS2>/game/csgo/replays/`. Die mit dem Konsolenbefehl `record` aufgenommenen legt es unter `<CS2>/game/csgo/` ab. Jede wird mit dem eigenen CS2-Konverter dieses Repositorys umgewandelt (3DHeat CS2, github.com/Holdi601/3DHeat-CS2: Position, Blickrichtung, Gesundheit und Geld jedes Spielers jeden achten Tick; Kills, Tode, Schaden, Granaten, Bombenlegen und Entschärfen dort, wo sie passiert sind; Runden, Spielstand, Wirtschaft). Das Ergebnis landet im Sitzungsordner als Tabelle `<map>/<match>.parquet` und Zusammenfassung `<match>.match.json`, die die Reiter Heatmap und Match des Viewers lesen. Das Scoreboard des Matches wird zur Statistik der Sitzung: für den Spieler, dessen Steam-Konto auf diesem Rechner angemeldet ist (aus Steams `loginusers.vdf`), unter den einfachen Namen - Kills, Tode, Assists, ADR, KAST, Headshot-Quote, Eröffnungs-Kills, Clutches - dazu Spielstand und Runden.
 
-Dasselbe Modul bedient außerdem: [Dota 2 (Replays)](game-dota-replays.md), [osu! (Replays)](game-osu-replays.md), [Squad (Replays)](game-squad-demos.md), [War Thunder (Replays)](game-warthunder-replays.md), [World of Tanks (Replays)](game-wot-replays.md), [World of Warships (Replays)](game-wows-replays.md).
+Dasselbe Modul bedient außerdem: [Dota 2 (Replays)](game-dota-replays.md), [Squad (Replays)](game-squad-demos.md), [War Thunder (Replays)](game-warthunder-replays.md), [World of Tanks (Replays)](game-wot-replays.md), [World of Warships (Replays)](game-wows-replays.md).
 
 ## Positionen und Achsen {#positions-and-axes}
 

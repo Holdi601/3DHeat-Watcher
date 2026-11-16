@@ -85,7 +85,7 @@ Le watcher suit la [règle du convertisseur](https://github.com/Holdi601/3DHeat/
 
 **Conservé brut**
 
-- chaque page en entier - toute la zone mappée, pas seulement les octets décodés - à chaque fois que ses octets changent, à la lecture de 10 Hz du watcher : `acpmf_physics`, `acpmf_graphics`, `acpmf_static` ; une relecture identique octet par octet au précédent est comptée dans `unchanged_reads` de meta.json, sans être stockée à nouveau
+- chaque page en entier - toute la zone mappée, pas seulement les octets décodés - à chaque fois que ses octets changent, lors des lectures du watcher à 10 Hz : `acpmf_physics`, `acpmf_graphics`, `acpmf_static` ; une relecture identique octet par octet au précédent est comptée dans `unchanged_reads` de meta.json, sans être stockée à nouveau
 - tout ce qui est décodé seulement pour les fichiers de tours (`decoders/kunos.py` : glissement, charge, pression, températures, carrossage, suspension, points de contact par roue, températures des freins, taux de glissement et angle ; vitesses monde et locale, vitesse angulaire, aides) est dans ces pages
 
 **Non disponible**

@@ -1,9 +1,9 @@
 ---
 title: "War Thunder (estado de juego)"
-nav_order: 47
+nav_order: 46
 lang: "es"
 source: game-warthunder-webmap.md
-source_hash: "d6026c277030"
+source_hash: "34a876e38f09"
 nav_exclude: true
 search_exclude: true
 ---
@@ -39,21 +39,21 @@ El juego sirve la página que puede mostrar una segunda pantalla o un teléfono 
 
 ```text
 /map_info.json   {"map_min": [x, y], "map_max": [x, y], "grid_steps", "grid_zero", "map_generation",
-                  "hud_type", "valid"}: extensiÃ³n del mapa en metros; valid false en el hangar
+                  "hud_type", "valid"}: extensión del mapa en metros; valid false en el hangar
 /map_obj.json    [{"type": aircraft|ground_model|airfield|capture_zone|bombing_point|defending_point|
                   respawn_base_*|..., "icon": Player|Fighter|Bomber|Mediumtank|SPAA|..., "color": "#rrggbb",
                   "x", "y" (0..1 of the map picture, y down), "dx", "dy" (direction),
-                  airfields "sx", "sy", "ex", "ey"}]: lo que muestra el minimapa; el propio vehÃ­culo del jugador
+                  airfields "sx", "sy", "ex", "ey"}]: lo que muestra el minimapa; el propio vehículo del jugador
                   con el icono "Player"; sin ids ni alturas
 /state           {"valid", "H, m", "TAS, km/h", "IAS, km/h", "M", "Vy, m/s", ...}: valores de vuelo,
-                  vÃ¡lido solo en una aeronave
-/indicators      {"valid", "army": air|tank|..., "type": el vehÃ­culo}
-/hudmsg?lastEvt=N&lastDmg=M   {"events": [...], "damage": [...]} mÃ¡s nuevos que los ids indicados, cada uno
-                  {"id", "msg", "sender", "enemy", "mode", "time"}; las lÃ­neas de daÃ±o tienen la forma
+                  válido solo en una aeronave
+/indicators      {"valid", "army": air|tank|..., "type": el vehículo}
+/hudmsg?lastEvt=N&lastDmg=M   {"events": [...], "damage": [...]} más nuevos que los ids indicados, cada uno
+                  {"id", "msg", "sender", "enemy", "mode", "time"}; las líneas de daño tienen la forma
                   "Name (Vehicle) shot down Name (Vehicle)"
-/gamechat?lastId=N  el chat mÃ¡s nuevo que el id indicado, [{"id", "msg", "sender", "enemy", "mode", "time"}]
+/gamechat?lastId=N  el chat más nuevo que el id indicado, [{"id", "msg", "sender", "enemy", "mode", "time"}]
 /mission.json    los objetivos de la batalla y su estado
-/map.img         la imagen del mapa sobre la que la pÃ¡gina dibuja los objetos
+/map.img         la imagen del mapa sobre la que la página dibuja los objetos
 ```
 
 Cada respuesta se guarda completa en el archivo auxiliar sin procesar de la sesión bajo su endpoint

@@ -1,9 +1,9 @@
 ---
 title: "Statistiche Steam (piattaforma)"
-nav_order: 43
+nav_order: 42
 lang: "it"
 source: game-steam-stats.md
-source_hash: "24fa6512bd6d"
+source_hash: "09ecf3611c02"
 nav_exclude: true
 search_exclude: true
 ---
@@ -46,7 +46,7 @@ Lo stesso modulo serve anche: [NVIDIA highlights (piattaforma)](game-nvidia-high
 | | |
 |---|---|
 | Posizioni registrate | no |
-| Asse verso l'alto | `y` |
+| Asse verticale | `y` |
 | Unità | metri |
 | Specchiato per il visualizzatore | nessuno |
 | Scala delle unità (`scale`: il visualizzatore moltiplica le posizioni per questo valore) | 1 |

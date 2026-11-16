@@ -10,7 +10,7 @@ search_exclude: true
 # Maintenance de ces pages {#maintaining-these-pages}
 
 La liste de contrôle de chaque version. Les pages doivent dire ce que fait le code, se lire bien pour un débutant, un
-enfant de 8 ans et un pro, et exister dans toutes les langues que le viewer 3DHeat prend en charge.
+enfant de 8 ans et un pro, et exister dans toutes les langues que le visualiseur 3DHeat prend en charge.
 
 ## Liste de contrôle de version {#release-checklist}
 
@@ -56,7 +56,7 @@ enfant de 8 ans et un pro, et exister dans toutes les langues que le viewer 3DHe
 
 ## Traductions : les commandes {#translations-the-commands}
 
-Le site est traduit dans les 40 langues du viewer 3DHeat : l'anglais dans `docs/`, chaque autre
+Le site est traduit dans les 40 langues du visualiseur 3DHeat : l'anglais dans `docs/`, chaque autre
 langue dans `docs/<lang>/` avec les mêmes noms de fichiers. `tools/docs_i18n.py` tient la comptabilité :
 
 ```bash
@@ -70,7 +70,7 @@ python tools/docs_i18n.py check              # exit 1 when hashes or labels are 
 ```
 
 Ne traduisez que ce que `todo` liste : gardez le Markdown, les liens, le code, les noms de fichiers et de colonnes tels quels,
-traduisez les titres et les descriptions d'images, et utilisez les mots propres au viewer 3DHeat pour ses boutons
+traduisez les titres et les descriptions d'images, et utilisez les mots propres au visualiseur 3DHeat pour ses boutons
 et ses panneaux (son dossier `src/i18n/locales/<lang>/`). Les pages de référence générées et les images de terminal restent
 en anglais. Sur le site, une traduction périmée le dit et renvoie vers la page anglaise ; une page manquante
 retombe sur l'anglais. Le menu de langue de l'en-tête et la redirection de la page d'accueil selon la langue du navigateur

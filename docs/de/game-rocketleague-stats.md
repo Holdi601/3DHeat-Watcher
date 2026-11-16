@@ -1,9 +1,9 @@
 ---
 title: "Rocket League (Spielzustand)"
-nav_order: 40
+nav_order: 39
 lang: "de"
 source: game-rocketleague-stats.md
-source_hash: "3da6ea772068"
+source_hash: "fd70d0540bb9"
 nav_exclude: true
 search_exclude: true
 ---

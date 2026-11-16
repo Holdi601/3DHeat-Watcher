@@ -9,7 +9,7 @@ search_exclude: true
 ---
 # EA SPORTS F1 24 (données en direct) {#ea-sports-f1-24-live-data}
 
-Pendant que vous jouez à EA SPORTS F1 24, le Watcher enregistre les données que le jeu envoie lui-même, afin que vous puissiez les regarder plus tard sur une carte dans la visionneuse 3DHeat.
+Pendant que vous jouez à EA SPORTS F1 24, le watcher enregistre les données que le jeu envoie lui-même, afin que vous puissiez les regarder plus tard sur une carte dans le visualiseur 3DHeat.
 
 *Détails techniques : adaptateur `f1-24`, type [`telemetry`](sources-and-rules.md) ; il tourne pendant que `F1_24.exe` est lancé et cherche de nouvelles données toutes les 0,1 s.*
 
@@ -28,9 +28,9 @@ Télémétrie UDP 127.0.0.1:20777 (Documents\My Games\F1 24\hardwaresettings\har
 
 ## Comment l'activer {#how-to-switch-it-on}
 
-Dans le jeu : Paramètres > Telemetry Settings > UDP Telemetry On, IP 127.0.0.1, port 20777 - ou `python -m heat3d_watch setup f1-24 --apply` (modifie hardware_settings_config.xml, sauvegardé avant ; le jeu doit être fermé). Tant qu'une autre application tient le port 20777, le Watcher le lui laisse
+Dans le jeu : Paramètres > Telemetry Settings > UDP Telemetry On, IP 127.0.0.1, port 20777 - ou `python -m heat3d_watch setup f1-24 --apply` (modifie hardware_settings_config.xml, sauvegardé avant ; le jeu doit être fermé). Tant qu'une autre application tient le port 20777, le watcher le lui laisse
 
-Saisissez la commande dans un terminal ouvert dans le dossier du Watcher (voir [Avant de commencer](before-you-start.md)). Si la commande échoue, la dernière ligne indique pourquoi ; [Installation et lancement](installing-and-running.md) décrit les causes les plus fréquentes.
+Saisissez la commande dans un terminal ouvert dans le dossier du watcher (voir [Avant de commencer](before-you-start.md)). Si la commande échoue, la dernière ligne indique pourquoi ; [Installation et lancement](installing-and-running.md) décrit les causes les plus fréquentes.
 
 `python -m heat3d_watch setup f1-24` liste les fichiers qu'il modifierait ; `python -m heat3d_watch setup f1-24 --apply` les modifie, en gardant l'original sous le nom `<file>.heat3d-backup` (voir [Commandes](commands.md#setup)). Il affiche `f1-24: changed: ...` pour chaque modification, ou `f1-24: nothing to change` si c'est déjà activé.
 
@@ -70,7 +70,7 @@ Ce qui est lu, par identifiant de paquet :
                 steer, brake, clutch, gear, rpm, DRS ...
 ```
 
-Chaque paquet est aussi gardé en entier, tel qu'il est arrivé, dans le fichier brut annexe de la session (`heat.raw.parquet`, `type` le nom du paquet - `motion`, `car_status` ... - avec `format`, `packet_id`, `frame` et `session_uid`) : ceux lus ci-dessus et ceux que rien ne lit encore : 5 Car Setups, 7 Car Status, 8 Final Classification, 9 Lobby Info, 10 Car Damage, 11 Session History, 12 Tyre Sets, 13 Motion Ex, 14 Time Trial, 15 Lap Positions, tout identifiant ultérieur, et les paquets dans un format que cela ne lit pas. Ainsi, un futur décodeur n'a besoin que du fichier annexe.
+Chaque paquet est aussi gardé en entier, tel qu'il est arrivé, dans le fichier brut de la session (`heat.raw.parquet`, `type` le nom du paquet - `motion`, `car_status` ... - avec `format`, `packet_id`, `frame` et `session_uid`) : ceux lus ci-dessus et ceux que rien ne lit encore : 5 Car Setups, 7 Car Status, 8 Final Classification, 9 Lobby Info, 10 Car Damage, 11 Session History, 12 Tyre Sets, 13 Motion Ex, 14 Time Trial, 15 Lap Positions, tout identifiant ultérieur, et les paquets dans un format que cela ne lit pas. Ainsi, un futur décodeur n'a besoin que du fichier brut.
 
 La position de chaque voiture est dans le paquet Motion - en ligne aussi, là où le jeu la transmet lui-même (seules les données de carburant, ERS, dégâts et jeux de pneus sont retenues pour les joueurs dont « Your Telemetry » est restreint). Chaque voiture est enregistrée à environ 10 Hz sous le nom de son pilote (« car N » tant que les noms n'arrivent pas), l'équipe par son nom, et votre voiture est marquée `own`.
 
@@ -85,15 +85,15 @@ Le même module sert aussi : [EA SPORTS F1 23 (données en direct)](game-f1-23.m
 | Positions enregistrées | oui |
 | Axe vertical | `y` |
 | Unités | mètres |
-| Miroir pour la visionneuse | aucun |
-| Échelle (`scale` : la visionneuse multiplie les positions par elle) | 1 |
+| Miroir pour le visualiseur | aucun |
+| Échelle (`scale` : le visualiseur multiplie les positions par elle) | 1 |
 
-Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session a des positions, dans le pied de `heat.parquet`, afin que la visionneuse 3DHeat tourne et mette à l'échelle les lignes toute seule - voir [Les données](the-data.md).
+Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session a des positions, dans le pied de `heat.parquet`, afin que le visualiseur 3DHeat tourne et mette à l'échelle les lignes toute seule - voir [Les données](the-data.md).
 
 ## Multijoueur {#multiplayer}
 
 - Marqué comme joué en ligne (`multiplayer`) : **oui**. `games --markdown` l'affiche comme « autorisé (lit seulement ce que le jeu publie) ».
-- Type `telemetry` : il ne lit que ce que le jeu ou la plateforme fournit (un port UDP ou une mémoire partagée que le jeu publie), donc il enregistre aussi en ligne ; l'indicateur ne décide que de la possibilité de lire la mémoire.
+- Type `telemetry` : il ne lit que ce que le jeu ou la plateforme fournit (un port UDP ou une mémoire partagée que le jeu publie), donc il enregistre aussi en ligne ; le drapeau décide seulement si la mémoire peut être lue.
 - Mémoire : **jamais** lue par cet adaptateur. Seuls les adaptateurs `memory` lisent la mémoire, et jamais pour un jeu marqué comme joué en ligne - voir [Sources et règles](sources-and-rules.md).
 
 ## Statistiques enregistrées {#statistics-recorded}
@@ -106,7 +106,7 @@ Une clé entre accolades est complétée à l'exécution (`score.{team}` est une
 
 ## Exhaustivité {#completeness}
 
-Le Watcher suit la [règle du convertisseur](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md) de 3DHeat : ce que la source contient est lu ou gardé, jamais jeté. En plus des lignes, chaque paquet, page, ligne ou réponse que reçoit l'adaptateur est gardé en entier dans `heat.raw.parquet` de la session (colonnes `time`, `ms`, `type`, `used`, `payload`, `text`, puis tout champ gardé par son nom ; `used` marque ce qui est aussi devenu des lignes), et `selfCheck.completeness` dans `meta.json` compte chaque `type` - `lost` vaut 0.
+Le watcher suit la [règle du convertisseur](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md) de 3DHeat : ce que la source contient est lu ou gardé, jamais jeté. En plus des lignes, chaque paquet, page, ligne ou réponse que reçoit l'adaptateur est gardé en entier dans `heat.raw.parquet` de la session (colonnes `time`, `ms`, `type`, `used`, `payload`, `text`, puis tout champ gardé par son nom ; `used` marque ce qui est aussi devenu des lignes), et `selfCheck.completeness` dans `meta.json` compte chaque `type` - `lost` vaut 0.
 
 **Lu**
 
@@ -127,7 +127,7 @@ Le Watcher suit la [règle du convertisseur](https://github.com/Holdi601/3DHeat/
 **Non disponible**
 
 - le carburant, l'ERS, les dégâts et les jeux de pneus des autres joueurs en ligne quand leur « Your Telemetry » est restreint : le jeu envoie des zéros pour eux
-- les paquets envoyés pendant que le Watcher ne tourne pas, ou pendant qu'une autre application tient le port 20777 : l'UDP n'est pas stocké par le jeu
+- les paquets envoyés pendant que le watcher ne tourne pas, ou pendant qu'une autre application tient le port 20777 : l'UDP n'est pas stocké par le jeu
 
 **Taille** : à une fréquence d'envoi de 60 Hz, chaque paquet représente environ 0,38 Mo/s (Motion, Lap Data, Car Telemetry, Car Status et Motion Ex à 60 Hz, Session History et Tyre Sets à 20/s, Car Damage à 10/s, Session et Car Setups à 2/s) plus environ 0,03 Mo/s d'en-têtes d'éléments : environ 1,5 Go par heure de conduite avant compression, environ 0,55 Go à la fréquence par défaut de 20 Hz ; zstd le réduit à une fraction de cela (les emplacements de voiture vides et les valeurs répétées se compressent bien ; pas encore mesuré sur une vraie session)
 

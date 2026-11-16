@@ -1,9 +1,9 @@
 ---
 title: "World of Warships (Replays)"
-nav_order: 49
+nav_order: 48
 lang: "de"
 source: game-wows-replays.md
-source_hash: "c822aca3f6fe"
+source_hash: "44a041452521"
 nav_exclude: true
 search_exclude: true
 ---
@@ -43,7 +43,7 @@ Beim ersten Sehen eines Ordners werden die dort vorhandenen Replays nur vermerkt
 
 Beide speichern ein Replay jeder Schlacht unter `<game>/replays/`, wenn die Aufzeichnung eingeschaltet ist (`*.wotreplay`, `*.wowsreplay`). Die Installationen findet der Watcher über die Liste des Wargaming Game Center (`C:/Games/World_of_Tanks*` bzw. `World_of_Warships*`) und über Steam. Wie bei War Thunder liest der Watcher die Dateien nicht selbst. Das macht je ein externer Konverter (`exporters/ext/wot-replay`, Befehl `heat3d-wot-replay`; `exporters/ext/wows-replay`, Befehl `heat3d-wows-replay`). Sie sind getrennt, damit ein Problem mit den Bedingungen von Wargaming nur den jeweiligen Konverter betrifft. Ist der Befehl im PATH, installiert oder neben dem Watcher, macht er aus jedem neuen Replay `<map>/<match>.parquet` und `<match>.match.json` im Sitzungsordner. Fehlt er, sagt der Watcher einmal, wie man ihn installiert. Die Zeile des aufzeichnenden Spielers - Fahrzeug oder Schiff, Kills, Schaden (World of Tanks), ob er überlebt hat, und das Ergebnis (World of Tanks) - wird zur Statistik der Sitzung. Was jeder Konverter liest und was nicht, steht in seiner README.
 
-Dasselbe Modul bedient außerdem: [Counter-Strike 2 (Replays)](game-cs2-demos.md), [Dota 2 (Replays)](game-dota-replays.md), [osu! (Replays)](game-osu-replays.md), [Squad (Replays)](game-squad-demos.md), [War Thunder (Replays)](game-warthunder-replays.md), [World of Tanks (Replays)](game-wot-replays.md).
+Dasselbe Modul bedient außerdem: [Counter-Strike 2 (Replays)](game-cs2-demos.md), [Dota 2 (Replays)](game-dota-replays.md), [Squad (Replays)](game-squad-demos.md), [War Thunder (Replays)](game-warthunder-replays.md), [World of Tanks (Replays)](game-wot-replays.md).
 
 ## Positionen und Achsen {#positions-and-axes}
 

@@ -20,7 +20,7 @@ Per i giochi per giocatore singolo che non pubblicano nulla, il watcher può leg
 I profili non vengono distribuiti perché un offset è giusto solo per la build su cui è stato trovato. Dopo una patch, un profilo che era giusto prima legge spazzatura, e la spazzatura sembra proprio numeri. Un profilo va verificato sulla build che il giocatore ha, dal giocatore stesso.
 
 ## I controlli, in ordine {#the-checks-in-order}
-![every condition must hold](../assets/img/it/memory-rules.svg)
+![ogni condizione deve essere vera](../assets/img/it/memory-rules.svg)
 
 
 Ogni controllo qui sotto deve passare. I primi quattro vengono fatti **prima** che il gioco venga aperto, perché aprire un gioco protetto per leggerlo è proprio ciò che un anti-cheat nota, e rifiutare dopo sarebbe troppo tardi.

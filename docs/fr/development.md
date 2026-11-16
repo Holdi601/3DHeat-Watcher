@@ -46,7 +46,7 @@ est ; ses méthodes font le travail.
 | `records` | `()` | ce qui est enregistré, un élément par type de chose |
 | `enable` | `""` | comment activer la source ; vide quand rien n'est nécessaire |
 | `interval` | `0.1` | secondes entre deux interrogations |
-| `axes` | `Axes()` | l'axe vertical du monde, les axes en miroir, l'échelle d'unité de la visionneuse (garder 1) et une note sur les unités |
+| `axes` | `Axes()` | l'axe vertical du monde, les axes en miroir, l'échelle d'unité du visualiseur (garder 1) et une note sur les unités |
 | `verified` | `""` | ce qui a été vérifié, honnêtement (voir plus bas) |
 | `completeness` | `{}` | le récit de la source selon la [règle de convertisseur](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md) de 3DHeat : `read` (ce qui devient des lignes), `raw` (ce qui est gardé entier, sous quel `type`), `missing` (ce que la source ne donne pas, et pourquoi), `size` (la taille du flux brut en une heure). La section « Completeness » de la page du jeu en est issue |
 
@@ -59,7 +59,7 @@ Les méthodes, toutes facultatives :
 | Méthode | Appelée | Ce qu'elle doit faire |
 |---|---|---|
 | `missing(self) -> str \| None` | par `games`, `status`, et avant le démarrage | dire pourquoi l'adaptateur ne peut pas tourner ici (une DLL introuvable, un dossier manquant), ou `None` |
-| `setup(self, ctx, *, apply) -> list[str]` | par `setup` | activer la sortie propre du jeu ; renvoyer une ligne par changement, et ne modifier les fichiers que si `apply` est vrai. Sauvegarder un fichier sous `<file>.heat3d-backup` avant sa première modification, et ne jamais écraser cette sauvegarde. Ne la redéfinir que s'il y a quelque chose à activer : `can_setup` (vrai quand `setup` est redéfinie) décide si `setup` l'exécute ou dit qu'il n'y a rien à changer ; une classe qui sert plusieurs jeux redéfinit `can_setup` pour ceux qu'elle ne peut pas configurer (`RallyAdapter` pour Richard Burns Rally). |
+| `setup(self, ctx, *, apply) -> list[str]` | par `setup` | activer la sortie de données du jeu ; renvoyer une ligne par changement, et ne modifier les fichiers que si `apply` est vrai. Sauvegarder un fichier sous `<file>.heat3d-backup` avant sa première modification, et ne jamais écraser cette sauvegarde. Ne la redéfinir que s'il y a quelque chose à activer : `can_setup` (vrai quand `setup` est redéfinie) décide si `setup` l'exécute ou dit qu'il n'y a rien à changer ; une classe qui sert plusieurs jeux redéfinit `can_setup` pour ceux qu'elle ne peut pas configurer (`RallyAdapter` pour Richard Burns Rally). |
 | `start(self, ctx)` | quand le processus du jeu apparaît (adaptateurs toujours actifs : quand `run` démarre) | ouvrir les sockets, trouver les fichiers, mémoriser où commencer |
 | `poll(self, ctx)` | toutes les `interval` secondes, dans le thread propre de l'adaptateur | prendre ce que le jeu a dit depuis la dernière interrogation et l'enregistrer |
 | `stop(self, ctx)` | quand le jeu a disparu ou que le watcher s'arrête | fermer les sessions et les sockets |
@@ -111,7 +111,7 @@ Une `Session` enregistre :
 
 `event`, `stat` et `raw` sont thread-safe et peuvent être appelés depuis un thread de travail.
 
-**Chaque adaptateur garde tout ce que sa source envoie.** Les lignes sont ce que la visionneuse dessine ; elles ne sont
+**Chaque adaptateur garde tout ce que sa source envoie.** Les lignes sont ce que le visualiseur dessine ; elles ne sont
 pas l'enregistrement. Chaque paquet qui arrive sur un port, chaque page de mémoire partagée lue (la totalité du mappage,
 à chaque changement), chaque ligne d'un journal ou d'un script d'export (y compris celles que l'adaptateur ignore), chaque
 réponse JSON ou document envoyé va dans `session.raw(...)` dès son arrivée, qu'il devienne ou non une
@@ -140,13 +140,13 @@ Conventions sur lesquelles le reste du système s'appuie :
   `death`, `finish`, `session_end` et `teleport` en terminent un. Chaque fois que le joueur s'est déplacé sans
   voyager (une remise à zéro, un retour en arrière, un voyage rapide, une sauvegarde chargée), écrivez `teleport` à l'endroit
   quitté, puis un début (`spawn`, ou `respawn` pour une remise à zéro que le jeu nomme) à l'endroit d'arrivée, pour que la
-  chaleur de trajet de la visionneuse termine un trajet et en commence un autre au lieu de tracer à travers la carte. `Driving.jumped` le fait
+  chaleur de trajet du visualiseur termine un trajet et en commence un autre au lieu de tracer à travers la carte. `Driving.jumped` le fait
   pour les véhicules.
 - **Les positions restent dans les coordonnées et unités propres au monde du jeu**, décrites par `axes`. Ne les convertissez pas
   dans un autre repère, sauf si le jeu ne donne aucun repère mondial utilisable (les simulateurs de vol mettent la latitude
   et la longitude dans une carte plate, `Tangent`, autour du premier relevé - DCS autour de l'origine fixe de son théâtre -
   et passent `geo=tangent.geo()` à `open`, pour que le pied de page dise où sur la Terre se trouve la carte). `axes.scale` est l'échelle
-  d'unité de la visionneuse - elle multiplie chaque position - et reste à 1, pour que les lignes s'alignent avec un niveau
+  d'unité du visualiseur - elle multiplie chaque position - et reste à 1, pour que les lignes s'alignent avec un niveau
   exporté du même jeu dans les mêmes unités ; indiquez l'unité dans `axes.units`.
 - **Les clés de statistiques** sont en minuscules avec des tirets bas, et portent leur unité quand il y en a une
   (`distance_km`, `top_speed_kmh`, `max_altitude_m`, `duration_s`). Un temps gardé comme meilleur commence par
@@ -298,7 +298,7 @@ Le script :
   indentés sous la ligne qui les présente (ils deviennent des blocs de code) ; un titre souligné de tirets, ou une
   ligne de titre courte dont le texte est indenté directement dessous (ils deviennent des titres) ;
 - liste les clés de statistiques que le code de l'adaptateur fixe par leur nom - `.stat("key", ...)`, les deux côtés d'une
-  expression `if`, et les modèles d'f-string tels que `score.{team}` - dans les classes de l'adaptateur et dans les
+  expression `if`, et les modèles de f-string tels que `score.{team}` - dans les classes de l'adaptateur et dans les
   aides qu'elles utilisent. Les clés prises d'une variable (une table des champs du jeu) ne sont pas listées ;
 - décide « Positions » d'après `axes.units` de l'adaptateur (une note commençant par « no » ou « none » signifie pas de
   positions) et d'après ce que son code écrit.

@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="848" height="299" viewBox="0 0 848 299" font-family="Segoe UI,Helvetica,Arial,sans-serif" role="img" aria-label="setup: switching a game&#x27;s own output on">
 <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5f6368"/></marker></defs>
 <rect width="848" height="299" rx="10" fill="#ffffff" stroke="#dadce0"/>
-<text x="24" y="36" font-size="18" font-weight="600" fill="#202124">setup : activer la sortie propre à un jeu</text>
+<text x="24" y="36" font-size="18" font-weight="600" fill="#202124">setup : activer la sortie de données d'un jeu</text>
 <rect x="24" y="69.5" width="236" height="60" rx="8" fill="#e8f0fe" stroke="#3b6fd8" stroke-width="1.5"/>
 <text x="142.0" y="95.5" text-anchor="middle" font-weight="600" font-size="16" fill="#202124">setup &lt;id&gt; | all</text>
 <text x="142.0" y="114.5" text-anchor="middle" font-size="14" fill="#3c4043">lit le fichier de réglages du jeu</text>

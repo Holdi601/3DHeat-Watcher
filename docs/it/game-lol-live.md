@@ -42,7 +42,7 @@ nell'interfaccia del gioco:
                                      allPlayers (championName, team ORDER/CHAOS, level,
                                      scores: kills, deaths, assists, creepScore, wardScore),
                                      events, gameData (gameMode, gameTime s, mapName)
-/liveclientdata/eventdata?eventID=N  {"Events": [...]} dal EventID N in poi: GameStart,
+/liveclientdata/eventdata?eventID=N  {"Events": [...]} dall'EventID N in poi: GameStart,
                                      MinionsSpawning, FirstBlood, FirstBrick, TurretKilled,
                                      InhibKilled, InhibRespawningSoon, InhibRespawned,
                                      DragonKill, HeraldKill, BaronKill, ChampionKill

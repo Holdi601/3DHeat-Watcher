@@ -3,7 +3,7 @@ title: "Dota 2 (repeticiones)"
 nav_order: 12
 lang: "es"
 source: game-dota-replays.md
-source_hash: "958b1e1855e8"
+source_hash: "c0ed25c261f6"
 nav_exclude: true
 search_exclude: true
 ---
@@ -27,23 +27,57 @@ repeticiones que guarda Dota 2: &lt;Dota>/game/dota/replays/&lt;id de partida>.d
 
 ## Cómo activarlo {#how-to-switch-it-on}
 
-descarga la repetición de una partida en Dota 2, o baja una pública: `python -m heat3d_watch dota-replay <id de partida>`; necesita `pip install gem-dota`
+descarga la repetición de una partida en Dota 2, o baja una pública: `python -m heat3d_watch dota-replay <id de partida>`; instala el lector: github.com/Holdi601/3DHeat-Ext-DotaReplay (`heat3d-dota-replay`, trae gem-dota)
 
 Escribe el comando en una terminal abierta en la carpeta del watcher (véase [Antes de empezar](before-you-start.md)). Si falla, la última línea dice por qué; [Instalación y uso](installing-and-running.md) recoge las causas habituales.
+
+Ajustes desde variables de entorno:
+
+- `HEAT3D_DOTA_REPLAY`: la carpeta del lector (un clon o una versión descomprimida), cuando no está instalado o junto al watcher
 
 ## Cómo funciona {#how-it-works}
 
 Repeticiones y demos: lo que guarda un juego de una partida, convertido una vez terminada la partida.
 
-Una repetición contiene todo lo que una interfaz en vivo oculta en los juegos multijugador - la posición de cada jugador, cada baja donde ocurrió - y es un archivo que el juego escribe para sus jugadores, así que leerlo no toca nada del juego. El watcher mira las carpetas donde los juegos las guardan, espera a que un archivo nuevo deje de crecer (si no, el juego aún lo está escribiendo), y lo convierte en un hilo de trabajo, para que una conversión larga nunca detenga el resto del watcher.
+Una repetición contiene todo lo que una interfaz en vivo oculta en los juegos multijugador -
+la posición de cada jugador, cada baja donde ocurrió- y es un archivo que el juego escribe para sus
+jugadores, así que leerlo no toca nada del juego. El watcher mira las carpetas donde los juegos las
+guardan, espera a que un archivo nuevo deje de crecer (si no, el juego aún lo está escribiendo), y lo
+convierte en un hilo de trabajo, para que una conversión larga nunca detenga el resto del watcher.
 
-La primera vez que se ve una carpeta, las repeticiones que ya contiene solo se anotan, no se convierten: un jugador con años de demos encontraría el watcher ocupado durante un día. `python -m heat3d_watch replays <adaptador> [carpeta]` convierte las existentes bajo petición.
+La primera vez que se ve una carpeta, las repeticiones que ya contiene solo se anotan, no se convierten:
+un jugador con años de demos vería el watcher ocupado durante un día. `python -m heat3d_watch
+replays <adaptador> [carpeta]` convierte las existentes bajo petición.
 
 #### Dota 2 {#dota-2}
 
-Dota 2 guarda las repeticiones que descarga un jugador (los detalles de una partida, o Ver > Repeticiones) en `<Dota>/game/dota/replays/<id de partida>.dem`; Valve conserva la repetición de cada partida pública en sus servidores durante unas semanas, y `python -m heat3d_watch dota-replay <id de partida>` descarga una por su id a través de OpenDota. Cada una se lee con gem (github.com/whanyu1212/gem-dota, MIT, `pip install gem-dota`) en un proceso propio (`heat3d_watch/decoders/dota_replay.py`): la posición, altura, salud, nivel, orientación, maná, experiencia, atributos y objetos de cada héroe 7,5 veces por segundo mientras está vivo; bajas y muertes donde ocurrieron; torres, cuarteles, Roshan y Tormentors donde cayeron; cada ward donde se colocó y donde terminó; las entradas del registro de combate sobre los héroes (daño, curaciones, habilidades, objetos, compras, runas, oro, experiencia, modificadores), y los pings, dibujos y órdenes de cada jugador - en `dota/<partida>.parquet`; cada otra unidad (criaturas, invocaciones, ilusiones, mensajeros, edificios) una vez por segundo en `<partida>.units.parquet`; el registro de combate completo en `<partida>.combatlog.parquet`; y la partida, el chat, el draft, todo lo demás que extrae el analizador y el registro de fin de partida del juego en `<partida>.match.json`, en la carpeta de la sesión. Lo demás que contiene la repetición se guarda completo junto a ellos (regla de conversión de 3DHeat): cada fotograma y mensaje de red en `<partida>.packets.parquet`, cada cambio de propiedad de entidad en `<partida>.entities.parquet`, cada entrada de tabla de cadenas en `<partida>.strings.parquet`, contado en `selfCheck.completeness` del documento de la partida. Las posiciones son las unidades del mundo de Dota, las mismas que informa la game-state integration. La línea del marcador del jugador con sesión iniciada se convierte en las estadísticas de la sesión: bajas, muertes, asistencias, últimos golpes, negaciones, valor neto, GPM, XPM, daño a héroes, wards, y si la partida se ganó. Una nueva versión de parche de Dota puede cambiar las entidades de la repetición antes de que gem las siga; una repetición que gem no puede leer hasta el final se convierte hasta donde llega y se marca como `incomplete` en su resumen.
+Dota 2 guarda las repeticiones que descarga un jugador (los detalles de una partida, o Ver > Repeticiones)
+en `<Dota>/game/dota/replays/<id de partida>.dem`; Valve conserva la repetición de cada partida pública en
+sus servidores durante unas semanas, y `python -m heat3d_watch dota-replay <id de partida>` descarga una por
+su id a través de OpenDota. El watcher no las lee por sí mismo: lo hace un lector externo (3DHeat Dota Replay,
+github.com/Holdi601/3DHeat-Ext-DotaReplay, `exporters/ext/dota-replay`, comando `heat3d-dota-replay`, que lee
+con gem-dota, MIT), separado para que un problema con él no afecte a nada más, y se ejecuta en un proceso propio
+con cada repetición nueva cuando está en el PATH, instalado o junto al watcher; si falta, el watcher indica una
+sola vez cómo instalarlo. Escribe la posición, altura, salud, nivel, orientación, maná, experiencia, atributos
+y objetos de cada héroe 7,5 veces por segundo mientras está vivo; bajas y muertes donde ocurrieron; torres,
+cuarteles, Roshan y Tormentors donde cayeron; cada ward donde se colocó y donde terminó; las entradas del
+registro de combate sobre los héroes (daño, curaciones, habilidades, objetos, compras, runas, oro, experiencia,
+modificadores), y los pings, dibujos y órdenes de cada jugador - en `dota/<partida>.parquet`; cada otra unidad
+(criaturas, invocaciones, ilusiones, mensajeros, edificios) una vez por segundo en `<partida>.units.parquet`;
+el registro de combate completo en `<partida>.combatlog.parquet`; y la partida, el chat, el draft, todo lo
+demás que extrae el analizador y el registro de fin de partida del juego en `<partida>.match.json`, en la
+carpeta de la sesión. Lo demás que contiene la repetición se guarda completo junto a ellos (regla de
+conversión de 3DHeat): cada fotograma y mensaje de red en `<partida>.packets.parquet`, cada cambio de
+propiedad de entidad en `<partida>.entities.parquet`, cada entrada de tabla de cadenas en
+`<partida>.strings.parquet`, contado en `selfCheck.completeness` del documento de la partida. Las posiciones
+son las unidades del mundo de Dota, las mismas que informa la game-state integration. La línea del marcador
+del jugador con sesión iniciada se convierte en las estadísticas de la sesión: bajas, muertes, asistencias,
+últimos golpes, negaciones, valor neto, GPM, XPM, daño a héroes, wards, y si la partida se ganó. Una nueva
+versión de parche de Dota puede cambiar las entidades de la repetición antes de que gem las siga; una
+repetición que gem no puede leer hasta el final se convierte hasta donde llega y se marca como `incomplete`
+en su resumen.
 
-El mismo módulo también sirve a: [Counter-Strike 2 (repeticiones)](game-cs2-demos.md), [osu! (repeticiones)](game-osu-replays.md), [Squad (repeticiones)](game-squad-demos.md), [War Thunder (repeticiones)](game-warthunder-replays.md), [World of Tanks (repeticiones)](game-wot-replays.md), [World of Warships (repeticiones)](game-wows-replays.md).
+El mismo módulo también sirve a: [Counter-Strike 2 (repeticiones)](game-cs2-demos.md), [Squad (repeticiones)](game-squad-demos.md), [War Thunder (repeticiones)](game-warthunder-replays.md), [World of Tanks (repeticiones)](game-wot-replays.md), [World of Warships (repeticiones)](game-wows-replays.md).
 
 ## Posiciones y ejes {#positions-and-axes}
 

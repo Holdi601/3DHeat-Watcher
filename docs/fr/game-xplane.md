@@ -1,9 +1,9 @@
 ---
 title: "X-Plane (données en direct)"
-nav_order: 50
+nav_order: 49
 lang: "fr"
 source: game-xplane.md
-source_hash: "4e7246cce10c"
+source_hash: "be1c5b21d2ef"
 nav_exclude: true
 search_exclude: true
 ---
@@ -74,9 +74,9 @@ Ce module regroupe aussi ce que les autres simulateurs de vol partagent : la car
 | Axe vertical | `y` |
 | Unités | mètres (est, altitude, nord depuis le premier relevé) |
 | Miroir pour le visualiseur | `z` |
-| Échelle des unités (`scale` : le visualiseur multiplie les positions par elle) | 1 |
+| Échelle des unités (`scale` : le visualiseur multiplie les positions par cette valeur) | 1 |
 
-Ces valeurs vont dans `meta.json` de chaque session (`axes`) et, quand la session a des positions, dans le pied de page de `heat.parquet`, pour que le visualiseur 3DHeat tourne et mette à l'échelle les lignes lui-même : voir [Les données](the-data.md).
+Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des positions, dans le pied de `heat.parquet`, pour que le visualiseur 3DHeat tourne et mette à l'échelle les lignes toute seule : voir [Les données](the-data.md).
 
 ## Multijoueur {#multiplayer}
 
@@ -105,8 +105,6 @@ Le watcher suit la [règle du convertisseur](https://github.com/Holdi601/3DHeat/
 **Conservé brut**
 
 - `RREF` et `RPOS` en entier comme `payload`, sous leur en-tête de quatre lettres (utilisés quand l'interrogation a fait une ligne ; dans les menus, sans relevé, ils n'en font aucune) ; tout ce que X-Plane envoie au port du watcher sous son propre en-tête, ou `unknown` ; `requests` dans meta.json dit quel dataref correspond à chaque index RREF, si bien que les charges utiles se lisent sans ce module
-- les autres trames
-
 **Non disponible**
 
 - les autres datarefs (X-Plane en a des milliers) : RREF n'envoie que ce qui est demandé, une souscription chacune ; la liste demande le vol, l'état de l'appareil et l'heure du simulateur - davantage de détails de cockpit (radios, lumières, toutes les jauges de moteur, pannes) multiplieraient les requêtes

@@ -12,13 +12,13 @@ search_exclude: true
 Tutte le registrazioni sono file semplici nella cartella dei dati (`%LOCALAPPDATA%\3DHeat\Watcher` salvo modifiche, vedi [Installazione e avvio](installing-and-running.md#where-everything-is)). Puoi leggerli, copiarli o eliminarli senza il watcher. Un file `.jsonl` è testo semplice, una riga per evento (si apre con Blocco note); un file `.parquet` è una tabella che il visualizzatore di 3DHeat apre (Excel non lo apre - `stats --csv` scrive file CSV per i fogli di calcolo).
 
 ## Cartelle di sessione {#session-folders}
-![a session folder](../assets/img/session-folder.svg)
+![una cartella di sessione](../assets/img/session-folder.svg)
 
 
 Una **sessione** è una seduta con una sola fonte: dal momento in cui il gioco dice per la prima volta qualcosa fino a quando si ferma (il gioco si chiude, una partita finisce, una guida o un volo vengono azzerati - la pagina di ogni adattatore dice cosa avvia e chiude le sue sessioni). Ogni sessione ha una cartella:
 
 ```text
-<data>\sessions\<game>\<YYYY-MM-DD_HH-MM-SS>_<adattatore id>\
+<data>\sessions\<game>\<YYYY-MM-DD_HH-MM-SS>_<adapter id>\
     events.jsonl
     heat.parquet
     meta.json
@@ -112,7 +112,7 @@ I simulatori di volo (DCS World, Microsoft Flight Simulator, X-Plane, le registr
   "version": 1,
   "watcher": "1.0.2",
   "game": "EA SPORTS F1 25",
-  "adattatore": "f1-25",
+  "adapter": "f1-25",
   "source": "UDP telemetry 127.0.0.1:20777 (...)",
   "multiplayer": true,
   "started": "2026-05-01T20:15:03",
@@ -141,7 +141,7 @@ Una sessione la cui fonte indica il giocatore (vedi [Le righe del giocatore](#th
 CREATE TABLE sessions (
   id TEXT PRIMARY KEY,          -- <game folder>/<session folder>
   game TEXT NOT NULL,
-  adattatore TEXT NOT NULL,
+  adapter TEXT NOT NULL,
   started REAL NOT NULL,        -- Unix seconds
   ended REAL,                   -- Unix seconds
   seconds REAL,
@@ -191,7 +191,7 @@ Quando `run` parte, cerca le sessioni che un watcher precedente ha lasciato aper
 Il log dice "finished N session(s) left open by an earlier run". Il file di lock impedisce a un secondo watcher di "recuperare" le sessioni di uno che è ancora in esecuzione.
 
 ## Esportazione CSV {#csv-export}
-![stats --csv and table](../assets/img/csv-and-table.svg)
+![stats --csv e table](../assets/img/csv-and-table.svg)
 
 
 ```bash
@@ -200,7 +200,7 @@ python -m heat3d_watch stats --csv out
 
 scrive `out\sessions.csv`, `out\events.csv` e `out\stats.csv`. Ogni file è una tabella di `watcher.sqlite`, completa, con una riga di intestazione, in UTF-8. Gli orari sono secondi Unix come nel database. `--game` non restringe l'esportazione; viene scritta ogni sessione.
 
-## Aprire una sessione nel visualizzatore di 3DHeat {#opening-a-session-in-the-3dheat-visualizzatore}
+## Aprire una sessione nel visualizzatore di 3DHeat {#opening-a-session-in-the-3dheat-viewer}
 
 Il visualizzatore: [github.com/Holdi601/3DHeat](https://github.com/Holdi601/3DHeat), documentazione [holdi601.github.io/3DHeat](https://holdi601.github.io/3DHeat/) - la sua pagina sul [contenitore `.3dheat`](https://holdi601.github.io/3DHeat/container.html) descrive il formato di un file per partita che possono scrivere i convertitori di replay.
 

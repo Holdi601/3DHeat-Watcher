@@ -3,7 +3,7 @@ title: "Counter-Strike 2 (replay)"
 nav_order: 8
 lang: "it"
 source: game-cs2-demos.md
-source_hash: "d115f9085302"
+source_hash: "82fe00f0f2f0"
 nav_exclude: true
 search_exclude: true
 ---
@@ -43,14 +43,14 @@ La prima volta che una cartella viene vista, i replay già presenti vengono solo
 
 CS2 salva i demo che un giocatore scarica dallo storico delle partite (scheda Guarda) in `<CS2>/game/csgo/replays/` e quelli registrati con il comando da console `record` in `<CS2>/game/csgo/`. Ciascuno viene convertito con il convertitore CS2 di questo repository (3DHeat CS2, github.com/Holdi601/3DHeat-CS2: la posizione, la direzione dello sguardo, la salute e il denaro di ogni giocatore ogni otto tick; uccisioni, morti, danni, granate, piazzamenti e disinneschi nel punto in cui sono avvenuti; round, punteggio, economia) nella cartella della sessione, come tabella `<mappa>/<partita>.parquet` e riepilogo `<partita>.match.json` che le schede Mappa di calore e Partita del visualizzatore leggono. Il tabellone della partita diventa le statistiche della sessione: per il giocatore il cui account Steam è connesso su questo computer (da `loginusers.vdf` di Steam) con i nomi semplici - uccisioni, morti, assist, ADR, KAST, percentuale di headshot, primi kill, clutch - e il punteggio e i round.
 
-Lo stesso modulo serve anche: [Dota 2 (replay)](game-dota-replays.md), [osu! (replay)](game-osu-replays.md), [Squad (replay)](game-squad-demos.md), [War Thunder (replay)](game-warthunder-replays.md), [World of Tanks (replay)](game-wot-replays.md), [World of Warships (replay)](game-wows-replays.md).
+Lo stesso modulo serve anche: [Dota 2 (replay)](game-dota-replays.md), [Squad (replay)](game-squad-demos.md), [War Thunder (replay)](game-warthunder-replays.md), [World of Tanks (replay)](game-wot-replays.md), [World of Warships (replay)](game-wows-replays.md).
 
 ## Posizioni e assi {#positions-and-axes}
 
 | | |
 |---|---|
 | Posizioni registrate | sì |
-| Asse verso l'alto | `z` |
+| Asse verticale | `z` |
 | Unità | pollici (unità Source) |
 | Specchiato per il visualizzatore | `y` |
 | Scala delle unità (`scale`: il visualizzatore moltiplica le posizioni per questo valore) | 1 |
@@ -60,7 +60,7 @@ Questi valori vanno in `meta.json` di ogni sessione (`axes`) e, quando la sessio
 ## Multigiocatore {#multiplayer}
 
 - Segnato come giocato online (`multiplayer`): **sì**. `games --markdown` lo mostra come "consentito (legge solo ciò che il gioco pubblica)".
-- Tipo `replay`: legge solo ciò che il gioco o la piattaforma consegnano (replay e demo che il gioco salva), quindi registra anche nel gioco online oltre che offline; il contrassegno decide soltanto se la memoria può mai essere letta.
+- Tipo `replay`: legge solo ciò che il gioco o la piattaforma consegnano (replay e demo che il gioco salva), quindi registra anche nel gioco online oltre che offline; il flag decide solo se la memoria può mai essere letta.
 - Memoria: **mai** letta da questo adattatore. Solo gli adattatori `memory` leggono la memoria, e mai per un gioco segnato come giocato online - vedi [Fonti e regole](sources-and-rules.md).
 
 ## Statistiche registrate {#statistics-recorded}

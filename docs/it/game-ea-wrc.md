@@ -44,7 +44,7 @@ gamecapture in
 `heat3d_capture/telemetry` di 3DHeat GameCapture, copiati in `heat3d_watch/decoders` (testati lì con pacchetti costruiti
 dai layout pubblicati). Questo modulo trasforma i loro fotogrammi nelle righe del
 watcher: la posizione dell'auto alcune volte al secondo con velocità, marcia e pedali,
-un evento per ogni giro o tappa, e i numeri che un pilota tiene d'occhio: giri, miglior giro,
+un evento per ogni giro o tappa, e i numeri che un pilota tiene d'occhio: giri, giro migliore,
 distanza, velocità massima.
 
 #### Forza (Horizon 4/5/6, Motorsport) {#forza-horizon-456-motorsport}
@@ -64,7 +64,7 @@ Mentre tiene la porta, inoltra ogni pacchetto invariato a
 127.0.0.1:5301: imposta la casella della porta di FH Companion (la sua scheda telemetria) su 5301 e
 registrano entrambi.
 
-#### DiRT Rally 2.0, Richard Burns Rally, EA SPORTS WRC {#ea-sports-wrc-dirt-rally-20-richard-burns-rally}
+#### EA SPORTS WRC, DiRT Rally 2.0, Richard Burns Rally {#ea-sports-wrc-dirt-rally-20-richard-burns-rally}
 
 UDP: il file `Documents/My Games/WRC/telemetry/config.json` di WRC (il pacchetto `session_update`
 della struttura `wrc`), il file `hardware_settings_config.xml` di DiRT
@@ -100,7 +100,7 @@ Questi valori finiscono in `meta.json` di ogni sessione (`axes`) e, quando la se
 ## Multigiocatore {#multiplayer}
 
 - Segnato come giocato online (`multiplayer`): **sì**. `games --markdown` lo mostra come "consentito (legge solo ciò che il gioco pubblica)".
-- Tipo `telemetry`: legge solo ciò che il gioco o la piattaforma rende disponibile (una porta UDP o la memoria condivisa che il gioco pubblica), quindi registra anche nel gioco online oltre che offline; il contrassegno decide solo se la memoria può mai essere letta.
+- Tipo `telemetry`: legge solo ciò che il gioco o la piattaforma rende disponibile (una porta UDP o la memoria condivisa che il gioco pubblica), quindi registra anche nel gioco online oltre che offline; il flag decide solo se la memoria può mai essere letta.
 - Memoria: **mai** letta da questo adattatore. Solo gli adattatori `memory` leggono la memoria, e mai per un gioco segnato come giocato online: vedi [Fonti e regole](sources-and-rules.md).
 
 ## Statistiche registrate {#statistics-recorded}
@@ -113,11 +113,11 @@ Una chiave tra parentesi graffe viene completata durante l'esecuzione (`score.{t
 
 ## Completezza {#completeness}
 
-Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md) di 3DHeat: ciò che la sorgente contiene viene letto o conservato, mai scartato. Oltre alle righe, ogni pacchetto, pagina, riga o risposta che l'adattatore riceve viene conservato intero in `heat.raw.parquet` della sessione (colonne `time`, `ms`, `type`, `used`, `payload`, `text`, poi ogni campo conservato per nome; `used` segna ciò che è diventato anche riga), e `selfCheck.completeness` in `meta.json` conta ogni `type`: `lost` è 0.
+Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md) di 3DHeat: ciò che la fonte contiene viene letto o conservato, mai scartato. Oltre alle righe, ogni pacchetto, pagina, riga o risposta che l'adattatore riceve viene conservato intero in `heat.raw.parquet` della sessione (colonne `time`, `ms`, `type`, `used`, `payload`, `text`, poi ogni campo conservato per nome; `used` segna ciò che è diventato anche riga), e `selfCheck.completeness` in `meta.json` conta ogni `type`: `lost` è 0.
 
 **Letto**
 
-- righe a 10 Hz: posizione, velocità, marcia, acceleratore, freno, distanza nella tappa, imbardata, giri motore, sterzo; inizio tappa, arrivo con il tempo della tappa, riavvii
+- righe a 10 Hz: posizione, velocità, marcia, acceleratore, freno, distanza nella tappa, imbardata, giri al minuto, sterzo; inizio tappa, arrivo con il tempo della tappa, riavvii
 
 **Conservato grezzo**
 
@@ -135,7 +135,7 @@ Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat
 
 decodifica del registratore di giri di gamecapture (testata su pacchetti costruiti dai layout documentati); l'adattatore testato su pacchetti costruiti nel test, inviati via UDP; non ancora testato con il gioco
 
-## Sorgente {#source}
+## Fonte {#source}
 
 [heat3d_watch/adapters/racing.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/racing.py)
 

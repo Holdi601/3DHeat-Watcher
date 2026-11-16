@@ -36,7 +36,7 @@ Tapez la commande dans un terminal ouvert dans le dossier du watcher (voir [Avan
 
 Télémétrie propre aux jeux de course : Forza, les jeux Assetto Corsa, les jeux de rallye et BeamNG, enregistrée sous forme de trajets, de tours et d'épreuves spéciales.
 
-Chacun de ces jeux publie sa télémétrie exprès, pour les tableaux de bord et les simulateurs de mouvement ; rien n'est injecté et rien que le jeu ne fournit n'est lu. Le décodage n'est pas écrit deux fois : ce sont les enregistreurs de tours de gamecapture, dans `heat3d_capture/telemetry` de 3DHeat GameCapture, recopiés dans `heat3d_watch/decoders` (testés là-bas avec des paquets construits à partir des dispositions publiées). Ce module transforme leurs images en lignes du watcher : la position de la voiture plusieurs fois par seconde avec sa vitesse, son rapport et ses pédales, un événement par tour ou par épreuve, et les chiffres que garde un pilote : tours, meilleur tour, distance, vitesse maximale.
+Chacun de ces jeux publie sa télémétrie exprès, pour les tableaux de bord et les simulateurs de mouvement ; rien n'est injecté et rien que le jeu ne fournit n'est lu. Le décodage n'est pas écrit deux fois : ce sont les enregistreurs de tours de gamecapture, dans `heat3d_capture/telemetry` de 3DHeat GameCapture, recopiés dans `heat3d_watch/decoders` (testés là-bas avec des paquets construits à partir des dispositions publiées). Ce module transforme leurs trames en lignes du watcher : la position de la voiture plusieurs fois par seconde avec sa vitesse, son rapport et ses pédales, un événement par tour ou par épreuve, et les chiffres que garde un pilote : tours, meilleur tour, distance, vitesse maximale.
 
 #### Forza (Horizon 4/5/6, Motorsport) {#forza-horizon-456-motorsport}
 
@@ -50,7 +50,7 @@ UDP : `Documents/My Games/WRC/telemetry/config.json` de WRC (paquet `session_upd
 
 Les lignes sont quelques-unes par seconde ; les jeux en envoient bien davantage. Chaque paquet UDP reçu - dans les menus, entre les tours, ceux qu'aucun décodeur ne lit - est conservé en entier dans `heat.raw.parquet` de la session, sous son format (`dash-horizon`, `session_update`, `extradata3`, `H3D1`, ...), et chaque page de mémoire partagée (toute la zone mappée, pas seulement les octets décodés) à chaque changement, sous le nom de sa zone (`acpmf_physics`, ...). `used` marque ce qui est aussi devenu des lignes ; `selfCheck.completeness` dans `meta.json` compte chaque type (règle du convertisseur de 3DHeat).
 
-Ce même module sert aussi : [Assetto Corsa (données en direct)](game-assetto-corsa.md), [Assetto Corsa Competizione (données en direct)](game-assetto-corsa-competizione.md), [Assetto Corsa EVO (données en direct)](game-assetto-corsa-evo.md), [Assetto Corsa Rally (données en direct)](game-assetto-corsa-rally.md), [BeamNG.drive (données en direct)](game-beamng.md), [EA SPORTS WRC (données en direct)](game-ea-wrc.md), [Forza Horizon 4 (données en direct)](game-forza-horizon-4.md), [Forza Horizon 5 (données en direct)](game-forza-horizon-5.md), [Forza Horizon 6 (données en direct)](game-forza-horizon-6.md), [Forza Motorsport (données en direct)](game-forza-motorsport.md), [Richard Burns Rally (données en direct)](game-richard-burns-rally.md).
+Le même module sert aussi : [Assetto Corsa (données en direct)](game-assetto-corsa.md), [Assetto Corsa Competizione (données en direct)](game-assetto-corsa-competizione.md), [Assetto Corsa EVO (données en direct)](game-assetto-corsa-evo.md), [Assetto Corsa Rally (données en direct)](game-assetto-corsa-rally.md), [BeamNG.drive (données en direct)](game-beamng.md), [EA SPORTS WRC (données en direct)](game-ea-wrc.md), [Forza Horizon 4 (données en direct)](game-forza-horizon-4.md), [Forza Horizon 5 (données en direct)](game-forza-horizon-5.md), [Forza Horizon 6 (données en direct)](game-forza-horizon-6.md), [Forza Motorsport (données en direct)](game-forza-motorsport.md), [Richard Burns Rally (données en direct)](game-richard-burns-rally.md).
 
 ## Positions et axes {#positions-and-axes}
 
@@ -62,7 +62,7 @@ Ce même module sert aussi : [Assetto Corsa (données en direct)](game-assetto-c
 | Miroir pour le visualiseur | aucun |
 | Échelle des unités (`scale` : le visualiseur multiplie les positions par elle) | 1 |
 
-Ces valeurs vont dans `meta.json` de chaque session (`axes`) et, quand la session a des positions, dans le pied de page de `heat.parquet`, pour que le visualiseur 3DHeat tourne et mette à l'échelle les lignes lui-même : voir [Les données](the-data.md).
+Ces valeurs vont dans `meta.json` de chaque session (`axes`) et, quand la session a des positions, dans le pied de `heat.parquet`, pour que le visualiseur 3DHeat tourne et mette à l'échelle les lignes lui-même : voir [Les données](the-data.md).
 
 ## Multijoueur {#multiplayer}
 
@@ -94,7 +94,7 @@ Le watcher suit la [règle du convertisseur](https://github.com/Holdi601/3DHeat/
 **Non disponible**
 
 - les autres voitures : les jeux n'envoient que la voiture du joueur
-- une voie de frein à main : le paquet n'en a pas
+- le frein à main : le paquet ne le transmet pas
 
 **Taille** : environ 70 Mo par heure à 60 paquets par seconde (264 octets plus un en-tête d'élément de 70 octets) ; zstd en garde une fraction
 

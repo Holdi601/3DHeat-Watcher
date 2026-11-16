@@ -35,7 +35,7 @@ Minecraft (édition Java) : les fichiers de journal, de statistiques et de joueu
 
 Où (`%APPDATA%\.minecraft\`) :
 
-* `logs\latest.log` - le journal du jeu, neuf à chaque lancement (l'ancien est
+* `logs\latest.log` - le journal du jeu, nouveau à chaque lancement (l'ancien est
   rangé dans un .log.gz daté). Lignes `[hh:mm:ss] [thread/LEVEL]: message`
   (les chargeurs de mods écrivent `[ddMMMyyyy hh:mm:ss.mmm] [thread/LEVEL] [logger/]: ...`).
   Ce que les joueurs voient dans le chat s'y trouve : connexions et déconnexions, messages de mort,
@@ -75,7 +75,7 @@ première copie est aussi conservée (`baseline`), la première fois que le fich
 | Axe vertical | `y` |
 | Unités | blocs (1 bloc = 1 m) |
 | Miroir pour le visualiseur | aucun |
-| Échelle des unités (`scale` : le visualiseur multiplie les positions par elle) | 1 |
+| Échelle des unités (`scale` : le visualiseur multiplie les positions par lui) | 1 |
 
 Ces valeurs vont dans `meta.json` de chaque session (`axes`) et, quand la session a des positions, dans le pied de page de `heat.parquet`, pour que le visualiseur 3DHeat tourne et mette à l'échelle les lignes lui-même : voir [Les données](the-data.md).
 

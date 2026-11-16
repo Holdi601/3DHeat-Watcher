@@ -28,7 +28,7 @@ Journal del giocatore %USERPROFILE%\Saved Games\Frontier Developments\Elite Dang
 
 ## Come attivarlo {#how-to-switch-it-on}
 
-Non serve attivare nulla: il watcher legge la sorgente così come il gioco o la piattaforma la fornisce.
+Non serve attivare nulla: il watcher legge la fonte così come il gioco o la piattaforma la fornisce.
 
 ## Come funziona {#how-it-works}
 
@@ -50,7 +50,7 @@ Dove: `%USERPROFILE%\Saved Games\Frontier Developments\Elite Dangerous\`
   `NavRoute.json`, `Cargo.json`, `ModulesInfo.json`, `ShipLocker.json`,
   `Backpack.json`, `FCMaterials.json`. Ogni `*.json` della cartella che il gioco scrive in questa sessione
   viene conservato intero ogni volta che cambia (regola del convertitore di 3DHeat:
-  ciò che la sorgente contiene viene letto o conservato), sotto il suo nome di file.
+  ciò che la fonte contiene viene letto o conservato), sotto il suo nome di file.
 
 Ogni riga del giornale viene conservata intera nel file accessorio grezzo della sessione
 sotto il suo `event`, ogni file di supporto sotto il suo nome di file; una riga che non è JSON
@@ -83,7 +83,7 @@ Questi valori finiscono in `meta.json` di ogni sessione (`axes`) e, quando la se
 ## Multigiocatore {#multiplayer}
 
 - Segnato come giocato online (`multiplayer`): **sì**. `games --markdown` lo mostra come "consentito (legge solo ciò che il gioco pubblica)".
-- Tipo `log`: legge solo ciò che il gioco o la piattaforma rende disponibile (file che il gioco scrive mentre è in esecuzione), quindi registra anche nel gioco online oltre che offline; il contrassegno decide solo se la memoria può mai essere letta.
+- Tipo `log`: legge solo ciò che il gioco o la piattaforma rende disponibile (file che il gioco scrive mentre è in esecuzione), quindi registra anche nel gioco online oltre che offline; il flag decide solo se la memoria può mai essere letta.
 - Memoria: **mai** letta da questo adattatore. Solo gli adattatori `memory` leggono la memoria, e mai per un gioco segnato come giocato online: vedi [Fonti e regole](sources-and-rules.md).
 
 ## Statistiche registrate {#statistics-recorded}
@@ -96,7 +96,7 @@ Una chiave tra parentesi graffe viene completata durante l'esecuzione (`score.{t
 
 ## Completezza {#completeness}
 
-Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md) di 3DHeat: ciò che la sorgente contiene viene letto o conservato, mai scartato. Oltre alle righe, ogni pacchetto, pagina, riga o risposta che l'adattatore riceve viene conservato intero in `heat.raw.parquet` della sessione (colonne `time`, `ms`, `type`, `used`, `payload`, `text`, poi ogni campo conservato per nome; `used` segna ciò che è diventato anche riga), e `selfCheck.completeness` in `meta.json` conta ogni `type`: `lost` è 0.
+Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md) di 3DHeat: ciò che la fonte contiene viene letto o conservato, mai scartato. Oltre alle righe, ogni pacchetto, pagina, riga o risposta che l'adattatore riceve viene conservato intero in `heat.raw.parquet` della sessione (colonne `time`, `ms`, `type`, `used`, `payload`, `text`, poi ogni campo conservato per nome; `used` segna ciò che è diventato anche riga), e `selfCheck.completeness` in `meta.json` conta ogni `type`: `lost` è 0.
 
 **Letto**
 
@@ -125,7 +125,7 @@ Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat
 
 parser riprodotto su file di giornale reali di un'installazione locale (i conteggi degli eventi corrispondono alle statistiche); i rilevamenti di superficie di Status.json testati solo su istantanee sintetiche
 
-## Sorgente {#source}
+## Fonte {#source}
 
 [heat3d_watch/adapters/elite.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/elite.py)
 

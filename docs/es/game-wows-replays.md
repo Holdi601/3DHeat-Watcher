@@ -1,9 +1,9 @@
 ---
 title: "World of Warships (repeticiones)"
-nav_order: 49
+nav_order: 48
 lang: "es"
 source: game-wows-replays.md
-source_hash: "c822aca3f6fe"
+source_hash: "44a041452521"
 nav_exclude: true
 search_exclude: true
 ---
@@ -35,7 +35,7 @@ Ajustes desde variables de entorno:
 
 Repeticiones y demos: lo que guarda un juego de una partida, convertido una vez que la partida ha terminado.
 
-Una repetición contiene todo lo que una interfaz en vivo se guarda en los juegos multijugador -
+Una repetición contiene todo lo que una interfaz en vivo se reserva en los juegos multijugador -
 la posición de cada jugador, cada baja donde ocurrió- y es un archivo que el
 juego escribe para sus jugadores, así que leerlo no toca nada del juego. El
 watcher mira las carpetas donde los juegos las guardan, espera a que un archivo
@@ -64,14 +64,14 @@ cómo instalarlo. La línea del jugador que grabó - vehículo o barco, bajas, d
 (World of Tanks), si sobrevivió, y el resultado (World of Tanks) - pasa a ser las
 estadísticas de la sesión. Lo que lee cada conversor, y lo que no, está en su README.
 
-El mismo módulo sirve también a: [Counter-Strike 2 (repeticiones)](game-cs2-demos.md), [Dota 2 (repeticiones)](game-dota-replays.md), [osu! (repeticiones)](game-osu-replays.md), [Squad (repeticiones)](game-squad-demos.md), [War Thunder (repeticiones)](game-warthunder-replays.md), [World of Tanks (repeticiones)](game-wot-replays.md).
+El mismo módulo sirve también a: [Counter-Strike 2 (repeticiones)](game-cs2-demos.md), [Dota 2 (repeticiones)](game-dota-replays.md), [Squad (repeticiones)](game-squad-demos.md), [War Thunder (repeticiones)](game-warthunder-replays.md), [World of Tanks (repeticiones)](game-wot-replays.md).
 
 ## Posiciones y ejes {#positions-and-axes}
 
 | | |
 |---|---|
-| Posiciones registradas | sí |
-| Eje vertical | `y` |
+| Posiciones grabadas | sí |
+| Eje hacia arriba | `y` |
 | Unidades | unidades del mundo de World of Warships (x este, y arriba, z norte; una equivale a 15 m según la geometría del casco, y a 30 m según los alcances del juego) |
 | Reflejado para el visor | `z` |
 | Escala de unidades (`scale`: el visor multiplica las posiciones por ella) | 1 |

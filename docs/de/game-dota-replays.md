@@ -3,7 +3,7 @@ title: "Dota 2 (Replays)"
 nav_order: 12
 lang: "de"
 source: game-dota-replays.md
-source_hash: "958b1e1855e8"
+source_hash: "c0ed25c261f6"
 nav_exclude: true
 search_exclude: true
 ---
@@ -27,9 +27,13 @@ Replays, die Dota 2 speichert: &lt;Dota>/game/dota/replays/&lt;match id>.dem (im
 
 ## So schaltest du es ein {#how-to-switch-it-on}
 
-Lade das Replay eines Matches in Dota 2 herunter oder hole ein öffentliches: `python -m heat3d_watch dota-replay <match id>`; braucht `pip install gem-dota`
+Lade das Replay eines Matches in Dota 2 herunter oder hole ein öffentliches: `python -m heat3d_watch dota-replay <match id>`; installiere den Leser: github.com/Holdi601/3DHeat-Ext-DotaReplay (`heat3d-dota-replay`, bringt gem-dota mit)
 
 Gib den Befehl in einem Terminal ein, das im Ordner des Watchers geöffnet ist (siehe [Vor dem Start](before-you-start.md)). Wenn er fehlschlägt, sagt die letzte Zeile, warum; [Installation und Start](installing-and-running.md) beschreibt die üblichen Ursachen.
+
+Einstellungen aus Umgebungsvariablen:
+
+- `HEAT3D_DOTA_REPLAY`: der Ordner des Lesers (ein Klon oder entpacktes Release), wenn er nicht installiert ist oder nicht neben dem Watcher liegt
 
 ## Wie es funktioniert {#how-it-works}
 
@@ -41,9 +45,9 @@ Das erste Mal, wenn ein Ordner gesehen wird, werden die Replays darin nur vermer
 
 #### Dota 2 {#dota-2}
 
-Dota 2 speichert die Replays, die ein Spieler herunterlädt (die Details eines Matches oder Watch > Replays), unter `<Dota>/game/dota/replays/<match id>.dem`; Valve hält das Replay jedes öffentlichen Matches einige Wochen auf seinen Servern vor, und `python -m heat3d_watch dota-replay <match id>` holt eines anhand seiner ID über OpenDota. Jedes wird mit gem (github.com/whanyu1212/gem-dota, MIT, `pip install gem-dota`) in einem eigenen Prozess gelesen (`heat3d_watch/decoders/dota_replay.py`): Position, Höhe, Leben, Stufe, Blickrichtung, Mana, Erfahrung, Attribute und Gegenstände jedes Helden, 7,5 Mal pro Sekunde, solange er lebt; Kills und Tode dort, wo sie passierten; Türme, Kasernen, Roshan und Tormentors dort, wo sie fielen; jeder Ward dort, wo er gesetzt und wo er beendet wurde; die Einträge des Kampflogs über die Helden (Schaden, Heilung, Fähigkeiten, Gegenstände, Käufe, Runen, Gold, Erfahrung, Modifikatoren) und jeder Map-Ping, jede Kartenzeichnung und jeder Befehl jedes Spielers - in `dota/<match>.parquet`; jede andere Einheit (Creeps, Beschwörungen, Illusionen, Kuriere, Gebäude) einmal pro Sekunde in `<match>.units.parquet`; das ganze Kampflog in `<match>.combatlog.parquet`; und das Match, der Chat, der Draft, alles andere, was der Parser herauszieht, und der Spielbericht am Matchende in `<match>.match.json`, im Session-Ordner. Alles andere, was das Replay enthält, wird ganz daneben behalten (Konverterregel von 3DHeat): jeder Frame und jede Netzwerknachricht in `<match>.packets.parquet`, jede Änderung einer Entitätseigenschaft in `<match>.entities.parquet`, jeder Eintrag der Stringtabelle in `<match>.strings.parquet`, gezählt in `selfCheck.completeness` des Match-Dokuments. Positionen sind Dotas Welteinheiten, dieselben, die die Game-State-Integration meldet. Die Scoreboard-Zeile des angemeldeten Spielers wird zur Statistik der Session: Kills, Tode, Assists, letzte Treffer, Denies, Nettowert, GPM, XPM, Heldenschaden, Wards und ob das Match gewonnen wurde. Ein neuer Dota-Patch kann die Entitäten des Replays ändern, bevor gem folgt; ein Replay, das gem nicht bis zum Ende lesen kann, wird so weit umgewandelt, wie es geht, und in seiner Zusammenfassung als `incomplete` markiert.
+Dota 2 speichert die Replays, die ein Spieler herunterlädt (die Details eines Matches oder Watch > Replays), unter `<Dota>/game/dota/replays/<match id>.dem`; Valve hält das Replay jedes öffentlichen Matches einige Wochen auf seinen Servern vor, und `python -m heat3d_watch dota-replay <match id>` holt eines anhand seiner ID über OpenDota. Den Watcher lesen sie nicht selbst: Das tut ein externer Leser (3DHeat Dota Replay, github.com/Holdi601/3DHeat-Ext-DotaReplay, `exporters/ext/dota-replay`, Befehl `heat3d-dota-replay`, liest über gem-dota, MIT). Er ist getrennt gehalten, damit ein Problem mit ihm nichts anderes berührt, und wird für jedes neue Replay in einem eigenen Prozess gestartet, wenn er im PATH steht, installiert ist oder neben dem Watcher liegt; fehlt er, sagt der Watcher einmal, wie man ihn installiert. Er schreibt Position, Höhe, Leben, Stufe, Blickrichtung, Mana, Erfahrung, Attribute und Gegenstände jedes Helden 7,5 Mal pro Sekunde, solange er lebt; Kills und Tode dort, wo sie passierten; Türme, Kasernen, Roshan und Tormentors dort, wo sie fielen; jeden Ward dort, wo er gesetzt und wo er beendet wurde; die Einträge des Kampflogs über die Helden (Schaden, Heilung, Fähigkeiten, Gegenstände, Käufe, Runen, Gold, Erfahrung, Modifikatoren); und jeden Map-Ping, jede Kartenzeichnung und jeden Befehl jedes Spielers - in `dota/<match>.parquet`; jede andere Einheit (Creeps, Beschwörungen, Illusionen, Kuriere, Gebäude) einmal pro Sekunde in `<match>.units.parquet`; das ganze Kampflog in `<match>.combatlog.parquet`; und das Match, den Chat, den Draft, alles andere, was der Parser herauszieht, und den Spielbericht des Spiels am Matchende in `<match>.match.json`, im Session-Ordner. Alles andere, was das Replay enthält, wird ganz daneben behalten (Konverterregel von 3DHeat): jeder Frame und jede Netzwerknachricht in `<match>.packets.parquet`, jede Änderung einer Entitätseigenschaft in `<match>.entities.parquet`, jeder Eintrag der Stringtabelle in `<match>.strings.parquet`, gezählt in `selfCheck.completeness` des Match-Dokuments. Positionen sind Dotas Welteinheiten, dieselben, die die Game-State-Integration meldet. Die Scoreboard-Zeile des angemeldeten Spielers wird zur Statistik der Session: Kills, Tode, Assists, letzte Treffer, Denies, Nettowert, GPM, XPM, Heldenschaden, Wards und ob das Match gewonnen wurde. Ein neuer Dota-Patch kann die Entitäten des Replays ändern, bevor gem folgt; ein Replay, das gem nicht bis zum Ende lesen kann, wird so weit umgewandelt, wie es geht, und in seiner Zusammenfassung als `incomplete` markiert.
 
-Dasselbe Modul bedient außerdem: [Counter-Strike 2 (Replays)](game-cs2-demos.md), [osu! (Replays)](game-osu-replays.md), [Squad (Replays)](game-squad-demos.md), [War Thunder (Replays)](game-warthunder-replays.md), [World of Tanks (Replays)](game-wot-replays.md), [World of Warships (Replays)](game-wows-replays.md).
+Dasselbe Modul bedient außerdem: [Counter-Strike 2 (Replays)](game-cs2-demos.md), [Squad (Replays)](game-squad-demos.md), [War Thunder (Replays)](game-warthunder-replays.md), [World of Tanks (Replays)](game-wot-replays.md), [World of Warships (Replays)](game-wows-replays.md).
 
 ## Positionen und Achsen {#positions-and-axes}
 

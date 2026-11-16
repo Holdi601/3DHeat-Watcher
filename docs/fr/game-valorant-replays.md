@@ -1,9 +1,9 @@
 ---
 title: "VALORANT (replays)"
-nav_order: 45
+nav_order: 44
 lang: "fr"
 source: game-valorant-replays.md
-source_hash: "10a648aabdf1"
+source_hash: "617e23a33a4c"
 nav_exclude: true
 search_exclude: true
 ---
@@ -25,18 +25,24 @@ les replays que VALORANT sauvegarde : %LOCALAPPDATA%/VALORANT/Saved/Demos/\*.vrf
 
 ## Comment l'activer {#how-to-switch-it-on}
 
-sauvegardez un replay dans VALORANT (carrière > partie > télécharger le replay)
+sauvegardez un replay dans VALORANT (carrière > partie > télécharger le replay) et installez le lecteur : github.com/Holdi601/3DHeat-Ext-Riot (`heat3d-riot-replays`)
 
-## Comment ça marche {#how-it-works}
+Réglages par variables d'environnement :
+
+- `HEAT3D_RIOT_REPLAYS` : le dossier du lecteur (un clone ou une version décompressée), quand il n'est pas installé ou à côté du watcher
+
+## Fonctionnement {#how-it-works}
 
 Replays de League of Legends et de Valorant : ce qu'on peut en lire tel quel.
 
-Les deux jeux sauvegardent les replays sur le disque du joueur, et protègent ce qui est à l'intérieur : les données de la partie seconde par seconde sont brouillées, et différemment à chaque patch, pour empêcher qu'on s'en serve pour tricher. En venir à bout supposerait de démonter le code du jeu, ce que les conditions de Riot interdisent (conditions d'utilisation 3.1 et 7.1) - donc ce n'est pas fait ici. Ce qui figure en clair dans chaque fichier est lu, et le reste est conservé tel quel : chaque partie du fichier, en entier, dans `heat.raw.parquet` de la session (règle du convertisseur de 3DHeat, docs/converters.md dans le dépôt du visualiseur), comptée dans `selfCheck.completeness` de meta.json.
+Les deux jeux sauvegardent les replays sur le disque du joueur, et protègent ce qui est à l'intérieur :
+les données de la partie seconde par seconde sont brouillées, et différemment à chaque patch, pour empêcher qu'on s'en serve pour tricher. En venir à bout supposerait de démonter le code du jeu, ce que les conditions de Riot interdisent (conditions d'utilisation 3.1 et 7.1) - donc ce n'est fait nulle part dans 3DHeat. Ce qui figure en clair dans chaque fichier est lu, et le reste est conservé tel quel : chaque partie du fichier, en entier, dans `heat.raw.parquet` de la session (règle du convertisseur de 3DHeat, docs/converters.md dans le dépôt du visualiseur), comptée dans `selfCheck.completeness` de meta.json.
+
+Le watcher ne lit pas lui-même les fichiers : un lecteur externe le fait (3DHeat Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`, commande `heat3d-riot-replays`), tenu à part pour qu'un problème avec les conditions de Riot ne touche que ce lecteur. Trouvé dans le PATH, installé, ou à côté du watcher, il lit chaque nouveau replay ; s'il manque, le watcher indique une fois comment l'installer. Ce qu'il lit, le watcher le consigne dans la session ; la chronologie Match-V5 décrite plus bas est récupérée par le watcher lui-même, car elle ne se trouve pas dans le fichier.
 
 #### Valorant (.vrf) {#valorant-vrf}
 
-`%LOCALAPPDATA%\VALORANT\Saved\Demos\*.vrf`, un replay local d'Unreal Engine
-(structure d'après vrfkit, Apache-2.0, et ValorantReplayParser, MIT). En clair :
+`%LOCALAPPDATA%\VALORANT\Saved\Demos\*.vrf`, un replay local d'Unreal Engine. En clair :
 le bloc d'informations du replay (durée, version réseau, changelist, son nom, date d'enregistrement,
 compressé ou chiffré ou non), la carte, l'identifiant de la partie et les agents
 choisis (dans l'en-tête), et la chronologie propre au serveur - éliminations
@@ -96,7 +102,7 @@ Le watcher suit la [règle du convertisseur](https://github.com/Holdi601/3DHeat/
 
 ## Vérifié {#verified}
 
-construit à partir de la structure de conteneur documentée par vrfkit (Apache-2.0) ; non testé sur un vrai replay, aucun n'était disponible - contrôle avant lecture, et ce qui ne correspond pas est ignoré
+le lecteur (heat3d-riot-replays) est construit à partir de la structure de conteneur documentée par vrfkit (Apache-2.0) ; non testé sur un vrai replay, aucun n'était disponible - il contrôle avant de lire et ignore ce qui ne correspond pas
 
 ## Source {#source}
 

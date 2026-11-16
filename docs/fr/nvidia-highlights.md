@@ -10,9 +10,9 @@ search_exclude: true
 # NVIDIA Highlights {#nvidia-highlights}
 
 Certains jeux demandent à votre pilote graphique NVIDIA de sauvegarder une courte vidéo quand quelque chose se produit, comme un frag.
-Le Watcher note chacun de ces moments et, quand il le peut, le place sur la carte à l'endroit où il a eu lieu.
+Le watcher note chacun de ces moments et, quand il le peut, le place sur la carte à l'endroit où il a eu lieu.
 
-L'adaptateur `nvidia-highlights` enregistre les clips, les moments forts et les captures d'écran que l'application NVIDIA (ou GeForce Experience) sauvegarde, et donne à chacun un lieu sur la carte quand il le peut. Cette page explique ce que NVIDIA Highlights peut fournir et ce qu'il ne peut pas, quels fichiers le Watcher lit, et comment un moment fort obtient une position. La page générée de l'adaptateur est [NVIDIA highlights (plateforme)](game-nvidia-highlights.md).
+L'adaptateur `nvidia-highlights` enregistre les clips, les moments forts et les captures d'écran que l'application NVIDIA (ou GeForce Experience) sauvegarde, et donne à chacun un lieu sur la carte quand il le peut. Cette page explique ce que NVIDIA Highlights peut fournir et ce qu'il ne peut pas, quels fichiers le watcher lit, et comment un moment fort obtient une position. La page générée de l'adaptateur est [NVIDIA highlights (plateforme)](game-nvidia-highlights.md).
 
 ## Ce que NVIDIA Highlights peut et ne peut pas fournir {#what-nvidia-highlights-can-and-cannot-deliver}
 
@@ -25,7 +25,7 @@ Le SDK n'a **aucun champ pour autre chose** : ni position, ni match ou manche, n
 
 Un moment fort ne peut donc dire qu'une chose : « ce type de moment, dans ce jeu, à cette heure ». Tout le reste doit venir d'ailleurs.
 
-## Ce que lit le Watcher {#what-the-watcher-reads}
+## Ce que lit le watcher {#what-the-watcher-reads}
 
 Tout est lu dans les fichiers que l'application NVIDIA écrit pour sa propre galerie. Rien ne parle au pilote ni à l'application. Le dossier de superposition NVIDIA est `%LOCALAPPDATA%\NVIDIA Corporation\NVIDIA Overlay`.
 
@@ -52,17 +52,17 @@ Pour chaque nouvel élément, l'adaptateur écrit une ligne : `highlight` pour u
 
 Les statistiques de session sont `clips`, `screenshots`, `clip_seconds` et `placed` (les éléments qui ont reçu une position).
 
-**L'identifiant du moment fort** n'est écrit dans aucun endroit documenté. L'adaptateur en essaie deux, non documentés : un champ de l'entrée de galerie dont le nom contient « highlight », et - seulement pour les fichiers du dossier temporaire des moments forts - l'un des identifiants enregistrés par le jeu (d'au moins 4 caractères) qui apparaît dans le nom du fichier. Un clip sauvegardé est nommé d'après le jeu, qui pourrait contenir par hasard un identifiant comme « kill », donc son nom n'est pas cherché. Ces deux méthodes n'ont pas encore été vues fonctionner sur une vraie machine : aucun clip avec identifiant de moment fort, et aucune ligne de requête GfeSDK, ne s'est présenté là où l'adaptateur a été testé. L'index de la galerie, les réglages, les définitions des moments forts et les clips ont été testés sur de vrais fichiers.
+**L'identifiant du moment fort** n'est écrit dans aucun endroit documenté. L'adaptateur en essaie deux, non documentés : un champ de l'entrée de galerie dont le nom contient « highlight », et - seulement pour les fichiers du dossier temporaire des moments forts - l'un des identifiants enregistrés par le jeu (d'au moins 4 caractères) qui apparaît dans le nom du fichier. Un clip sauvegardé est nommé d'après le jeu, qui pourrait contenir par hasard un identifiant comme « kill », donc son nom n'est pas cherché. Ces deux méthodes n'ont pas encore été vues fonctionner sur une vraie machine : aucun clip avec identifiant de moment fort, ni aucune ligne de requête GfeSDK, n'est apparu là où l'adaptateur a été testé. L'index de la galerie, les réglages, les définitions des moments forts et les clips ont été testés sur de vrais fichiers.
 
 ### Quand les éléments sont enregistrés {#when-items-are-recorded}
 
-- Un clip continue d'être écrit un moment après l'appui sur la touche. L'adaptateur attend qu'un fichier ait la même taille et la même heure à deux regards (toutes les 10 s) et qu'il ait au moins 5 s.
+- Un clip continue d'être écrit un moment après l'appui sur la touche. L'adaptateur attend qu'un fichier ait la même taille et la même heure à deux contrôles espacés de 10 s et qu'il ait au moins 5 s.
 - La première fois que l'adaptateur tourne, tout ce qui est déjà dans la galerie et dans les journaux n'est que noté, pas enregistré, pour que des années de vieux clips n'inondent pas les statistiques. Ce qu'il a vu est gardé dans `<data>\state\nvidia-highlights.json`, donc un redémarrage n'enregistre rien deux fois.
 - Les éléments sont regroupés en une session par jeu. La session d'un jeu se ferme après 30 minutes sans nouvel élément, et finit à son dernier moment plutôt qu'à la fermeture du jeu. Des moments séparés de plus de 30 minutes vont dans des sessions distinctes.
 
 ## Comment un moment fort obtient une position {#how-a-highlight-gets-a-position}
 
-Le moment fort lui-même n'a pas de lieu. L'adaptateur cherche le moment dans les autres enregistrements que le Watcher a faits du même jeu, au même moment :
+Le moment fort lui-même n'a pas de lieu. L'adaptateur cherche le moment dans les autres enregistrements que le watcher a faits du même jeu, au même moment :
 
 1. **Le même jeu** : les dossiers de session sous `<data>\sessions\` dont le nom de jeu correspond à celui du moment fort. Les noms sont comparés en minuscules, lettres et chiffres seulement. Ils correspondent quand ils sont égaux, ou quand le plus court a au moins 5 caractères et est contenu dans le plus long (`Counter-Strike 2` et `Counter-Strike-2`).
 2. **Le même moment** : les sessions dont le début et la fin (depuis `meta.json`, avec une seconde de marge à chaque bout) couvrent le moment. Les sessions terminées sans positions, et les sessions propres à l'adaptateur, sont ignorées.
@@ -82,5 +82,5 @@ Points à connaître sur la position empruntée :
 
 L'autre façon d'obtenir une position serait de la lire dans la mémoire. Aucune des deux mémoires ne convient :
 
-- **La mémoire de NVIDIA ne contient pas de position.** L'application NVIDIA reçoit ce que le GfeSDK transporte - un identifiant de moment fort et deux décalages temporels - plus la vidéo qu'elle enregistre. Il n'y a nulle part de position côté NVIDIA à lire. (Le Watcher ne lit de toute façon pas la mémoire de NVIDIA ; il lit les fichiers ci-dessus.)
-- **La mémoire du jeu est interdite en multijoueur.** La position est dans le processus du jeu, mais le Watcher ne lit jamais la mémoire d'un jeu multijoueur : un adaptateur mémoire pour un jeu marqué comme joué en ligne est refusé avant que quoi que ce soit ne soit ouvert (voir [Lecture de la mémoire](memory-reading.md)). Les jeux multijoueurs tournent sous des anti-triches (Easy Anti-Cheat, BattlEye, Vanguard, ...) qui considèrent comme de la triche qu'un autre programme ouvre le processus du jeu, ce qui peut faire bannir le compte. Lire l'état du jeu de l'extérieur est aussi ce que les conditions des jeux interdisent. Un moment fort dans un jeu multijoueur n'a donc un lieu que grâce à ce que le jeu publie : son intégration d'état de jeu ou sa télémétrie, enregistrées par un autre adaptateur au même moment.
+- **La mémoire de NVIDIA ne contient pas de position.** L'application NVIDIA reçoit ce que le GfeSDK transporte - un identifiant de moment fort et deux décalages temporels - plus la vidéo qu'elle enregistre. Il n'y a nulle part de position côté NVIDIA à lire. (Le watcher ne lit de toute façon pas la mémoire de NVIDIA ; il lit les fichiers ci-dessus.)
+- **La mémoire du jeu est interdite en multijoueur.** La position est dans le processus du jeu, mais le watcher ne lit jamais la mémoire d'un jeu multijoueur : un adaptateur mémoire pour un jeu marqué comme joué en ligne est refusé avant que quoi que ce soit ne soit ouvert (voir [Lecture de la mémoire](memory-reading.md)). Les jeux multijoueurs tournent sous des anti-triches (Easy Anti-Cheat, BattlEye, Vanguard, ...) qui considèrent comme de la triche qu'un autre programme ouvre le processus du jeu, ce qui peut faire bannir le compte. Lire l'état du jeu de l'extérieur est aussi ce que les conditions des jeux interdisent. Un moment fort dans un jeu multijoueur n'a donc un lieu que grâce à ce que le jeu publie : son intégration d'état de jeu ou sa télémétrie, enregistrées par un autre adaptateur au même moment.

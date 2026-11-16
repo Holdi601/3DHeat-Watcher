@@ -1,15 +1,15 @@
 ---
 title: "War Thunder (replays)"
-nav_order: 46
+nav_order: 45
 lang: "fr"
 source: game-warthunder-replays.md
-source_hash: "81f03926431d"
+source_hash: "23676a6c5441"
 nav_exclude: true
 search_exclude: true
 ---
 # War Thunder (replays) {#war-thunder-replays}
 
-Après une partie de War Thunder, le watcher transforme le replay que le jeu a sauvegardé en fichiers que vous pouvez regarder sur une carte dans la visionneuse 3DHeat.
+Après une partie de War Thunder, le watcher transforme le replay que le jeu a sauvegardé en fichiers que vous pouvez regarder sur une carte dans le visualiseur 3DHeat.
 
 *Détails techniques : adaptateur `warthunder-replays`, type [`replay`](sources-and-rules.md) ; il tourne en permanence (il n'attend pas le lancement d'un jeu) et cherche de nouvelles données toutes les 5 s.*
 
@@ -61,8 +61,8 @@ lit pas, est dans son README. La ligne de résultat de l'auteur du replay — ki
 assistances, score, captures — devient les statistiques de la session.
 
 Le même module sert aussi : [Counter-Strike 2 (replays)](game-cs2-demos.md), [Dota 2 (replays)](game-dota-replays.md),
-[osu! (replays)](game-osu-replays.md), [Squad (replays)](game-squad-demos.md),
-[World of Tanks (replays)](game-wot-replays.md), [World of Warships (replays)](game-wows-replays.md).
+[Squad (replays)](game-squad-demos.md), [World of Tanks (replays)](game-wot-replays.md),
+[World of Warships (replays)](game-wows-replays.md).
 
 ## Positions et axes {#positions-and-axes}
 
@@ -71,17 +71,17 @@ Le même module sert aussi : [Counter-Strike 2 (replays)](game-cs2-demos.md), [D
 | Positions enregistrées | oui |
 | Axe vertical | `y` |
 | Unités | mètres (x est, y vertical, z nord) |
-| Miroir pour la visionneuse | `z` |
-| Échelle (`scale` : la visionneuse multiplie les positions par elle) | 1 |
+| Miroir pour le visualiseur | `z` |
+| Échelle (`scale` : le visualiseur multiplie les positions par elle) | 1 |
 
 Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des
-positions, dans le pied de `heat.parquet` : la visionneuse 3DHeat tourne et met à l'échelle les lignes
+positions, dans le pied de `heat.parquet` : le visualiseur 3DHeat tourne et met à l'échelle les lignes
 toute seule — voir [Les données](the-data.md).
 
 ## Multijoueur {#multiplayer}
 
 - Marqué comme joué en ligne (`multiplayer`) : **oui**. `games --markdown` l'affiche comme « autorisé (lit seulement ce que le jeu publie) ».
-- Type `replay` : il ne lit que ce que le jeu ou la plateforme remet (les replays et démos que le jeu sauvegarde), donc il enregistre aussi en ligne ; l'indicateur décide seulement si la mémoire peut être lue.
+- Type `replay` : il ne lit que ce que le jeu ou la plateforme remet (les replays et démos que le jeu sauvegarde), donc il enregistre aussi en ligne ; le drapeau décide seulement si la mémoire peut être lue.
 - Mémoire : **jamais** lue par cet adaptateur. Seuls les adaptateurs `memory` lisent la mémoire, et jamais pour un jeu marqué comme joué en ligne — voir [Sources et règles](sources-and-rules.md).
 
 ## Statistiques enregistrées {#statistics-recorded}
@@ -98,8 +98,8 @@ pas dans cette liste ; « Ce qui est enregistré » ci-dessus les nomme.
 
 Le convertisseur que lance cet adaptateur suit la [règle des convertisseurs](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md)
 de 3DHeat : ce que contient le replay est lu ou gardé, jamais abandonné — lu dans la table et dans le
-document du match, tout le reste gardé entier dans des fichiers annexes à côté, compté dans
-`selfCheck.completeness` du document du match. La documentation du convertisseur liste ce qu'il lit,
+document de partie, tout le reste gardé entier dans des fichiers annexes à côté, compté dans
+`selfCheck.completeness` du document de partie. La documentation du convertisseur liste ce qu'il lit,
 garde brut et ne peut pas lire.
 
 ## Vérifié {#verified}

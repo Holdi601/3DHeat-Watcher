@@ -1,9 +1,9 @@
 ---
 title: "Línea de tiempo de Steam (plataforma)"
-nav_order: 44
+nav_order: 43
 lang: "es"
 source: game-steam-timeline.md
-source_hash: "3878efe0d7f1"
+source_hash: "3a502e4ad09e"
 nav_exclude: true
 search_exclude: true
 ---
@@ -29,7 +29,7 @@ El watcher guarda lo que la Línea de tiempo de Steam conserva sobre tus juegos,
 
 ## Cómo activarlo {#how-to-switch-it-on}
 
-Steam > Ajustes > Grabación de juegos: graba en segundo plano o a demanda (entonces Steam escribe las líneas de tiempo)
+Steam > Configuración > Grabación de juegos: graba en segundo plano o a demanda (entonces Steam escribe las líneas de tiempo)
 
 ## Cómo funciona {#how-it-works}
 
@@ -71,8 +71,8 @@ El mismo módulo sirve también a: [Destacados de NVIDIA (plataforma)](game-nvid
 
 | | |
 |---|---|
-| Posiciones registradas | no |
-| Eje vertical | `y` |
+| Posiciones grabadas | no |
+| Eje hacia arriba | `y` |
 | Unidades | metros |
 | Reflejado para el visor | ninguno |
 | Escala de unidades (`scale`: el visor multiplica las posiciones por ella) | 1 |
@@ -113,7 +113,7 @@ El watcher sigue la [regla de conversores](https://github.com/Holdi601/3DHeat/bl
 
 **Tamaño**: unos cientos de entradas de 100 a 300 bytes por hora de juego: muy por debajo de 1 MB por hora
 
-## Verificación {#verified}
+## Verificado {#verified}
 
 probado con archivos de línea de tiempo reales de una instalación local: entradas de logro, modo de juego, error, y los eventos, descripciones de estado y fases propios de los juegos; el formato del archivo no está documentado
 

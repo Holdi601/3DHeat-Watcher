@@ -1,9 +1,9 @@
 ---
 title: "Rocket League (stato di gioco)"
-nav_order: 40
+nav_order: 39
 lang: "it"
 source: game-rocketleague-stats.md
-source_hash: "3da6ea772068"
+source_hash: "fd70d0540bb9"
 nav_exclude: true
 search_exclude: true
 ---
@@ -138,8 +138,8 @@ Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat
 
 testato su messaggi nel formato documentato inviati da un server locale finto; non ancora testato con il gioco
 
-## Sorgente {#source}
+## Fonte {#source}
 
 [heat3d_watch/adapters/rocketleague.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/rocketleague.py)
 
-<!-- Generated from the adattatore by tools/gen_game_pages.py; change the adattatore and run it again rather than editing this page. -->
+<!-- Generato dall'adattatore da tools/gen_game_pages.py; per cambiarlo modifica l'adattatore ed eseguilo di nuovo invece di modificare questa pagina. -->

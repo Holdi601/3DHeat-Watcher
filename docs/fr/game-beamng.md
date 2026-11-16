@@ -9,7 +9,7 @@ search_exclude: true
 ---
 # BeamNG.drive (données en direct) {#beamngdrive-live-data}
 
-Pendant que vous jouez à BeamNG.drive, le watcher enregistre les données que le jeu envoie lui-même, pour que vous puissiez les regarder plus tard sur une carte dans la visionneuse 3DHeat.
+Pendant que vous jouez à BeamNG.drive, le watcher enregistre les données que le jeu envoie lui-même, pour que vous puissiez les regarder plus tard sur une carte dans le visualiseur 3DHeat.
 
 *Détails techniques : adaptateur `beamng`, type [`telemetry`](sources-and-rules.md) ; il tourne pendant que `BeamNG.drive.x64.exe` ou `BeamNG.drive.exe` est lancé et cherche de nouvelles données toutes les 0,1 s.*
 
@@ -60,10 +60,10 @@ Le même module sert aussi : [Assetto Corsa (données en direct)](game-assetto-c
 | Positions enregistrées | oui |
 | Axe vertical | `y` |
 | Unités | mètres (monde Z vers le haut de BeamNG, tourné autour de X, comme le fait l'enregistreur de tours) |
-| Miroir pour la visionneuse | aucun |
-| Échelle des unités (`scale` : la visionneuse multiplie les positions par cette valeur) | 1 |
+| Miroir pour le visualiseur | aucun |
+| Échelle des unités (`scale` : le visualiseur multiplie les positions par cette valeur) | 1 |
 
-Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des positions, dans le pied de `heat.parquet`, pour que la visionneuse 3DHeat tourne et mette à l'échelle les lignes toute seule : voir [Les données](the-data.md).
+Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des positions, dans le pied de `heat.parquet`, pour que le visualiseur 3DHeat tourne et mette à l'échelle les lignes toute seule : voir [Les données](the-data.md).
 
 ## Multijoueur {#multiplayer}
 

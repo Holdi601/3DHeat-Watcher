@@ -1,9 +1,9 @@
 ---
 title: "Rocket League (estado de juego)"
-nav_order: 40
+nav_order: 39
 lang: "es"
 source: game-rocketleague-stats.md
-source_hash: "3da6ea772068"
+source_hash: "fd70d0540bb9"
 nav_exclude: true
 search_exclude: true
 ---
@@ -62,11 +62,11 @@ MatchCreated, MatchInitialized, CountdownBegin, RoundStarted, GoalReplayStart/Wi
 MatchPaused/Unpaused, PodiumStart, ReplayCreated, MatchDestroyed, ClockUpdatedSeconds
 ```
 
-Las posiciones van en unidades de Unreal (centímetros), Z hacia arriba; el campo mide unos 8200 x 10240, con las porterías en Y = ±5120. Las posiciones de los coches no forman parte de la API: lo que tiene lugar es el balón donde se golpeó, marcó o tocó el larguero.
+Las posiciones van en unidades de Unreal (centímetros), Z hacia arriba; el campo mide unos 8200 x 10240, con las porterías en Y = ±5120. Las posiciones de los coches no forman parte de la API: lo único con posición es el balón, donde se golpeó, marcó o tocó el larguero.
 
 Cada mensaje también se guarda entero (regla de conversión de 3DHeat, docs/converters.md en el repositorio del visor): `heat.raw.parquet`, con `type` igual al nombre del Event del mensaje y `text` el objeto tal como llegó del flujo. Un UpdateState idéntico byte a byte al anterior (una partida en pausa, un menú) se guarda una vez y se cuenta en `unchanged_replies` de meta.json. Los mensajes entre partidas esperan en cola para la sesión de la siguiente partida; lo que queda cuando se cierra el juego recibe una sesión propia. Los caracteres entre objetos que no son JSON se guardan como "junk".
 
-Fuentes: <https://www.rocketleague.com/en/developer/stats-api> (la página oficial); el uso de mayúsculas de los campos y el encuadre TCP se confirmaron con el cliente rlstatsapi (<https://docs.rs/crate/rlstatsapi>, MIT; leído solo por los datos).
+Fuentes: <https://www.rocketleague.com/en/developer/stats-api> (la página oficial); el uso de mayúsculas de los campos y el encuadre TCP se confirmaron con el cliente rlstatsapi (<https://docs.rs/crate/rlstatsapi>, MIT; leído solo para los hechos).
 
 ## Posiciones y ejes {#positions-and-axes}
 
@@ -120,7 +120,7 @@ El watcher sigue la [regla de conversión](https://github.com/Holdi601/3DHeat/bl
 
 ## Verificado {#verified}
 
-Probado con mensajes en el formato documentado enviados por un servidor local falso; sin probar contra el juego
+probado con mensajes en el formato documentado enviados por un servidor local falso; sin probar contra el juego
 
 ## Fuente {#source}
 

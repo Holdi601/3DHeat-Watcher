@@ -84,7 +84,7 @@ ADAPTERS = [MyAdapter(id="mygame", game="My Game", ...)]
 | `settings` | i `Settings` ([Installazione e avvio](installing-and-running.md#settings)) |
 | `data` | la cartella dei dati |
 | `pid`, `exe` | l'id del processo del gioco e il percorso dell'eseguibile, quando l'adattatore è stato avviato per un gioco in esecuzione; la cartella di installazione è accanto a `exe` |
-| `open(adattatore, *, game=None, when=None, axes=..., source=..., multiplayer=..., meta=..., geo=None)` | una nuova `Session`. `game` sostituisce il nome del gioco dell'adattatore (per gli adattatori che coprono molti giochi); `when` imposta l'inizio per le sessioni che descrivono il passato; `axes`, `source` e `multiplayer` prendono il valore dell'adattatore; `meta` è un dizionario scritto in `meta.json`; `geo` (`{"lat0": .., "lon0": ..}`, oppure impostato dopo in `session.geo`) colloca una sessione su mappa piatta sulla Terra, in `meta.json` e nel piè di pagina della tabella |
+| `open(adapter, *, game=None, when=None, axes=..., source=..., multiplayer=..., meta=..., geo=None)` | una nuova `Session`. `game` sostituisce il nome del gioco dell'adattatore (per gli adattatori che coprono molti giochi); `when` imposta l'inizio per le sessioni che descrivono il passato; `axes`, `source` e `multiplayer` prendono il valore dell'adattatore; `meta` è un dizionario scritto in `meta.json`; `geo` (`{"lat0": .., "lon0": ..}`, oppure impostato dopo in `session.geo`) colloca una sessione su mappa piatta sulla Terra, in `meta.json` e nel piè di pagina della tabella |
 | `close(session)` | chiude una sessione: la tabella, `heat.raw.parquet`, `meta.json`, la sua riga in `watcher.sqlite`. Una sessione senza eventi né elementi grezzi viene eliminata; una con soli elementi grezzi viene mantenuta (niente tabella, nessuna riga nel database). Accetta `None`. Restituisce il percorso della tabella oppure `None`. |
 
 Una `Session` registra:
@@ -116,7 +116,7 @@ Convenzioni su cui si basa il resto del sistema:
 |---|---|---|
 | `Follower(find, since, stamp=None)`, `game_started(pid)`, `newest(paths)`, `read_shared(path)`, `steam_libraries()` | `_logfollow` | seguire un log scritto dal gioco: letture condivise, solo le righe di questa sessione, file nuovi e sostituiti, solo righe complete |
 | `UdpPort(port, forward=None, grace=0.0, recheck=3.0)` con `try_open(who)`, `receive()`, `close()` | `racing` | una porta UDP di telemetria su 127.0.0.1, presa solo se libera, lasciata a un altro programma su richiesta, facoltativamente inoltrata |
-| `Driving(adattatore, ctx, hz=10.0, jump=50.0)` con `sample(...)`, `event(...)`, `lap(...)`, `count(...)`, `close()` | `racing` | sessioni di veicoli: posizioni a frequenza fissa, distanza, velocità massima, giri; a un salto, `teleport` dove era l'auto e `spawn` dove si trova ora (`jumped(...)`) |
+| `Driving(adapter, ctx, hz=10.0, jump=50.0)` con `sample(...)`, `event(...)`, `lap(...)`, `count(...)`, `close()` | `racing` | sessioni di veicoli: posizioni a frequenza fissa, distanza, velocità massima, giri; a un salto, `teleport` dove era l'auto e `spawn` dove si trova ora (`jumped(...)`) |
 | `SharedView.open(name)` | `simracing_shm` | la memoria condivisa con nome di un gioco, in sola lettura, mai creata |
 | `ReplayAdapter` (`patterns`, `folders(ctx)`, `convert(path, ctx)`) | `replays` | una cartella di replay sorvegliata: i file vengono convertiti una volta smesso di crescere, in un thread di lavoro; la prima occhiata si limita a notare cosa c'è, e `convert_existing(ctx, folder=None)` - il comando [`replays`](commands.md#replays) - converte quelli su richiesta |
 | `load_state`, `save_state` | `platform` | ricordare cosa un adattatore sempre attivo ha già visto, in `<data>\state\<id>.json` |
@@ -192,7 +192,7 @@ from heat3d_watch.config import Settings
 from heat3d_watch.session import read_rows
 
 ctx = Context(Settings(data=str(data)), data, exe=install / "PathOfExileSteam.exe")
-a = replace(poe.ADAPTERS[0])   # a fresh copy of the adattatore
+a = replace(poe.ADAPTERS[0])   # a fresh copy of the adapter
 a.start(ctx); a.poll(ctx); a.stop(ctx)
 [session] = list((data / "sessions").glob("*/*"))
 rows = read_rows(session)      # then check the rows and meta.json's stats
@@ -205,7 +205,7 @@ Gli adattatori di rete si testano contro un server locale finto, oppure con pacc
 `verified` dice cosa è stato controllato e come, e cosa no. Viene mostrato da `games` e in ogni pagina di gioco, e i giocatori si fidano di esso. Esempi dal codice:
 
 - "tested on packets in the 2023, 2024 and 2025 formats built from EA's published specification, sent over UDP; untested against the game"
-- "tested on documents in the published GSI format posted to the running adattatore; untested against the running game"
+- "tested on documents in the published GSI format posted to the running adapter; untested against the running game"
 - "tested on real stats files and schemas from a local install; change detection tested on files built in the binary KeyValues format"
 
 Scrivi "untested against the game" finché l'adattatore non ha registrato il gioco in esecuzione. Dichiara solo il metodo e la tolleranza: mai una mappa, un id partita, un nome di giocatore, una data, la dimensione di un corpus o un conteggio esatto da file reali, e mai "this machine" (chi legge non conosce quella macchina). Nomina la fonte di ogni offset e di ogni layout, e dì dove due fonti sono state confrontate. Non dichiarare mai più di quanto è stato fatto. Un formato che è stato indovinato o preso da strumenti della comunità va detto così.

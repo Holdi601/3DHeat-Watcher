@@ -9,7 +9,7 @@ search_exclude: true
 ---
 # Euro Truck Simulator 2 (données en direct) {#euro-truck-simulator-2-live-data}
 
-Pendant que vous jouez à Euro Truck Simulator 2, le watcher enregistre les données que le jeu envoie lui-même, pour que vous puissiez les regarder plus tard sur une carte dans la visionneuse 3DHeat.
+Pendant que vous jouez à Euro Truck Simulator 2, le watcher enregistre les données que le jeu envoie lui-même, pour que vous puissiez les regarder plus tard sur une carte dans le visualiseur 3DHeat.
 
 *Détails techniques : adaptateur `ets2`, type [`telemetry`](sources-and-rules.md) ; il tourne pendant que `eurotrucks2.exe` est lancé et cherche de nouvelles données toutes les 0,1 s.*
 
@@ -52,7 +52,7 @@ SCS publie un SDK de télémétrie (<https://modding.scssoft.com/wiki/Documentat
       train, refuel, refuelPayed
 ```
 
-Le placement mondial du camion est le repère monde de SCS : x est, y haut, z sud, en mètres (droitier, y haut - la visionneuse le dessine tel quel). Les bacs, les trains et le chargement d'une sauvegarde déplacent le camion sans conduite : le trajet est coupé à cet endroit.
+Le placement mondial du camion est le repère monde de SCS : x est, y haut, z sud, en mètres (droitier, y haut - le visualiseur le dessine tel quel). Les bacs, les trains et le chargement d'une sauvegarde déplacent le camion sans conduite : le trajet est coupé à cet endroit.
 
 Toute la zone mémoire (les 32 Kio du plugin : chaque zone ci-dessus et celles non lues - configuration du camion, roues, usure, autres canaux du camion, et ce que la révision dispose après l'octet 4400, les remorques) est conservée dans le fichier brut de la session à chaque changement, de `type` `SCSTelemetry` avec la `revision` à côté - une page d'une autre révision est aussi conservée entière plutôt que lue de travers.
 
@@ -65,10 +65,10 @@ Le même module sert aussi : [American Truck Simulator (données en direct)](gam
 | Positions enregistrées | oui |
 | Axe vertical | `y` |
 | Unités | mètres (monde SCS : x est, y haut, z sud) |
-| Miroir pour la visionneuse | aucun |
-| Échelle des unités (`scale` : la visionneuse multiplie les positions par cette valeur) | 1 |
+| Miroir pour le visualiseur | aucun |
+| Échelle des unités (`scale` : le visualiseur multiplie les positions par cette valeur) | 1 |
 
-Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des positions, dans le pied de `heat.parquet`, pour que la visionneuse 3DHeat tourne et mette à l'échelle les lignes toute seule : voir [Les données](the-data.md).
+Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des positions, dans le pied de `heat.parquet`, pour que le visualiseur 3DHeat tourne et mette à l'échelle les lignes toute seule : voir [Les données](the-data.md).
 
 ## Multijoueur {#multiplayer}
 

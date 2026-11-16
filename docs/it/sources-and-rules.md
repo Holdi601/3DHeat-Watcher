@@ -1,9 +1,9 @@
 ---
-title: Fonti e regole
+title: "Fonti e regole"
 nav_order: 7
 lang: "it"
 source: sources-and-rules.md
-source_hash: "9ec43cafc724"
+source_hash: "990402abdc5d"
 nav_exclude: true
 search_exclude: true
 ---
@@ -22,7 +22,7 @@ Ogni adattatore ha un `kind`, e il kind decide cosa l'adattatore può fare:
 | `telemetry` | una porta UDP o una memoria condivisa che il gioco pubblica per dashboard, simulatori di movimento e volanti (Forza Data Out, UDP di F1, memoria condivisa di Kunos e iRacing, SimConnect, l'interfaccia UDP di X-Plane, il plugin SDK di SCS) | sì - è l'output stesso del gioco |
 | `gsi` | un'interfaccia di stato del gioco o un'API web locale che il gioco serve alla macchina del giocatore (Valve GSI, Live Client Data API di League, Stats API di Rocket League, la mappa web di War Thunder) | sì, entro ciò che l'API mostra al giocatore |
 | `log` | file che il gioco scrive mentre gira: giornale, log, statistiche, salvataggi (Elite Dangerous, Minecraft, Path of Exile, Hearthstone, Star Citizen, EVE Online) | sì |
-| `replay` | demo e replay che il gioco salva per i suoi giocatori, convertiti dopo la partita (CS2, Dota 2, osu!, War Thunder, World of Tanks, World of Warships, Squad, League of Legends, VALORANT, IL-2 Tacview) | sì, a meno che non siano cifrati, e solo le parti in chiaro |
+| `replay` | demo e replay che il gioco salva per i suoi giocatori, convertiti dopo la partita (CS2, Dota 2, War Thunder, World of Tanks, World of Warships, Squad, League of Legends, VALORANT, IL-2 Tacview) | sì, a meno che non siano cifrati, e solo le parti in chiaro |
 | `platform` | ciò che Steam e il driver grafico conservano: statistiche, obiettivi, timeline, clip e highlight | sì |
 | `memory` | la memoria del gioco, in sola lettura, tramite un profilo che hai scritto | **mai** - solo giocatore singolo |
 
@@ -64,7 +64,7 @@ Alcuni giochi, e alcune parti di giochi, non vengono registrati perché l'unico 
 | Apex Legends | tutto | La sua LiveAPI invia eventi completi solo nelle lobby private e personalizzate; altrimenti nulla è disponibile in locale. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | dati in tempo reale | Nessun replay, log o output di game-state locale da leggere. Le loro statistiche arrivano dove le conserva Steam ([Statistiche Steam](game-steam-stats.md), [Steam Timeline](game-steam-timeline.md)), e i loro clip come [NVIDIA highlights](nvidia-highlights.md). |
 | Star Citizen | tutto ciò che va oltre `Game.log` | Gira con Easy Anti-Cheat; il watcher legge solo il file di log che il gioco scrive e non si avvicina mai al processo del gioco. |
-| osu!lazer | replay | Conservati nell'archivio proprio del gioco; vengono letti solo i file `.osr` di osu! (versione stabile). |
+| osu! | replay | Fuori campo: un gioco 2D, senza nulla da collocare su una mappa. |
 | Qualsiasi gioco multigiocatore | memoria | Mai. Anche i giochi per giocatore singolo la cui modalità gira sotto un anti-cheat (GTA V, Elden Ring tramite il suo launcher) non vengono letti. |
 
 I replay cifrati non vengono aperti: il lettore di VALORANT controlla il flag di cifratura del replay e rifiuta un file cifrato ("this replay is encrypted; it is not read").

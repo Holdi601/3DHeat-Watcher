@@ -15,11 +15,11 @@ Mentre giochi ad Assetto Corsa, il watcher salva i dati che il gioco stesso invi
 
 ## Cosa viene registrato {#what-is-recorded}
 
-- posizione della tua auto (XYZ nel mondo, m: media dei punti di contatto degli pneumatici) a 10 Hz, con velocità, marcia, acceleratore, freno
+- posizione della tua auto (XYZ nel mondo, m: media dei punti di contatto delle gomme) a 10 Hz, con velocità, marcia, acceleratore, freno
 - inizio e fine della sessione, con il tracciato e l'auto che il gioco indica
 - giri, secondo il contagiri del gioco, con il suo tempo sul giro
 - teletrasporti (ritorno ai box, un riavvio): `teleport` dove si trovava l'auto, `spawn` dove si trova ora
-- giri, miglior giro, distanza, velocità massima
+- giri, giro migliore, distanza, velocità massima
 
 ## Da dove arriva {#where-it-comes-from}
 
@@ -27,7 +27,7 @@ memoria condivisa Local\acpmf_physics, Local\acpmf_graphics, Local\acpmf_static
 
 ## Come attivarlo {#how-to-switch-it-on}
 
-Non serve attivare nulla: il watcher legge la sorgente così come il gioco o la piattaforma la fornisce.
+Non serve attivare nulla: il watcher legge la fonte così come il gioco o la piattaforma la fornisce.
 
 ## Come funziona {#how-it-works}
 
@@ -41,7 +41,7 @@ gamecapture in
 `heat3d_capture/telemetry` di 3DHeat GameCapture, copiati in `heat3d_watch/decoders` (testati lì con pacchetti costruiti
 dai layout pubblicati). Questo modulo trasforma i loro fotogrammi nelle righe del
 watcher: la posizione dell'auto alcune volte al secondo con velocità, marcia e pedali,
-un evento per ogni giro o tappa, e i numeri che un pilota tiene d'occhio: giri, miglior giro,
+un evento per ogni giro o tappa, e i numeri che un pilota tiene d'occhio: giri, giro migliore,
 distanza, velocità massima.
 
 #### Forza (Horizon 4/5/6, Motorsport) {#forza-horizon-456-motorsport}
@@ -66,7 +66,7 @@ registrano entrambi.
 Memoria condivisa che il gioco scrive per le app: `Local\acpmf_physics`,
 `Local\acpmf_graphics`, `Local\acpmf_static` (AC EVO: `Local\acevo_pmf_*`).
 Aperta in sola lettura e solo quando il gioco l'ha creata (`simracing_shm`). La
-posizione è la media dei quattro punti di contatto degli pneumatici, in metri del mondo, Y in alto.
+posizione è la media dei quattro punti di contatto delle gomme, in metri del mondo, Y in alto.
 Giri dal contagiri del gioco (AC, ACC) oppure passando di nuovo il punto di partenza
 (AC EVO, AC Rally), come fa `kunos.py` per il registratore dei giri.
 
@@ -97,7 +97,7 @@ Questi valori finiscono in `meta.json` di ogni sessione (`axes`) e, quando la se
 ## Multigiocatore {#multiplayer}
 
 - Segnato come giocato online (`multiplayer`): **sì**. `games --markdown` lo mostra come "consentito (legge solo ciò che il gioco pubblica)".
-- Tipo `telemetry`: legge solo ciò che il gioco o la piattaforma rende disponibile (una porta UDP o la memoria condivisa che il gioco pubblica), quindi registra anche nel gioco online oltre che offline; il contrassegno decide solo se la memoria può mai essere letta.
+- Tipo `telemetry`: legge solo ciò che il gioco o la piattaforma rende disponibile (una porta UDP o la memoria condivisa che il gioco pubblica), quindi registra anche nel gioco online oltre che offline; il flag decide solo se la memoria può mai essere letta.
 - Memoria: **mai** letta da questo adattatore. Solo gli adattatori `memory` leggono la memoria, e mai per un gioco segnato come giocato online: vedi [Fonti e regole](sources-and-rules.md).
 
 ## Statistiche registrate {#statistics-recorded}
@@ -110,11 +110,11 @@ Una chiave tra parentesi graffe viene completata durante l'esecuzione (`score.{t
 
 ## Completezza {#completeness}
 
-Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md) di 3DHeat: ciò che la sorgente contiene viene letto o conservato, mai scartato. Oltre alle righe, ogni pacchetto, pagina, riga o risposta che l'adattatore riceve viene conservato intero in `heat.raw.parquet` della sessione (colonne `time`, `ms`, `type`, `used`, `payload`, `text`, poi ogni campo conservato per nome; `used` segna ciò che è diventato anche riga), e `selfCheck.completeness` in `meta.json` conta ogni `type`: `lost` è 0.
+Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md) di 3DHeat: ciò che la fonte contiene viene letto o conservato, mai scartato. Oltre alle righe, ogni pacchetto, pagina, riga o risposta che l'adattatore riceve viene conservato intero in `heat.raw.parquet` della sessione (colonne `time`, `ms`, `type`, `used`, `payload`, `text`, poi ogni campo conservato per nome; `used` segna ciò che è diventato anche riga), e `selfCheck.completeness` in `meta.json` conta ogni `type`: `lost` è 0.
 
 **Letto**
 
-- righe a 10 Hz dalla pagina di fisica: posizione (media dei punti di contatto degli pneumatici), velocità, marcia, acceleratore, freno, imbardata/beccheggio/rollio (rad), giri motore, sterzo (come lo riporta la pagina); inizio sessione con tracciato e auto dalla pagina statica; giri, posizione in gara
+- righe a 10 Hz dalla pagina di fisica: posizione (media dei punti di contatto delle gomme), velocità, marcia, acceleratore, freno, imbardata/beccheggio/rollio (rad), giri al minuto, sterzo (come lo riporta la pagina); inizio sessione con tracciato e auto dalla pagina statica; giri, posizione in gara
 
 **Conservato grezzo**
 
@@ -132,7 +132,7 @@ Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat
 
 decodifica del registratore di giri di gamecapture (testata su pagine sintetiche); l'adattatore testato su memoria condivisa costruita nel test dal layout documentato; non ancora testato con il gioco
 
-## Sorgente {#source}
+## Fonte {#source}
 
 [heat3d_watch/adapters/racing.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/racing.py)
 

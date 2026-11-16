@@ -1,9 +1,9 @@
 ---
 title: "VALORANT (repeticiones)"
-nav_order: 45
+nav_order: 44
 lang: "es"
 source: game-valorant-replays.md
-source_hash: "10a648aabdf1"
+source_hash: "617e23a33a4c"
 nav_exclude: true
 search_exclude: true
 ---
@@ -16,7 +16,7 @@ Después de una partida de VALORANT, el watcher convierte la repetición que gua
 ## Qué se graba {#what-is-recorded}
 
 - el mapa, el id de la partida y los agentes elegidos; el bloque de información de la repetición (duración, versiones, nombre, fecha de grabación, indicadores de compresión y cifrado)
-- la línea de tiempo de eventos del servidor: muertes (asesino y víctima como ids de red), inicios de ronda, spikes plantados, desactivados y explotados, ultimates usados, cambios de bando; cada uno con su id y sus metadatos
+- la línea de tiempo de eventos del servidor: bajas (asesino y víctima como ids de red), inicios de ronda, spikes plantados, desactivados y explotados, ultimates usados, cambios de bando; cada uno con su id y sus metadatos
 - cada fragmento del archivo guardado entero en heat.raw.parquet; no se decodifica: posiciones, nombres o marcadores, que están en el flujo ofuscado
 
 ## De dónde viene {#where-it-comes-from}
@@ -25,17 +25,23 @@ las repeticiones que guarda VALORANT: `%LOCALAPPDATA%/VALORANT/Saved/Demos/\*.vr
 
 ## Cómo activarlo {#how-to-switch-it-on}
 
-guarda una repetición en VALORANT (carrera > partida > descargar repetición)
+guarda una repetición en VALORANT (carrera > partida > descargar repetición) e instala el lector: github.com/Holdi601/3DHeat-Ext-Riot (`heat3d-riot-replays`)
+
+Ajustes desde variables de entorno:
+
+- `HEAT3D_RIOT_REPLAYS`: la carpeta del lector (un clon o una versión descomprimida), cuando no está instalado o junto al watcher
 
 ## Cómo funciona {#how-it-works}
 
 Repeticiones de League of Legends y VALORANT: lo que de ellas se puede leer tal cual.
 
-Ambos juegos guardan las repeticiones en el disco del jugador, y los dos protegen lo que va dentro: los datos de la partida momento a momento están ofuscados, y de forma distinta con cada parche, para impedir que se usen para hacer trampa. Para atravesarlo habría que desensamblar el código del propio juego, algo que prohíben las condiciones de Riot (Términos de Servicio 3.1 y 7.1), así que aquí no se hace. Lo que cada archivo lleva a la vista se lee, y el resto se guarda tal como está: cada parte del archivo, entera, en `heat.raw.parquet` de la sesión (regla de conversión de 3DHeat, docs/converters.md en el repositorio del visor), contada en `selfCheck.completeness` de meta.json.
+Ambos juegos guardan las repeticiones en el disco del jugador, y los dos protegen lo que va dentro: los datos de la partida momento a momento están ofuscados, y de forma distinta con cada parche, para impedir que se usen para hacer trampa. Para atravesarlo habría que desensamblar el código del propio juego, algo que prohíben las condiciones de Riot (Términos de Servicio 3.1 y 7.1), así que aquí no se hace en ningún sitio de 3DHeat. Lo que cada archivo lleva a la vista se lee, y el resto se guarda tal como está: cada parte del archivo, entera, en `heat.raw.parquet` de la sesión (regla de conversión de 3DHeat, docs/converters.md en el repositorio del visor), contada en `selfCheck.completeness` de meta.json.
+
+El watcher no lee los archivos por sí mismo: lo hace un lector externo (3DHeat Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`, comando `heat3d-riot-replays`), separado para que un problema con las condiciones de Riot afecte solo a ese lector. Si lo encuentra en el PATH, instalado o junto al watcher, lee cada repetición nueva; si falta, el watcher indica una sola vez cómo instalarlo. Lo que lee, el watcher lo registra en la sesión; la línea de tiempo Match-V5 de más abajo la descarga el propio watcher, porque no está en el archivo.
 
 #### Valorant (.vrf) {#valorant-vrf}
 
-`%LOCALAPPDATA%\VALORANT\Saved\Demos\*.vrf`, una repetición local de Unreal Engine (estructura de vrfkit, Apache-2.0, y ValorantReplayParser, MIT). A la vista: el bloque de información de la repetición (duración, versión de red, changelist, su nombre, cuándo se grabó, si está comprimida o cifrada), el mapa, el id de la partida y los agentes elegidos (en la cabecera), y la línea de tiempo de eventos del propio servidor: muertes (asesino y víctima como ids de red, no como nombres), inicios de ronda, spikes plantados, desactivados y explotados, ultimates usados, cambios de bando, cada uno con su tiempo, id y metadatos. Las posiciones, nombres, marcadores y todo lo demás están en el flujo ofuscado (los fragmentos de datos de repetición y de checkpoint), que se guarda entero sin leer.
+`%LOCALAPPDATA%\VALORANT\Saved\Demos\*.vrf`, una repetición local de Unreal Engine. A la vista: el bloque de información de la repetición (duración, versión de red, changelist, su nombre, cuándo se grabó, si está comprimida o cifrada), el mapa, el id de la partida y los agentes elegidos (en la cabecera), y la línea de tiempo de eventos del propio servidor: bajas (asesino y víctima como ids de red, no como nombres), inicios de ronda, spikes plantados, desactivados y explotados, ultimates usados, cambios de bando, cada uno con su tiempo, id y metadatos. Las posiciones, nombres, marcadores y todo lo demás están en el flujo ofuscado (los fragmentos de datos de repetición y de checkpoint), que se guarda entero sin leer.
 
 El mismo módulo también sirve a: [League of Legends (repeticiones)](game-lol-replays.md).
 

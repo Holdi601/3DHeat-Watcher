@@ -118,7 +118,7 @@ se terminant par `.json`. Un exemple fictif :
 | `anchors` | oui | adresses nommées dans le module principal. `aob` : un motif d'octets, des octets hexadécimaux séparés par des espaces, `?` ou `??` pour n'importe quel octet ; il doit apparaître **exactement une fois** dans l'image du module (plusieurs correspondances comptent comme un échec, comme aucune). `rip: [d, n]` : le motif pointe vers une instruction avec un déplacement RIP relatif de 32 bits à l'octet `d` et de longueur `n` ; l'ancre devient l'adresse à laquelle cette instruction se réfère. `offset` : ajouté ensuite (texte hexadécimal ou décimal). Au lieu de `aob`, `module_offset` donne un décalage fixe depuis la base du module. |
 | `values` | oui | ce qui est lu à chaque interrogation : `type` (`i32`, `u32`, `i64`, `u64`, `u8`, `f32`, `f64`, `vec3f`, `vec3d`), `base` (le nom d'une ancre), `chain` (décalages en texte hexadécimal ou décimal) |
 | `events` | non | règles qui transforment les changements en événements : `when` `change` (la valeur diffère de la dernière interrogation) ou `to_zero` (un nombre passe de au-dessus de 0 à 0 ou en dessous) |
-| `axes` | non | `up` (par défaut `y`), `units` (par défaut `game units`), `scale` (l'échelle d'unité de la visionneuse, qui multiplie chaque position ; par défaut 1, les unités propres au jeu) |
+| `axes` | non | `up` (par défaut `y`), `units` (par défaut `game units`), `scale` (l'échelle d'unité du visualiseur, qui multiplie chaque position ; par défaut 1, les unités propres au jeu) |
 | `rate` | non | interrogations par seconde, de 1 à 60 (par défaut 10) |
 | `provenance` | non | d'où viennent les décalages et sur quelle version vous les avez vérifiés ; c'est recopié dans le `meta.json` de chaque session |
 
@@ -159,7 +159,7 @@ journalisé comme `profile <file> not used: <reason>`. Les profils sont chargés
    pour laquelle il a été refusé ou n'a pas pu démarrer.
 7. **Vérifiez les nombres contre le jeu.** Marchez jusqu'à un endroit connu et regardez les lignes `position` dans
    `events.jsonl` de la session. Bougent-elles quand vous bougez, de la bonne quantité, selon les bons axes ? Ouvrez
-   `heat.parquet` dans la visionneuse et vérifiez que le trajet correspond à l'endroit où vous êtes allé. Déclenchez chaque événement
+   `heat.parquet` dans le visualiseur et vérifiez que le trajet correspond à l'endroit où vous êtes allé. Déclenchez chaque événement
    (perdre toute sa vie, changer de zone) et vérifiez qu'il n'apparaît qu'une fois. Des données erronées ressemblent à des
    nombres, et seule cette comparaison permet de les distinguer.
 8. **Notez ce que vous avez vérifié** dans `provenance` : la source des décalages et la version sur laquelle vous les avez

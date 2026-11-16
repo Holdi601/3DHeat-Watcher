@@ -1,15 +1,15 @@
 ---
 title: "Richard Burns Rally (données en direct)"
-nav_order: 39
+nav_order: 38
 lang: "fr"
 source: game-richard-burns-rally.md
-source_hash: "1b9866f5a1f6"
+source_hash: "4f2a2e46f8c8"
 nav_exclude: true
 search_exclude: true
 ---
 # Richard Burns Rally (données en direct) {#richard-burns-rally-live-data}
 
-Pendant que vous jouez à Richard Burns Rally, le watcher enregistre les données que le jeu envoie lui-même, pour que vous puissiez les regarder plus tard sur une carte dans la visionneuse 3DHeat.
+Pendant que vous jouez à Richard Burns Rally, le watcher enregistre les données que le jeu envoie lui-même, pour que vous puissiez les regarder plus tard sur une carte dans le visualiseur 3DHeat.
 
 *Détails techniques : adaptateur `richard-burns-rally`, type [`telemetry`](sources-and-rules.md) ; il tourne pendant que `RichardBurnsRally_SSE.exe` ou `RichardBurnsRally.exe` est lancé et cherche de nouvelles données toutes les 0,1 s.*
 
@@ -26,7 +26,7 @@ Télémétrie UDP du plugin NGP, 127.0.0.1:6776 (RichardBurnsRally.ini [NGP] udp
 
 ## Comment l'activer {#how-to-switch-it-on}
 
-RSF/NGP : dans RichardBurnsRally.ini, section [NGP], réglez udpTelemetry=1 et le point d'arrivée sur 127.0.0.1:6776
+RSF/NGP : dans RichardBurnsRally.ini, section [NGP], réglez udpTelemetry=1 et l'adresse de destination sur 127.0.0.1:6776
 
 ## Fonctionnement {#how-it-works}
 
@@ -36,7 +36,7 @@ Tous ces jeux publient leur télémétrie exprès, pour des tableaux de bord et 
 
 #### Forza (Horizon 4/5/6, Motorsport) {#forza-horizon-456-motorsport}
 
-UDP « Data Out », activé dans le HUD et les réglages de jeu du jeu, vers 127.0.0.1 port 5300, format Dash. Un paquet par tick de simulation ; le décalage du bloc du tableau de bord est trouvé à partir des paquets (`forza.detect_layout`). Mètres dans le monde, Y vers le haut ; le monde est gaucher et est dessiné tel qu'envoyé, comme le fait l'enregistreur de tours (documentation « Data Out » de Forza Motorsport et de Forza Horizon).
+UDP « Data Out », activé dans le HUD et les réglages de jeu, vers 127.0.0.1 port 5300, format Dash. Un paquet par tick de simulation ; le décalage du bloc du tableau de bord est trouvé à partir des paquets (`forza.detect_layout`). Mètres dans le monde, Y vers le haut ; le monde est gaucher et est dessiné tel qu'envoyé, comme le fait l'enregistreur de tours (documentation « Data Out » de Forza Motorsport et de Forza Horizon).
 Le jeu envoie vers un seul port, et FH Companion et les autres applications Data Out écoutent sur ce même port. Deux programmes ne peuvent pas le partager : sous Windows, le socket lié à 127.0.0.1 reçoit les paquets, et celui lié à toutes les adresses sur le même port n'en reçoit aucun, quel que soit celui arrivé en premier. Le watcher attend donc un peu après le lancement du jeu avant de prendre le port, ne le prend jamais à une application qui le détient, et le libère dès qu'une autre application se met à écouter dessus.
 Tant qu'il tient le port, il transmet chaque paquet sans le modifier vers 127.0.0.1:5301 : réglez le champ de port de FH Companion (son onglet télémétrie) sur 5301 et les deux enregistrent.
 
@@ -57,10 +57,10 @@ Le même module sert aussi : [Assetto Corsa (données en direct)](game-assetto-c
 | Positions enregistrées | oui |
 | Axe vertical | `y` |
 | Unités | mètres ; axe vertical décidé d'après la course (RBR ne documente pas ses axes) |
-| Miroir pour la visionneuse | aucun |
-| Échelle des unités (`scale` : la visionneuse multiplie les positions par cette valeur) | 1 |
+| Miroir pour le visualiseur | aucun |
+| Échelle des unités (`scale` : le visualiseur multiplie les positions par cette valeur) | 1 |
 
-Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des positions, dans le pied de `heat.parquet`, pour que la visionneuse 3DHeat tourne et mette à l'échelle les lignes toute seule : voir [Les données](the-data.md).
+Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des positions, dans le pied de `heat.parquet`, pour que le visualiseur 3DHeat tourne et mette à l'échelle les lignes tout seul : voir [Les données](the-data.md).
 
 ## Multijoueur {#multiplayer}
 

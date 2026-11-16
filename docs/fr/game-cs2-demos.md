@@ -3,13 +3,13 @@ title: "Counter-Strike 2 (replays)"
 nav_order: 8
 lang: "fr"
 source: game-cs2-demos.md
-source_hash: "d115f9085302"
+source_hash: "82fe00f0f2f0"
 nav_exclude: true
 search_exclude: true
 ---
 # Counter-Strike 2 (replays) {#counter-strike-2-replays}
 
-Après une partie de Counter-Strike 2, le watcher transforme le replay que le jeu a sauvegardé en fichiers que vous pouvez regarder sur une carte dans la visionneuse 3DHeat.
+Après une partie de Counter-Strike 2, le watcher transforme le replay que le jeu a sauvegardé en fichiers que vous pouvez regarder sur une carte dans le visualiseur 3DHeat.
 
 *Détails techniques : adaptateur `cs2-demos`, type [`replay`](sources-and-rules.md) ; il tourne en permanence (il n'attend pas le lancement d'un jeu) et cherche de nouvelles données toutes les 5 s.*
 
@@ -25,7 +25,7 @@ les démos que CS2 sauvegarde : &lt;CS2>/game/csgo/replays/\*.dem (téléchargé
 
 ## Comment l'activer {#how-to-switch-it-on}
 
-téléchargez la démo d'un match dans CS2 (Watch > Your Matches), ou enregistrez-en une avec la commande de console `record`
+téléchargez la démo d'un match dans CS2 (Regarder > Vos matchs), ou enregistrez-en une avec la commande de console `record`
 
 Paramètres issus de variables d'environnement :
 
@@ -48,19 +48,19 @@ un joueur avec des années de démos verrait sinon le watcher occupé pendant un
 
 #### Counter-Strike 2 {#counter-strike-2}
 
-CS2 sauvegarde les démos qu'un joueur télécharge depuis l'historique des matchs (onglet Watch) dans
+CS2 sauvegarde les démos qu'un joueur télécharge depuis l'historique des matchs (onglet Regarder) dans
 `<CS2>/game/csgo/replays/`, et celles enregistrées avec la commande de console `record` dans
 `<CS2>/game/csgo/`. Chacune est convertie par le convertisseur CS2 de ce dépôt (3DHeat CS2,
 github.com/Holdi601/3DHeat-CS2 : la position, la direction du regard, la vie et l'argent de chaque
 joueur à chaque huitième tick ; kills, morts, dégâts, grenades, poses et désamorçages de bombe là où
 ils ont eu lieu ; rounds, score, économie) dans le dossier de session, sous forme de table
 `<map>/<match>.parquet` et de résumé `<match>.match.json` que lisent les onglets Carte de chaleur et
-Match de la visionneuse. Le tableau des scores du match devient les statistiques de la session : pour
+Match du visualiseur. Le tableau des scores du match devient les statistiques de la session : pour
 le joueur dont le compte Steam est connecté sur cette machine (depuis le `loginusers.vdf` de Steam),
 sous leurs noms simples — kills, morts, assistances, ADR, KAST, pourcentage de headshots, premiers
 kills, clutches — ainsi que le score et les rounds.
 
-Le même module sert aussi : [Dota 2 (replays)](game-dota-replays.md), [osu! (replays)](game-osu-replays.md),
+Le même module sert aussi : [Dota 2 (replays)](game-dota-replays.md),
 [Squad (replays)](game-squad-demos.md), [War Thunder (replays)](game-warthunder-replays.md),
 [World of Tanks (replays)](game-wot-replays.md), [World of Warships (replays)](game-wows-replays.md).
 
@@ -71,11 +71,11 @@ Le même module sert aussi : [Dota 2 (replays)](game-dota-replays.md), [osu! (re
 | Positions enregistrées | oui |
 | Axe vertical | `z` |
 | Unités | pouces (unités Source) |
-| Miroir pour la visionneuse | `y` |
-| Échelle (`scale` : la visionneuse multiplie les positions par elle) | 1 |
+| Miroir pour le visualiseur | `y` |
+| Échelle (`scale` : le visualiseur multiplie les positions par elle) | 1 |
 
 Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des
-positions, dans le pied de `heat.parquet` : la visionneuse 3DHeat tourne et met à l'échelle les lignes
+positions, dans le pied de `heat.parquet` : le visualiseur 3DHeat tourne et met à l'échelle les lignes
 toute seule — voir [Les données](the-data.md).
 
 ## Multijoueur {#multiplayer}

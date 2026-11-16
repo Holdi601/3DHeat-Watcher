@@ -1,5 +1,5 @@
 ---
-title: "NVIDIA highlights (plateforme)"
+title: "Moments forts NVIDIA (plateforme)"
 nav_order: 34
 lang: "fr"
 source: game-nvidia-highlights.md
@@ -7,15 +7,15 @@ source_hash: "5d45211c0e37"
 nav_exclude: true
 search_exclude: true
 ---
-# NVIDIA highlights (plateforme) {#nvidia-highlights-platform}
+# Moments forts NVIDIA (plateforme) {#nvidia-highlights-platform}
 
-Le watcher enregistre ce que NVIDIA highlights garde de vos jeux, pour que vous puissiez consulter votre historique plus tard sur une carte dans la visionneuse 3DHeat.
+Le watcher enregistre ce que NVIDIA highlights garde de vos jeux, pour que vous puissiez consulter votre historique plus tard sur une carte dans le visualiseur 3DHeat.
 
 *Détails techniques : adaptateur `nvidia-highlights`, type [`platform`](sources-and-rules.md) ; il tourne en permanence (il n'attend pas le lancement d'un jeu) et cherche de nouvelles données toutes les 10 s.*
 
 ## Ce qui est enregistré {#what-is-recorded}
 
-- chaque nouveau clip, moment fort ou capture d'écran : jeu, fichier, type, durée et moment (ms en heure murale)
+- chaque nouveau clip, moment fort ou capture d'écran : jeu, fichier, type, durée et moment (ms, heure de l'horloge)
 - l'identifiant et le nom du moment fort quand le jeu l'a enregistré auprès de NVIDIA
 - où se trouvait le joueur à ce moment-là, quand un autre adaptateur a enregistré ce même jeu à ce moment-là
 - les demandes de moment fort que les jeux GfeSDK consignent, même quand aucun clip n'est gardé
@@ -57,7 +57,7 @@ Ce que cela peut et ne peut pas fournir : un jeu compatible avec NVIDIA Highligh
 
 Chaque adaptateur garde ce qu'il a déjà vu dans `<données>\state\<id>.json`, donc un redémarrage n'enregistre rien deux fois.
 
-Chaque session garde aussi d'où viennent ses lignes, entier (règle du convertisseur de 3DHeat, docs/converters.md dans le dépôt de la visionneuse), dans `heat.raw.parquet` : les octets du fichier de statistiques et de son schéma, et le bloc localconfig du jeu (steam-stats ; un fichier de statistiques que le décodeur ne peut pas lire donne une session qui ne contient que ses octets), les en-têtes du fichier de chronologie et chaque entrée en JSON (steam-timeline), l'entrée d'index de galerie de chaque clip, les définitions de moments forts du jeu et chaque ligne de journal GfeSDK, celles qui ne sont pas des demandes de moment fort aussi (nvidia-highlights).
+Chaque session garde aussi d'où viennent ses lignes, en entier (règle du convertisseur de 3DHeat, docs/converters.md dans le dépôt du visualiseur), dans `heat.raw.parquet` : les octets du fichier de statistiques et de son schéma, et le bloc localconfig du jeu (steam-stats ; un fichier de statistiques que le décodeur ne peut pas lire donne une session qui ne contient que ses octets), les en-têtes du fichier de chronologie et chaque entrée en JSON (steam-timeline), l'entrée d'index de galerie de chaque clip, les définitions de moments forts du jeu et chaque ligne de journal GfeSDK, celles qui ne sont pas des demandes de moment fort aussi (nvidia-highlights).
 
 Le même module sert aussi : [Statistiques Steam (plateforme)](game-steam-stats.md), [Steam Timeline (plateforme)](game-steam-timeline.md).
 
@@ -68,10 +68,10 @@ Le même module sert aussi : [Statistiques Steam (plateforme)](game-steam-stats.
 | Positions enregistrées | seulement empruntées : le lieu qu'un autre enregistrement du même jeu a pour ce moment |
 | Axe vertical | `y` |
 | Unités | mètres |
-| Miroir pour la visionneuse | aucun |
-| Échelle des unités (`scale` : la visionneuse multiplie les positions par cette valeur) | 1 |
+| Miroir pour le visualiseur | aucun |
+| Échelle des unités (`scale` : le visualiseur multiplie les positions par cette valeur) | 1 |
 
-Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des positions, dans le pied de `heat.parquet`, pour que la visionneuse 3DHeat tourne et mette à l'échelle les lignes toute seule : voir [Les données](the-data.md).
+Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des positions, dans le pied de `heat.parquet`, pour que le visualiseur 3DHeat tourne et mette à l'échelle les lignes tout seul : voir [Les données](the-data.md).
 
 ## Multijoueur {#multiplayer}
 

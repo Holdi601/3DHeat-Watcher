@@ -1,15 +1,15 @@
 ---
 title: "Project CARS 2 (données en direct)"
-nav_order: 37
+nav_order: 36
 lang: "fr"
 source: game-project-cars-2.md
-source_hash: "a1990b93b7d1"
+source_hash: "278eb9594615"
 nav_exclude: true
 search_exclude: true
 ---
 # Project CARS 2 (données en direct) {#project-cars-2-live-data}
 
-Pendant que vous jouez à Project CARS 2, le watcher enregistre les données que le jeu envoie lui-même, pour que vous puissiez les regarder plus tard sur une carte dans la visionneuse 3DHeat.
+Pendant que vous jouez à Project CARS 2, le watcher enregistre les données que le jeu envoie lui-même, pour que vous puissiez les regarder plus tard sur une carte dans le visualiseur 3DHeat.
 
 *Détails techniques : adaptateur `project-cars-2`, type [`telemetry`](sources-and-rules.md) ; il tourne pendant que `pCARS2AVX.exe` ou `pCARS2.exe` est lancé et cherche de nouvelles données toutes les 0,1 s.*
 
@@ -56,10 +56,10 @@ Le même module sert aussi : [Automobilista 2 (données en direct)](game-automob
 | Positions enregistrées | oui |
 | Axe vertical | `y` |
 | Unités | mètres |
-| Miroir pour la visionneuse | aucun |
-| Échelle des unités (`scale` : la visionneuse multiplie les positions par cette valeur) | 1 |
+| Miroir pour le visualiseur | aucun |
+| Échelle des unités (`scale` : le visualiseur multiplie les positions par cette valeur) | 1 |
 
-Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des positions, dans le pied de `heat.parquet`, pour que la visionneuse 3DHeat tourne et mette à l'échelle les lignes toute seule : voir [Les données](the-data.md).
+Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des positions, dans le pied de `heat.parquet`, pour que le visualiseur 3DHeat tourne et mette à l'échelle les lignes tout seul : voir [Les données](the-data.md).
 
 ## Multijoueur {#multiplayer}
 

@@ -1,9 +1,9 @@
 ---
-title: Instalación y ejecución
+title: "Instalación y ejecución"
 nav_order: 3
 lang: "es"
 source: installing-and-running.md
-source_hash: "ceb60cbb49b7"
+source_hash: "2b03b0eda49e"
 nav_exclude: true
 search_exclude: true
 ---
@@ -103,13 +103,13 @@ detecta, no para grabar.
 
 
 La primera vez que un adaptador de repeticiones ve una de sus carpetas, solo anota las repeticiones que ya hay en
-ella: un jugador con años de demos encontraría si no al watcher ocupado convirtiendo durante un día. A partir de
+ella: de lo contrario, un jugador con años de demos vería al watcher ocupado convirtiendo durante un día. A partir de
 entonces, cada repetición nueva se convierte cuando el juego ha terminado de escribirla. Las antiguas se convierten
 bajo petición con [`replays`](commands.md#replays):
 
 ```bash
 python -m heat3d_watch replays cs2-demos              # every demo in CS2's folders and replay_folders
-python -m heat3d_watch replays osu-replays D:\Old     # the replays in one folder
+python -m heat3d_watch replays lol-replays D:\Old     # the replays in one folder
 ```
 
 ### Ejecutar en segundo plano {#running-in-the-background}
@@ -133,7 +133,7 @@ El watcher no se instala solo para arrancar con Windows. Para arrancarlo automá
 - **Carpeta de inicio**: pon un acceso directo en `shell:startup` con el mismo programa, argumentos y carpeta
   *Iniciar en*.
 
-Ninguna de las dos forma parte del watcher ni la prueba. El [archivo de bloqueo](#the-lock-file) asegura que una
+Ninguna de las dos forma parte del watcher, ni el watcher las prueba. El [archivo de bloqueo](#the-lock-file) asegura que una
 segunda copia iniciada por error salga enseguida.
 
 ## El archivo de bloqueo {#the-lock-file}
@@ -204,12 +204,12 @@ arrancar un comando, así que reinicia `run` después de cambiarlos.
 | `auto_update` | `true` | Mientras no hay ningún juego en marcha, instala una versión más nueva y reinicia (véase [Actualizaciones](updates.md)). `false`: solo un aviso en el registro. |
 | `scan_seconds` | `2.0` | Segundos entre revisiones de la lista de procesos. |
 | `memory` | `false` | Permite que se ejecuten los adaptadores de memoria (juegos para un jugador con un perfil que escribiste). Desactivado por defecto; véase [Lectura de memoria](memory-reading.md). |
-| `replays` | `true` | Ejecuta los adaptadores `replay`: todos ellos (véase `python -m heat3d_watch replays` y [Juegos](games.md)): demos de CS2, Dota 2, osu!, War Thunder, World of Tanks, World of Warships, Squad, repeticiones de League of Legends y VALORANT, grabaciones Tacview de IL-2. |
+| `replays` | `true` | Ejecuta los adaptadores `replay`: todos ellos (véase `python -m heat3d_watch replays` y [Juegos](games.md)): demos de CS2, Dota 2, War Thunder, World of Tanks, World of Warships, Squad, repeticiones de League of Legends y VALORANT, grabaciones Tacview de IL-2. |
 | `replay_folders` | `{}` | Carpetas extra por id de adaptador, por ejemplo `{"cs2-demos": ["D:\\Demos"]}`. Los adaptadores de repeticiones las vigilan además de las carpetas propias del juego; `il2-tacview` acepta también carpetas de instalación (entonces busca en su `data\Tracks`); para `elite`, la primera carpeta sustituye a la carpeta del diario. Fija las carpetas de un adaptador con `config --set replay_folders.cs2-demos=D:\Demos,E:\More`, o el diccionario completo como JSON. |
 | `riot_id` | `""` | Tu Riot ID (`Name#TAG`), para que tu propia línea en una repetición de League of Legends se convierta en tus estadísticas. Vacío: se guarda la línea de cada jugador, y ninguna se marca como tuya. |
-| `riot_api_key` | `""` | Tu propia clave de API de desarrollador de Riot, para obtener la cronología oficial de cada partida de League repetida (posiciones cada minuto, eliminaciones donde ocurrieron). Vacío: no se obtiene nada. |
+| `riot_api_key` | `""` | Tu propia clave de API de desarrollador de Riot, para obtener la cronología oficial de cada partida de League repetida (posiciones cada minuto, bajas donde ocurrieron). Vacío: no se obtiene nada. |
 | `riot_platform` | `"EUW1"` | El id de plataforma de tu servidor de League (`EUW1`, `EUN1`, `NA1`, `KR`, ...), que se usa para encontrar el servidor regional de Match-V5. |
-| `player_names` | `{}` | Tu nombre en juegos cuya interfaz nombra a todos los jugadores pero no dice cuál eres tú, por id de adaptador: `warthunder-webmap` (las líneas del feed de eliminaciones sobre ti pasan a ser tus eliminaciones y muertes) y `rocketleague-stats` (tus filas pasan a ser `me`; sin él, el jugador que sigue la cámara del juego). Se fija con `config --set player_names.warthunder-webmap=Name`. |
+| `player_names` | `{}` | Tu nombre en juegos cuya interfaz nombra a todos los jugadores pero no dice cuál eres tú, por id de adaptador: `warthunder-webmap` (las líneas del feed de bajas sobre ti pasan a ser tus bajas y muertes) y `rocketleague-stats` (tus filas pasan a ser `me`; sin él, el jugador que sigue la cámara del juego). Se fija con `config --set player_names.warthunder-webmap=Name`. |
 
 Un `settings.json` con todos los valores por defecto:
 

@@ -17,7 +17,7 @@ Mentre giochi a Microsoft Flight Simulator 2020, il watcher salva i dati che il 
 
 - la posizione del proprio velivolo a ogni frame del simulatore, campionata a 10 Hz (latitudine/longitudine/altitudine come metri est/alto/nord rispetto al primo punto; lat/lon/alt conservate come colonne)
 - assetto, velocità indicata, velocità al suolo, AGL, g, a terra o no; velocità vera, Mach, velocità verticale, AoA, angolo di derapata, prua magnetica, velocità sugli assi del corpo, accelerazioni e velocità di rotazione a circa 10 Hz
-- peso, carburante, flap, carrello, spoiler, freno di stazionamento, pilota automatico, manetta, giri, meteo, velocità della simulazione, ora e stato della camera una volta al secondo; il titolo del velivolo e il tipo, il modello e l'id per l'ATC
+- peso, carburante, flap, carrello, spoiler, freno di stazionamento, pilota automatico, manetta, giri, meteo, velocità della simulazione, ora e stato della camera una volta al secondo; il titolo del velivolo, il tipo ATC, il modello e l'id
 - decolli, atterraggi, schianti, voli iniziati e terminati (session_start/session_end)
 - tempo di volo, tempo in aria, distanza, altezza massima, g massimo, atterraggi
 - ogni messaggio SimConnect conservato intero in heat.raw.parquet

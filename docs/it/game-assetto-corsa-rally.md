@@ -31,7 +31,7 @@ Non serve attivare nulla: il watcher legge la fonte così come il gioco o la pia
 
 ## Come funziona {#how-it-works}
 
-La telemetria dei giochi di guida: Forza, i giochi Assetto Corsa, i giochi rally
+La telemetria dei giochi di corsa: Forza, i giochi Assetto Corsa, i giochi rally
 e BeamNG, registrata come percorsi, giri e tappe.
 
 Ogni gioco qui pubblica la propria telemetria di proposito, per dashboard e
@@ -117,7 +117,7 @@ Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat
 
 - posizioni delle altre auto: le pagine descrivono solo l'auto del giocatore (la pagina grafica di ACC ha in alcune versioni gli id e le coordinate delle altre auto - conservati nella pagina grezza, non decodificati)
 - tick di fisica tra una lettura del watcher e l'altra: il gioco riscrive la pagina alla sua frequenza di fisica (fino a 333 Hz) e il watcher legge 10 volte al secondo
-- un tempo di tappa o il tempo di tappa del gioco: AC Rally non pubblica una pagina grafica; le tappe finiscono dove l'auto si ferma
+- un cronometro di tappa o il tempo di tappa del gioco: AC Rally non pubblica una pagina grafica; le tappe finiscono dove l'auto si ferma
 
 **Dimensione**: circa 150-300 MB all'ora prima della compressione (una regione di 4 KB per pagina con fino a 10 cambiamenti al secondo); le pagine sono per lo più zeri e zstd ne conserva una piccola frazione
 

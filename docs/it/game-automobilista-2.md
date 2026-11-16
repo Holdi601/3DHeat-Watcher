@@ -31,7 +31,7 @@ Nel gioco: Opzioni > Sistema > Memoria condivisa: "Project CARS 2"
 
 ## Come funziona {#how-it-works}
 
-Memoria condivisa che i giochi di guida pubblicano per le dashboard, aperta in sola lettura - e
+Memoria condivisa che i giochi di corsa pubblicano per le dashboard, aperta in sola lettura - e
 mai creata.
 
 Diversi simulatori consegnano la loro telemetria come una mappatura di file di Windows

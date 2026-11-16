@@ -1,9 +1,9 @@
 ---
 title: "Star Citizen (archivos de registro)"
-nav_order: 42
+nav_order: 41
 lang: "es"
 source: game-starcitizen.md
-source_hash: "6528f948d2e5"
+source_hash: "7b1ce51dc50a"
 nav_exclude: true
 search_exclude: true
 ---
@@ -98,7 +98,7 @@ El watcher sigue la [regla del convertidor](https://github.com/Holdi601/3DHeat/b
 **Se lee**
 
 - `<Actor Death>`: víctima, asesino, arma y su clase, tipo de daño, zona; PNJ o jugador
-- `<Vehicle Destruction>`: vehículo, zona, posición relativa a la zona como texto, piloto, causa, modo, nivel de destrucción
+- `<Vehicle Destruction>`: vehículo, zona, posición relativa a la zona como texto, piloto, causa, cómo, nivel de destrucción
 - objetivos `<Quantum Navtarget>`, `<Changing Solar System>`, `OnClientSpawned`, reapariciones en el hospital, incapacitaciones con sus causas, `EndSession`
 - el identificador del jugador (handle), de `<AccountLoginCharacterStatus_Character>` o de la línea de inicio de sesión
 

@@ -1,9 +1,9 @@
 ---
 title: "War Thunder (stato di gioco)"
-nav_order: 47
+nav_order: 46
 lang: "it"
 source: game-warthunder-webmap.md
-source_hash: "d6026c277030"
+source_hash: "34a876e38f09"
 nav_exclude: true
 search_exclude: true
 ---
@@ -43,7 +43,7 @@ Il gioco serve la pagina che un secondo schermo o un telefono può mostrare (la 
 /map_obj.json   [{"type": aircraft|ground_model|airfield|capture_zone|bombing_point|defending_point|
                   respawn_base_*|..., "icon": Player|Fighter|Bomber|Mediumtank|SPAA|..., "color": "#rrggbb",
                   "x", "y" (0..1 dell'immagine della mappa, y verso il basso), "dx", "dy" (direzione),
-                  airfield "sx", "sy", "ex", "ey"}]: ciò che mostra la minimappa, il proprio mezzo con icon "Player"; nessun id, nessuna altezza
+                  airfields "sx", "sy", "ex", "ey"}]: ciò che mostra la minimappa, il proprio mezzo con icon "Player"; nessun id, nessuna altezza
 /state           {"valid", "H, m", "TAS, km/h", "IAS, km/h", "M", "Vy, m/s", ...}: valori di volo,
                   validi solo in un aereo
 /indicators      {"valid", "army": air|tank|..., "type": il mezzo}
@@ -55,7 +55,7 @@ Il gioco serve la pagina che un secondo schermo o un telefono può mostrare (la 
 /map.img         l'immagine della mappa su cui la pagina disegna gli oggetti
 ```
 
-Ogni risposta viene conservata intera nel file accessorio grezzo della sessione sotto il suo endpoint (map_info, map_obj, state, indicators, hudmsg, gamechat, mission, map_img); tra una battaglia e l'altra le risposte vanno in una sessione tutta loro.
+Ogni risposta viene conservata intera nei dati grezzi della sessione sotto il suo endpoint (map_info, map_obj, state, indicators, hudmsg, gamechat, mission, map_img); tra una battaglia e l'altra le risposte vanno in una sessione tutta loro.
 
 Una posizione sulla mappa diventa metri con l'estensione: u = min_x + x \* (max_x - min_x) est, v = max_y - y \* (max_y - min_y) nord (la y dell'immagine scende). Le righe sono x = u, y = altezza (`H, m` del proprio aereo; 0 per tutto il resto), z = v, quindi Y è verso l'alto; z è specchiata per il visualizzatore così che il nord non venga disegnato a sud.
 
@@ -68,7 +68,7 @@ Fonti: la pagina del gioco stesso su <http://127.0.0.1:8111> e il suo JSON; i da
 | | |
 |---|---|
 | Posizioni registrate | sì |
-| Asse verso l'alto | `y` |
+| Asse verticale | `y` |
 | Unità | metri (est/nord della mappa; altezza solo per il proprio aereo) |
 | Specchiato per il visualizzatore | `z` |
 | Scala delle unità (`scale`: il visualizzatore moltiplica le posizioni per questo valore) | 1 |
@@ -104,7 +104,7 @@ Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat
 **Conservato grezzo**
 
 - ogni risposta intera, `text` il JSON così come l'ha inviato il gioco, sotto il suo endpoint: `map_info`, `map_obj`, `state`, `indicators`, `hudmsg`, `gamechat`, `mission`; `map_img` i byte dell'immagine della mappa come `payload`, una volta per battaglia
-- ciò che solo il file accessorio grezzo contiene: ogni campo di /state oltre i cinque letti (AoA, AoS, Ny, Wx, manetta, giri, carburante, ... - l'insieme cambia da un aereo all'altro), ogni campo di /indicators (gli strumenti di cabina degli aerei, la velocità, la marcia, l'equipaggio e lo stabilizzatore dei carri), le altre chiavi degli oggetti della mappa (color[], blink, icon_bg, estremità degli aeroporti), sender, enemy e mode di hudmsg, la chat (/gamechat, una volta al secondo), gli obiettivi della battaglia e il loro stato (/mission.json, ogni 10 s in battaglia), le righe dette prima che il watcher partisse
+- ciò che solo i dati grezzi della sessione contengono: ogni campo di /state oltre i cinque letti (AoA, AoS, Ny, Wx, manetta, giri, carburante, ... - l'insieme cambia da un aereo all'altro), ogni campo di /indicators (gli strumenti di cabina degli aerei, la velocità, la marcia, l'equipaggio e lo stabilizzatore dei carri), le altre chiavi degli oggetti della mappa (color[], blink, icon_bg, estremità degli aeroporti), sender, enemy e mode di hudmsg, la chat (/gamechat, una volta al secondo), gli obiettivi della battaglia e il loro stato (/mission.json, ogni 10 s in battaglia), le righe dette prima che il watcher partisse
 - tra le battaglie (hangar, caricamento) le risposte vanno in una sessione tutta loro, segnata `between_battles` in meta.json, che non ha righe
 
 **Non disponibile**
@@ -123,4 +123,4 @@ testato con un server locale finto che serve risposte nel formato della mappa we
 
 [heat3d_watch/adapters/warthunder.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/warthunder.py)
 
-<!-- Generated from the adattatore by tools/gen_game_pages.py; change the adattatore and run it again rather than editing this page. -->
+<!-- Generato dall'adattatore da tools/gen_game_pages.py; per cambiarlo modifica l'adattatore ed eseguilo di nuovo invece di modificare questa pagina. -->

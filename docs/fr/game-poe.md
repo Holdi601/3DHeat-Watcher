@@ -1,9 +1,9 @@
 ---
 title: "Path of Exile (fichiers journal)"
-nav_order: 36
+nav_order: 35
 lang: "fr"
 source: game-poe.md
-source_hash: "9facfd5a1551"
+source_hash: "b5783b5a5690"
 nav_exclude: true
 search_exclude: true
 ---
@@ -57,10 +57,10 @@ Chaque ligne de cette session est conservée entière dans le fichier brut de la
 | Positions enregistrées | non |
 | Axe vertical | `y` |
 | Unités | aucune position enregistrée |
-| Miroir pour la visionneuse | aucun |
-| Échelle des unités (`scale` : la visionneuse multiplie les positions par cette valeur) | 1 |
+| Miroir pour le visualiseur | aucun |
+| Échelle des unités (`scale` : le visualiseur multiplie les positions par cette valeur) | 1 |
 
-Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des positions, dans le pied de `heat.parquet`, pour que la visionneuse 3DHeat tourne et mette à l'échelle les lignes toute seule : voir [Les données](the-data.md).
+Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des positions, dans le pied de `heat.parquet`, pour que le visualiseur 3DHeat tourne et mette à l'échelle les lignes tout seul : voir [Les données](the-data.md).
 
 ## Multijoueur {#multiplayer}
 
@@ -87,7 +87,7 @@ Le watcher suit la [règle du convertisseur](https://github.com/Holdi601/3DHeat/
 
 **Conservé brut**
 
-- chaque ligne de cette session, entière, `type` = le niveau et le journaliseur entre crochets (`INFO Client`, `DEBUG Client`, `WARN Client`, `CRIT Client`, ...), `used` là où elle est devenue une ligne : chat global, échange, groupe et guilde, `Connecting to instance server`, les avis AFK et NPD, les réponses aux commandes de chat comme `/played` et `/deaths`, les lignes de chargement et du moteur du client - conservées, pas encore transformées en lignes
+- chaque ligne de cette session, entière, `type` = le niveau et le journaliseur entre crochets (`INFO Client`, `DEBUG Client`, `WARN Client`, `CRIT Client`, ...), `used` là où elle est devenue une ligne : chat global, échange, groupe et guilde, `Connecting to instance server`, les avis AFK et DND, les réponses aux commandes de chat comme `/played` et `/deaths`, les lignes de chargement et du moteur du client - conservées, pas encore transformées en lignes
 - une ligne horodatée sans crochets (`***** LOG FILE OPENING *****`) comme `untagged`, une ligne sans heure comme `untimed`
 
 **Non disponible**

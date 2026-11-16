@@ -1,9 +1,9 @@
 ---
 title: "Star Citizen (fichiers journal)"
-nav_order: 42
+nav_order: 41
 lang: "fr"
 source: game-starcitizen.md
-source_hash: "6528f948d2e5"
+source_hash: "7b1ce51dc50a"
 nav_exclude: true
 search_exclude: true
 ---
@@ -61,10 +61,10 @@ Chaque ligne est conservée entière dans le fichier brut de la session (règle 
 | Positions enregistrées | non |
 | Axe vertical | `y` |
 | Unités | aucune position enregistrée |
-| Miroir pour la visionneuse | aucun |
-| Échelle des unités (`scale` : la visionneuse multiplie les positions par cette valeur) | 1 |
+| Miroir pour le visualiseur | aucun |
+| Échelle des unités (`scale` : le visualiseur multiplie les positions par cette valeur) | 1 |
 
-Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des positions, dans le pied de `heat.parquet`, pour que la visionneuse 3DHeat tourne et mette à l'échelle les lignes toute seule : voir [Les données](the-data.md).
+Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des positions, dans le pied de `heat.parquet`, pour que le visualiseur 3DHeat tourne et mette à l'échelle les lignes tout seul : voir [Les données](the-data.md).
 
 ## Multijoueur {#multiplayer}
 

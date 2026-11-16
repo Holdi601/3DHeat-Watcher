@@ -9,7 +9,7 @@ search_exclude: true
 ---
 # American Truck Simulator (données en direct) {#american-truck-simulator-live-data}
 
-Pendant que vous jouez à American Truck Simulator, le watcher enregistre les données que le jeu envoie lui-même, pour que vous puissiez les regarder plus tard sur une carte dans la visionneuse 3DHeat.
+Pendant que vous jouez à American Truck Simulator, le watcher enregistre les données que le jeu envoie lui-même, pour que vous puissiez les regarder plus tard sur une carte dans le visualiseur 3DHeat.
 
 *Détails techniques : adaptateur `ats`, type [`telemetry`](sources-and-rules.md) ; il tourne pendant que `amtrucks.exe` est lancé et cherche de nouvelles données toutes les 0,1 s.*
 
@@ -33,7 +33,7 @@ Installez scs-telemetry.dll (révision 12) depuis github.com/RenCloud/scs-sdk-pl
 
 Euro Truck Simulator 2 et American Truck Simulator : le SDK de télémétrie de SCS, par le plugin de RenCloud.
 
-SCS publie un SDK de télémétrie (<https://modding.scssoft.com/wiki/Documentation/Engine/SDK/Telemetry>) pour les plugins que le joueur place dans `<jeu>\bin\win_x64\plugins\`. Le jeu lui-même ne publie rien ; le plugin largement utilisé depuis <https://github.com/RenCloud/scs-sdk-plugin> (MIT) copie les canaux du SDK dans la mémoire partagée `Local\SCSTelemetry` (32 Kio), dont la disposition est décrite dans `scs-telemetry/inc/scs-telemetry-common.hpp`. Ce module lit la révision 12 de cette disposition (PLUGIN_REVID 12) et rien d'autre : le plugin écrit sa révision à l'octet 40, et toute autre révision est laissée non lue plutôt que lue de travers. Décalages utilisés (zones telles que l'en-tête les marque ; alignement naturel) :
+SCS publie un SDK de télémétrie (<https://modding.scssoft.com/wiki/Documentation/Engine/SDK/Telemetry>) pour les plugins que le joueur place dans `<jeu>\bin\win_x64\plugins\`. Le jeu lui-même ne publie rien ; le plugin largement utilisé depuis <https://github.com/RenCloud/scs-sdk-plugin> (MIT) copie les canaux du SDK dans la mémoire partagée `Local\SCSTelemetry` (32 Ko), dont la disposition est décrite dans `scs-telemetry/inc/scs-telemetry-common.hpp`. Ce module lit la révision 12 de cette disposition (PLUGIN_REVID 12) et rien d'autre : le plugin écrit sa révision à l'octet 40, et toute autre révision est laissée non lue plutôt que lue de travers. Décalages utilisés (zones telles que l'en-tête les marque ; alignement naturel) :
 
 ```text
    0  bool sdkActive          4  bool paused
@@ -52,9 +52,9 @@ SCS publie un SDK de télémétrie (<https://modding.scssoft.com/wiki/Documentat
       train, refuel, refuelPayed
 ```
 
-Le placement mondial du camion est le repère monde de SCS : x est, y haut, z sud, en mètres (droitier, y haut - la visionneuse le dessine tel quel). Les bacs, les trains et le chargement d'une sauvegarde déplacent le camion sans conduite : le trajet est coupé à cet endroit.
+Le placement mondial du camion est le repère monde de SCS : x est, y haut, z sud, en mètres (droitier, y haut - le visualiseur le dessine tel quel). Les bacs, les trains et le chargement d'une sauvegarde déplacent le camion sans conduite : le trajet est coupé à cet endroit.
 
-Toute la zone mémoire (les 32 Kio du plugin : chaque zone ci-dessus et celles non lues - configuration du camion, roues, usure, autres canaux du camion, et ce que la révision dispose après l'octet 4400, les remorques) est conservée dans le fichier brut de la session à chaque changement, de `type` `SCSTelemetry` avec la `revision` à côté - une page d'une autre révision est aussi conservée entière plutôt que lue de travers.
+Toute la zone mémoire (les 32 Ko du plugin : chaque zone ci-dessus et celles non lues - configuration du camion, roues, usure, autres canaux du camion, et ce que la révision organise après l'octet 4400, les remorques) est conservée dans le fichier brut de la session à chaque changement, de `type` `SCSTelemetry` avec la `revision` à côté - une page d'une autre révision est aussi conservée entière plutôt que lue de travers.
 
 Le même module sert aussi : [Euro Truck Simulator 2 (données en direct)](game-ets2.md).
 
@@ -65,10 +65,10 @@ Le même module sert aussi : [Euro Truck Simulator 2 (données en direct)](game-
 | Positions enregistrées | oui |
 | Axe vertical | `y` |
 | Unités | mètres (monde SCS : x est, y haut, z sud) |
-| Miroir pour la visionneuse | aucun |
-| Échelle des unités (`scale` : la visionneuse multiplie les positions par cette valeur) | 1 |
+| Miroir pour le visualiseur | aucun |
+| Échelle des unités (`scale` : le visualiseur multiplie les positions par cette valeur) | 1 |
 
-Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des positions, dans le pied de `heat.parquet`, pour que la visionneuse 3DHeat tourne et mette à l'échelle les lignes toute seule : voir [Les données](the-data.md).
+Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des positions, dans le pied de `heat.parquet`, pour que le visualiseur 3DHeat tourne et mette à l'échelle les lignes toute seule : voir [Les données](the-data.md).
 
 ## Multijoueur {#multiplayer}
 
@@ -82,7 +82,7 @@ Clés de statistiques que le code de cet adaptateur définit par leur nom (`stat
 
 `deliveries`, `distance_km`, `fines`, `fines_total`, `jobs_cancelled`, `max_speed_kmh`, `refuels`, `revenue`, `tolls_total`, `xp`
 
-Une clé entre accolades est complétée à l'exécution (`score.{team}` est une clé par équipe). Les clés que le code prend dans une table des champs du jeu ou dans ses propres noms de statistiques ne figurent pas dans cette liste ; « Ce qui est enregistré » plus haut les nomme.
+Une clé entre accolades est complétée à l'exécution (`score.{team}` est une clé par équipe). Les clés que le code prend dans une table des champs du jeu ou dans les noms de statistiques du jeu ne figurent pas dans cette liste ; « Ce qui est enregistré » plus haut les nomme.
 
 ## Complétude {#completeness}
 
@@ -96,7 +96,7 @@ Le watcher suit la [règle du convertisseur](https://github.com/Holdi601/3DHeat/
 
 **Conservé brut**
 
-- `SCSTelemetry` : toute la zone de 32 Kio du plugin, à chaque lecture dont les octets diffèrent de la copie conservée la dernière fois (`unchanged_reads` dans meta.json compte les autres), `revision` à côté : chaque zone - configuration du camion et de la remorque, canaux du camion (pédales, direction, carburant, AdBlue, pressions, températures, usure, feux, roues), vecteurs de placement et d'accélération, chaînes de travail et de jeu, et tout ce que la révision dispose après l'octet 4400 (les remorques) ; `used` vaut vrai tant que le SDK est actif et que la révision est 12
+- `SCSTelemetry` : toute la zone de 32 Ko du plugin, à chaque lecture dont les octets diffèrent de la copie conservée la dernière fois (`unchanged_reads` dans meta.json compte les autres), `revision` à côté : chaque zone - configuration du camion et de la remorque, canaux du camion (pédales, direction, carburant, AdBlue, pressions, températures, usure, feux, roues), vecteurs de placement et d'accélération, chaînes de travail et de jeu, et tout ce que la révision organise après l'octet 4400 (les remorques) ; `used` vaut vrai tant que le SDK est actif et que la révision est 12
 - une page d'une autre révision du plugin est conservée entière avec `used` à faux plutôt que lue de travers
 
 **Non disponible**
@@ -104,7 +104,7 @@ Le watcher suit la [règle du convertisseur](https://github.com/Holdi601/3DHeat/
 - tout ce que le plugin ne copie pas hors du SDK, et tout pendant que le plugin n'est pas installé : le jeu ne publie aucune télémétrie propre
 - les camions des autres joueurs dans TruckersMP ou les convois : le SDK ne donne que le camion du joueur
 
-**Taille** : 32 Kio jusqu'à 10 fois par seconde pendant la conduite (les lectures diffèrent alors toutes) : environ 1,2 Go par heure avant compression, une seule copie en pause ; la plus grande part de la page est faite de zéros et de configuration qui ne change pas, donc zstd la réduit beaucoup (pas encore mesuré sur une vraie session)
+**Taille** : 32 Ko jusqu'à 10 fois par seconde pendant la conduite (les lectures diffèrent alors toutes) : environ 1,2 Go par heure avant compression, une seule copie en pause ; la plus grande part de la page est faite de zéros et de configuration qui ne change pas, donc zstd la réduit beaucoup (pas encore mesuré sur une vraie session)
 
 ## Vérifié {#verified}
 

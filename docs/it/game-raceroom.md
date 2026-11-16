@@ -1,9 +1,9 @@
 ---
 title: "RaceRoom Racing Experience (dati in tempo reale)"
-nav_order: 38
+nav_order: 37
 lang: "it"
 source: game-raceroom.md
-source_hash: "ffd0499ca059"
+source_hash: "f3879cd40a67"
 nav_exclude: true
 search_exclude: true
 ---
@@ -107,7 +107,7 @@ Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat
 
 **Conservato grezzo**
 
-- `r3e`: l'intera mappatura di $R3E, ogni lettura i cui byte differiscono dalla copia conservata per ultima - ogni campo di r3e.h: la fisica del giocatore (orientamento, velocità, accelerazioni, forze G), motore, carburante, gomme, freni, danni, flag, menu dei pit, tempi di settore, l'intera fase dati di ogni slot di pilota (classe, modello, squadra, tempi di settore, distacchi, penalità, gomme)
+- `r3e`: l'intera mappatura di $R3E, ogni lettura i cui byte differiscono dalla copia conservata per ultima - ogni campo di r3e.h: la fisica del giocatore (orientamento, velocità, accelerazioni, forze G), motore, carburante, gomme, freni, danni, flag, menu dei pit, tempi di settore, l'intero blocco dati di ogni slot di pilota (classe, modello, squadra, tempi di settore, distacchi, penalità, gomme)
 - `used` è vero per una pagina letta in righe; falso per una pagina nei menu, in pausa, in un replay, di un altro layout o presa mentre viene scritta (`torn` 1); `unchanged_reads` in meta.json conta le letture identiche byte per byte alla copia conservata prima
 
 **Non disponibile**
@@ -126,4 +126,4 @@ testato su una pagina costruita nel test da r3e.h 3.6 (offset ricavati dall'inte
 
 [heat3d_watch/adapters/simracing_shm.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/simracing_shm.py)
 
-<!-- Generated from the adattatore by tools/gen_game_pages.py; change the adattatore and run it again rather than editing this page. -->
+<!-- Generato dall'adattatore da tools/gen_game_pages.py; per cambiarlo modifica l'adattatore ed eseguilo di nuovo invece di modificare questa pagina. -->

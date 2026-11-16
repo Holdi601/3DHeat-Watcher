@@ -9,7 +9,7 @@ search_exclude: true
 ---
 # Microsoft Flight Simulator 2024 (données en direct) {#microsoft-flight-simulator-2024-live-data}
 
-Pendant que vous jouez à Microsoft Flight Simulator 2024, le Watcher enregistre les données que le simulateur envoie lui-même, afin que vous puissiez les regarder plus tard sur une carte dans la visionneuse 3DHeat.
+Pendant que vous jouez à Microsoft Flight Simulator 2024, le watcher enregistre les données que le simulateur envoie lui-même, afin que vous puissiez les regarder plus tard sur une carte dans le visualiseur 3DHeat.
 
 *Détails techniques : adaptateur `msfs2024`, type [`telemetry`](sources-and-rules.md) ; il tourne pendant que `FlightSimulator2024.exe` est lancé et cherche de nouvelles données toutes les 0,1 s.*
 
@@ -34,7 +34,7 @@ rien dans le simulateur ; il lui faut SimConnect.dll - MSFS 2020 l'a dans son do
 
 Microsoft Flight Simulator 2020 et 2024 : SimConnect, par le SimConnect.dll propre au joueur.
 
-SimConnect est l'API cliente publiée du simulateur (documentation du SDK : <https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/SimConnect_SDK.htm>, <https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/SimConnect_SDK.htm>). Le Watcher ne livre pas la DLL : il charge celle qui est venue avec le simulateur ou son SDK - MSFS 2020 place `SimConnect.dll` dans son dossier d'installation ; MSFS 2024 sur Steam ne livre que sa version interne, donc les joueurs de 2024 installent le SDK de MSFS 2024 (`<SDK>\SimConnect SDK\lib\SimConnect.dll` ; le simulateur 2024 accepte aussi les clients 2020).
+SimConnect est l'API cliente publiée du simulateur (documentation du SDK : <https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/SimConnect_SDK.htm>, <https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/SimConnect_SDK.htm>). Le watcher ne livre pas la DLL : il charge celle qui est venue avec le simulateur ou son SDK - MSFS 2020 place `SimConnect.dll` dans son dossier d'installation ; MSFS 2024 sur Steam ne livre que sa version interne, donc les joueurs de 2024 installent le SDK de MSFS 2024 (`<SDK>\SimConnect SDK\lib\SimConnect.dll` ; le simulateur 2024 accepte aussi les clients 2020).
 
 Les appels, tirés de SimConnect.h, renvoient tous un HRESULT (0 = S_OK) :
 
@@ -77,10 +77,10 @@ Le même module sert aussi : [Microsoft Flight Simulator 2020 (données en direc
 | Positions enregistrées | oui |
 | Axe vertical | `y` |
 | Unités | mètres (est, altitude, nord depuis le premier relevé) |
-| Miroir pour la visionneuse | `z` |
-| Échelle (`scale` : la visionneuse multiplie les positions par elle) | 1 |
+| Miroir pour le visualiseur | `z` |
+| Échelle (`scale` : le visualiseur multiplie les positions par lui) | 1 |
 
-Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session a des positions, dans le pied de `heat.parquet`, afin que la visionneuse 3DHeat tourne et mette à l'échelle les lignes toute seule - voir [Les données](the-data.md).
+Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session a des positions, dans le pied de `heat.parquet`, afin que le visualiseur 3DHeat tourne et mette à l'échelle les lignes tout seul - voir [Les données](the-data.md).
 
 ## Multijoueur {#multiplayer}
 
@@ -98,19 +98,19 @@ Une clé entre accolades est complétée à l'exécution (`score.{team}` est une
 
 ## Exhaustivité {#completeness}
 
-Le Watcher suit la [règle du convertisseur](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md) de 3DHeat : ce que la source contient est lu ou gardé, jamais jeté. En plus des lignes, chaque paquet, page, ligne ou réponse que reçoit l'adaptateur est gardé en entier dans `heat.raw.parquet` de la session (colonnes `time`, `ms`, `type`, `used`, `payload`, `text`, puis tout champ gardé par son nom ; `used` marque ce qui est aussi devenu des lignes), et `selfCheck.completeness` dans `meta.json` compte chaque `type` - `lost` vaut 0.
+Le watcher suit la [règle du convertisseur](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md) de 3DHeat : ce que la source contient est lu ou gardé, jamais jeté. En plus des lignes, chaque paquet, page, ligne ou réponse que reçoit l'adaptateur est gardé en entier dans `heat.raw.parquet` de la session (colonnes `time`, `ms`, `type`, `used`, `payload`, `text`, puis tout champ gardé par son nom ; `used` marque ce qui est aussi devenu des lignes), et `selfCheck.completeness` dans `meta.json` compte chaque `type` - `lost` vaut 0.
 
 **Lu**
 
-- SIMOBJECT_DATA de la définition de position (chaque image du simulateur) : latitude, longitude, altitude, hauteur sol, tangage, inclinaison, cap vrai, IAS, vitesse sol, g, au sol - la dernière image de l'interrogation en ligne, chaque image pour les toucher des roues et les décollages
+- SIMOBJECT_DATA de la définition de position (chaque image du simulateur) : latitude, longitude, altitude, hauteur sol, tangage, inclinaison, cap vrai, IAS, vitesse sol, g, au sol - la dernière image de chaque interrogation, comme une ligne, et chaque image pendant les posers et les décollages
 - SIMOBJECT_DATA de la définition de mouvement (environ 10 Hz : TAS, Mach, vitesse verticale, incidence, dérapage, cap magnétique, vitesse du corps, accélération et vitesse de rotation sur trois axes) et de la définition d'état (1 Hz : poids, carburant, volets, train, aérofreins, frein de parking, pilote automatique, moteurs, manette et régime, température extérieure, vent, pression au niveau de la mer, vitesse de simulation, heure zoulou et locale, état de la caméra) sur les lignes, telles que reçues en dernier
 - SIMOBJECT_DATA de la définition des noms (titre, type ATC, modèle et identifiant) dans meta.json et `aircraft` des lignes ; OPEN (application et version) dans meta.json
-- EVENT et EVENT_FILENAME : SimStart, SimStop, Crashed, FlightLoaded (le fichier de vol) et AircraftLoaded (le fichier de l'avion) comme vols, crashs et meta.json
+- EVENT et EVENT_FILENAME : SimStart, SimStop, Crashed, FlightLoaded (le fichier de vol) et AircraftLoaded (le fichier de l'avion) pour les vols, les crashs et meta.json
 - QUIT termine la session
 
 **Gardé brut**
 
-- chaque message que SimConnect remet au Watcher, en entier comme `payload`, sous son nom SIMCONNECT_RECV_ID : `SIMOBJECT_DATA`, `EVENT`, `EVENT_FILENAME`, `OPEN`, `QUIT`, `EXCEPTION` (une variable ou un événement que le simulateur n'a pas accepté, avec l'identifiant d'envoi et l'index), tout autre identifiant par son nom ou `RECV_<id>`
+- chaque message que SimConnect remet au watcher, en entier comme `payload`, sous son nom SIMCONNECT_RECV_ID : `SIMOBJECT_DATA`, `EVENT`, `EVENT_FILENAME`, `OPEN`, `QUIT`, `EXCEPTION` (une variable ou un événement que le simulateur n'a pas accepté, avec l'identifiant d'envoi et l'index), tout autre identifiant par son nom ou `RECV_<id>`
 - ce que seul le fichier brut annexe contient : la position de chaque image du simulateur entre les lignes, les événements Pause, Sim, CrashReset, PositionChanged et FlightSaved, une définition coupée par le simulateur (une variable qu'il ne connaît pas : le bloc n'est alors pas lu par son nom) ; `requests` dans meta.json liste les variables et unités de chaque définition, dans l'ordre, pour que les charges utiles se lisent sans ce module
 
 **Non disponible**

@@ -9,7 +9,7 @@ search_exclude: true
 ---
 # iRacing (dati in tempo reale) {#iracing-live-data}
 
-Mentre giochi a iRacing, il watcher salva i dati che il gioco stesso invia, così puoi guardarli più tardi come statistiche e una cronologia.
+Mentre giochi a iRacing, il watcher salva i dati che il gioco stesso invia, così puoi guardarli più tardi come statistiche e una timeline.
 
 *Dettagli tecnici: adattatore `iracing`, tipo [`telemetry`](sources-and-rules.md); gira mentre `iRacingSim64DX11.exe` o `iRacingSim64.exe` è in esecuzione e cerca nuovi dati ogni 0,1 s.*
 

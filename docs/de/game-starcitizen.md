@@ -1,9 +1,9 @@
 ---
 title: "Star Citizen (Logdateien)"
-nav_order: 42
+nav_order: 41
 lang: "de"
 source: game-starcitizen.md
-source_hash: "6528f948d2e5"
+source_hash: "7b1ce51dc50a"
 nav_exclude: true
 search_exclude: true
 ---

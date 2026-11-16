@@ -1,9 +1,9 @@
 ---
-title: Comandi
+title: "Comandi"
 nav_order: 6
 lang: "it"
 source: commands.md
-source_hash: "701d07f4596d"
+source_hash: "5f90aaf52404"
 nav_exclude: true
 search_exclude: true
 ---
@@ -12,7 +12,7 @@ search_exclude: true
 Non hai mai usato la riga di comando? Leggi prima [Prima di iniziare](before-you-start.md). Ogni comando si scrive in un terminale aperto nella cartella in cui hai estratto o clonato il programma (in Esplora file, scrivi `powershell` nella barra dell'indirizzo), così:
 
 ```bash
-python -m heat3d_watch <comando> [opzioni]
+python -m heat3d_watch <command> [options]
 ```
 
 ![python -m heat3d_watch --help](../assets/img/help.svg)
@@ -28,6 +28,7 @@ python -m heat3d_watch <comando> [opzioni]
 | [`table`](#table) | ricostruisce il `heat.parquet` di una sessione dal suo `events.jsonl` |
 | [`replays`](#replays) | converte i replay già presenti sul disco |
 | [`dota-replay`](#dota-replay) | scarica il replay di una partita pubblica di Dota 2 tramite il suo id |
+| [`dota-map`](#dota-map) | la mappa di Dota 2 dalla tua installazione come livello 3D, tramite lo strumento separato 3DHeat Dota |
 | [`update`](#update) | aggiorna all'ultima versione |
 | [`config`](#config) | mostra o cambia le impostazioni |
 
@@ -35,7 +36,7 @@ Opzioni valide per ogni comando: `-h` / `--help` mostra l'aiuto, e `python -m he
 
 Le immagini di questa pagina sono esecuzioni su sessioni di esempio sintetiche (`Example Racer`, `Example Arena`), non su registrazioni reali.
 
-Ogni comando tranne `update` cerca prima una versione più recente (al massimo ogni sei ore; la ricerca si salta con `HEAT3D_NO_UPDATE=1`, vedi [Aggiornamenti](updates.md)). `run` si limita a stampare un avviso. Gli altri comandi chiedono `Update now? [Y/n]` quando vengono eseguiti in un terminale, e quando non lo sono stampano come aggiornare. L'output è in UTF-8, quindi i nomi dei giochi in qualsiasi alfabeto si stampano correttamente in ogni console.
+Ogni comando tranne `update` cerca prima una versione più recente (al massimo ogni sei ore; la ricerca si salta con `HEAT3D_NO_UPDATE=1`, vedi [Aggiornamenti](updates.md)). `run` si limita a stampare un avviso. Gli altri comandi chiedono `Update now? [Y/n]` quando vengono eseguiti in un terminale, e quando non lo sono stampano come si aggiorna. L'output è in UTF-8, quindi i nomi dei giochi in qualsiasi alfabeto si stampano correttamente in ogni console.
 
 ## run {#run}
 
@@ -62,7 +63,7 @@ python -m heat3d_watch games [--markdown]
 
 ![games](../assets/img/games.svg)
 
-Elenca ogni adattatore raggruppato per gioco: il nome, l'id e il tipo, da dove legge, cosa registra e come attivarlo. Un adattatore che non può girare su questo computer è segnato come `[unavailable: <motivo>]`: SimConnect.dll non trovato, nessuna cartella di Minecraft, 3DHeat CS2 non installato, Steam o l'app NVIDIA non trovati. Un modulo di adattatore che non si è importato è indicato alla fine, con l'errore.
+Elenca ogni adattatore raggruppato per gioco: il nome, l'id e il tipo, da dove legge, cosa registra e come attivarlo. Un adattatore che non può girare su questo computer è segnato come `[unavailable: <why>]`: SimConnect.dll non trovato, nessuna cartella di Minecraft, 3DHeat CS2 non installato, Steam o l'app NVIDIA non trovati. Un modulo di adattatore che non si è importato è indicato alla fine, con l'errore.
 
 ```text
 EA SPORTS F1 25  (f1-25, telemetry)
@@ -76,7 +77,7 @@ EA SPORTS F1 25  (f1-25, telemetry)
 ## setup {#setup}
 
 ```bash
-python -m heat3d_watch setup <id adattatore | all> [--apply]
+python -m heat3d_watch setup <adapter id | all> [--apply]
 ```
 
 ![setup](../assets/img/setup.svg)
@@ -90,7 +91,7 @@ f1-25: would change: hardware_settings_config.xml <udp>: enabled="false" -> "tru
 Nothing was changed. Run again with --apply to make these changes.
 ```
 
-`all` esegue la configurazione di ogni adattatore che ne ha una. Un adattatore senza configurazione, indicato da solo, stampa `<id>: nothing for setup to change; ` seguito da come si attiva il gioco (il suo testo `enable`, oppure che non serve nulla). Un id sconosciuto stampa `no adattatore '<id>'; games lists them` ed esce con codice 2. Gli adattatori che hanno qualcosa da configurare:
+`all` esegue la configurazione di ogni adattatore che ne ha una. Un adattatore senza configurazione, indicato da solo, stampa `<id>: nothing for setup to change; ` seguito da come si attiva il gioco (il suo testo `enable`, oppure che non serve nulla). Un id sconosciuto stampa `no adapter '<id>'; games lists them` ed esce con codice 2. Gli adattatori che hanno qualcosa da configurare:
 
 | Adattatore | Cosa cambia `--apply` |
 |---|---|
@@ -117,7 +118,7 @@ python -m heat3d_watch status
 ```text
 3DHeat Watcher 1.0.2; data in C:\Users\...\AppData\Local\3DHeat\Watcher
 Games running: EA SPORTS F1 25 (f1-25)
-Always on: il2-tacview, steam-stats, steam-timeline, nvidia-highlights, cs2-demos, osu-replays, lol-replays, valorant-replays
+Always on: il2-tacview, steam-stats, steam-timeline, nvidia-highlights, cs2-demos, lol-replays, valorant-replays
 ```
 
 Dice quali adattatori un `run` avvierebbe adesso, secondo le stesse regole: il processo del gioco è in esecuzione, l'adattatore non è in `disabled`, non manca nulla di cui ha bisogno, gli adattatori dei replay solo con `replays` attivo, gli adattatori di memoria solo con `memory` attivo e ogni controllo di memoria superato. Non avvia niente.
@@ -155,7 +156,7 @@ Senza opzioni: una tabella di tutti i giochi (sessioni, ore, eventi, posizioni, 
 ## table {#table}
 
 ```bash
-python -m heat3d_watch table <cartella della sessione>
+python -m heat3d_watch table <session folder>
 ```
 
 ![stats --csv and table](../assets/img/csv-and-table.svg)
@@ -165,43 +166,50 @@ Ricostruisce `heat.parquet` in una cartella di sessione dal suo `events.jsonl`, 
 ## replays {#replays}
 
 ```bash
-python -m heat3d_watch replays <id adattatore> [cartella] [-v]
+python -m heat3d_watch replays <adapter id> [folder] [-v]
 ```
 
 ![replays and their converters](../assets/img/it/replays.svg)
 
-Converte i replay già presenti sul disco, ora, uno dopo l'altro, ognuno in una sessione come lo farebbe la sorveglianza del watcher. La prima volta che il watcher vede una cartella di replay si limita a prendere nota di cosa c'è dentro (vedi [Installazione e avvio](installing-and-running.md#replays-already-on-disk)); con questo comando quelli vecchi si convertono su richiesta. Senza `cartella` si leggono le cartelle proprie dell'adattatore (quelle del gioco, più `replay_folders`); con essa, i replay di quella cartella. Ogni replay convertito viene segnato come già visto, così il watcher in esecuzione non lo converte di nuovo. Un replay che non si converte viene registrato nel log e saltato.
+Converte i replay già presenti sul disco, ora, uno dopo l'altro, ognuno in una sessione come lo farebbe la sorveglianza del watcher. La prima volta che il watcher vede una cartella di replay si limita a prendere nota di cosa c'è dentro (vedi [Installazione e avvio](installing-and-running.md#replays-already-on-disk)); con questo comando quelli vecchi si convertono su richiesta. Senza `folder` si leggono le cartelle proprie dell'adattatore (quelle del gioco, più `replay_folders`); con essa, i replay di quella cartella. Ogni replay convertito viene segnato come già visto, così il watcher in esecuzione non lo converte di nuovo. Un replay che non si converte viene registrato nel log e saltato.
 
 | Adattatore | Replay |
 |---|---|
 | `cs2-demos` | demo di Counter-Strike 2 (`*.dem`), tramite 3DHeat CS2 |
-| `lol-replays` | replay di League of Legends (`*.rofl`) |
-| `osu-replays` | replay di osu! (`*.osr`) |
-| `valorant-replays` | replay di VALORANT (`*.vrf`) |
+| `lol-replays` | replay di League of Legends (`*.rofl`), tramite il lettore esterno `heat3d-riot-replays` (3DHeat-Ext-Riot) |
+| `valorant-replays` | replay di VALORANT (`*.vrf`), tramite il lettore esterno `heat3d-riot-replays` (3DHeat-Ext-Riot) |
 | `warthunder-replays` | replay di War Thunder (`*.wrpl`), tramite il convertitore esterno `heat3d-wt-replay` (exporters/ext/warthunder-replay) |
 | `wot-replays` | replay di World of Tanks (`*.wotreplay`), tramite il convertitore esterno `heat3d-wot-replay` (exporters/ext/wot-replay) |
 | `wows-replays` | replay di World of Warships (`*.wowsreplay`), tramite il convertitore esterno `heat3d-wows-replay` (exporters/ext/wows-replay) |
-| `dota-replays` | replay di Dota 2 (`*.dem`), tramite gem (`pip install gem-dota`) |
+| `dota-replays` | replay di Dota 2 (`*.dem`), tramite il lettore esterno `heat3d-dota-replay` (3DHeat-Ext-DotaReplay) |
 
 ```text
-osu-replays: converted 12 replay(s); `sessions --game` lists them
+lol-replays: converted 12 replay(s); `sessions --game` lists them
 ```
 
-Un id che non è uno di questi stampa `no replay adattatore '<id>'` con la lista ed esce con codice 2; lo stesso vale per una `cartella` che non esiste. Un adattatore che qui non può girare (3DHeat CS2 non installato) stampa il motivo ed esce con codice 1. Le tracce Tacview di IL-2 non sono nella lista: quell'adattatore converte da solo ogni traccia finita che trova.
+Un id che non è uno di questi stampa `no replay adapter '<id>'` con la lista ed esce con codice 2; lo stesso vale per una `folder` che non esiste. Un adattatore che qui non può girare (3DHeat CS2 o il lettore del gioco non installato) stampa il motivo - dove ottenere il lettore e come installarlo - ed esce con codice 1. Le tracce Tacview di IL-2 non sono nella lista: quell'adattatore converte da solo ogni traccia finita che trova.
 
 ## dota-replay {#dota-replay}
 
 ```bash
-python -m heat3d_watch dota-replay <id partita> [<id partita> ...] [-o CARTELLA] [--convert] [-v]
+python -m heat3d_watch dota-replay <match id> [<match id> ...] [-o FOLDER] [--convert] [-v]
 ```
 
-Scarica il replay di una partita pubblica di Dota 2 dai server di replay di Valve. Serve internet. L'id partita è il numero nella pagina della partita nel client di Dota (i dettagli della partita) o nel sito di OpenDota; Valve conserva un replay per qualche settimana, dopodiché il download fallisce. Il server e il sale del replay vengono dal registro di OpenDota della partita (`api.opendota.com/api/matches/<id>`, senza chiave), il file da `replay<cluster>.valve.net/570/<id>_<salt>.dem.bz2`; viene decompresso mentre arriva (Valve serve sotto quel nome sia bzip2 sia Zstandard) e salvato come `<id partita>.dem`. Senza `-o` va nella cartella dei replay di Dota 2 quando Dota 2 è installato - dove un watcher in esecuzione lo converte - altrimenti in `<data>/replays/dota`. Un file già presente viene mantenuto. `--convert` converte subito i replay scaricati, come farebbe `replays dota-replays`, e li segna come visti.
+Scarica il replay di una partita pubblica di Dota 2 dai server di replay di Valve. Serve internet. L'id partita è il numero nella pagina della partita nel client di Dota (i dettagli della partita) o nel sito di OpenDota; Valve conserva un replay per qualche settimana, dopodiché il download fallisce. Il server e il sale del replay vengono dal registro di OpenDota della partita (`api.opendota.com/api/matches/<id>`, senza chiave), il file da `replay<cluster>.valve.net/570/<id>_<salt>.dem.bz2`; viene decompresso mentre arriva (Valve serve sotto quel nome sia bzip2 sia Zstandard) e salvato come `<match id>.dem`. Senza `-o` va nella cartella dei replay di Dota 2 quando Dota 2 è installato - dove un watcher in esecuzione lo converte - altrimenti in `<data>/replays/dota`. Un file già presente viene mantenuto. `--convert` converte subito i replay scaricati, come farebbe `replays dota-replays`, e li segna come visti; serve il lettore di replay di Dota 2 ([3DHeat-Ext-DotaReplay](https://github.com/Holdi601/3DHeat-Ext-DotaReplay), `heat3d-dota-replay`) e, senza di esso, dice dove ottenerlo ed esce con codice 1 prima di scaricare qualsiasi cosa. Il download in sé richiede solo il watcher.
 
 ```text
 match 9000000000: C:\Program Files (x86)\Steam\steamapps\common\dota 2 beta\game\dota\replays\9000000000.dem
 ```
 
 Valve conserva i replay per qualche settimana; una partita più vecchia stampa `Valve no longer has the replay of match <id>` ed esce con codice 1. Una partita che OpenDota non ha ancora visto non ha sale: il messaggio dice di chiederlo a OpenDota (`curl -X POST https://api.opendota.com/api/request/<id>`) e riprovare qualche minuto dopo. Le lobby private e le partite con un profilo nascosto non sono affatto sui server di replay.
+
+## dota-map {#dota-map}
+
+```bash
+python -m heat3d_watch dota-map [<map>] -o <file.glb> [--game FOLDER] [--source2viewer EXE] [--detail UNITS]
+```
+
+Scrive la mappa di Dota 2 - terreno, scogliere, acqua, alberi ed edifici - come livello `.glb` nel sistema di riferimento in cui vengono disegnate le tabelle dei replay di Dota, dalla tua installazione di Dota 2. Il watcher non legge da sé i file del gioco: esegue lo strumento separato **3DHeat Dota** (`heat3d-dota-maps level`, [3DHeat-Ext-Dota](https://github.com/Holdi601/3DHeat-Ext-Dota)) con queste opzioni, e ne passa output e codice di uscita. `<map>` è `dota` per default; `--game` è la cartella di Dota 2 quando non si trova in una libreria Steam; `--source2viewer` il percorso della CLI di Source2Viewer, di cui quello strumento ha bisogno; `--detail` la cella di raggruppamento dei vertici per gli edifici in unità di gioco (predefinita 8, 0 mantiene ogni triangolo). Quando lo strumento non è installato stampa `dota-map: the Dota 2 map converter is not installed: ...` con dove ottenerlo, ed esce con codice 2. Dettagli: [Mappa di Dota 2](dota-map.md).
 
 ## update {#update}
 
@@ -216,17 +224,17 @@ Chiede a GitHub l'ultima versione, ignorando la risposta in cache, e aggiorna qu
 ## config {#config}
 
 ```bash
-python -m heat3d_watch config [--set CHIAVE=VALORE ...]
+python -m heat3d_watch config [--set KEY=VALUE ...]
 ```
 
 ![config](../assets/img/config.svg)
 
-Stampa ogni impostazione come `chiave = valore`. Con `--set` cambia prima quelle indicate e salva `settings.json` (`saved <path>`). I valori si leggono in base al tipo dell'impostazione:
+Stampa ogni impostazione come `key = value`. Con `--set` cambia prima quelle indicate e salva `settings.json` (`saved <path>`). I valori si leggono in base al tipo dell'impostazione:
 
 - impostazioni vero/falso: `1`, `true`, `yes`, `on` o `ja` è vero; `0`, `false`, `no`, `off`, `nein` o niente è falso;
 - numeri: un numero decimale (`scan_seconds=5`);
 - liste: separate da virgola oppure una lista JSON (`disabled=steam-stats,steam-timeline`; un valore vuoto svuota la lista);
-- dizionari (`replay_folders`, `player_names`): l'intero dizionario come JSON, oppure una voce come `CHIAVE.ID=VALORE` - `replay_folders.cs2-demos=D:\Demos,E:\More Demos` imposta le cartelle di quell'adattatore (separate da virgola), `player_names.warthunder-webmap=Name` il nome di quell'adattatore; un valore vuoto rimuove la voce;
+- dizionari (`replay_folders`, `player_names`): l'intero dizionario come JSON, oppure una voce come `KEY.ID=VALUE` - `replay_folders.cs2-demos=D:\Demos,E:\More Demos` imposta le cartelle di quell'adattatore (separate da virgola), `player_names.warthunder-webmap=Name` il nome di quell'adattatore; un valore vuoto rimuove la voce;
 - testo: così come è scritto (`data=D:\Heat`, `riot_id=Name#TAG`).
 
 ```bash
@@ -235,4 +243,4 @@ python -m heat3d_watch config --set riot_id=Name#TAG riot_platform=EUW1
 python -m heat3d_watch config --set replay_folders.cs2-demos=D:\Demos player_names.rocketleague-stats=Name
 ```
 
-Una chiave sconosciuta stampa `no setting '<chiave>'`, e un valore che non è del tipo dell'impostazione (`memory=perhaps`, `scan_seconds=often`, un dizionario che non è JSON) stampa `not saved: ...`; entrambi escono con codice 2 senza salvare nulla. Un `settings.json` modificato a mano viene letto allo stesso modo: un valore scritto come testo dove l'impostazione è un numero, un vero/falso o un dizionario viene letto così come è scritto, e uno che non si può leggere resta al suo valore predefinito. Ogni impostazione è descritta in [Installazione e avvio](installing-and-running.md#settings).
+Una chiave sconosciuta stampa `no setting '<key>'`, e un valore che non è del tipo dell'impostazione (`memory=perhaps`, `scan_seconds=often`, un dizionario che non è JSON) stampa `not saved: ...`; entrambi escono con codice 2 senza salvare nulla. Un `settings.json` modificato a mano viene letto allo stesso modo: un valore scritto come testo dove l'impostazione è un numero, un vero/falso o un dizionario viene letto così come è scritto, e uno che non si può leggere resta al suo valore predefinito. Ogni impostazione è descritta in [Installazione e avvio](installing-and-running.md#settings).

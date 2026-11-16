@@ -12,7 +12,7 @@ search_exclude: true
 Tous les enregistrements sont des fichiers simples dans le dossier de données (`%LOCALAPPDATA%\3DHeat\Watcher` sauf changement,
 voir [Installation et lancement](installing-and-running.md#where-everything-is)). Vous pouvez les lire, les copier ou les
 supprimer sans le watcher. Un fichier `.jsonl` est du texte brut, un événement par ligne (le Bloc-notes l'ouvre) ;
-un fichier `.parquet` est un tableau que la visionneuse 3DHeat ouvre (Excel non - `stats --csv` écrit des fichiers CSV
+un fichier `.parquet` est un tableau que le visualiseur 3DHeat ouvre (Excel ne l'ouvre pas : `stats --csv` écrit des fichiers CSV
 pour les tableurs).
 
 ## Dossiers de session {#session-folders}
@@ -86,7 +86,7 @@ C'est la source qui dit quelles lignes concernent la personne qui joue, jamais u
   par l'index de voiture du joueur du jeu, RaceRoom par son propre emplacement, Automobilista 2 et Project CARS 2 par le
   participant regardé) marquent ainsi la voiture du joueur et gardent le nom du pilote dans `player` ;
 - son `player` est le `player` de la session dans `meta.json` : le nom que la source donne au joueur - le
-  commandant d'Elite Dangerous (le journal est toujours celui du joueur), la ligne du Riot ID indiqué dans les réglages, pour un replay de League of Legends.
+  commandant d'Elite Dangerous (le journal est toujours celui du joueur), le Riot ID indiqué dans les réglages, pour un replay de League of Legends.
 
 War Thunder et Rocket League nomment chaque joueur et ne disent pas lequel vous êtes ; avec votre nom dans le réglage
 `player_names` (voir [Réglages](installing-and-running.md#settings)), vos lignes deviennent `me`.
@@ -95,7 +95,7 @@ War Thunder et Rocket League nomment chaque joueur et ne disent pas lequel vous 
 ## heat.parquet {#heatparquet}
 
 Quand une session se ferme, les lignes de `events.jsonl` qui ont `x`, `y` et `z` sont écrites dans
-`heat.parquet`. C'est le tableau que la visionneuse 3DHeat ouvre. Si la session n'a pas de positions, aucun
+`heat.parquet`. C'est le tableau que le visualiseur 3DHeat ouvre. Si la session n'a pas de positions, aucun
 tableau n'est écrit.
 
 - Les colonnes sont `time`, `ms`, `event`, `x`, `y`, `z`, `player`, `team`, `session`, suivies de chaque
@@ -103,8 +103,8 @@ tableau n'est écrit.
 - `x`, `y`, `z` et `time` sont des flottants 64 bits et `ms` un entier 64 bits. Une colonne supplémentaire dont toutes les
   valeurs sont des nombres est un flottant 64 bits ; toute autre colonne est du texte encodé par dictionnaire (les valeurs
   manquantes sont du texte vide, et les listes ou objets sont écrits en texte JSON).
-- Les métadonnées du fichier ont une clé `heat3d` avec les instructions de lecture, pour que la visionneuse associe
-  elle-même les colonnes et les axes (un exemple, la liste `extra` raccourcie) :
+- Les métadonnées du fichier ont une clé `heat3d` avec les instructions de lecture, pour que le visualiseur associe
+  lui-même les colonnes et les axes (un exemple, la liste `extra` raccourcie) :
 
 ```json
 {
@@ -122,7 +122,7 @@ tableau n'est écrit.
 ```
 
 `up` est l'axe vertical du jeu, `flipX`/`flipY`/`flipZ` inversent un axe pour qu'un monde en système gaucher ne soit pas
-dessiné en miroir, et `scale` est l'échelle d'unité de la visionneuse : elle multiplie chaque position par cette valeur lors du
+dessiné en miroir, et `scale` est l'échelle d'unité du visualiseur : elle multiplie chaque position par cette valeur lors du
 chargement du tableau (0.01 transformerait des centimètres en mètres). Chaque adaptateur écrit 1 et garde les unités propres
 au jeu - des mètres pour la plupart, les unités Source (pouces) pour Counter-Strike 2, les unités Unreal (centimètres) pour
 Rocket League - parce qu'un niveau exporté du jeu est dans ces mêmes unités, donc les lignes s'y posent ; les
@@ -130,7 +130,7 @@ tableaux du propre convertisseur de CS2 disent la même chose. `units` dans `met
 page de chaque jeu liste ses valeurs sous « Positions and axes ».
 
 Les simulateurs de vol (DCS World, Microsoft Flight Simulator, X-Plane, les enregistrements Tacview d'IL-2) placent leurs
-lignes sur la Terre, et leur pied de page indique où, pour que la visionneuse puisse poser le vrai monde dessous :
+lignes sur la Terre, et leur pied de page indique où, pour que le visualiseur puisse poser le vrai monde dessous :
 
 ```json
 "geo": {"lat0": 42.0, "lon0": 42.0, "projection": "tangent-plane", "east": "x", "north": "z", "up": "y"}
@@ -259,14 +259,14 @@ python -m heat3d_watch stats --csv out
 `watcher.sqlite`, avec une ligne d'en-tête, en UTF-8. Les heures sont des secondes Unix, comme dans la base.
 `--game` ne restreint pas l'export ; toutes les sessions sont écrites.
 
-## Ouvrir une session dans la visionneuse 3DHeat {#opening-a-session-in-the-3dheat-viewer}
+## Ouvrir une session dans le visualiseur 3DHeat {#opening-a-session-in-the-3dheat-viewer}
 
-La visionneuse : [github.com/Holdi601/3DHeat](https://github.com/Holdi601/3DHeat), documentation
+Le visualiseur : [github.com/Holdi601/3DHeat](https://github.com/Holdi601/3DHeat), documentation
 [holdi601.github.io/3DHeat](https://holdi601.github.io/3DHeat/) - sa page
 [conteneur `.3dheat`](https://holdi601.github.io/3DHeat/container.html) décrit le format d'un fichier par match que les
 convertisseurs de replays peuvent écrire.
 
-Ouvrez le `heat.parquet` d'une session dans la visionneuse 3DHeat. Le pied de page indique à la visionneuse quelle colonne est la
+Ouvrez le `heat.parquet` d'une session dans le visualiseur 3DHeat. Le pied de page indique à le visualiseur quelle colonne est la
 position, l'heure, le joueur, l'équipe et la session, et dans quel sens est le haut, donc rien n'a besoin d'être associé
 à la main. Les positions sont dans les coordonnées propres au monde du jeu. Dessinées par-dessus un niveau exporté avec
 les autres outils 3DHeat (par exemple depuis [3DHeat GameFiles](https://github.com/Holdi601/3DHeat-GameFiles)),
@@ -275,8 +275,8 @@ elles se posent là où elles se sont produites.
 - **Cartes de chaleur** utilisent chaque ligne avec une position, filtrée par `event`, `player`, `team` ou `session` comme
   n'importe quelle autre colonne.
 - **Chaleur en lignes** trace une ligne de chacune des lignes d'un joueur vers sa suivante, et en lecture chaque
-  joueur est un point qui se déplace le long du trajet avec une traînée derrière lui. Le panneau Parcours de la
-  visionneuse choisit, à partir de la colonne `event`, quels événements **démarrent** un trajet et lesquels en **terminent** un. Le watcher écrit
+  joueur est un point qui se déplace le long du trajet avec une traînée derrière lui. Le panneau Parcours du
+  visualiseur choisit, à partir de la colonne `event`, quels événements **démarrent** un trajet et lesquels en **terminent** un. Le watcher écrit
   les événements de bornage comme lignes avec une position, pour qu'ils puissent être choisis là :
   - débuts : `spawn`, `respawn`, `session_start`. Un début ferme le trajet resté ouvert sans
     tracer de ligne jusqu'au nouvel endroit.
@@ -290,15 +290,14 @@ elles se posent là où elles se sont produites.
   l'arrivée comme `to_x`, `to_y`, `to_z` et la distance comme `metres`, la ligne de début
   `after: "teleport"`. Les adaptateurs de camions font de même pour un ferry, un train ou une sauvegarde chargée, et les
   adaptateurs de vol pour un saut qu'aucun avion ne pourrait effectuer. Ainsi, avec `teleport` parmi les fins et `spawn`
-  parmi les débuts - ce que la visionneuse propose d'elle-même -, un trajet se termine là où le saut a quitté
+  parmi les débuts - ce que le visualiseur propose de lui-même -, un trajet se termine là où le saut a quitté
   et le suivant commence là où il est arrivé, et aucune ligne ne traverse la carte. Un trajet ne traverse jamais un
   changement de la colonne `session`. Une ligne de position est écrite quelques fois par seconde
   (10 Hz pour la plupart des télémétries), ce qui donne une ligne lisse.
 - La colonne `session` découpe une séance en ses manches, étapes, vies ou corps (Elite Dangerous
-  sépare ainsi les lignes de la galaxie et celles de la surface de chaque planète). Choisissez-en une dans la visionneuse pour
+  sépare ainsi les lignes de la galaxie et celles de la surface de chaque planète). Choisissez-en une dans le visualiseur pour
   ne regarder que cette partie.
 
-Ce que la visionneuse fait des lignes - filtres, couleurs, lecture - est décrit dans la documentation propre à la
-visionneuse. Les sessions de démos Counter-Strike 2 s'ouvrent par le `<map>/<match>.parquet` et le
-`<match>.match.json` du convertisseur, dans les onglets Carte de chaleur et Match de la visionneuse. Les positions d'iRacing viennent des
-fichiers `.ibt` listés dans la session, que la visionneuse lit elle-même.
+Ce que le visualiseur fait des lignes - filtres, couleurs, lecture - est décrit dans la documentation propre au visualiseur. Les sessions de démos Counter-Strike 2 s'ouvrent par le `<map>/<match>.parquet` et le
+`<match>.match.json` du convertisseur, dans les onglets Carte de chaleur et Match du visualiseur. Les positions d'iRacing viennent des
+fichiers `.ibt` listés dans la session, que le visualiseur lit lui-même.

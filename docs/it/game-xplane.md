@@ -1,9 +1,9 @@
 ---
 title: "X-Plane (dati in tempo reale)"
-nav_order: 50
+nav_order: 49
 lang: "it"
 source: game-xplane.md
-source_hash: "4e7246cce10c"
+source_hash: "be1c5b21d2ef"
 nav_exclude: true
 search_exclude: true
 ---
@@ -70,7 +70,7 @@ derapata, rotta magnetica, Mach, g assiali e laterali, velocità di rotazione, f
 aerofreni, acceleratore: `DATAREFS`), con lo stato più lento dell'aereo una volta al
 secondo (pesi, leva del carrello, servi del pilota automatico, motori, tempo del
 simulatore, pausa e velocità, meteo: `SLOW_DATAREFS`). Ogni datagramma viene anche
-conservato intero nel file accessorio grezzo della sessione, e meta.json indica il dataref
+conservato intero nei dati grezzi della sessione, e meta.json indica il dataref
 dietro ogni indice RREF.
 
 X-Plane 12 accetta queste richieste solo con Impostazioni > Rete > "Accetta connessioni
@@ -138,8 +138,8 @@ Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat
 
 testato contro un finto X-Plane che risponde a RREF/RPOS secondo "Exchanging Data with X-Plane" di X-Plane 12; nomi dei dataref verificati su DataRefs.txt di X-Plane 12; non ancora testato con il simulatore in esecuzione
 
-## Sorgente {#source}
+## Fonte {#source}
 
 [heat3d_watch/adapters/xplane.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/xplane.py)
 
-<!-- Generated from the adattatore by tools/gen_game_pages.py; change the adattatore and run it again rather than editing this page. -->
+<!-- Generato dall'adattatore da tools/gen_game_pages.py; per cambiarlo modifica l'adattatore ed eseguilo di nuovo invece di modificare questa pagina. -->

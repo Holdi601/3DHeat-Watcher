@@ -3,13 +3,13 @@ title: "Dota 2 (replay)"
 nav_order: 12
 lang: "it"
 source: game-dota-replays.md
-source_hash: "958b1e1855e8"
+source_hash: "c0ed25c261f6"
 nav_exclude: true
 search_exclude: true
 ---
 # Dota 2 (replay) {#dota-2-replays}
 
-Dopo una partita di Dota 2, il watcher trasforma il replay salvato dal gioco in file che puoi guardare su una mappa nel visualizzatore di 3DHeat.
+Dopo una partita di Dota 2, il watcher trasforma il replay salvato dal gioco in file che puoi guardare su una mappa nel visualizzatore 3DHeat.
 
 *Dettagli tecnici: adattatore `dota-replays`, tipo [`replay`](sources-and-rules.md); gira sempre (non aspetta l'avvio di una partita) e cerca nuovi dati ogni 5 s.*
 
@@ -27,9 +27,13 @@ i replay che Dota 2 salva: &lt;Dota&gt;/game/dota/replays/&lt;id partita&gt;.dem
 
 ## Come attivarlo {#how-to-switch-it-on}
 
-scarica il replay di una partita in Dota 2, oppure recuperane uno pubblico: `python -m heat3d_watch dota-replay <id partita>`; richiede `pip install gem-dota`
+scarica il replay di una partita in Dota 2, oppure recuperane uno pubblico: `python -m heat3d_watch dota-replay <id partita>`; installa il lettore: github.com/Holdi601/3DHeat-Ext-DotaReplay (`heat3d-dota-replay`, porta con sé gem-dota)
 
 Scrivi il comando in un terminale aperto nella cartella del watcher (vedi [Prima di iniziare](before-you-start.md)). Se fallisce, l'ultima riga dice il motivo; [Installazione e avvio](installing-and-running.md) descrive le cause più comuni.
+
+Impostazioni dalle variabili d'ambiente:
+
+- `HEAT3D_DOTA_REPLAY`: la cartella del lettore (un clone o una release estratta), quando non è installato o non si trova accanto al watcher
 
 ## Come funziona {#how-it-works}
 
@@ -41,21 +45,21 @@ La prima volta che una cartella viene vista, i replay già presenti vengono solo
 
 #### Dota 2 {#dota-2}
 
-Dota 2 salva i replay che il giocatore scarica (i dettagli di una partita, oppure Guarda > Replay) in `<Dota>/game/dota/replays/<id partita>.dem`; Valve conserva il replay di ogni partita pubblica sui suoi server per alcune settimane, e `python -m heat3d_watch dota-replay <id partita>` ne recupera uno dal suo id tramite OpenDota. Ognuno viene letto con gem (github.com/whanyu1212/gem-dota, MIT, `pip install gem-dota`) in un processo a parte (`heat3d_watch/decoders/dota_replay.py`): posizione, altezza, vita, livello, direzione, mana, esperienza, attributi e oggetti di ogni eroe 7,5 volte al secondo mentre è vivo; uccisioni e morti dove sono avvenuti; torri, caserme, Roshan e Tormentor dove sono caduti; ogni ward dove è stata piazzata e dove è finita; le voci del combat log sugli eroi (danni, cure, abilità, oggetti, acquisti, rune, oro, esperienza, modificatori); e i ping sulla mappa, i disegni e gli ordini di ogni giocatore - nel file `dota/<match>.parquet`; ogni altra unità (creep, evocazioni, illusioni, corrieri, edifici) una volta al secondo in `<match>.units.parquet`; l'intero combat log in `<match>.combatlog.parquet`; e la partita, la chat, il draft, tutto ciò che il parser estrae e il riepilogo di fine partita del gioco in `<match>.match.json`, nella cartella della sessione. Tutto il resto che il replay contiene viene conservato intero accanto a questi (regola del convertitore di 3DHeat): ogni frame e messaggio di rete in `<match>.packets.parquet`, ogni cambio di proprietà di entità in `<match>.entities.parquet`, ogni voce della tabella di stringhe in `<match>.strings.parquet`, contati in `selfCheck.completeness` del documento della partita. Le posizioni sono nelle unità del mondo di Dota, le stesse che riporta la game-state integration. La riga del punteggio del giocatore con cui hai effettuato l'accesso diventa le statistiche della sessione: uccisioni, morti, assist, last hit, denies, valore netto, GPM, XPM, danni agli eroi, ward, e se la partita è stata vinta. Una nuova patch di Dota può cambiare le entità del replay prima che gem la segua; un replay che gem non riesce a leggere fino in fondo viene convertito fin dove arriva e segnato come `incomplete` nel suo riepilogo.
+Dota 2 salva i replay che il giocatore scarica (i dettagli di una partita, oppure Guarda > Replay) in `<Dota>/game/dota/replays/<id partita>.dem`; Valve conserva il replay di ogni partita pubblica sui suoi server per alcune settimane, e `python -m heat3d_watch dota-replay <id partita>` ne recupera uno dal suo id tramite OpenDota. Il watcher non li legge da sé: lo fa un lettore esterno (3DHeat Dota Replay, github.com/Holdi601/3DHeat-Ext-DotaReplay, `exporters/ext/dota-replay`, comando `heat3d-dota-replay`, che legge tramite gem-dota, MIT), tenuto separato perché un suo problema non tocchi nient'altro, ed eseguito in un processo proprio su ogni nuovo replay quando si trova nel PATH, è installato o si trova accanto al watcher; se manca, il watcher dice una volta come installarlo. Il lettore scrive posizione, altezza, vita, livello, direzione, mana, esperienza, attributi e oggetti di ogni eroe 7,5 volte al secondo mentre è vivo; uccisioni e morti dove sono avvenuti; torri, caserme, Roshan e Tormentor dove sono caduti; ogni ward dove è stata piazzata e dove è finita; le voci del combat log sugli eroi (danni, cure, abilità, oggetti, acquisti, rune, oro, esperienza, modificatori); e i ping sulla mappa, i disegni e gli ordini di ogni giocatore - nel file `dota/<match>.parquet`; ogni altra unità (creep, evocazioni, illusioni, corrieri, edifici) una volta al secondo in `<match>.units.parquet`; l'intero combat log in `<match>.combatlog.parquet`; e la partita, la chat, il draft, tutto ciò che il parser estrae e il riepilogo di fine partita del gioco in `<match>.match.json`, nella cartella della sessione. Tutto il resto che il replay contiene viene conservato intero accanto a questi (regola del convertitore di 3DHeat): ogni frame e messaggio di rete in `<match>.packets.parquet`, ogni cambio di proprietà di entità in `<match>.entities.parquet`, ogni voce della tabella di stringhe in `<match>.strings.parquet`, contati in `selfCheck.completeness` del documento della partita. Le posizioni sono nelle unità del mondo di Dota, le stesse che riporta la game-state integration. La riga del punteggio del giocatore con cui hai effettuato l'accesso diventa le statistiche della sessione: uccisioni, morti, assist, last hit, denies, valore netto, GPM, XPM, danni agli eroi, ward, e se la partita è stata vinta. Una nuova patch di Dota può cambiare le entità del replay prima che gem la segua; un replay che gem non riesce a leggere fino in fondo viene convertito fin dove arriva e segnato come `incomplete` nel suo riepilogo.
 
-Lo stesso modulo serve anche: [Counter-Strike 2 (replay)](game-cs2-demos.md), [osu! (replay)](game-osu-replays.md), [Squad (replay)](game-squad-demos.md), [War Thunder (replay)](game-warthunder-replays.md), [World of Tanks (replay)](game-wot-replays.md), [World of Warships (replay)](game-wows-replays.md).
+Lo stesso modulo serve anche: [Counter-Strike 2 (replay)](game-cs2-demos.md), [Squad (replay)](game-squad-demos.md), [War Thunder (replay)](game-warthunder-replays.md), [World of Tanks (replay)](game-wot-replays.md), [World of Warships (replay)](game-wows-replays.md).
 
 ## Posizioni e assi {#positions-and-axes}
 
 | | |
 |---|---|
 | Posizioni registrate | sì |
-| Asse verso l'alto | `z` |
+| Asse verticale | `z` |
 | Unità | unità del mondo di Dota (unità di Hammer; la mappa è larga circa 16400) |
 | Specchiato per il visualizzatore | `y` |
 | Scala delle unità (`scale`: il visualizzatore moltiplica le posizioni per questo valore) | 1 |
 
-Questi valori finiscono in `meta.json` (`axes`) di ogni sessione e, quando la sessione ha delle posizioni, nel footer di `heat.parquet`, così il visualizzatore di 3DHeat ruota e scala le righe da solo - vedi [I dati](the-data.md).
+Questi valori finiscono in `meta.json` (`axes`) di ogni sessione e, quando la sessione ha delle posizioni, nel footer di `heat.parquet`, così il visualizzatore 3DHeat ruota e scala le righe da solo - vedi [I dati](the-data.md).
 
 ## Multigiocatore {#multiplayer}
 
@@ -101,8 +105,8 @@ Il convertitore segue la [regola del convertitore](https://github.com/Holdi601/3
 
 verificato su un replay di una partita pubblica: uccisioni, morti, assist, livello, last hit e denies coincidono con il riepilogo di fine partita del gioco per tutti e dieci i giocatori; ogni messaggio nel file accessorio dei pacchetti viene riserializzato byte per byte; la tabella e le statistiche sono testate con dati sintetici
 
-## Sorgente {#source}
+## Fonte {#source}
 
 [heat3d_watch/adapters/replays.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/replays.py)
 
-<!-- Generated from the adattatore by tools/gen_game_pages.py; change the adattatore and run it again rather than editing this page. -->
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

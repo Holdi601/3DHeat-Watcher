@@ -1,9 +1,9 @@
 ---
 title: "Rocket League (état de la partie)"
-nav_order: 40
+nav_order: 39
 lang: "fr"
 source: game-rocketleague-stats.md
-source_hash: "3da6ea772068"
+source_hash: "fd70d0540bb9"
 nav_exclude: true
 search_exclude: true
 ---
@@ -18,7 +18,7 @@ Pendant que vous jouez à Rocket League, le watcher enregistre ce que le jeu ind
 - les touches de balle avec l'endroit où se trouve la balle (XYZ, unités Unreal), qui l'a touchée et les vitesses
 - les buts avec le point d'impact, le buteur, le passeur et la vitesse ; les coups sur la barre transversale avec leur endroit
 - le fil de statistiques (démolitions, arrêts, tirs, arrêts spectaculaires, ...), les coups d'envoi, les replays, le début et la fin du match, le vainqueur
-- les contres, passes, arrêts, tirs, démolitions, touches, score et scores des équipes, d'après UpdateState
+- les buts contre son camp, passes, arrêts, tirs, démolitions, touches, score et scores des équipes, d'après UpdateState
 - la ligne finale de chaque joueur à la fin du match
 - vos propres lignes sous `me` : le joueur nommé dans les réglages (`config --set player_names.rocketleague-stats=<nom>`), sinon celui que suit la caméra du jeu hors des replays
 - aucune position de voiture : l'API n'en a pas
@@ -90,9 +90,9 @@ casse des champs et découpage TCP confirmés avec le client rlstatsapi
 | Axe vertical | `z` |
 | Unités | unités Unreal (centimètres) |
 | Miroir pour le visualiseur | aucun |
-| Échelle des unités (`scale` : le visualiseur multiplie les positions par elle) | 1 |
+| Échelle des unités (`scale` : le visualiseur multiplie les positions par cette valeur) | 1 |
 
-Ces valeurs vont dans `meta.json` de chaque session (`axes`) et, quand la session a des positions, dans le pied de page de `heat.parquet`, pour que le visualiseur 3DHeat tourne et mette à l'échelle les lignes lui-même : voir [Les données](the-data.md).
+Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des positions, dans le pied de `heat.parquet`, pour que le visualiseur 3DHeat tourne et mette à l'échelle les lignes tout seul : voir [Les données](the-data.md).
 
 ## Multijoueur {#multiplayer}
 

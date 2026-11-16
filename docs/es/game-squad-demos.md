@@ -1,9 +1,9 @@
 ---
 title: "Squad (repeticiones)"
-nav_order: 41
+nav_order: 40
 lang: "es"
 source: game-squad-demos.md
-source_hash: "82c24e6df01c"
+source_hash: "a908f7e6d9c3"
 nav_exclude: true
 search_exclude: true
 ---
@@ -35,7 +35,7 @@ Ajustes desde variables de entorno:
 
 Repeticiones y demos: lo que guarda un juego de una partida, convertido una vez que la partida ha terminado.
 
-Una repetición contiene todo lo que una interfaz en vivo se guarda en los juegos multijugador -
+Una repetición contiene todo lo que una interfaz en vivo se reserva en los juegos multijugador -
 la posición de cada jugador, cada baja donde ocurrió- y es un archivo que el
 juego escribe para sus jugadores, así que leerlo no toca nada del juego. El
 watcher mira las carpetas donde los juegos las guardan, espera a que un archivo
@@ -63,14 +63,14 @@ demos copiadas de un servidor alquilado, y deja en la carpeta de la sesión
 `<mapa>/<partida>.parquet` y `<partida>.match.json`. La capa, el mapa, el número de
 jugadores y la duración de la partida pasan a ser las estadísticas de la sesión.
 
-El mismo módulo sirve también a: [Counter-Strike 2 (repeticiones)](game-cs2-demos.md), [Dota 2 (repeticiones)](game-dota-replays.md), [osu! (repeticiones)](game-osu-replays.md), [War Thunder (repeticiones)](game-warthunder-replays.md), [World of Tanks (repeticiones)](game-wot-replays.md), [World of Warships (repeticiones)](game-wows-replays.md).
+El mismo módulo sirve también a: [Counter-Strike 2 (repeticiones)](game-cs2-demos.md), [Dota 2 (repeticiones)](game-dota-replays.md), [War Thunder (repeticiones)](game-warthunder-replays.md), [World of Tanks (repeticiones)](game-wot-replays.md), [World of Warships (repeticiones)](game-wows-replays.md).
 
 ## Posiciones y ejes {#positions-and-axes}
 
 | | |
 |---|---|
-| Posiciones registradas | sí |
-| Eje vertical | `z` |
+| Posiciones grabadas | sí |
+| Eje hacia arriba | `z` |
 | Unidades | unidades de Unreal (centímetros) |
 | Reflejado para el visor | ninguno |
 | Escala de unidades (`scale`: el visor multiplica las posiciones por ella) | 1 |

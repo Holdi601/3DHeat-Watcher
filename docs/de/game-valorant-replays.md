@@ -1,9 +1,9 @@
 ---
 title: "VALORANT (Wiederholungen)"
-nav_order: 45
+nav_order: 44
 lang: "de"
 source: game-valorant-replays.md
-source_hash: "10a648aabdf1"
+source_hash: "617e23a33a4c"
 nav_exclude: true
 search_exclude: true
 ---
@@ -25,7 +25,11 @@ Wiederholungen, die VALORANT speichert: %LOCALAPPDATA%/VALORANT/Saved/Demos/\*.v
 
 ## So schaltest du es ein {#how-to-switch-it-on}
 
-speichere eine Wiederholung in VALORANT (Karriere > Spiel > Wiederholung herunterladen)
+speichere eine Wiederholung in VALORANT (Karriere > Spiel > Wiederholung herunterladen) und installiere den Leser: github.com/Holdi601/3DHeat-Ext-Riot (`heat3d-riot-replays`)
+
+Einstellungen aus Umgebungsvariablen:
+
+- `HEAT3D_RIOT_REPLAYS`: der Ordner des Lesers (ein Klon oder entpacktes Release), wenn er nicht installiert ist oder nicht neben dem Watcher liegt
 
 ## So funktioniert es {#how-it-works}
 
@@ -33,9 +37,11 @@ League of Legends und Valorant, Wiederholungen: was davon sich unverschlüsselt 
 
 Beide Spiele speichern Wiederholungen auf der Festplatte des Spielers, und beide schützen den Inhalt: Das Spielgeschehen Moment für Moment ist verschleiert, und bei jedem Patch anders, damit es nicht zum Schummeln benutzt werden kann. Um dort hindurchzukommen, müsste man den Code des Spiels selbst auseinandernehmen, was Riots Nutzungsbedingungen untersagen (Nutzungsbedingungen 3.1 und 7.1) – deshalb geschieht es hier nicht. Was jede Datei unverschlüsselt enthält, wird gelesen, und der Rest wird unverändert behalten: jeder Teil der Datei, vollständig, in der `heat.raw.parquet` der Sitzung (Regel des 3DHeat-Konverters, docs/converters.md im Repository des Viewers), gezählt in `selfCheck.completeness` der meta.json.
 
+Der Watcher liest die Dateien nicht selbst: Das tut ein externer Leser (3DHeat Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`, Befehl `heat3d-riot-replays`). Er ist getrennt gehalten, damit ein Problem mit Riots Bedingungen nur diesen Leser berührt. Auf dem PATH, installiert oder neben dem Watcher gefunden, liest er jedes neue Replay; fehlt er, sagt der Watcher einmal, wie man ihn installiert. Was der Leser liest, schreibt der Watcher in die Sitzung; die Match-V5-Zeitleiste unten holt der Watcher selbst, weil sie nicht in der Datei steht.
+
 #### Valorant (.vrf) {#valorant-vrf}
 
-`%LOCALAPPDATA%\VALORANT\Saved\Demos\*.vrf`, eine lokale Wiederholung der Unreal Engine (Layout von vrfkit, Apache-2.0, und ValorantReplayParser, MIT). Unverschlüsselt liegen vor: der Infoblock der Wiederholung (Länge, Netzwerkversion, Changelist, ihr Name, wann sie aufgezeichnet wurde, ob sie komprimiert oder verschlüsselt ist), die Karte, die Spiel-ID und die gewählten Agenten (im Kopf), und die eigene Ereigniszeitleiste des Servers – Abschüsse (Töter und Opfer als Netzwerk-IDs, nicht als Namen), Beginn der Runden, gelegte, entschärfte und explodierende Spikes, eingesetzte Ultimates, Seitenwechsel – jeweils mit Zeit, ID und Metadaten. Positionen, Namen, Punktestände und alles andere stehen im verschleierten Datenstrom (die Chunks mit den Wiederholungsdaten und Checkpoints), der vollständig behalten und nicht gelesen wird.
+`%LOCALAPPDATA%\VALORANT\Saved\Demos\*.vrf`, eine lokale Wiederholung der Unreal Engine. Unverschlüsselt liegen vor: der Infoblock der Wiederholung (Länge, Netzwerkversion, Changelist, ihr Name, wann sie aufgezeichnet wurde, ob sie komprimiert oder verschlüsselt ist), die Karte, die Spiel-ID und die gewählten Agenten (im Kopf), und die eigene Ereigniszeitleiste des Servers – Abschüsse (Töter und Opfer als Netzwerk-IDs, nicht als Namen), Beginn der Runden, gelegte, entschärfte und explodierende Spikes, eingesetzte Ultimates, Seitenwechsel – jeweils mit Zeit, ID und Metadaten. Positionen, Namen, Punktestände und alles andere stehen im verschleierten Datenstrom (die Chunks mit den Wiederholungsdaten und Checkpoints), der vollständig behalten und nicht gelesen wird.
 
 Dasselbe Modul bedient auch: [League of Legends (Wiederholungen)](game-lol-replays.md).
 
@@ -88,7 +94,7 @@ Der Watcher folgt der [Konverterregel](https://github.com/Holdi601/3DHeat/blob/m
 
 ## Geprüft {#verified}
 
-aus dem Containerlayout gebaut, das vrfkit (Apache-2.0) dokumentiert; nicht an einer echten Wiederholung getestet, da keine bereitstand – der Adapter prüft vor dem Lesen und überspringt, was nicht passt
+der Leser (heat3d-riot-replays) ist aus dem Containerlayout gebaut, das vrfkit (Apache-2.0) dokumentiert; nicht an einer echten Wiederholung getestet, da keine bereitstand – er prüft vor dem Lesen und überspringt, was nicht passt
 
 ## Quelle {#source}
 

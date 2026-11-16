@@ -34,7 +34,7 @@ Ciò che il launcher e il driver della scheda grafica conservano della tua attiv
 obiettivi, tempo di gioco e timeline, e highlights e clip di NVIDIA.
 
 Nessuna di queste fonti richiede che un gioco collabori o sia in esecuzione, quindi i tre
-adattatore qui sono sempre attivi e guardano pochi file ogni pochi secondi.
+adattatori qui sono sempre attivi e guardano pochi file ogni pochi secondi.
 
 #### Highlights e clip NVIDIA (`nvidia-highlights`) {#nvidia-highlights-and-clips-nvidia-highlights}
 

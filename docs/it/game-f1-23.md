@@ -30,7 +30,7 @@ telemetria UDP 127.0.0.1:20777 (Documents\My Games\F1 23\hardwaresettings\hardwa
 
 Nel gioco: Impostazioni > Impostazioni telemetria > UDP Telemetry attivo, IP 127.0.0.1, porta 20777 - oppure `python -m heat3d_watch setup f1-23 --apply` (modifica hardware_settings_config.xml, con backup prima; il gioco deve essere chiuso). Mentre un'altra app usa la 20777, il watcher lascia la porta a quell'app
 
-Scrivi il comando in un terminale aperto nella cartella del watcher (vedi [Prima di iniziare](before-you-start.md)). Se fallisce, l'ultima riga dice il motivo; [Installazione e avvio](installing-and-running.md) descrive le cause più comuni.
+Digita il comando in un terminale aperto nella cartella del watcher (vedi [Prima di iniziare](before-you-start.md)). Se fallisce, l'ultima riga dice il motivo; [Installazione e avvio](installing-and-running.md) descrive le cause più comuni.
 
 `python -m heat3d_watch setup f1-23` elenca i file che verrebbero modificati; `python -m heat3d_watch setup f1-23 --apply` li modifica, tenendo l'originale come `<file>.heat3d-backup` (vedi [Comandi](commands.md#setup)). Stampa `f1-23: changed: ...` per ogni modifica, oppure `f1-23: nothing to change` quando è già attivo.
 

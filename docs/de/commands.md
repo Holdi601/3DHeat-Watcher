@@ -3,7 +3,7 @@ title: "Befehle"
 nav_order: 6
 lang: "de"
 source: commands.md
-source_hash: "701d07f4596d"
+source_hash: "5f90aaf52404"
 nav_exclude: true
 search_exclude: true
 ---
@@ -30,6 +30,7 @@ python -m heat3d_watch <command> [options]
 | [`table`](#table) | baut die `heat.parquet` einer Sitzung aus ihrer `events.jsonl` neu auf |
 | [`replays`](#replays) | wandelt die Replays um, die schon auf der Festplatte liegen |
 | [`dota-replay`](#dota-replay) | lädt das Replay eines öffentlichen Dota-2-Matches über seine ID herunter |
+| [`dota-map`](#dota-map) | die Dota-2-Karte aus deiner Installation als 3D-Level, über das eigene Werkzeug 3DHeat Dota |
 | [`update`](#update) | aktualisiert auf die neueste Version |
 | [`config`](#config) | zeigt oder ändert die Einstellungen |
 
@@ -151,7 +152,7 @@ python -m heat3d_watch status
 ```text
 3DHeat Watcher 1.0.2; data in C:\Users\...\AppData\Local\3DHeat\Watcher
 Games running: EA SPORTS F1 25 (f1-25)
-Always on: il2-tacview, steam-stats, steam-timeline, nvidia-highlights, cs2-demos, osu-replays, lol-replays, valorant-replays
+Always on: il2-tacview, steam-stats, steam-timeline, nvidia-highlights, cs2-demos, lol-replays, valorant-replays
 ```
 
 Sagt, welche Adapter ein `run` jetzt starten würde, nach denselben Regeln: Der Prozess des Spiels läuft, der
@@ -227,21 +228,19 @@ kann, wird protokolliert und übersprungen.
 | Adapter | Replays |
 |---|---|
 | `cs2-demos` | Counter-Strike-2-Demos (`*.dem`), über 3DHeat CS2 |
-| `lol-replays` | League-of-Legends-Replays (`*.rofl`) |
-| `osu-replays` | osu!-Replays (`*.osr`) |
-| `valorant-replays` | VALORANT-Replays (`*.vrf`) |
+| `lol-replays` | League-of-Legends-Replays (`*.rofl`), über den externen Leser `heat3d-riot-replays` (3DHeat-Ext-Riot) |
+| `valorant-replays` | VALORANT-Replays (`*.vrf`), über den externen Leser `heat3d-riot-replays` (3DHeat-Ext-Riot) |
 | `warthunder-replays` | War-Thunder-Replays (`*.wrpl`), über den externen Konverter `heat3d-wt-replay` (exporters/ext/warthunder-replay) |
 | `wot-replays` | World-of-Tanks-Replays (`*.wotreplay`), über den externen Konverter `heat3d-wot-replay` (exporters/ext/wot-replay) |
 | `wows-replays` | World-of-Warships-Replays (`*.wowsreplay`), über den externen Konverter `heat3d-wows-replay` (exporters/ext/wows-replay) |
-| `dota-replays` | Dota-2-Replays (`*.dem`), über gem (`pip install gem-dota`) |
+| `dota-replays` | Dota-2-Replays (`*.dem`), über den externen Leser `heat3d-dota-replay` (3DHeat-Ext-DotaReplay) |
 
 ```text
-osu-replays: converted 12 replay(s); `sessions --game` lists them
+lol-replays: converted 12 replay(s); `sessions --game` lists them
 ```
 
 Eine ID, die keiner davon ist, gibt `no replay adapter '<id>'` mit der Liste aus und beendet mit Exitcode 2;
-ebenso ein `folder`, der nicht existiert. Ein Adapter, der hier nicht laufen kann (3DHeat CS2 nicht
-installiert), nennt den Grund und beendet mit Exitcode 1. Die Tacview-Aufzeichnungen von IL-2 stehen nicht in
+ebenso ein `folder`, der nicht existiert. Ein Adapter, der hier nicht laufen kann (3DHeat CS2 oder der Leser des Spiels nicht installiert), nennt den Grund, wo man den Leser bekommt und wie man ihn installiert, und beendet mit Exitcode 1. Die Tacview-Aufzeichnungen von IL-2 stehen nicht in
 der Liste: Dieser Adapter wandelt jede fertige Aufzeichnung, die er findet, selbst um.
 
 ## dota-replay {#dota-replay}
@@ -259,7 +258,7 @@ liefert unter diesem Namen sowohl bzip2 als auch Zstandard) und als `<match id>.
 landet sie im Replay-Ordner von Dota 2, wenn Dota 2 installiert ist – dort, wo ein laufender Watcher sie
 umwandelt – und sonst in `<data>/replays/dota`. Eine Datei, die schon dort liegt, bleibt erhalten. `--convert`
 wandelt die heruntergeladenen Replays sofort um, so wie `replays dota-replays` es täte, und vermerkt sie als
-gesehen.
+gesehen. Er braucht den Dota-2-Replay-Leser ([3DHeat-Ext-DotaReplay](https://github.com/Holdi601/3DHeat-Ext-DotaReplay), `heat3d-dota-replay`); fehlt er, sagt der Befehl, wo man ihn bekommt, und beendet mit Exitcode 1, bevor etwas heruntergeladen wird. Der Download selbst braucht nur den Watcher.
 
 ```text
 match 9000000000: C:\Program Files (x86)\Steam\steamapps\common\dota 2 beta\game\dota\replays\9000000000.dem
@@ -270,6 +269,14 @@ aus und beendet mit Exitcode 1. Ein Match, das OpenDota noch nicht gesehen hat, 
 Meldung sagt, dass man OpenDota darum bitten soll (`curl -X POST https://api.opendota.com/api/request/<id>`)
 und es ein paar Minuten später noch einmal versuchen soll. Private Lobbys und Matches mit einem verborgenen
 Profil sind auf den Replay-Servern gar nicht vorhanden.
+
+## dota-map {#dota-map}
+
+```bash
+python -m heat3d_watch dota-map [<map>] -o <file.glb> [--game FOLDER] [--source2viewer EXE] [--detail UNITS]
+```
+
+Schreibt die Dota-2-Karte - Boden, Klippen, Wasser, Bäume und Gebäude - als `.glb`-Level in dem Koordinatensystem, in dem die Dota-Replay-Tabellen gezeichnet werden, aus deiner eigenen Dota-2-Installation. Der Watcher liest die Dateien des Spiels nicht selbst: Er startet das eigene Werkzeug **3DHeat Dota** (`heat3d-dota-maps level`, [3DHeat-Ext-Dota](https://github.com/Holdi601/3DHeat-Ext-Dota)) mit diesen Optionen und gibt dessen Ausgabe und Exitcode unverändert weiter. `<map>` ist standardmäßig `dota`; `--game` ist der Dota-2-Ordner, wenn er nicht in einer Steam-Bibliothek liegt; `--source2viewer` der Pfad zur CLI von Source2Viewer, die dieses Werkzeug braucht; `--detail` die Zellgröße für das Zusammenfassen der Gebäude-Eckpunkte in Spieleinheiten (Standard 8, 0 behält jedes Dreieck). Ist das Werkzeug nicht installiert, zeigt der Befehl `dota-map: the Dota 2 map converter is not installed: ...` mit dem Hinweis, wo man es bekommt, und beendet mit Exitcode 2. Details: [Dota-2-Karte](dota-map.md).
 
 ## update {#update}
 

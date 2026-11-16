@@ -1,15 +1,15 @@
 ---
 title: "Squad (replays)"
-nav_order: 41
+nav_order: 40
 lang: "fr"
 source: game-squad-demos.md
-source_hash: "82c24e6df01c"
+source_hash: "a908f7e6d9c3"
 nav_exclude: true
 search_exclude: true
 ---
 # Squad (replays) {#squad-replays}
 
-Après une partie de Squad, le watcher transforme le replay que le jeu a sauvegardé en fichiers que vous pouvez regarder sur une carte dans la visionneuse 3DHeat.
+Après une partie de Squad, le watcher transforme le replay que le jeu a sauvegardé en fichiers que vous pouvez regarder sur une carte dans le visualiseur 3DHeat.
 
 *Détails techniques : adaptateur `squad-demos`, type [`replay`](sources-and-rules.md) ; il tourne en permanence (il n'attend pas le lancement d'un jeu) et cherche de nouvelles données toutes les 5 s.*
 
@@ -17,7 +17,7 @@ Après une partie de Squad, le watcher transforme le replay que le jeu a sauvega
 
 - la position, l'orientation du corps et la vitesse de chaque joueur chaque fois que le serveur la réplique (jusqu'à 8 fois par seconde), à pied et dans les véhicules terrestres
 - le nom, l'équipe, la faction et l'escouade de chaque joueur, en suivant les changements d'équipe
-- non : le mouvement des hélicoptères, les kills et les déployables — voir le README du lecteur
+- non : le mouvement des hélicoptères, les éliminations et les déployables — voir le README du lecteur
 
 ## D'où viennent les données {#where-it-comes-from}
 
@@ -36,7 +36,7 @@ Paramètres issus de variables d'environnement :
 Replays et démos : ce qu'un jeu sauvegarde d'une partie, converti une fois la partie terminée.
 
 Un replay contient tout ce qu'une interface en direct retient dans les jeux multijoueurs —
-la position de chaque joueur, chaque kill là où il a eu lieu — et c'est un fichier que le jeu écrit
+la position de chaque joueur, chaque élimination là où elle a eu lieu — et c'est un fichier que le jeu écrit
 pour ses joueurs, donc le lire ne touche à rien dans le jeu. Le watcher regarde les dossiers où les
 jeux les sauvegardent, attend qu'un nouveau fichier ait cessé de grossir (sinon le jeu est encore en
 train de l'écrire), et le convertit dans un thread de travail, pour qu'une longue conversion ne bloque
@@ -56,12 +56,12 @@ lecteur externe le fait (lecteur de démos 3DHeat Squad, `exporters/ext/squad-de
 `heat3d-squad-demo`), gardé à part pour qu'un problème dans celui-ci ne touche à rien d'autre. Il est
 lancé sur chaque nouvelle démo des dossiers où écrit un serveur local, ou dans un dossier que les
 paramètres ajoutent pour les démos copiées depuis un serveur loué, et produit dans le dossier de
-session `<map>/<match>.parquet` et `<match>.match.json`. La couche, la carte, le nombre de joueurs et
+session `<map>/<match>.parquet` et `<match>.match.json`. La variante (layer), la carte, le nombre de joueurs et
 la durée du match deviennent les statistiques de la session.
 
 Le même module sert aussi : [Counter-Strike 2 (replays)](game-cs2-demos.md), [Dota 2 (replays)](game-dota-replays.md),
-[osu! (replays)](game-osu-replays.md), [War Thunder (replays)](game-warthunder-replays.md),
-[World of Tanks (replays)](game-wot-replays.md), [World of Warships (replays)](game-wows-replays.md).
+[War Thunder (replays)](game-warthunder-replays.md), [World of Tanks (replays)](game-wot-replays.md),
+[World of Warships (replays)](game-wows-replays.md).
 
 ## Positions et axes {#positions-and-axes}
 
@@ -70,12 +70,12 @@ Le même module sert aussi : [Counter-Strike 2 (replays)](game-cs2-demos.md), [D
 | Positions enregistrées | oui |
 | Axe vertical | `z` |
 | Unités | unités Unreal (centimètres) |
-| Miroir pour la visionneuse | aucun |
-| Échelle (`scale` : la visionneuse multiplie les positions par elle) | 1 |
+| Miroir pour le visualiseur | aucun |
+| Échelle (`scale` : le visualiseur multiplie les positions par lui) | 1 |
 
 Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des
-positions, dans le pied de `heat.parquet` : la visionneuse 3DHeat tourne et met à l'échelle les lignes
-toute seule — voir [Les données](the-data.md).
+positions, dans le pied de `heat.parquet` : le visualiseur 3DHeat tourne et met à l'échelle les lignes
+tout seul — voir [Les données](the-data.md).
 
 ## Multijoueur {#multiplayer}
 
@@ -103,7 +103,7 @@ garde brut et ne peut pas lire.
 
 ## Vérifié {#verified}
 
-le lecteur est vérifié sur des démos publiques de serveurs (le mouvement concorde avec la vitesse qu'il transporte ; l'équipe de chaque ligne correspond à la faction de son soldat) et par des tests sur des démos construites ; ce crochet par des tests avec une commande de remplacement
+le lecteur est vérifié sur des démos publiques de serveurs (le mouvement concorde avec la vitesse qu'il transporte ; l'équipe de chaque ligne correspond à la faction de son soldat) et par des tests sur des démos construites ; ce crochet est testé avec une commande de remplacement
 
 ## Source {#source}
 

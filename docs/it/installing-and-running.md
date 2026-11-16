@@ -1,9 +1,9 @@
 ---
-title: Installazione e avvio
+title: "Installazione e avvio"
 nav_order: 3
 lang: "it"
 source: installing-and-running.md
-source_hash: "ceb60cbb49b7"
+source_hash: "2b03b0eda49e"
 nav_exclude: true
 search_exclude: true
 ---
@@ -57,7 +57,7 @@ python -m heat3d_watch run --once # one look at the games running now, then stop
 All'avvio, `run`:
 
 1. scrive il [file di lock](#the-lock-file);
-2. chiude le sessioni che una esecuzione precedente aveva lasciato aperte, per esempio dopo un crash (vedi [Recupero](the-data.md#recovery-after-a-crash));
+2. chiude le sessioni che un'esecuzione precedente aveva lasciato aperte, per esempio dopo un crash (vedi [Recupero](the-data.md#recovery-after-a-crash));
 3. ogni `scan_seconds` (2 s) legge la lista dei processi (solo nomi e percorsi, nessun processo viene aperto) e avvia un adattatore, in un thread proprio, per ogni gioco trovato. Quando il processo di un gioco scompare, il suo adattatore viene fermato e le sessioni che aveva aperte vengono chiuse, il che scrive la loro tabella e la loro riga nelle statistiche. Gli adattatori che non aspettano un gioco (statistiche di Steam, Timeline di Steam, highlight NVIDIA, le cartelle dei replay) girano sempre;
 4. mentre nessun gioco è in esecuzione, cerca una versione più recente al massimo una volta all'ora (la risposta stessa è in cache per sei ore) e, con `auto_update` attivo, la installa e riparte da solo (vedi [Aggiornamenti](updates.md)).
 
@@ -75,7 +75,7 @@ La prima volta che un adattatore di replay vede una delle sue cartelle, si limit
 
 ```bash
 python -m heat3d_watch replays cs2-demos              # every demo in CS2's folders and replay_folders
-python -m heat3d_watch replays osu-replays D:\Old     # the replays in one folder
+python -m heat3d_watch replays lol-replays D:\Old     # the replays in one folder
 ```
 
 ### Esecuzione in background {#running-in-the-background}
@@ -147,7 +147,7 @@ Il watcher non elimina nulla in queste cartelle, tranne una cartella di sessione
 | `auto_update` | `true` | Mentre nessun gioco è in esecuzione, installa una versione più recente e riavvia (vedi [Aggiornamenti](updates.md)). `false`: solo un avviso nel log. |
 | `scan_seconds` | `2.0` | Secondi tra un controllo della lista dei processi e il successivo. |
 | `memory` | `false` | Permette agli adattatori di memoria (giochi per giocatore singolo con un profilo che hai scritto) di girare. Disattivato di default; vedi [Lettura della memoria](memory-reading.md). |
-| `replays` | `true` | Esegue gli adattatori `replay`: tutti (vedi `python -m heat3d_watch replays` e [Giochi](games.md)) - demo di CS2, Dota 2, osu!, War Thunder, World of Tanks, World of Warships, Squad, i replay di League of Legends e di VALORANT, le registrazioni Tacview di IL-2. |
+| `replays` | `true` | Esegue gli adattatori `replay`: tutti (vedi `python -m heat3d_watch replays` e [Giochi](games.md)) - demo di CS2, Dota 2, War Thunder, World of Tanks, World of Warships, Squad, i replay di League of Legends e di VALORANT, le registrazioni Tacview di IL-2. |
 | `replay_folders` | `{}` | Cartelle in più per id di adattatore, per esempio `{"cs2-demos": ["D:\\Demos"]}`. Gli adattatori di replay le sorvegliano in aggiunta alle cartelle del gioco; `il2-tacview` accetta anche le cartelle di installazione (cerca poi in `data\Tracks`); per `elite`, la prima cartella sostituisce quella del giornale. Imposta le cartelle di un adattatore con `config --set replay_folders.cs2-demos=D:\Demos,E:\More`, oppure l'intero dizionario come JSON. |
 | `riot_id` | `""` | Il tuo Riot ID (`Nome#TAG`), così la tua riga nel replay di League of Legends diventa le tue statistiche. Vuoto: ogni riga di giocatore viene mantenuta, nessuna è segnata come tua. |
 | `riot_api_key` | `""` | La tua chiave API per sviluppatori di Riot, per scaricare la timeline ufficiale di ogni partita replicata di League (posizioni ogni minuto, uccisioni dove sono avvenute). Vuoto: non si scarica nulla. |

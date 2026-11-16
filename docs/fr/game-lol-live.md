@@ -23,7 +23,7 @@ Pendant que vous jouez à League of Legends, le watcher enregistre ce que le jeu
 
 ## D'où viennent les données {#where-it-comes-from}
 
-API de données du client en direct du client du jeu, <https://127.0.0.1:2999/liveclientdata/> (allgamedata, eventdata), pendant une partie
+API de données en direct du client du jeu, <https://127.0.0.1:2999/liveclientdata/> (allgamedata, eventdata), pendant une partie
 
 ## Comment l'activer {#how-to-switch-it-on}
 
@@ -52,7 +52,7 @@ Il n'y a pas de positions : l'API n'en a pas, donc une partie de League donne de
 
 La politique de Riot autorise les outils à montrer ce que le joueur pourrait savoir grâce au jeu lui-même, et rien de calculé au-delà (pas de minuteurs ennemis) : cela enregistre le fil des éliminations et le tableau des scores que voit le joueur, ainsi que les propres chiffres du joueur.
 
-Chaque réponse est aussi conservée entière (règle du convertisseur de 3DHeat, docs/converters.md dans le dépôt de la visionneuse) : `heat.raw.parquet`, `type` le point d'accès (« allgamedata », « eventdata »), `text` le JSON tel que le client l'a envoyé, `status` quand la réponse n'était pas 200. Une réponse identique octet par octet à la précédente de son point d'accès (la liste d'événements quand il ne se passe rien) est conservée une fois et comptée dans `unchanged_replies` de meta.json. allgamedata contient tout ce que servent les autres points d'accès (activeplayer\*, playerlist, playerscores, playeritems, playersummonerspells, playermainrunes, gamestats), donc ceux-ci ne sont pas demandés séparément. Les réponses avant une partie (l'écran de chargement) attendent dans un arriéré et entrent dans la session de la partie ; après GameEnd, la session reste ouverte jusqu'au départ du client, pour que les réponses de l'écran de fin y soient conservées.
+Chaque réponse est aussi conservée entière (règle du convertisseur de 3DHeat, docs/converters.md dans le dépôt du visualiseur) : `heat.raw.parquet`, `type` le point d'accès (« allgamedata », « eventdata »), `text` le JSON tel que le client l'a envoyé, `status` quand la réponse n'était pas 200. Une réponse identique octet par octet à la précédente de son point d'accès (la liste d'événements quand il ne se passe rien) est conservée une fois et comptée dans `unchanged_replies` de meta.json. allgamedata contient tout ce que servent les autres points d'accès (activeplayer\*, playerlist, playerscores, playeritems, playersummonerspells, playermainrunes, gamestats), donc ceux-ci ne sont pas demandés séparément. Les réponses avant une partie (l'écran de chargement) attendent dans un arriéré et entrent dans la session de la partie ; après GameEnd, la session reste ouverte jusqu'au départ du client, pour que les réponses de l'écran de fin y soient conservées.
 
 Source : <https://developer.riotgames.com/docs/lol#game-client-api>
 
@@ -63,10 +63,10 @@ Source : <https://developer.riotgames.com/docs/lol#game-client-api>
 | Positions enregistrées | non |
 | Axe vertical | `z` |
 | Unités | aucune (pas de positions) |
-| Miroir pour la visionneuse | aucun |
-| Échelle des unités (`scale` : la visionneuse multiplie les positions par cette valeur) | 1 |
+| Miroir pour le visualiseur | aucun |
+| Échelle des unités (`scale` : le visualiseur multiplie les positions par cette valeur) | 1 |
 
-Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des positions, dans le pied de `heat.parquet`, pour que la visionneuse 3DHeat tourne et mette à l'échelle les lignes toute seule : voir [Les données](the-data.md).
+Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des positions, dans le pied de `heat.parquet`, pour que le visualiseur 3DHeat tourne et mette à l'échelle les lignes toute seule : voir [Les données](the-data.md).
 
 ## Multijoueur {#multiplayer}
 

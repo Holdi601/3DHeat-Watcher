@@ -9,7 +9,7 @@ search_exclude: true
 ---
 # Assetto Corsa Competizione (données en direct) {#assetto-corsa-competizione-live-data}
 
-Pendant que vous jouez à Assetto Corsa Competizione, le watcher enregistre les données que le jeu envoie lui-même, pour que vous puissiez les regarder plus tard sur une carte dans la visionneuse 3DHeat.
+Pendant que vous jouez à Assetto Corsa Competizione, le watcher enregistre les données que le jeu envoie lui-même, pour que vous puissiez les regarder plus tard sur une carte dans le visualiseur 3DHeat.
 
 *Détails techniques : adaptateur `assetto-corsa-competizione`, type [`telemetry`](sources-and-rules.md) ; il tourne pendant que `AC2-Win64-Shipping.exe` est lancé et cherche de nouvelles données toutes les 0,1 s.*
 
@@ -37,11 +37,11 @@ Tous ces jeux publient leur télémétrie exprès, pour des tableaux de bord et 
 
 #### Forza (Horizon 4/5/6, Motorsport) {#forza-horizon-456-motorsport}
 
-UDP « Data Out », activé dans le HUD et les réglages de jeu du jeu, vers 127.0.0.1 port 5300, format Dash. Un paquet par tick de simulation ; le décalage du bloc du tableau de bord est trouvé à partir des paquets (`forza.detect_layout`). Mètres dans le monde, Y vers le haut ; le monde est gaucher et est dessiné tel qu'envoyé, comme le fait l'enregistreur de tours (documentation « Data Out » de Forza Motorsport et de Forza Horizon).
+UDP « Data Out », activé dans les réglages HUD et Gameplay du jeu, vers 127.0.0.1 port 5300, format Dash. Un paquet par tick de simulation ; le décalage du bloc du tableau de bord est trouvé à partir des paquets (`forza.detect_layout`). Mètres dans le monde, Y vers le haut ; le monde est gaucher et est dessiné tel qu'envoyé, comme le fait l'enregistreur de tours (documentation « Data Out » de Forza Motorsport et de Forza Horizon).
 Le jeu envoie vers un seul port, et FH Companion et les autres applications Data Out écoutent sur ce même port. Deux programmes ne peuvent pas le partager : sous Windows, le socket lié à 127.0.0.1 reçoit les paquets, et celui lié à toutes les adresses sur le même port n'en reçoit aucun, quel que soit celui arrivé en premier. Le watcher attend donc un peu après le lancement du jeu avant de prendre le port, ne le prend jamais à une application qui le détient, et le libère dès qu'une autre application se met à écouter dessus.
 Tant qu'il tient le port, il transmet chaque paquet sans le modifier vers 127.0.0.1:5301 : réglez le champ de port de FH Companion (son onglet télémétrie) sur 5301 et les deux enregistrent.
 
-#### Tout est conservé {#everything-kept}
+#### Tout ce qui est conservé {#everything-kept}
 
 Les lignes sont quelques-unes par seconde ; les jeux en envoient bien davantage. Chaque paquet UDP reçu - dans les menus, entre les tours, ceux qu'aucun décodeur ne lit - est conservé entier dans `heat.raw.parquet` de la session, sous son format (`dash-horizon`, `session_update`, `extradata3`, `H3D1`, ...). Chaque page de mémoire partagée (toute la zone mappée, pas seulement les octets décodés) est conservée à chaque changement, sous le nom de sa zone (`acpmf_physics`, ...). `used` marque ce qui est aussi devenu des lignes ; `selfCheck.completeness` de `meta.json` compte chaque type (règle du convertisseur de 3DHeat).
 
@@ -54,10 +54,10 @@ Le même module sert aussi : [Assetto Corsa (données en direct)](game-assetto-c
 | Positions enregistrées | oui |
 | Axe vertical | `y` |
 | Unités | mètres |
-| Miroir pour la visionneuse | aucun |
-| Échelle des unités (`scale` : la visionneuse multiplie les positions par cette valeur) | 1 |
+| Miroir pour le visualiseur | aucun |
+| Échelle des unités (`scale` : le visualiseur multiplie les positions par cette valeur) | 1 |
 
-Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des positions, dans le pied de `heat.parquet`, pour que la visionneuse 3DHeat tourne et mette à l'échelle les lignes toute seule : voir [Les données](the-data.md).
+Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des positions, dans le pied de `heat.parquet`, pour que le visualiseur 3DHeat tourne et mette à l'échelle les lignes toute seule : voir [Les données](the-data.md).
 
 ## Multijoueur {#multiplayer}
 
@@ -71,7 +71,7 @@ Clés de statistiques que le code de cet adaptateur définit par leur nom (`stat
 
 `best_lap`, `best_stage`, `distance_km`, `laps`, `race_position`, `stages`, `top_speed_kmh`
 
-Une clé entre accolades est complétée à l'exécution (`score.{team}` est une clé par équipe). Les clés que le code prend dans une table des champs du jeu ou dans ses propres noms de statistiques ne figurent pas dans cette liste ; « Ce qui est enregistré » plus haut les nomme.
+Une clé entre accolades est complétée à l'exécution (`score.{team}` est une clé par équipe). Les clés que le code prend dans une table des champs du jeu ou dans les noms de statistiques du jeu ne figurent pas dans cette liste ; « Ce qui est enregistré » plus haut les nomme.
 
 ## Complétude {#completeness}
 
@@ -83,7 +83,7 @@ Le watcher suit la [règle du convertisseur](https://github.com/Holdi601/3DHeat/
 
 **Conservé brut**
 
-- chaque page entière - toute la zone mappée, pas seulement les octets décodés - à chaque changement de ses octets, à la lecture de 10 Hz du watcher : `acpmf_physics`, `acpmf_graphics`, `acpmf_static` ; une relecture identique octet par octet à la précédente est comptée dans `unchanged_reads` de meta.json, sans être stockée à nouveau
+- chaque page entière - toute la zone mappée, pas seulement les octets décodés - à chaque changement de ses octets, lors des lectures du watcher à 10 Hz : `acpmf_physics`, `acpmf_graphics`, `acpmf_static` ; une relecture identique octet par octet à la précédente est comptée dans `unchanged_reads` de meta.json, sans être stockée à nouveau
 - tout ce qui n'est décodé que pour les fichiers de tours (`decoders/kunos.py` : glissement, charge, pression, températures, carrossage, suspension, points de contact, températures de frein, taux et angle de glissement par roue ; vitesses monde et locales, vitesse angulaire, aides) se trouve dans ces pages
 
 **Non disponible**

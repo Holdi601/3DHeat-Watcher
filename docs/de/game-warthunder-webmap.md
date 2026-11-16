@@ -1,9 +1,9 @@
 ---
 title: "War Thunder (Spielstand)"
-nav_order: 47
+nav_order: 46
 lang: "de"
 source: game-warthunder-webmap.md
-source_hash: "d6026c277030"
+source_hash: "34a876e38f09"
 nav_exclude: true
 search_exclude: true
 ---
@@ -16,7 +16,7 @@ Während du War Thunder spielst, speichert der Watcher, was das Spiel an Program
 ## Was aufgezeichnet wird {#what-is-recorded}
 
 - eigene Position (Karte Osten/Norden in Metern; Höhe aus /state im Flugzeug, sonst 0), zweimal pro Sekunde, Kurs, Geschwindigkeit
-- Spawns und das Verlassen der Karte durch das eigene Fahrzeug (zerstört, gelandet, zurück in den Hangar), eine Einsatzfahrt je Mal
+- Spawns und das Verlassen der Karte durch das eigene Fahrzeug (zerstört, gelandet, zurück in den Hangar), je einen Einsatz
 - andere Flugzeuge und Bodeneinheiten auf der Minimap als Positionen mit verfolgten IDs und Seite (ohne Höhe)
 - Flugplätze, Eroberungszonen und Basen einmal, und Zonen, die die Seite wechseln
 - Zeilen des Kill-Feeds und des Schadensfeeds (wer, Fahrzeug, Verb); die Kills und Tode des Spielers, wenn dein Name gesetzt ist (`config --set player_names.warthunder-webmap=<name>`)

@@ -3,7 +3,7 @@ title: "League of Legends (replay)"
 nav_order: 30
 lang: "it"
 source: game-lol-replays.md
-source_hash: "216b88922360"
+source_hash: "ed26619fa904"
 nav_exclude: true
 search_exclude: true
 ---
@@ -26,7 +26,11 @@ i replay che salva il client di League: %USERPROFILE%/Documents/League of Legend
 
 ## Come attivarlo {#how-to-switch-it-on}
 
-salva un replay nel client di League (cronologia partite > scarica); per le posizioni imposta riot_api_key e riot_platform con `config --set`
+salva un replay nel client di League (cronologia partite > scarica) e installa il lettore: github.com/Holdi601/3DHeat-Ext-Riot (`heat3d-riot-replays`); per le posizioni imposta riot_api_key e riot_platform con `config --set`
+
+Impostazioni dalle variabili d'ambiente:
+
+- `HEAT3D_RIOT_REPLAYS`: la cartella del lettore (un clone o una release estratta), quando non è installato o non si trova accanto al watcher
 
 ## Come funziona {#how-it-works}
 
@@ -36,10 +40,18 @@ Entrambi i giochi salvano i replay sul disco del giocatore, e proteggono ciò ch
 i dati di gioco momento per momento sono offuscati, e in modo diverso a ogni patch,
 per impedire che vengano usati per barare. Superarlo significa smontare il codice del
 gioco stesso, cosa che i termini di Riot vietano (Condizioni d'uso 3.1 e 7.1)
-- quindi qui non si fa. Viene letto ciò che ogni file contiene in chiaro, e il resto
+- quindi in 3DHeat non si fa in nessun punto. Viene letto ciò che ogni file contiene in chiaro, e il resto
 viene conservato così com'è: ogni parte del file, intera, in `heat.raw.parquet` della
 sessione (regola del convertitore di 3DHeat, docs/converters.md nel repository del
 visualizzatore), conteggiata in `selfCheck.completeness` di meta.json.
+
+Il watcher non legge i file da sé: lo fa un lettore esterno (3DHeat
+Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`,
+comando `heat3d-riot-replays`), tenuto separato perché un problema con i termini di Riot
+tocchi solo quel lettore. Se viene trovato nel PATH, installato o accanto al watcher, legge
+ogni nuovo replay; se manca, il watcher dice una volta come installarlo. Ciò che il lettore
+legge, il watcher lo registra nella sessione; la timeline Match-V5 qui sotto viene
+scaricata dal watcher stesso, perché non è nel file.
 
 #### League of Legends (.rofl) {#league-of-legends-rofl}
 
@@ -54,7 +66,7 @@ sua lunghezza negli ultimi quattro byte (indicato da un ingegnere di Riot, Repla
 issue 299). L'intestazione del payload di ROFL1 (id partita, lunghezza, numero di chunk e
 keyframe, lunghezza della chiave del chunk) e la sua tabella di chunk (id, tipo, lunghezza,
 chunk successivo, offset) sono in chiaro e vengono lette; i chunk stessi sono cifrati, e
-conservati interi senza essere letti. Layout da roflxd.cs (MIT).
+conservati interi senza essere letti.
 
 Le posizioni non vengono dal file. Con una chiave per sviluppatori Riot del giocatore
 (`riot_api_key` nelle impostazioni; una chiave personale serve esattamente a questo,
@@ -118,10 +130,10 @@ Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat
 
 ## Verificato {#verified}
 
-il lettore dei metadati testato su file costruiti secondo i layout di roflxd.cs (MIT); la timeline sul JSON documentato di Match-V5; nessun replay reale era disponibile per il controllo
+il lettore (heat3d-riot-replays) testato su file costruiti secondo i layout di roflxd.cs (MIT); la timeline sul JSON documentato di Match-V5; nessun replay reale era disponibile per il controllo
 
 ## Sorgente {#source}
 
 [heat3d_watch/adapters/riot_replays.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/riot_replays.py)
 
-<!-- Generated from the adattatore by tools/gen_game_pages.py; change the adattatore and run it again rather than editing this page. -->
+<!-- Generated from the adapter by tools/gen_game_pages.py; change the adapter and run it again rather than editing this page. -->

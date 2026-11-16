@@ -51,8 +51,7 @@ Une mission le remplace dans son `init.sqf` (`heat3d_captureDelay = 0.5;`).
 Les enregistrements vont dans `recordings/` à l'intérieur de `@heat3d`, ou dans `HEAT3D_DIR`.
 
 **Sortie :** un fichier par mission, dans la disposition JSON d'OCAP (le format de l'enregistreur OCAP2),
-nommé `<date>__<time>_<mission>.json`. Pendant la mission, c'est un journal (`.heat3d.part`), vidé à
-chaque écriture ; le journal d'une mission plantée est terminé la prochaine fois qu'une mission démarre.
+nommé `<date>__<time>_<mission>.json`. Pendant la mission, c'est un journal (`.heat3d.part`), écrit sur le disque à chaque écriture ; le journal d'une mission plantée est terminé la prochaine fois qu'une mission démarre.
 
 ## Arma Reforger {#arma-reforger}
 
@@ -60,7 +59,7 @@ Le mod (`Heat3DRecorder.gproj`) s'ouvre et se construit dans Workbench de Bohemi
 se teste sur un serveur dédié local, se publie depuis Workbench (non listé pendant les tests) et s'ajoute à
 la liste `mods` du `config.json` du serveur — étape par étape dans son README. Chaque seconde, il écrit la
 position, la direction, l'état de vie, le véhicule et l'identifiant de joueur de chaque personnage, et la
-position, la direction, l'état et l'équipage de chaque véhicule ; ainsi que les kills (tueur, arme, distance),
+position, la direction, l'état et l'équipage de chaque véhicule ; ainsi que les éliminations (tueur, arme, distance),
 les impacts, les montées et descentes de véhicule, les arrivées et départs de joueurs, et la fin de la
 mission.
 
@@ -70,9 +69,9 @@ mission.
 `[id, x, y, z, dir, alive, vehicleId, playerId]`, les lignes de véhicules
 `[id, x, y, z, dir, alive, [crew ids]]` ; les événements suivent la disposition d'événements d'OCAP2.
 
-## Dans la visionneuse {#in-the-viewer}
+## Dans le visualiseur {#in-the-viewer}
 
-Déposez un enregistrement d'Arma 3 sur la [visionneuse 3DHeat](https://holdi601.github.io/3DHeat/) :
+Déposez un enregistrement d'Arma 3 sur le [visualiseur 3DHeat](https://holdi601.github.io/3DHeat/) :
 une mission devient une session, les unités deviennent des soldats, les véhicules prennent leur type, et les
-kills et impacts vont dans la liste du débriefing. Le lecteur web d'OCAP2 le joue aussi. Le fichier Reforger
+éliminations et impacts vont dans la liste du débriefing. Le lecteur web d'OCAP2 le joue aussi. Le fichier Reforger
 est le format de lignes propre au mod, avec la disposition d'événements d'OCAP2.

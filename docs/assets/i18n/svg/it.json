@@ -10,7 +10,7 @@
  "<file>.heat3d-backup": "<file>.heat3d-backup",
  "<mission>.json": "<missione>.json",
  "<session>.jsonl": "<sessione>.jsonl",
- "Arma 3 file: drop it in;": "file di Arma 3: copialo dentro;",
+ "Arma 3 file: drop it in;": "file di Arma 3: trascinalo dentro;",
  "Arma 3 server": "server di Arma 3",
  "Arma 3: OCAP's JSON layout": "Arma 3: layout JSON di OCAP",
  "Arma Reforger server": "server di Arma Reforger",
@@ -63,7 +63,7 @@
  "memory = true": "memory = true",
  "meta.json, heat.raw.parquet": "meta.json, heat.raw.parquet",
  "never a multiplayer one": "mai un multigiocatore",
- "never mid-game": "mai in partita",
+ "never mid-game": "mai durante il gioco",
  "newer version?": "versione nuova?",
  "no anti-cheat": "nessun anti-cheat",
  "no connection out": "nessuna connessione in uscita",
@@ -111,5 +111,9 @@
  "update": "aggiornamento",
  "watcher.sqlite": "watcher.sqlite",
  "where you see it": "dove lo vedi",
- "would change ...": "modificherebbe ..."
+ "would change ...": "modificherebbe ...",
+ "external reader, opt-in (gem-dota)": "lettore esterno, facoltativo (gem-dota)",
+ "external reader: only the open parts": "lettore esterno: solo le parti aperte",
+ "heat3d-dota-replay": "heat3d-dota-replay",
+ "heat3d-riot-replays": "heat3d-riot-replays"
 }

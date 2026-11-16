@@ -9,7 +9,7 @@ search_exclude: true
 ---
 # IL-2 Sturmovik: Great Battles (dati in tempo reale) {#il-2-sturmovik-great-battles-live-data}
 
-Mentre giochi a IL-2 Sturmovik: Great Battles, il watcher salva i dati che il gioco stesso invia, così puoi guardarli più tardi come statistiche e una cronologia.
+Mentre giochi a IL-2 Sturmovik: Great Battles, il watcher salva i dati che il gioco stesso invia, così puoi guardarli più tardi come statistiche e una timeline.
 
 *Dettagli tecnici: adattatore `il2`, tipo [`telemetry`](sources-and-rules.md); gira mentre `Il-2.exe` o `IL2Series.exe` è in esecuzione e cerca nuovi dati ogni 0,1 s.*
 
@@ -125,7 +125,7 @@ Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat
 
 **Conservato grezzo**
 
-- ogni datagramma intero come `payload`, sotto il suo Packet_ID: `0x54000101` per la telemetria (usato quando ha creato una riga o una voce di meta.json), ogni altro id come è, un datagramma piÃ¹ corto dell'intestazione viene conservato come `short`
+- ogni datagramma intero come `payload`, sotto il suo Packet_ID: `0x54000101` per la telemetria (usato quando ha creato una riga o una voce di meta.json), ogni altro id come è, un datagramma più corto dell'intestazione viene conservato come `short`
 - ciò che solo il file accessorio grezzo contiene: gli indicatori tra le righe una volta al secondo (il gioco li invia a 50 Hz / decimation), un evento SETUP più corto del layout della specifica, id di eventi che la specifica non elenca
 
 **Non disponibile**

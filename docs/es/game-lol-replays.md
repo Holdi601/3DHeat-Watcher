@@ -3,7 +3,7 @@ title: "League of Legends (repeticiones)"
 nav_order: 30
 lang: "es"
 source: game-lol-replays.md
-source_hash: "216b88922360"
+source_hash: "ed26619fa904"
 nav_exclude: true
 search_exclude: true
 ---
@@ -15,7 +15,7 @@ Después de una partida de League of Legends, el watcher convierte la repetició
 
 ## Qué se graba {#what-is-recorded}
 
-- el campeón, rol, equipo, muertes, asesinatos, asistencias, oro, daño a campeones y resultado de cada jugador, y cada otro número de la tabla de resultados final
+- el campeón, rol, equipo, muertes, bajas, asistencias, oro, daño a campeones y resultado de cada jugador, y cada otro número de la tabla de resultados final
 - tu línea como estadísticas, y tus filas marcadas como tuyas (`player` en meta.json), con tu Riot ID en los ajustes
 - con tu propia clave de la API de Riot: la posición de cada jugador cada minuto con las estadísticas de ese minuto, y cada evento de la línea de tiempo (muertes donde ocurrieron, edificios, monstruos, wards, objetos, habilidades), en la hora de reloj que da la línea de tiempo
 - cada parte del archivo de la repetición guardada entera en heat.raw.parquet; no se decodifica: la partida momento a momento, que va cifrada y ofuscada contra las trampas
@@ -26,17 +26,23 @@ las repeticiones que guarda el cliente de League: `%USERPROFILE%/Documents/Leagu
 
 ## Cómo activarlo {#how-to-switch-it-on}
 
-guarda una repetición en el cliente de League (historial de partidas > descargar); para las posiciones, pon riot_api_key y riot_platform con `config --set`
+guarda una repetición en el cliente de League (historial de partidas > descargar) e instala el lector: github.com/Holdi601/3DHeat-Ext-Riot (`heat3d-riot-replays`); para las posiciones, pon riot_api_key y riot_platform con `config --set`
+
+Ajustes desde variables de entorno:
+
+- `HEAT3D_RIOT_REPLAYS`: la carpeta del lector (un clon o una versión descomprimida), cuando no está instalado o junto al watcher
 
 ## Cómo funciona {#how-it-works}
 
 Repeticiones de League of Legends y VALORANT: lo que de ellas se puede leer tal cual.
 
-Ambos juegos guardan las repeticiones en el disco del jugador, y los dos protegen lo que va dentro: los datos de la partida momento a momento están ofuscados, y de forma distinta con cada parche, para impedir que se usen para hacer trampa. Para atravesarlo habría que desensamblar el código del propio juego, algo que prohíben las condiciones de Riot (Términos de Servicio 3.1 y 7.1), así que aquí no se hace. Lo que cada archivo lleva a la vista se lee, y el resto se guarda tal como está: cada parte del archivo, entera, en `heat.raw.parquet` de la sesión (regla de conversión de 3DHeat, docs/converters.md en el repositorio del visor), contada en `selfCheck.completeness` de meta.json.
+Ambos juegos guardan las repeticiones en el disco del jugador, y los dos protegen lo que va dentro: los datos de la partida momento a momento están ofuscados, y de forma distinta con cada parche, para impedir que se usen para hacer trampa. Para atravesarlo habría que desensamblar el código del propio juego, algo que prohíben las condiciones de Riot (Términos de Servicio 3.1 y 7.1), así que aquí no se hace en ningún sitio de 3DHeat. Lo que cada archivo lleva a la vista se lee, y el resto se guarda tal como está: cada parte del archivo, entera, en `heat.raw.parquet` de la sesión (regla de conversión de 3DHeat, docs/converters.md en el repositorio del visor), contada en `selfCheck.completeness` de meta.json.
+
+El watcher no lee los archivos por sí mismo: lo hace un lector externo (3DHeat Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`, comando `heat3d-riot-replays`), separado para que un problema con las condiciones de Riot afecte solo a ese lector. Si lo encuentra en el PATH, instalado o junto al watcher, lee cada repetición nueva; si falta, el watcher indica una sola vez cómo instalarlo. Lo que lee, el watcher lo registra en la sesión; la línea de tiempo Match-V5 de más abajo la descarga el propio watcher, porque no está en el archivo.
 
 #### League of Legends (.rofl) {#league-of-legends-rofl}
 
-`%USERPROFILE%\Documents\League of Legends\Replays\*.rofl`. Las dos versiones del contenedor llevan la tabla de resultados final como JSON sin cifrar (`statsJson`): para cada uno de los diez jugadores, el campeón, muertes, asesinatos, asistencias, oro, daño a campeones, objetos, equipo, rol, victoria, su Riot ID, y cada otro número que el juego suma (más de cien por jugador); todos pasan a la fila `player_result` del jugador. ROFL1 (parche 14.9 y anteriores) lo tiene tras una cabecera fija (`RIOT\0\0`, una firma de 256 bytes y luego las longitudes); ROFL2 (14.11 en adelante, `RIOT\2\0`) lo tiene al final del archivo, con su longitud en los últimos cuatro bytes (lo indica un ingeniero de Riot, ReplayBook número 299). La cabecera de carga de ROFL1 (id de partida, longitud, cuentas de fragmentos y keyframes, longitud de la clave del fragmento) y su tabla de fragmentos (id, tipo, longitud, siguiente fragmento, desplazamiento) están a la vista y se leen; los propios fragmentos van cifrados y se guardan enteros sin leer. Las estructuras vienen de roflxd.cs (MIT).
+`%USERPROFILE%\Documents\League of Legends\Replays\*.rofl`. Las dos versiones del contenedor llevan la tabla de resultados final como JSON sin cifrar (`statsJson`): para cada uno de los diez jugadores, el campeón, muertes, bajas, asistencias, oro, daño a campeones, objetos, equipo, rol, victoria, su Riot ID, y cada otro número que el juego suma (más de cien por jugador); todos pasan a la fila `player_result` del jugador. ROFL1 (parche 14.9 y anteriores) lo tiene tras una cabecera fija (`RIOT\0\0`, una firma de 256 bytes y luego las longitudes); ROFL2 (14.11 en adelante, `RIOT\2\0`) lo tiene al final del archivo, con su longitud en los últimos cuatro bytes (lo indica un ingeniero de Riot, ReplayBook número 299). La cabecera de carga de ROFL1 (id de partida, longitud, cuentas de fragmentos y keyframes, longitud de la clave del fragmento) y su tabla de fragmentos (id, tipo, longitud, siguiente fragmento, desplazamiento) están a la vista y se leen; los propios fragmentos van cifrados y se guardan enteros sin leer.
 
 Las posiciones no vienen del archivo. Con una clave de desarrollador de Riot del propio jugador (`riot_api_key` en los ajustes; una clave personal está pensada justo para esto, "mostrar tus estadísticas (propias)"), se descarga de la API Match-V5 de Riot la línea de tiempo oficial de la partida: la posición de cada jugador una vez por minuto con todo lo que el fotograma de ese minuto dice de él (oro, experiencia, nivel, súbditos, estadísticas de campeón y de daño), y cada evento de la línea de tiempo (muertes, edificios, monstruos élite, wards, objetos, habilidades, niveles), cada uno como una fila, colocada donde ocurrió cuando tiene lugar. Sin clave no se descarga nada y no se envía nada.
 
@@ -77,7 +83,7 @@ El watcher sigue la [regla de conversión](https://github.com/Holdi601/3DHeat/bl
 - el JSON de metadatos: duración de la partida, versión, ids del último fragmento y del último keyframe, y `statsJson`: cada campo de la tabla de resultados de cada jugador, en su fila `player_result` (los números escritos como texto se leen como números)
 - ROFL1: el bloque de longitudes, la cabecera de carga (id de partida, duración, cuentas de keyframes y fragmentos, ids de los fragmentos de arranque e inicio de partida, intervalo de keyframes, la clave del fragmento tal como está guardada) y la tabla de fragmentos (id, tipo, longitud, siguiente fragmento, desplazamiento): en `rofl` de meta.json y en el `text` de las filas en bruto
 - ROFL2: la cadena de versión
-- la línea de tiempo Match-V5 (solo con tu propia clave de la API): cada fotograma de participante en una fila `position` (o `participant_frame` si no tiene lugar), con todos sus campos aplanados (`championStats.armor`, `damageStats.totalDamageDone`, `currentGold`, `xp`, ...); cada evento como una fila con el nombre de su tipo, colocada donde tiene `position`; CHAMPION_KILL como una muerte y un asesinato
+- la línea de tiempo Match-V5 (solo con tu propia clave de la API): cada fotograma de participante en una fila `position` (o `participant_frame` si no tiene lugar), con todos sus campos aplanados (`championStats.armor`, `damageStats.totalDamageDone`, `currentGold`, `xp`, ...); cada evento como una fila con el nombre de su tipo, colocada donde tiene `position`; CHAMPION_KILL como una baja y una muerte
 
 **Se guarda en bruto**
 
@@ -93,7 +99,7 @@ El watcher sigue la [regla de conversión](https://github.com/Holdi601/3DHeat/bl
 
 ## Verificado {#verified}
 
-El lector de metadatos, probado con archivos construidos según las estructuras de roflxd.cs (MIT); la línea de tiempo, según el JSON documentado de Match-V5; no había ninguna repetición real con la que comprobarlo
+El lector (heat3d-riot-replays) probado con archivos construidos según las estructuras de roflxd.cs (MIT); la línea de tiempo, según el JSON documentado de Match-V5; no había ninguna repetición real con la que comprobarlo
 
 ## Fuente {#source}
 

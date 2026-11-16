@@ -9,7 +9,7 @@ search_exclude: true
 ---
 # Dota 2 (stato di gioco) {#dota-2-game-state}
 
-Mentre giochi a Dota 2, il watcher salva ciò che il gioco comunica ai programmi sul tuo computer, così puoi guardarlo più tardi su una mappa nel visualizzatore di 3DHeat.
+Mentre giochi a Dota 2, il watcher salva ciò che il gioco comunica ai programmi sul tuo computer, così puoi guardarlo più tardi su una mappa nel visualizzatore 3DHeat.
 
 *Dettagli tecnici: adattatore `dota2-gsi`, tipo [`gsi`](sources-and-rules.md); gira mentre `dota2.exe` è in esecuzione e cerca nuovi dati ogni 0,05 s.*
 
@@ -64,12 +64,12 @@ Lo stesso modulo serve anche: [Counter-Strike 2 (stato di gioco)](game-cs2-gsi.m
 | | |
 |---|---|
 | Posizioni registrate | sì |
-| Asse verso l'alto | `z` |
+| Asse verticale | `z` |
 | Unità | unità del mondo di Dota (z sempre 0) |
 | Specchiato per il visualizzatore | `y` |
 | Scala delle unità (`scale`: il visualizzatore moltiplica le posizioni per questo valore) | 1 |
 
-Questi valori finiscono in `meta.json` (`axes`) di ogni sessione e, quando la sessione ha delle posizioni, nel footer di `heat.parquet`, così il visualizzatore di 3DHeat ruota e scala le righe da solo - vedi [I dati](the-data.md).
+Questi valori finiscono in `meta.json` (`axes`) di ogni sessione e, quando la sessione ha delle posizioni, nel footer di `heat.parquet`, così il visualizzatore 3DHeat ruota e scala le righe da solo - vedi [I dati](the-data.md).
 
 ## Multigiocatore {#multiplayer}
 
@@ -116,7 +116,7 @@ Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat
 
 testato su documenti nel formato GSI pubblicato, inviati all'adattatore in esecuzione; non ancora testato con il gioco in esecuzione
 
-## Sorgente {#source}
+## Fonte {#source}
 
 [heat3d_watch/adapters/gsi.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/gsi.py)
 

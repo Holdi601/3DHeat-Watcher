@@ -3,7 +3,7 @@ title: Inicio
 nav_order: 1
 lang: "es"
 source: index.md
-source_hash: "ffd13e9431c3"
+source_hash: "d74a4eae2685"
 nav_exclude: true
 search_exclude: true
 permalink: /es/
@@ -98,7 +98,7 @@ el formato de un archivo por partida del visor está descrito en su página
 
 | Página | Qué cubre |
 |---|---|
-| [Antes de empezar](before-you-start.md) | Python, una terminal, marcadores, cómo se ven el éxito y los errores habituales |
+| [Antes de empezar](before-you-start.md) | Python, una terminal, marcadores de posición, cómo se ven el éxito y los errores habituales |
 | [Instalación y ejecución](installing-and-running.md) | requisitos, ejecución en segundo plano, arranque con Windows, el archivo de bloqueo, el registro, cada ajuste y variable de entorno |
 | [Juegos](games.md) | una página por juego: qué se registra, de dónde, cómo activarlo, cómo funciona, ejes, estadísticas, qué se ha verificado |
 | [Los datos](the-data.md) | carpetas de sesión, `events.jsonl`, `heat.parquet` y su pie, `meta.json`, `watcher.sqlite`, recuperación tras un fallo, exportación CSV, abrir una sesión en el visor 3DHeat |
@@ -132,6 +132,15 @@ para convertir las demos de CS2). Cada una es un proyecto propio, con sus versio
 | [Ext-Squad](https://github.com/Holdi601/3DHeat-Ext-Squad) | demos de servidores de Squad en tablas y documentos de partida | [sitio](https://holdi601.github.io/3DHeat-Ext-Squad/) |
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | mapas de DCS World en modelos 3D | [sitio](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | mapas de IL-2 Sturmovik en modelos 3D | [sitio](https://holdi601.github.io/3DHeat-Ext-IL2/) |
+| [Ext-Dota](https://github.com/Holdi601/3DHeat-Ext-Dota) | el mapa de Dota 2 desde tu propia instalación, como nivel 3D | [sitio](https://holdi601.github.io/3DHeat-Ext-Dota/) |
+| [Ext-DotaReplay](https://github.com/Holdi601/3DHeat-Ext-DotaReplay) | repeticiones de Dota 2 | [sitio](https://holdi601.github.io/3DHeat-Ext-DotaReplay/) |
+| [Ext-Riot](https://github.com/Holdi601/3DHeat-Ext-Riot) | repeticiones de League of Legends y VALORANT (lo que contienen sin cifrar) | [sitio](https://holdi601.github.io/3DHeat-Ext-Riot/) |
+| [Ext-Forza](https://github.com/Holdi601/3DHeat-Ext-Forza) | circuitos, carreras y coches de Forza desde tu propia instalación | [sitio](https://holdi601.github.io/3DHeat-Ext-Forza/) |
+| [Ext-Battlefield](https://github.com/Holdi601/3DHeat-Ext-Battlefield) | niveles de Battlefield (Frostbite) como niveles 3D | [sitio](https://holdi601.github.io/3DHeat-Ext-Battlefield/) |
+| [Ext-BeamNG](https://github.com/Holdi601/3DHeat-Ext-BeamNG) | circuitos de BeamNG.drive | [sitio](https://holdi601.github.io/3DHeat-Ext-BeamNG/) |
+| [Ext-ACRally](https://github.com/Holdi601/3DHeat-Ext-ACRally) | tramos de Assetto Corsa Rally como circuitos | [sitio](https://holdi601.github.io/3DHeat-Ext-ACRally/) |
+| [Ext-Reforger](https://github.com/Holdi601/3DHeat-Ext-Reforger) | mundos de Arma Reforger (Enfusion) como niveles 3D | [sitio](https://holdi601.github.io/3DHeat-Ext-Reforger/) |
+| [Ext-R6](https://github.com/Holdi601/3DHeat-Ext-R6) | repeticiones de partidas de Rainbow Six Siege | [sitio](https://holdi601.github.io/3DHeat-Ext-R6/) |
 
 Licencia: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Las licencias de los
 paquetes de terceros que usa, y lo que exigen los juegos que lee, están en

@@ -1,9 +1,9 @@
 ---
 title: "Statistiques Steam (plateforme)"
-nav_order: 43
+nav_order: 42
 lang: "fr"
 source: game-steam-stats.md
-source_hash: "24fa6512bd6d"
+source_hash: "09ecf3611c02"
 nav_exclude: true
 search_exclude: true
 ---
@@ -56,12 +56,12 @@ Le même module sert aussi : [Moments forts NVIDIA (plateforme)](game-nvidia-hig
 | Positions enregistrées | non |
 | Axe vertical | `y` |
 | Unités | mètres |
-| Miroir pour la visionneuse | aucun |
-| Échelle (`scale` : la visionneuse multiplie les positions par elle) | 1 |
+| Miroir pour le visualiseur | aucun |
+| Échelle (`scale` : le visualiseur multiplie les positions par lui) | 1 |
 
 Ces valeurs vont dans le `meta.json` de chaque session (`axes`) et, quand la session contient des
-positions, dans le pied de `heat.parquet` : la visionneuse 3DHeat tourne et met à l'échelle les lignes
-toute seule — voir [Les données](the-data.md).
+positions, dans le pied de `heat.parquet` : le visualiseur 3DHeat tourne et met à l'échelle les lignes
+tout seul — voir [Les données](the-data.md).
 
 ## Multijoueur {#multiplayer}
 
@@ -95,7 +95,7 @@ marque ce qui est aussi devenu des lignes), et `selfCheck.completeness` dans `me
 
 **Gardé brut**
 
-- `UserGameStats` : les octets du fichier de statistiques, entiers, à chaque enregistrement (le `crc`, `PendingChanges`, les bits de succès que le schéma ne définit plus et toute clé que le décodeur saute s'y trouvent)
+- `UserGameStats` : les octets du fichier de statistiques, en entier, à chaque enregistrement (le `crc`, `PendingChanges`, les bits de succès que le schéma ne définit plus et toute clé que le décodeur saute s'y trouvent)
 - `UserGameStatsSchema` : les octets du fichier de schéma à côté, pour que les statistiques puissent être décodées à partir de la session seule (tous les noms et descriptions des statistiques et succès, dans toutes les langues, icônes, drapeaux)
 - `localconfig_app` : le bloc entier du jeu dans localconfig.vdf en JSON (état de la synchronisation cloud, options de lancement, badges et toute autre clé que Steam garde par jeu) quand son temps de jeu est enregistré
 - un fichier de statistiques que le décodeur ne peut pas lire (coupé pendant l'écriture, ou une disposition nouvelle) : ses octets et le schéma, dans une session sans lignes (`used` à faux ; `unreadable` dans meta.json)

@@ -50,7 +50,7 @@ Una missione la sovrascrive nel suo `init.sqf` (`heat3d_captureDelay = 0.5;`).
 Le registrazioni vanno in `recordings/` dentro `@heat3d`, oppure in `HEAT3D_DIR`.
 
 **Output:** un file per missione nel formato JSON di OCAP (il formato del registratore OCAP2),
-chiamato `<data>__<ora>_<missione>.json`. Durante la missione è un diario (`.heat3d.part`), scritto a ogni
+chiamato `<giorno>__<ora>_<missione>.json`. Durante la missione è un diario (`.heat3d.part`), salvato a ogni
 scrittura; il diario di una missione interrotta viene completato alla prossima partenza di una missione.
 
 ## Arma Reforger {#arma-reforger}
@@ -62,14 +62,14 @@ la direzione, lo stato di vita, il veicolo e l'id del giocatore di ogni personag
 lo stato e l'equipaggio di ogni veicolo; e le uccisioni (assassino, arma, distanza), i colpi, il salire e
 scendere dai mezzi, i giocatori che entrano ed escono, e la fine della missione.
 
-**Output:** un oggetto JSON per riga, `$profile:heat3d/<data UTC>_<ora UTC>_<mondo>.jsonl`:
+**Output:** un oggetto JSON per riga, `$profile:heat3d/<giorno UTC>_<ora UTC>_<mondo>.jsonl`:
 una riga `header` (formato `heat3d-reforger`, assi x est, y alto, z nord), poi righe `entity`, `frame` ed `event`
 man mano che avvengono, e una riga `end`. Le righe delle unità sono `[id, x, y, z, dir, alive, vehicleId, playerId]`,
 quelle dei veicoli `[id, x, y, z, dir, alive, [id dell'equipaggio]]`; gli eventi seguono il formato eventi di OCAP2.
 
-## Nel visualizzatore {#in-the-visualizzatore}
+## Nel visualizzatore {#in-the-viewer}
 
 Trascina una registrazione di Arma 3 nel [visualizzatore 3DHeat](https://holdi601.github.io/3DHeat/):
 una missione è una sessione, le unità diventano soldati, i veicoli il loro tipo, e
 uccisioni e colpi finiscono nell'elenco del resoconto. Anche il lettore web di OCAP2 la riproduce.
-Il file di Reforger è un file di testo proprio del mod, con il formato eventi di OCAP2.
+Il file di Reforger è in formato a righe proprio del mod, con il layout degli eventi di OCAP2.

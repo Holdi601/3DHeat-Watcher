@@ -1,9 +1,9 @@
 ---
 title: "Project CARS 2 (Live-Daten)"
-nav_order: 37
+nav_order: 36
 lang: "de"
 source: game-project-cars-2.md
-source_hash: "a1990b93b7d1"
+source_hash: "278eb9594615"
 nav_exclude: true
 search_exclude: true
 ---

@@ -1,19 +1,17 @@
 ---
-title: Fuentes y reglas
+title: "Fuentes y reglas"
 nav_order: 7
 lang: "es"
 source: sources-and-rules.md
-source_hash: "9ec43cafc724"
+source_hash: "990402abdc5d"
 nav_exclude: true
 search_exclude: true
 ---
 # Fuentes y reglas {#sources-and-rules}
-
 El watcher graba solo lo que los juegos y las plataformas entregan al jugador. Esta página explica qué fuentes
 cubre eso, qué puede hacer el watcher con cada una, y qué juegos o partes de juegos deja fuera a propósito.
 
 ## Los seis tipos de fuente {#the-six-kinds-of-source}
-
 ![fuentes que llegan a las sesiones](../assets/img/es/overview.svg)
 
 
@@ -24,7 +22,7 @@ Cada adaptador tiene un `kind` (tipo), y el tipo decide lo que el adaptador pued
 | `telemetry` | un puerto UDP o memoria compartida que el juego publica para paneles, plataformas de movimiento y volantes (Forza Data Out, UDP de F1, memoria compartida de Kunos e iRacing, SimConnect, la interfaz UDP de X-Plane, el plugin SCS SDK) | sí - es la salida propia del juego |
 | `gsi` | una game-state integration o API web local que el juego sirve a la propia máquina del jugador (Valve GSI, la Live Client Data API de League, la Stats API de Rocket League, el mapa web de War Thunder) | sí, dentro de lo que la API muestra al jugador |
 | `log` | archivos que el juego escribe mientras se ejecuta: diarios, registros, estadísticas, partidas guardadas (Elite Dangerous, Minecraft, Path of Exile, Hearthstone, Star Citizen, EVE Online) | sí |
-| `replay` | demos y repeticiones que el juego guarda para sus jugadores, convertidas tras la partida (CS2, Dota 2, osu!, War Thunder, World of Tanks, World of Warships, Squad, League of Legends, VALORANT, IL-2 Tacview) | sí, salvo si están cifradas, y solo las partes en claro |
+| `replay` | demos y repeticiones que el juego guarda para sus jugadores, convertidas tras la partida (CS2, Dota 2, War Thunder, World of Tanks, World of Warships, Squad, League of Legends, VALORANT, IL-2 Tacview) | sí, salvo si están cifradas, y solo las partes en claro |
 | `platform` | lo que guardan Steam y el controlador gráfico: estadísticas, logros, líneas de tiempo, clips y highlights | sí |
 | `memory` | la memoria del juego, solo de lectura, mediante un perfil que escribiste tú | **nunca** - solo para un jugador |
 
@@ -32,7 +30,6 @@ Solo `memory` abre otro proceso, y solo para leer. Los otros cinco tipos leen lo
 Steam o NVIDIA App ya han escrito o envían.
 
 ## Cómo se leen las fuentes {#how-the-sources-are-read}
-
 - **Nada se inyecta, se engancha o se cambia en un juego.** No se carga código en ningún juego, no se engancha ninguna ventana ni entrada,
   no se parchea ningún archivo del juego. Los únicos archivos que el watcher escribe fuera de su carpeta de datos son
   los que escribe [`setup --apply`](commands.md#setup) cuando lo pides: el archivo de ajustes del propio juego
@@ -59,7 +56,6 @@ Steam o NVIDIA App ya han escrito o envían.
 - **Activar una fuente es decisión tuya.** `setup` sin `--apply` solo indica lo que cambiaría.
 
 ## Reglas para el multijugador {#multiplayer-rules}
-
 - Un juego jugado en línea se graba solo a través de lo que publica: telemetría, APIs de game-state, registros,
   repeticiones, archivos de plataforma. Dentro de eso, el watcher graba lo que el juego muestra al jugador, y nada
   calculado más allá de ello:
@@ -83,7 +79,6 @@ Steam o NVIDIA App ya han escrito o envían.
   memoria. No impide que los otros tipos graben el juego en línea.
 
 ## Lo que se rechaza y por qué {#what-is-declined-and-why}
-
 Algunos juegos, y algunas partes de juegos, no se graban porque la única forma de obtenerlos rompería una protección o las
 condiciones de un juego:
 
@@ -97,7 +92,7 @@ condiciones de un juego:
 | Apex Legends | todo | Su LiveAPI envía eventos completos solo en lobbies privados y personalizados; por lo demás no hay nada disponible en local. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | datos en vivo | No hay salida local de repeticiones, registros ni game-state que leer. Sus estadísticas llegan donde Steam las guarda ([Estadísticas de Steam](game-steam-stats.md), [Steam Timeline](game-steam-timeline.md)), y sus clips como [NVIDIA highlights](nvidia-highlights.md). |
 | Star Citizen | cualquier cosa más allá de `Game.log` | Usa Easy Anti-Cheat; el watcher lee solo el archivo de registro que escribe el juego y nunca se acerca al proceso del juego. |
-| osu!lazer | repeticiones | Se guardan en el almacén propio del juego; solo se leen los archivos `.osr` de osu! (estable). |
+| osu! | replays | Fuera de alcance: un juego 2D, sin nada que colocar en un mapa. |
 | Cualquier juego multijugador | memoria | Nunca. Tampoco se leen los juegos de un jugador cuyo modo se ejecuta bajo un anti-trampas (GTA V, Elden Ring a través de su lanzador). |
 
 Las repeticiones cifradas no se abren: el lector de VALORANT comprueba la marca de cifrado de la repetición y

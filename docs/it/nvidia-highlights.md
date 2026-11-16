@@ -19,7 +19,7 @@ L'adattatore `nvidia-highlights` registra i clip, gli highlight e gli screenshot
 Un gioco che supporta NVIDIA Highlights parla con l'app NVIDIA tramite il GfeSDK di NVIDIA. L'SDK trasporta solo due tipi di messaggio:
 
 1. **Una volta, all'avvio**: i tipi di highlight che il gioco userà - un id (come `kill`), una rilevanza, dei tag e un nome visualizzato per lingua. L'app NVIDIA li memorizza per gioco.
-2. **In un momento di gioco**: "highlight `<id>`, da `<ms>` prima di ora a `<ms>` dopo". Questo è tutto il messaggio: l'id di un tipo che il gioco ha registrato, e due scarti temporali che dicono all'app NVIDIA quale tratto della sua registrazione continua tenere.
+2. **In un momento di gioco**: "highlight `<id>`, da `<ms>` prima di ora a `<ms>` dopo". Questo è tutto il messaggio: l'id di un tipo che il gioco ha registrato, e due scarti temporali che dicono all'app NVIDIA quale parte della sua registrazione continua conservare.
 
 L'SDK **non ha un campo per nient'altro**: nessuna posizione, nessuna partita o round, nessun avversario, nessuna arma, nessun punteggio, nessun dato personalizzato di alcun tipo. Un gioco non può mettere una posizione in un highlight, anche se lo volesse. Quando il clip viene salvato, l'app NVIDIA aggiunge un file, un nome del gioco, una durata e un orario.
 

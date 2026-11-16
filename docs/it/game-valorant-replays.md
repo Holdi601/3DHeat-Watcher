@@ -1,9 +1,9 @@
 ---
 title: "VALORANT (replay)"
-nav_order: 45
+nav_order: 44
 lang: "it"
 source: game-valorant-replays.md
-source_hash: "10a648aabdf1"
+source_hash: "617e23a33a4c"
 nav_exclude: true
 search_exclude: true
 ---
@@ -25,7 +25,11 @@ i replay che salva VALORANT: %LOCALAPPDATA%/VALORANT/Saved/Demos/\*.vrf (solo le
 
 ## Come attivarlo {#how-to-switch-it-on}
 
-salva un replay in VALORANT (carriera > partita > scarica replay)
+salva un replay in VALORANT (carriera > partita > scarica replay) e installa il lettore: github.com/Holdi601/3DHeat-Ext-Riot (`heat3d-riot-replays`)
+
+Impostazioni dalle variabili d'ambiente:
+
+- `HEAT3D_RIOT_REPLAYS`: la cartella del lettore (un clone o una release estratta), quando non è installato o non si trova accanto al watcher
 
 ## Come funziona {#how-it-works}
 
@@ -35,15 +39,22 @@ Entrambi i giochi salvano i replay sul disco del giocatore, e proteggono ciò ch
 i dati di gioco momento per momento sono offuscati, e in modo diverso a ogni patch,
 per impedire che vengano usati per barare. Superarlo significa smontare il codice del
 gioco stesso, cosa che i termini di Riot vietano (Condizioni d'uso 3.1 e 7.1)
-- quindi qui non si fa. Viene letto ciò che ogni file contiene in chiaro, e il resto
+- quindi in 3DHeat non si fa in nessun punto. Viene letto ciò che ogni file contiene in chiaro, e il resto
 viene conservato così com'è: ogni parte del file, intera, in `heat.raw.parquet` della
 sessione (regola del convertitore di 3DHeat, docs/converters.md nel repository del
 visualizzatore), conteggiata in `selfCheck.completeness` di meta.json.
 
+Il watcher non legge i file da sé: lo fa un lettore esterno (3DHeat
+Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`,
+comando `heat3d-riot-replays`), tenuto separato perché un problema con i termini di Riot
+tocchi solo quel lettore. Se viene trovato nel PATH, installato o accanto al watcher, legge
+ogni nuovo replay; se manca, il watcher dice una volta come installarlo. Ciò che il lettore
+legge, il watcher lo registra nella sessione; la timeline Match-V5 qui sotto viene
+scaricata dal watcher stesso, perché non è nel file.
+
 #### Valorant (.vrf) {#valorant-vrf}
 
-`%LOCALAPPDATA%\VALORANT\Saved\Demos\*.vrf`, un replay locale di Unreal Engine
-(layout da vrfkit, Apache-2.0, e ValorantReplayParser, MIT). In chiaro:
+`%LOCALAPPDATA%\VALORANT\Saved\Demos\*.vrf`, un replay locale di Unreal Engine. In chiaro:
 il blocco informativo del replay (durata, versione di rete, changelist, il suo nome,
 quando è stato registrato, se è compresso o cifrato), la mappa, l'id della partita e
 gli agenti scelti (nell'intestazione), e la cronologia degli eventi del server -
@@ -99,14 +110,14 @@ Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat
 - posizioni, nomi, punteggi, abilità, ogni fotogramma del gioco: i chunk dei dati di replay e dei checkpoint sono offuscati; leggerli significa smontare il client, cosa che i termini di Riot vietano. Conservati interi, non letti
 - il contenuto di un replay cifrato: attraversato e conservato intero, nulla letto all'interno
 
-**Dimensione**: il file accessorio grezzo è circa della dimensione del replay stesso: il flusso offuscato non si comprime
+**Dimensione**: i dati grezzi della sessione occupano circa quanto il replay stesso: il flusso offuscato non si comprime
 
 ## Verificato {#verified}
 
-costruito dal layout del contenitore documentato da vrfkit (Apache-2.0); non ancora testato su un replay reale, non ce n'era nessuno disponibile - controlla prima di leggere e salta ciò che non corrisponde
+il lettore (heat3d-riot-replays) è costruito dal layout del contenitore documentato da vrfkit (Apache-2.0); non ancora testato su un replay reale, non ce n'era nessuno disponibile - controlla prima di leggere e salta ciò che non corrisponde
 
 ## Sorgente {#source}
 
 [heat3d_watch/adapters/riot_replays.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/riot_replays.py)
 
-<!-- Generated from the adattatore by tools/gen_game_pages.py; change the adattatore and run it again rather than editing this page. -->
+<!-- Generato dall'adattatore da tools/gen_game_pages.py; per cambiarlo modifica l'adattatore ed eseguilo di nuovo invece di modificare questa pagina. -->

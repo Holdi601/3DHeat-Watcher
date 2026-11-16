@@ -1,9 +1,9 @@
 ---
 title: "Project CARS 2 (dati in tempo reale)"
-nav_order: 37
+nav_order: 36
 lang: "it"
 source: game-project-cars-2.md
-source_hash: "a1990b93b7d1"
+source_hash: "278eb9594615"
 nav_exclude: true
 search_exclude: true
 ---
@@ -68,7 +68,7 @@ dispari mentre il gioco scrive. Gli offset sono stati ricavati da due
 copie indipendenti dell'intestazione (la copia del gioco non è installata
 qui), che concordano.
 
-Entrambe le pagine sono conservate intere oltre a tutto il resto (docs/converters.md, "Live sources"): la
+Entrambe le pagine sono conservate intere, oltre alle righe (docs/converters.md, "Live sources"): la
 mappatura intera, ogni lettura i cui byte differiscono dalla copia conservata per ultima, nei dati grezzi della
 sessione sotto `type` `r3e` o `pcars2` - ogni slot di pilota e ogni campo della struttura,
 anche quelli non letti qui, così un decodificatore futuro ha bisogno solo dei dati grezzi.
@@ -131,4 +131,4 @@ testato su una pagina costruita nel test; offset da due copie indipendenti di Sh
 
 [heat3d_watch/adapters/simracing_shm.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/simracing_shm.py)
 
-<!-- Generated from the adattatore by tools/gen_game_pages.py; change the adattatore and run it again rather than editing this page. -->
+<!-- Generato dall'adattatore da tools/gen_game_pages.py; per cambiarlo modifica l'adattatore ed eseguilo di nuovo invece di modificare questa pagina. -->

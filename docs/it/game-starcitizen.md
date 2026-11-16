@@ -1,9 +1,9 @@
 ---
 title: "Star Citizen (file di log)"
-nav_order: 42
+nav_order: 41
 lang: "it"
 source: game-starcitizen.md
-source_hash: "6528f948d2e5"
+source_hash: "7b1ce51dc50a"
 nav_exclude: true
 search_exclude: true
 ---
@@ -53,7 +53,7 @@ un livello, poi un tag tra parentesi angolari:
 <...> [Notice] <Changing Solar System> ... Client entity Handle ... changing system from Stanton to Pyro ...
 ```
 
-(qui andate a capo; nel file ogni riga sta su una sola linea). La zona di una morte è di solito
+(qui le righe sono spezzate a capo; nel file ogni riga sta su una sola linea). La zona di una morte è di solito
 la nave su cui sedeva la vittima, non un luogo. Il formato non è documentato da Cloud
 Imperium e cambia tra una patch e l'altra; i pattern seguono le righe che leggono i tracker di
 uccisioni della comunità (ad es. <https://github.com/DimmaDont/all-slain>, MIT - solo
@@ -123,4 +123,4 @@ testato su righe sintetiche di Game.log nel formato documentato dai tracker dell
 
 [heat3d_watch/adapters/starcitizen.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/starcitizen.py)
 
-<!-- Generated from the adattatore by tools/gen_game_pages.py; change the adattatore and run it again rather than editing this page. -->
+<!-- Generato dall'adattatore da tools/gen_game_pages.py; per cambiarlo modifica l'adattatore ed eseguilo di nuovo invece di modificare questa pagina. -->

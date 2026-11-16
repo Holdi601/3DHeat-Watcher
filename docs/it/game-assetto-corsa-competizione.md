@@ -31,7 +31,7 @@ Non serve attivare nulla: il watcher legge la fonte così come il gioco o la pia
 
 ## Come funziona {#how-it-works}
 
-La telemetria dei giochi di guida: Forza, i giochi Assetto Corsa, i giochi rally
+La telemetria dei giochi di corsa: Forza, i giochi Assetto Corsa, i giochi rally
 e BeamNG, registrata come percorsi, giri e tappe.
 
 Ogni gioco qui pubblica la propria telemetria di proposito, per dashboard e

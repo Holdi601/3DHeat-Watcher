@@ -3,7 +3,7 @@ title: "Counter-Strike 2 (repeticiones)"
 nav_order: 8
 lang: "es"
 source: game-cs2-demos.md
-source_hash: "d115f9085302"
+source_hash: "82fe00f0f2f0"
 nav_exclude: true
 search_exclude: true
 ---
@@ -35,7 +35,7 @@ Ajustes desde variables de entorno:
 
 Repeticiones y demos: lo que guarda un juego de una partida, convertido una vez que la partida ha terminado.
 
-Una repetición contiene todo lo que una interfaz en vivo se guarda en los juegos multijugador -
+Una repetición contiene todo lo que una interfaz en vivo oculta en los juegos multijugador -
 la posición de cada jugador, cada baja donde ocurrió- y es un archivo que el
 juego escribe para sus jugadores, así que leerlo no toca nada del juego. El
 watcher mira las carpetas donde los juegos las guardan, espera a que un archivo
@@ -64,7 +64,7 @@ sesión iniciada en este equipo (desde `loginusers.vdf` de Steam), con sus nombr
 sencillos - bajas, muertes, asistencias, ADR, KAST, porcentaje de aciertos en la
 cabeza, primeras bajas, remontadas - y el marcador y las rondas.
 
-El mismo módulo sirve también a: [Dota 2 (repeticiones)](game-dota-replays.md), [osu! (repeticiones)](game-osu-replays.md), [Squad (repeticiones)](game-squad-demos.md), [War Thunder (repeticiones)](game-warthunder-replays.md), [World of Tanks (repeticiones)](game-wot-replays.md), [World of Warships (repeticiones)](game-wows-replays.md).
+El mismo módulo sirve también a: [Dota 2 (repeticiones)](game-dota-replays.md), [Squad (repeticiones)](game-squad-demos.md), [War Thunder (repeticiones)](game-warthunder-replays.md), [World of Tanks (repeticiones)](game-wot-replays.md), [World of Warships (repeticiones)](game-wows-replays.md).
 
 ## Posiciones y ejes {#positions-and-axes}
 

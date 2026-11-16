@@ -1,9 +1,9 @@
 ---
 title: "X-Plane (datos en vivo)"
-nav_order: 50
+nav_order: 49
 lang: "es"
 source: game-xplane.md
-source_hash: "4e7246cce10c"
+source_hash: "be1c5b21d2ef"
 nav_exclude: true
 search_exclude: true
 ---
@@ -62,7 +62,8 @@ sim/time/total_flight_time_sec                           since the flight was re
 
 El resto del vuelo llega a la misma velocidad (velocidad verdadera, velocidad vertical, AoA, resbalamiento, rumbo magnético, Mach, g axial y lateral, tasas de rotación, flaps, aerofrenos, gases: `DATAREFS`), y el estado más lento del avión una vez por segundo (pesos, palanca del tren, servos del piloto automático, tiempo del simulador, pausa y velocidad, clima: `SLOW_DATAREFS`). Cada datagrama también se guarda entero en el archivo bruto de la sesión, y meta.json indica el dataref de cada índice RREF.
 
-X-Plane 12 solo acepta esto con Settings > Network > "Accept incoming connections" activado. Las posiciones van a un mapa plano alrededor de la primera posición fijada de la sesión (`Tangent`): x al este, z al norte en metros, y la altitud sobre el nivel del mar. Así un vuelo horizontal se queda horizontal aunque llegue lejos, algo que un plano tangente real haría caer con la curvatura de la Tierra. El origen del mapa es el `geo` de la sesión: meta.json y el pie de la tabla lo guardan, para que el visor pueda poner el mundo real bajo el vuelo.
+X-Plane 12 solo acepta esto con Settings > Network > "Accept incoming
+connections" activado. Las posiciones van a un mapa plano alrededor de la primera posición fijada de la sesión (`Tangent`): x al este, z al norte en metros, y la altitud sobre el nivel del mar. Así un vuelo horizontal se queda horizontal aunque llegue lejos, algo que un plano tangente real haría caer con la curvatura de la Tierra. El origen del mapa es el `geo` de la sesión: meta.json y el pie de la tabla lo guardan, para que el visor pueda poner el mundo real bajo el vuelo.
 
 Este módulo también recoge lo que comparten los demás simuladores de vuelo: el mapa plano, el registro de vuelos (despegues, aterrizajes, accidentes, distancia), el socket UDP y la lista de la biblioteca de Steam.
 
@@ -80,7 +81,7 @@ Esto va al `meta.json` de cada sesión (`axes`) y, cuando la sesión tiene posic
 
 ## Multijugador {#multiplayer}
 
-- Marcado como jugado en línea (`multiplayer`): **no**. `games --markdown` muestra esto como "single-player".
+- Marcado como jugado en línea (`multiplayer`): **no**. `games --markdown` muestra esto como "un jugador".
 - Tipo `telemetry`: solo lee lo que el juego o la plataforma entregan (un puerto UDP o la memoria compartida que publica el juego), así que graba también en el juego en línea, además del juego sin conexión. La marca solo decide si la memoria puede leerse alguna vez.
 - Memoria: **nunca** la lee este adaptador. Solo los adaptadores `memory` leen memoria, y nunca en un juego marcado como jugado en línea; ver [Fuentes y reglas](sources-and-rules.md).
 

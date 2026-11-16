@@ -1,9 +1,9 @@
 ---
 title: "Steam Timeline (piattaforma)"
-nav_order: 44
+nav_order: 43
 lang: "it"
 source: game-steam-timeline.md
-source_hash: "3878efe0d7f1"
+source_hash: "3a502e4ad09e"
 nav_exclude: true
 search_exclude: true
 ---
@@ -63,7 +63,7 @@ Lo stesso modulo serve anche: [NVIDIA highlights (piattaforma)](game-nvidia-high
 | | |
 |---|---|
 | Posizioni registrate | no |
-| Asse verso l'alto | `y` |
+| Asse verticale | `y` |
 | Unità | metri |
 | Specchiato per il visualizzatore | nessuno |
 | Scala delle unità (`scale`: il visualizzatore moltiplica le posizioni per questo valore) | 1 |

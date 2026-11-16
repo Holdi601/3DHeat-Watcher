@@ -1,9 +1,9 @@
 ---
 title: "Path of Exile (file di log)"
-nav_order: 36
+nav_order: 35
 lang: "it"
 source: game-poe.md
-source_hash: "9facfd5a1551"
+source_hash: "b5783b5a5690"
 nav_exclude: true
 search_exclude: true
 ---
@@ -114,4 +114,4 @@ testato su righe sintetiche di Client.txt nel formato del gioco; non ancora test
 
 [heat3d_watch/adapters/poe.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/poe.py)
 
-<!-- Generated from the adattatore by tools/gen_game_pages.py; change the adattatore and run it again rather than editing this page. -->
+<!-- Generato dall'adattatore da tools/gen_game_pages.py; per cambiarlo modifica l'adattatore ed eseguilo di nuovo invece di modificare questa pagina. -->

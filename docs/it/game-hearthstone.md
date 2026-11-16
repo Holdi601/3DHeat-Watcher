@@ -28,7 +28,7 @@ Mentre giochi a Hearthstone, il watcher legge i file che il gioco scrive e salva
 
 `python -m heat3d_watch setup hearthstone --apply` aggiunge la registrazione [Power] a %LOCALAPPDATA%\Blizzard\Hearthstone\log.config (con copia di backup); riavvia il gioco
 
-Digita il comando in un terminale aperto nella cartella del watcher (vedi [Prima di iniziare](before-you-start.md)). Se non riesce, l'ultima riga dice perché; [Installazione ed esecuzione](installing-and-running.md) descrive le cause più comuni.
+Digita il comando in un terminale aperto nella cartella del watcher (vedi [Prima di iniziare](before-you-start.md)). Se non riesce, l'ultima riga dice perché; [Installazione e avvio](installing-and-running.md) descrive le cause più comuni.
 
 `python -m heat3d_watch setup hearthstone` elenca i file che cambierebbe; `python -m heat3d_watch setup hearthstone --apply` li cambia, conservando l'originale come `<file>.heat3d-backup` (vedi [Comandi](commands.md#setup)). Stampa `hearthstone: changed: ...` per ogni modifica, oppure `hearthstone: nothing to change` se è già attivo.
 

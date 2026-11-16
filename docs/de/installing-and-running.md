@@ -3,7 +3,7 @@ title: "Installieren und Starten"
 nav_order: 3
 lang: "de"
 source: installing-and-running.md
-source_hash: "ceb60cbb49b7"
+source_hash: "2b03b0eda49e"
 nav_exclude: true
 search_exclude: true
 ---
@@ -103,13 +103,13 @@ erkannt wird, nicht zum Aufzeichnen.
 
 
 Das erste Mal, wenn ein Replay-Adapter einen seiner Ordner sieht, merkt er sich nur die Replays, die schon darin
-liegen: Ein Spieler mit jahrelangen Demos würde sonst einen Tag lang Konvertierungen erleben. Von da an wird jedes
+liegen: Ein Spieler mit jahrelangen Demos hätte sonst einen Tag lang den Watcher mit dem Umwandeln beschäftigt. Von da an wird jedes
 neue Replay einmal umgewandelt, sobald das Spiel es fertig geschrieben hat. Die alten werden auf Anfrage mit
 [`replays`](commands.md#replays) umgewandelt:
 
 ```bash
 python -m heat3d_watch replays cs2-demos              # every demo in CS2's folders and replay_folders
-python -m heat3d_watch replays osu-replays D:\Old     # the replays in one folder
+python -m heat3d_watch replays lol-replays D:\Old     # the replays in one folder
 ```
 
 ### Im Hintergrund laufen lassen {#running-in-the-background}
@@ -204,12 +204,12 @@ Start eines Befehls gelesen, daher starte `run` nach einer Änderung neu.
 | `auto_update` | `true` | Solange kein Spiel läuft, eine neuere Version installieren und neu starten (siehe [Updates](updates.md)). `false`: nur ein Hinweis im Protokoll. |
 | `scan_seconds` | `2.0` | Sekunden zwischen den Blicken auf die Prozessliste. |
 | `memory` | `false` | Speicher-Adaptern (Einzelspieler-Spielen mit einem Profil, das du geschrieben hast) erlauben zu laufen. Standardmäßig aus; siehe [Speicher lesen](memory-reading.md). |
-| `replays` | `true` | Die `replay`-Adapter laufen lassen: alle (siehe `python -m heat3d_watch replays` und [Spiele](games.md)) – CS2-Demos, Dota 2, osu!, War Thunder, World of Tanks, World of Warships, Squad, League-of-Legends- und VALORANT-Replays, IL-2-Tacview-Aufzeichnungen. |
+| `replays` | `true` | Die `replay`-Adapter laufen lassen: alle (siehe `python -m heat3d_watch replays` und [Spiele](games.md)) – CS2-Demos, Dota 2, War Thunder, World of Tanks, World of Warships, Squad, League-of-Legends- und VALORANT-Replays, IL-2-Tacview-Aufzeichnungen. |
 | `replay_folders` | `{}` | Zusätzliche Ordner nach Adapter-ID, zum Beispiel `{"cs2-demos": ["D:\\Demos"]}`. Die Replay-Adapter beobachten sie zusätzlich zu den Ordnern des Spiels selbst; `il2-tacview` akzeptiert auch Installationsordner (dann sucht es in deren `data\Tracks`); bei `elite` ersetzt der erste Ordner den Journal-Ordner. Die Ordner eines Adapters setzt du mit `config --set replay_folders.cs2-demos=D:\Demos,E:\More`, oder das ganze Wörterbuch als JSON. |
 | `riot_id` | `""` | Deine Riot-ID (`Name#TAG`), damit deine eigene Zeile in einem League-of-Legends-Replay zu deiner Statistik wird. Leer: Die Zeile jedes Spielers wird behalten, keine wird als deine markiert. |
 | `riot_api_key` | `""` | Dein eigener Riot-Entwicklerschlüssel, um für jedes abgespielte League-Match die offizielle Zeitleiste zu holen (Positionen jede Minute, Abschüsse dort, wo sie passierten). Leer: Es wird nichts geholt. |
 | `riot_platform` | `"EUW1"` | Die Plattform-ID deines League-Servers (`EUW1`, `EUN1`, `NA1`, `KR`, ...), mit der der regionale Match-V5-Host gefunden wird. |
-| `player_names` | `{}` | Dein Name in Spielen, deren Oberfläche jeden Spieler nennt, aber nicht sagt, wer du bist, nach Adapter-ID: `warthunder-webmap` (die Zeilen des Abschussprotokolls über dich werden deine Abschüsse und Tode) und `rocketleague-stats` (deine Zeilen werden `me`; ohne ihn der Spieler, dem die Kamera des Spiels folgt). Setzen mit `config --set player_names.warthunder-webmap=Name`. |
+| `player_names` | `{}` | Dein Name in Spielen, deren Oberfläche jeden Spieler nennt, aber nicht sagt, wer du bist, nach Adapter-ID: `warthunder-webmap` (die Zeilen des Kill-Feeds über dich werden deine Abschüsse und Tode) und `rocketleague-stats` (deine Zeilen werden `me`; ohne ihn der Spieler, dem die Kamera des Spiels folgt). Setzen mit `config --set player_names.warthunder-webmap=Name`. |
 
 Eine `settings.json` mit allen Standardwerten:
 

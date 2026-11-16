@@ -1,9 +1,9 @@
 ---
 title: "Richard Burns Rally (dati in tempo reale)"
-nav_order: 39
+nav_order: 38
 lang: "it"
 source: game-richard-burns-rally.md
-source_hash: "1b9866f5a1f6"
+source_hash: "4f2a2e46f8c8"
 nav_exclude: true
 search_exclude: true
 ---
@@ -76,8 +76,8 @@ UDP che arriva - nei menu, tra un giro e l'altro, quelli che nessun decodificato
 legge - viene conservato intero in `heat.raw.parquet` della sessione sotto il suo
 formato (`dash-horizon`, `session_update`, `extradata3`, `H3D1`, ...), e ogni pagina
 di memoria condivisa (l'intera mappatura, non solo i byte decodificati) ogni volta che
-cambia, sotto il nome della sua mappatura (`acpmf_physics`, ...). `used` segna ciò
-che è diventato anche riga; `selfCheck.completeness` in `meta.json` conta ogni tipo
+cambia, sotto il nome della sua mappatura (`acpmf_physics`, ...). `used` segna
+ciò che è diventato anche riga; `selfCheck.completeness` in `meta.json` conta ogni tipo
 (regola del convertitore di 3DHeat).
 
 Lo stesso modulo serve anche: [Assetto Corsa (dati in tempo reale)](game-assetto-corsa.md), [Assetto Corsa Competizione (dati in tempo reale)](game-assetto-corsa-competizione.md), [Assetto Corsa EVO (dati in tempo reale)](game-assetto-corsa-evo.md), [Assetto Corsa Rally (dati in tempo reale)](game-assetto-corsa-rally.md), [BeamNG.drive (dati in tempo reale)](game-beamng.md), [DiRT Rally 2.0 (dati in tempo reale)](game-dirt-rally-2.md), [EA SPORTS WRC (dati in tempo reale)](game-ea-wrc.md), [Forza Horizon 4 (dati in tempo reale)](game-forza-horizon-4.md), [Forza Horizon 5 (dati in tempo reale)](game-forza-horizon-5.md), [Forza Horizon 6 (dati in tempo reale)](game-forza-horizon-6.md), [Forza Motorsport (dati in tempo reale)](game-forza-motorsport.md).
@@ -136,4 +136,4 @@ decodifica del registratore di giri di gamecapture (testato su pacchetti costrui
 
 [heat3d_watch/adapters/racing.py](https://github.com/Holdi601/3DHeat-Watcher/blob/main/heat3d_watch/adapters/racing.py)
 
-<!-- Generated from the adattatore by tools/gen_game_pages.py; change the adattatore and run it again rather than editing this page. -->
+<!-- Generato dall'adattatore da tools/gen_game_pages.py; per cambiarlo modifica l'adattatore ed eseguilo di nuovo invece di modificare questa pagina. -->

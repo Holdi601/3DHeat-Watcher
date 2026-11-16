@@ -3,28 +3,28 @@ title: "Accueil"
 nav_order: 1
 lang: "fr"
 source: index.md
-source_hash: "ffd13e9431c3"
+source_hash: "d74a4eae2685"
 nav_exclude: true
 search_exclude: true
 permalink: /fr/
 ---
-# 3DHeat Watcher {#dheat-watcher}
+# 3DHeat Watcher {#3dheat-watcher}
 
 **Qu'est-ce que c'est ?** Vous jouez à un jeu. Ce programme note discrètement où vous êtes allé et ce qui s'est passé.
-Plus tard, vous pouvez le consulter comme une carte colorée dans la visionneuse 3DHeat.
+Plus tard, vous pouvez le consulter comme une carte colorée dans le visualiseur 3DHeat.
 
 **À quoi ça sert ?** À garder votre propre historique de chaque session - où vous avez roulé, volé ou combattu,
 vos totaux par jeu - sans aucun site web et sans modifier le jeu.
 
 **Exemple :** vous roulez un tour dans un jeu de course pendant que le watcher tourne ; ensuite, un fichier dans
-`sessions\<jeu>\` contient la trajectoire que vous avez suivie, et la visionneuse la dessine.
+`sessions\<jeu>\` contient la trajectoire que vous avez suivie, et le visualiseur la dessine.
 
 En détail : 3DHeat Watcher est un programme de fond qui enregistre ce que les jeux publient sur votre jeu - où vous
 êtes allé, ce qui s'est passé à chaque endroit, et les chiffres qui en découlent - dans des fichiers sur votre propre
-ordinateur. Les fichiers servent à vos statistiques personnelles, et aux cartes de chaleur et tracés de route de la
-visionneuse 3DHeat.
+ordinateur. Les fichiers servent à vos statistiques personnelles, et aux cartes de chaleur et tracés de route du
+visualiseur 3DHeat.
 
-Il tourne discrètement, remarque quel jeu vous lancez, et lit les sorties propres à ce jeu : un port de
+Il tourne discrètement, remarque quel jeu vous lancez, et lit les sorties de ce jeu : un port de
 télémétrie ou une mémoire partagée que le jeu publie pour ses tableaux de bord, une intégration de l'état de jeu, le
 journal ou le fichier de log que le jeu écrit, le replay enregistré après une partie, les statistiques que
 Steam conserve, les clips enregistrés par NVIDIA App. Les enregistrements restent sur votre ordinateur. Le programme ne contacte que deux
@@ -82,14 +82,14 @@ Tout est écrit dans `%LOCALAPPDATA%\3DHeat\Watcher`. Pour utiliser un autre dos
 variable d'environnement `HEAT3D_WATCH_HOME` ou lancez `python -m heat3d_watch config --set data=D:\ailleurs`.
 
 - `sessions\<jeu>\<date>_<adaptateur>\` - un dossier par session, contenant `events.jsonl` (chaque événement
-  au moment où il se produit), `heat.parquet` (les lignes avec une position, prêtes pour la visionneuse 3DHeat) et
+  au moment où il se produit), `heat.parquet` (les lignes avec une position, prêtes pour le visualiseur 3DHeat) et
   `meta.json` (jeu, source, axes, comptes, statistiques)
 - `watcher.sqlite` - les statistiques de chaque session, dans trois tables simples
 - `watcher.log` - ce que le watcher a fait
 
-La visionneuse ouvre directement le `heat.parquet` d'une session, sans rien à régler (ses axes et ses unités sont dans
+Le visualiseur ouvre directement le `heat.parquet` d'une session, sans rien à régler (ses axes et ses unités sont dans
 le fichier). Les replays convertis sont écrits sous forme de tables et de documents de partie à côté ; le format
-d'un fichier par partie de la visionneuse est décrit sur sa page [conteneur `.3dheat`](https://holdi601.github.io/3DHeat/container.html),
+d'un fichier par partie du visualiseur est décrit sur sa page [conteneur `.3dheat`](https://holdi601.github.io/3DHeat/container.html),
 et les colonnes de chaque table dans [Les données](the-data.md).
 
 ## La documentation {#the-documentation}
@@ -99,11 +99,11 @@ et les colonnes de chaque table dans [Les données](the-data.md).
 | [Avant de commencer](before-you-start.md) | Python, un terminal, les espaces réservés, à quoi ressemblent la réussite et les erreurs courantes |
 | [Installation et lancement](installing-and-running.md) | prérequis, exécution en arrière-plan, démarrage avec Windows, le fichier de verrouillage, le journal, chaque réglage et variable d'environnement |
 | [Jeux](games.md) | une page par jeu : ce qui est enregistré, d'où, comment l'activer, fonctionnement, axes, statistiques, ce qui a été vérifié |
-| [Les données](the-data.md) | dossiers de session, `events.jsonl`, `heat.parquet` et son pied, `meta.json`, `watcher.sqlite`, reprise après un plantage, export CSV, ouverture d'une session dans la visionneuse 3DHeat |
+| [Les données](the-data.md) | dossiers de session, `events.jsonl`, `heat.parquet` et son pied, `meta.json`, `watcher.sqlite`, reprise après un plantage, export CSV, ouverture d'une session dans le visualiseur 3DHeat |
 | [Commandes](commands.md) | chaque commande et chaque option de `python -m heat3d_watch` |
 | [Sources et règles](sources-and-rules.md) | les six sortes de sources, les règles du multijoueur, les jeux laissés de côté et pourquoi |
 | [Moments forts NVIDIA](nvidia-highlights.md) | ce que les Moments forts NVIDIA peuvent et ne peuvent pas fournir, et comment un moment fort obtient une position |
-| [Mods d'enregistrement serveur](server-mods.md) | les mods serveur d'Arma 3 et d'Arma Reforger qui enregistrent des missions entières pour la visionneuse |
+| [Mods d'enregistrement serveur](server-mods.md) | les mods serveur d'Arma 3 et d'Arma Reforger qui enregistrent des missions entières pour le visualiseur |
 | [Lecture de la mémoire](memory-reading.md) | profils de mémoire pour le solo : le format, les contrôles, comment en écrire et en vérifier un |
 | [Mises à jour](updates.md) | comment le watcher cherche de nouvelles versions et se met à jour lui-même |
 | [Développement](development.md) | écrire un adaptateur : l'API, les tests, un `verified` honnête, régénérer les pages des jeux |
@@ -113,12 +113,12 @@ et les colonnes de chaque table dans [Les données](the-data.md).
 
 ## Partie de 3DHeat {#part-of-3dheat}
 
-3DHeat Watcher est l'un des outils gratuits qui entourent la visionneuse 3DHeat (le watcher utilise 3DHeat CS2
+3DHeat Watcher est l'un des outils gratuits qui entourent le visualiseur 3DHeat (le watcher utilise 3DHeat CS2
 pour convertir les démos CS2). Chacun est un projet à part, avec ses propres versions et sa licence :
 
 | Outil | Ce qu'il fait | Documentation |
 |---|---|---|
-| [3DHeat](https://github.com/Holdi601/3DHeat) | la visionneuse : cartes de chaleur, analyse de course et revue de partie en 3D | [site](https://holdi601.github.io/3DHeat/) |
+| [3DHeat](https://github.com/Holdi601/3DHeat) | le visualiseur : cartes de chaleur, analyse de course et revue de partie en 3D | [site](https://holdi601.github.io/3DHeat/) |
 | [GameFiles](https://github.com/Holdi601/3DHeat-GameFiles) | circuits et niveaux tirés des fichiers livrés par les jeux, en modèles 3D | [site](https://holdi601.github.io/3DHeat-GameFiles/) |
 | [GameCapture](https://github.com/Holdi601/3DHeat-GameCapture) | télémétrie de tour des jeux de course ; niveaux reconstruits à partir de vidéos de jeu | [site](https://holdi601.github.io/3DHeat-GameCapture/) |
 | [Unreal Exporter](https://github.com/Holdi601/3DHeat-UnrealExporter) | un plugin de l'éditeur Unreal qui exporte un niveau en un modèle 3D | [site](https://holdi601.github.io/3DHeat-UnrealExporter/) |
@@ -130,6 +130,15 @@ pour convertir les démos CS2). Chacun est un projet à part, avec ses propres v
 | [Ext-Squad](https://github.com/Holdi601/3DHeat-Ext-Squad) | démos de serveurs Squad en tables et documents de partie | [site](https://holdi601.github.io/3DHeat-Ext-Squad/) |
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | cartes de DCS World en modèles 3D | [site](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | cartes d'IL-2 Sturmovik en modèles 3D | [site](https://holdi601.github.io/3DHeat-Ext-IL2/) |
+| [Ext-Dota](https://github.com/Holdi601/3DHeat-Ext-Dota) | la carte de Dota 2 de votre propre installation, en niveau 3D | [site](https://holdi601.github.io/3DHeat-Ext-Dota/) |
+| [Ext-DotaReplay](https://github.com/Holdi601/3DHeat-Ext-DotaReplay) | replays de Dota 2 | [site](https://holdi601.github.io/3DHeat-Ext-DotaReplay/) |
+| [Ext-Riot](https://github.com/Holdi601/3DHeat-Ext-Riot) | replays de League of Legends et de VALORANT (ce qu'ils contiennent sans chiffrement) | [site](https://holdi601.github.io/3DHeat-Ext-Riot/) |
+| [Ext-Forza](https://github.com/Holdi601/3DHeat-Ext-Forza) | circuits, courses et voitures Forza tirés de votre propre installation | [site](https://holdi601.github.io/3DHeat-Ext-Forza/) |
+| [Ext-Battlefield](https://github.com/Holdi601/3DHeat-Ext-Battlefield) | niveaux de Battlefield (Frostbite) en niveaux 3D | [site](https://holdi601.github.io/3DHeat-Ext-Battlefield/) |
+| [Ext-BeamNG](https://github.com/Holdi601/3DHeat-Ext-BeamNG) | circuits de BeamNG.drive | [site](https://holdi601.github.io/3DHeat-Ext-BeamNG/) |
+| [Ext-ACRally](https://github.com/Holdi601/3DHeat-Ext-ACRally) | étapes d'Assetto Corsa Rally en circuits | [site](https://holdi601.github.io/3DHeat-Ext-ACRally/) |
+| [Ext-Reforger](https://github.com/Holdi601/3DHeat-Ext-Reforger) | mondes d'Arma Reforger (Enfusion) en niveaux 3D | [site](https://holdi601.github.io/3DHeat-Ext-Reforger/) |
+| [Ext-R6](https://github.com/Holdi601/3DHeat-Ext-R6) | replays de matchs de Rainbow Six Siege | [site](https://holdi601.github.io/3DHeat-Ext-R6/) |
 
 Licence : MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Les licences
 des paquets tiers qu'il utilise, et ce qu'imposent les jeux qu'il lit, sont listées dans

@@ -1,9 +1,9 @@
 ---
-title: Comandos
+title: "Comandos"
 nav_order: 6
 lang: "es"
 source: commands.md
-source_hash: "701d07f4596d"
+source_hash: "5f90aaf52404"
 nav_exclude: true
 search_exclude: true
 ---
@@ -30,6 +30,7 @@ python -m heat3d_watch <command> [options]
 | [`table`](#table) | reconstruye el `heat.parquet` de una sesión a partir de su `events.jsonl` |
 | [`replays`](#replays) | convierte las repeticiones que ya están en el disco |
 | [`dota-replay`](#dota-replay) | descarga la repetición de una partida pública de Dota 2 por su id |
+| [`dota-map`](#dota-map) | el mapa de Dota 2 de tu instalación como nivel 3D, con la herramienta 3DHeat Dota aparte |
 | [`update`](#update) | actualiza a la versión más reciente |
 | [`config`](#config) | muestra o cambia los ajustes |
 
@@ -150,7 +151,7 @@ python -m heat3d_watch status
 ```text
 3DHeat Watcher 1.0.2; data in C:\Users\...\AppData\Local\3DHeat\Watcher
 Games running: EA SPORTS F1 25 (f1-25)
-Always on: il2-tacview, steam-stats, steam-timeline, nvidia-highlights, cs2-demos, osu-replays, lol-replays, valorant-replays
+Always on: il2-tacview, steam-stats, steam-timeline, nvidia-highlights, cs2-demos, lol-replays, valorant-replays
 ```
 
 Indica qué adaptadores arrancaría ahora un `run`, con las mismas reglas: el proceso del juego está en marcha,
@@ -187,7 +188,7 @@ más jugado al menos, y luego, para cada juego, sus 25 eventos más frecuentes y
 el número de sesiones que la tienen, el total, el mejor valor (`best`) y la media. `best` sabe qué sentido
 es el mejor: el valor más bajo para los tiempos guardados como mejor (`best_lap`, `best_stage` y cualquier
 otra clave que empiece por `best_`) y para los puestos (`race_position`, `grid_position`, cualquier clave que
-termine en `_position`), y el más alto para todo lo demás (eliminaciones, distancia, velocidad máxima, los
+termine en `_position`), y el más alto para todo lo demás (bajas, distancia, velocidad máxima, los
 contadores propios de un juego).
 
 | Opción | Efecto |
@@ -226,22 +227,22 @@ log y se omite.
 | Adaptador | Repeticiones |
 |---|---|
 | `cs2-demos` | demos de Counter-Strike 2 (`*.dem`), mediante 3DHeat CS2 |
-| `lol-replays` | repeticiones de League of Legends (`*.rofl`) |
-| `osu-replays` | repeticiones de osu! (`*.osr`) |
-| `valorant-replays` | repeticiones de VALORANT (`*.vrf`) |
+| `lol-replays` | repeticiones de League of Legends (`*.rofl`), mediante el lector externo `heat3d-riot-replays` (3DHeat-Ext-Riot) |
+| `valorant-replays` | repeticiones de VALORANT (`*.vrf`), mediante el lector externo `heat3d-riot-replays` (3DHeat-Ext-Riot) |
 | `warthunder-replays` | repeticiones de War Thunder (`*.wrpl`), mediante el conversor externo `heat3d-wt-replay` (exporters/ext/warthunder-replay) |
 | `wot-replays` | repeticiones de World of Tanks (`*.wotreplay`), mediante el conversor externo `heat3d-wot-replay` (exporters/ext/wot-replay) |
 | `wows-replays` | repeticiones de World of Warships (`*.wowsreplay`), mediante el conversor externo `heat3d-wows-replay` (exporters/ext/wows-replay) |
-| `dota-replays` | repeticiones de Dota 2 (`*.dem`), mediante gem (`pip install gem-dota`) |
+| `dota-replays` | repeticiones de Dota 2 (`*.dem`), mediante el lector externo `heat3d-dota-replay` (3DHeat-Ext-DotaReplay) |
 
 ```text
-osu-replays: converted 12 replay(s); `sessions --game` lists them
+lol-replays: converted 12 replay(s); `sessions --game` lists them
 ```
 
 Un id que no es ninguno de estos muestra `no replay adapter '<id>'` con la lista y sale con código 2; lo
-mismo ocurre con una `folder` que no existe. Un adaptador que no puede ejecutarse aquí (3DHeat CS2 no
-instalado) muestra el motivo y sale con código 1. Las pistas Tacview de IL-2 no están en la lista: ese
-adaptador convierte por sí mismo cada pista terminada que encuentra.
+mismo ocurre con una `folder` que no existe. Un adaptador que no puede ejecutarse aquí (3DHeat CS2 o el lector
+del juego no instalados) muestra el motivo - dónde conseguir el lector y cómo instalarlo - y sale con código 1.
+Las pistas Tacview de IL-2 no están en la lista: ese adaptador convierte por sí mismo cada pista terminada que
+encuentra.
 
 ## dota-replay {#dota-replay}
 
@@ -258,7 +259,10 @@ OpenDota (`api.opendota.com/api/matches/<id>`, sin clave), y el archivo de
 Zstandard con ese nombre) y se guarda como `<match id>.dem`. Sin `-o` se guarda en la carpeta de repeticiones
 de Dota cuando Dota 2 está instalado (donde un watcher en marcha la convierte), y si no en
 `<data>/replays/dota`. Un archivo que ya esté allí se conserva. `--convert` convierte las repeticiones
-descargadas enseguida, igual que lo haría `replays dota-replays`, y las anota como vistas.
+descargadas enseguida, igual que lo haría `replays dota-replays`, y las anota como vistas; necesita el lector
+de repeticiones de Dota 2 ([3DHeat-Ext-DotaReplay](https://github.com/Holdi601/3DHeat-Ext-DotaReplay), `heat3d-dota-replay`)
+y, sin él, indica dónde conseguirlo y sale con código 1 antes de descargar nada. La descarga en sí solo
+necesita el watcher.
 
 ```text
 match 9000000000: C:\Program Files (x86)\Steam\steamapps\common\dota 2 beta\game\dota\replays\9000000000.dem
@@ -268,6 +272,22 @@ Valve guarda las repeticiones unas semanas; una partida más antigua muestra `Va
 y sale con código 1. Una partida que OpenDota todavía no ha visto no tiene salt: el mensaje indica pedírselo a
 OpenDota (`curl -X POST https://api.opendota.com/api/request/<id>`) y volver a intentarlo unos minutos después.
 Las salas privadas y las partidas con perfil oculto no están en los servidores de repeticiones.
+
+## dota-map {#dota-map}
+
+```bash
+python -m heat3d_watch dota-map [<map>] -o <file.glb> [--game FOLDER] [--source2viewer EXE] [--detail UNITS]
+```
+
+Escribe el mapa de Dota 2 - suelo, acantilados, agua, árboles y edificios - como un nivel `.glb` en el marco
+en que se dibujan las tablas de repeticiones de Dota, desde tu propia instalación de Dota 2. El watcher no lee
+por sí mismo los archivos del juego: ejecuta la herramienta aparte **3DHeat Dota** (`heat3d-dota-maps level`,
+[3DHeat-Ext-Dota](https://github.com/Holdi601/3DHeat-Ext-Dota)) con estas opciones, y le pasa su salida y su
+código de salida. `<map>` es `dota` por defecto; `--game` es la carpeta de Dota 2 cuando no está en una biblioteca
+de Steam; `--source2viewer` la ruta de la CLI de Source2Viewer, que esa herramienta necesita; `--detail` la celda
+de agrupación de vértices de los edificios, en unidades del juego (por defecto 8, 0 conserva cada triángulo).
+Cuando la herramienta no está instalada, muestra `dota-map: the Dota 2 map converter is not installed: ...` con
+dónde conseguirla y sale con código 2. Detalles: [Mapa de Dota 2](dota-map.md).
 
 ## update {#update}
 
