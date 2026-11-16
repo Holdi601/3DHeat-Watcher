@@ -137,5 +137,5 @@ registo de problemas, por isso pode ser instalado, atualizado, mantido - ou reti
 titular de direitos - por si só, sem afetar o visualizador nem as outras ferramentas.
 
 Licença: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). As licenças
-dos pacotes de terceiros que ele usa, e o que os jogos que ele lê exigem, estão listadas em
+dos pacotes de terceiros que ele usa, e a nota de que nada de um jogo é distribuído com ele, estão listadas em
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

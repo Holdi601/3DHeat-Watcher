@@ -3,7 +3,7 @@ title: "Startseite"
 nav_order: 1
 lang: "de"
 source: index.md
-source_hash: "269b4c01a4af"
+source_hash: "09afd8dfdb26"
 nav_exclude: true
 search_exclude: true
 permalink: /de/
@@ -145,5 +145,5 @@ Issue-Tracker. So lässt er sich für sich allein installieren, aktualisieren, p
 Rechteinhabers zurückziehen -, ohne dass der Viewer oder die anderen Werkzeuge davon berührt werden.
 
 Lizenz: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Die Lizenzen der Pakete von
-Dritten, die es nutzt, und was die Spiele, die es liest, verlangen, stehen in
+Dritten, die es nutzt, und der Hinweis, dass nichts aus einem Spiel mitgeliefert wird, stehen in
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

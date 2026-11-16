@@ -136,5 +136,5 @@ sistem de raportare a problemelor, astfel încât poate fi instalat, actualizat,
 deținător de drepturi - separat, fără să afecteze vizualizatorul sau celelalte unelte.
 
 Licență: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Licențele
-pachetelor terțe pe care le folosește, și ce cer jocurile pe care le citește, sunt enumerate în
+pachetelor terțe pe care le folosește, și mențiunea că nu livrează nimic dintr-un joc, sunt enumerate în
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

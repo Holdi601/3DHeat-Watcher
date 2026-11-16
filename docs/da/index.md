@@ -134,5 +134,5 @@ issue-tracker, så den kan installeres, opdateres, vedligeholdes - eller trække
 rettighedshavers anmodning - for sig selv, uden at det påvirker vieweren eller de andre værktøjer.
 
 Licens: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Licenserne
-for tredjepartspakkerne, det bruger, og hvad de spil, det læser, kræver, står i
+for tredjepartspakkerne, det bruger, og en note om, at intet fra et spil følger med, står i
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

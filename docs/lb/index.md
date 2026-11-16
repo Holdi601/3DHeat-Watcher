@@ -135,5 +135,5 @@ sengem eegenen Issue-Tracker, sou datt e fir sech eleng installéiert, aktualis�
 Ufro vun engem Rechteinhaber zréckgezunn - gi kann, ouni de Viewer oder déi aner Tools ze beréieren.
 
 Lizenz: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). D'Lizenze
-vun den Drëtt-Packagen, déi et benotzt, a wat d'Spiller, déi et liest, verlaangen, stinn an
+vun den Drëtt-Packagen, déi et benotzt, a den Hiweis, datt näischt aus engem Spill matgeliwwert gëtt, stinn an
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

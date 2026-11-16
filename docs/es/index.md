@@ -3,7 +3,7 @@ title: Inicio
 nav_order: 1
 lang: "es"
 source: index.md
-source_hash: "269b4c01a4af"
+source_hash: "09afd8dfdb26"
 nav_exclude: true
 search_exclude: true
 permalink: /es/
@@ -147,5 +147,5 @@ gestor de incidencias, así que puede instalarse, actualizarse, mantenerse - o r
 titular de derechos - por separado, sin afectar al visor ni a las demás herramientas.
 
 Licencia: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Las licencias de los
-paquetes de terceros que usa, y lo que exigen los juegos que lee, están en
+paquetes de terceros que usa, y la nota de que no incluye nada de ningún juego, están en
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

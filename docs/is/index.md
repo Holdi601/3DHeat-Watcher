@@ -3,7 +3,7 @@ title: "Heim"
 nav_order: 1
 lang: "is"
 source: index.md
-source_hash: "269b4c01a4af"
+source_hash: "09afd8dfdb26"
 nav_exclude: true
 search_exclude: true
 permalink: /is/
@@ -144,5 +144,5 @@ svo að hægt er að setja hann upp, uppfæra hann, viðhalda honum - eða draga
 rétthafa - einan og sér, án þess að það hafi áhrif á skoðarann eða hin verkfærin.
 
 Leyfi: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Leyfi
-þriðju aðila pakka sem það notar, og það sem leikirnir sem það les krefjast, eru talin upp í
+þriðju aðila pakka sem það notar, og athugasemd um að ekkert úr leikjum fylgi með því, eru talin upp í
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

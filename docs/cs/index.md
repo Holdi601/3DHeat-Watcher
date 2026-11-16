@@ -136,5 +136,5 @@ problémů, takže ji lze instalovat, aktualizovat, udržovat – nebo na žádo
 samostatně, bez dopadu na prohlížeč a ostatní nástroje.
 
 Licence: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Licence
-balíčků třetích stran, které používá, a to, co vyžadují hry, které čte, jsou uvedeny v
+balíčků třetích stran, které používá, a poznámka, že se s ním nedodává nic ze hry, jsou uvedeny v
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

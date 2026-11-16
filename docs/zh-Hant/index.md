@@ -108,5 +108,5 @@ python -m heat3d_watch stats --csv out  # sessions, events and stats as CSV file
 
 每個遊戲讀取器都是一個獨立的小專案，有自己的授權檔案、發行版本與問題追蹤器，因此可以單獨安裝、更新、維護，或應權利人的要求單獨撤回，而不影響檢視器或其他工具。
 
-授權：MIT（[LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)）。它所使用的第三方套件的授權，以及它所讀取的遊戲所需遵守的規定，列於
+授權：MIT（[LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)）。它所使用的第三方套件的授權，以及不隨附任何遊戲內容的說明，列於
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md)。

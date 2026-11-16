@@ -131,5 +131,5 @@ ir problemų sekimo sistema, todėl ją galima įdiegti, atnaujinti, prižiūrė
 prašymu – atskirai, nepaveikiant žiūryklės ir kitų įrankių.
 
 Licencija: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Trečiųjų šalių paketų, kuriuos
-jis naudoja, licencijos ir tai, ko reikalauja žaidimai, kuriuos jis skaito, išvardytos
+jis naudoja, licencijos ir pastaba, kad su juo nepateikiama nieko iš žaidimų, išvardytos
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

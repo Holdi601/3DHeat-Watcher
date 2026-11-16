@@ -3,7 +3,7 @@ title: Home
 nav_order: 1
 lang: "it"
 source: index.md
-source_hash: "269b4c01a4af"
+source_hash: "09afd8dfdb26"
 nav_exclude: true
 search_exclude: true
 permalink: /it/
@@ -146,5 +146,5 @@ il proprio issue tracker, così può essere installato, aggiornato, mantenuto - 
 un titolare dei diritti - per conto suo, senza toccare il visualizzatore o gli altri strumenti.
 
 Licenza: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Le licenze dei
-pacchetti di terze parti che usa, e ciò che richiedono i giochi che legge, sono elencate in
+pacchetti di terze parti che usa, e la nota che non include nulla di alcun gioco, sono elencate in
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

@@ -133,5 +133,5 @@ więc można go instalować, aktualizować, utrzymywać – albo wycofać na pro
 niezależnie, bez wpływu na przeglądarkę i pozostałe narzędzia.
 
 Licencja: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Licencje
-pakietów stron trzecich, których używa, oraz to, czego wymagają gry, które czyta, są wymienione w
+pakietów stron trzecich, których używa, oraz uwaga, że nie dostarcza niczego z gier, są wymienione w
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

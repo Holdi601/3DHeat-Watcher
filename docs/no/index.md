@@ -3,7 +3,7 @@ title: Hjem
 nav_order: 1
 lang: "no"
 source: index.md
-source_hash: "269b4c01a4af"
+source_hash: "09afd8dfdb26"
 nav_exclude: true
 search_exclude: true
 permalink: /no/
@@ -142,5 +142,5 @@ at den kan installeres, oppdateres, vedlikeholdes - eller trekkes tilbake etter 
 rettighetshaver - for seg selv, uten at det påvirker visningsprogrammet eller de andre verktøyene.
 
 Lisens: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Lisensene til
-tredjepartspakkene den bruker, og hva spillene den leser krever, står i
+tredjepartspakkene den bruker, og en merknad om at ingenting fra et spill følger med, står i
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

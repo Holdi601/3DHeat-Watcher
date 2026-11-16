@@ -135,5 +135,5 @@ të problemeve, që të mund të instalohet, përditësohet, mirëmbahet - ose t
 më vete, pa prekur shikuesin ose mjetet e tjera.
 
 Licenca: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Licencat
-e paketave të palëve të treta që përdor, dhe çfarë kërkojnë lojërat që lexon, listohen te
+e paketave të palëve të treta që përdor, dhe shënimi që me të nuk shpërndahet asgjë nga lojërat, listohen te
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

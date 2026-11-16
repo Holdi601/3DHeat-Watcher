@@ -135,5 +135,5 @@ fadhbanna féin, ionas gur féidir é a shuiteáil, a nuashonrú, a chothabháil
 shealbhóir ceart - ina aonar, gan tionchar a imirt ar an amharcán ná ar na huirlisí eile.
 
 Ceadúnas: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Tá ceadúnais
-na bpacáistí tríú páirtí a úsáideann sé, agus an méid a éilíonn na cluichí a léann sé, liostaithe in
+na bpacáistí tríú páirtí a úsáideann sé, agus nóta nach seoltar aon rud ó chluiche leis, liostaithe in
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

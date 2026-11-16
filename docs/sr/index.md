@@ -135,5 +135,5 @@ python -m heat3d_watch stats --csv out  # сесије, догађаји и ст
 засебно, без утицаја на приказивач и остале алате.
 
 Лиценца: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Лиценце
-пакета трећих страна које користите, и оно што игре које чита налажу, наведени су у
+пакета трећих страна које користите, и напомена да се уз њега не испоручује ништа из игара, наведени су у
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

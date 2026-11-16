@@ -134,5 +134,5 @@ saab paigaldada, uuendada, hooldada - või õiguste omaniku palvel tagasi võtta
 mõjutaks vaatajat või teisi tööriistu.
 
 Litsents: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Kolmanda osapoole pakettide
-litsentsid ja see, mida loetavad mängud nõuavad, on loetletud failis
+litsentsid ja märkus, et sellega ei tarnita midagi mängudest, on loetletud failis
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

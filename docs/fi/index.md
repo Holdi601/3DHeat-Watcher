@@ -3,7 +3,7 @@ title: "Etusivu"
 nav_order: 1
 lang: "fi"
 source: index.md
-source_hash: "269b4c01a4af"
+source_hash: "09afd8dfdb26"
 nav_exclude: true
 search_exclude: true
 permalink: /fi/
@@ -144,5 +144,5 @@ vianseuranta, joten sen voi asentaa, päivittää, ylläpitää - tai vetää po
 erikseen ilman, että se vaikuttaa katselimeen tai muihin työkaluihin.
 
 Lisenssi: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Käyttämiensä kolmansien
-osapuolten pakettien lisenssit ja lukemiensa pelien vaatimukset on lueteltu tiedostossa
+osapuolten pakettien lisenssit ja huomautus, ettei sen mukana toimiteta mitään peleistä on lueteltu tiedostossa
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

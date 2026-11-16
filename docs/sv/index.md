@@ -133,5 +133,5 @@ så att den kan installeras, uppdateras, underhållas – eller dras tillbaka p�
 begäran – för sig, utan att det påverkar visaren eller de andra verktygen.
 
 Licens: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Licenserna
-för tredjepartspaketen den använder, och vad spelen den läser kräver, finns i
+för tredjepartspaketen den använder, och en anteckning om att inget från ett spel följer med, finns i
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

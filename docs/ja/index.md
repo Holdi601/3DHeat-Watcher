@@ -105,4 +105,4 @@ python -m heat3d_watch stats --csv out  # セッション、出来事、統計�
 
 各ゲームのリーダーは、それぞれ独自のライセンスファイル、リリース、課題トラッカーを持つ小さな独立したプロジェクトです。そのため、ビューアや他のツールに影響を与えることなく、個別にインストール、更新、保守でき、権利者から求められた場合には個別に取り下げることもできます。
 
-ライセンス: MIT（[LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)）。使用しているサードパーティのパッケージのライセンスと、読み取るゲームが求めることは、[LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md) に一覧があります。
+ライセンス: MIT（[LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)）。使用しているサードパーティのパッケージのライセンスと、ゲームのものを何も同梱していないことの説明は、[LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md) に一覧があります。

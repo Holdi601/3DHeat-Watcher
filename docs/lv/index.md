@@ -128,5 +128,5 @@ izsekotāju, tāpēc to var instalēt, atjaunināt, uzturēt - vai pēc tiesību
 atsevišķi, neietekmējot skatītāju vai pārējos rīkus.
 
 Licence: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Trešo pušu pakotņu
-licences, ko tas izmanto, un to, ko prasa spēles, ko tas nolasa, uzskaitītas lapā
+licences, ko tas izmanto, un piezīme, ka kopā ar to netiek piegādāts nekas no spēlēm, uzskaitītas lapā
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

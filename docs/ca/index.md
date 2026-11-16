@@ -138,5 +138,5 @@ gestor d'incidències, de manera que es pot instal·lar, actualitzar, mantenir -
 de drets - per separat, sense afectar el visualitzador ni les altres eines.
 
 Llicència: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Les llicències
-dels paquets de tercers que fa servir, i el que exigeixen els jocs que llegeix, figuren a
+dels paquets de tercers que fa servir, i la nota que no inclou res de cap joc, figuren a
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

@@ -135,5 +135,5 @@ hekk li jista' jiġi installat, aġġornat, miżmum - jew irtirat fuq talba ta' 
 mingħajr ma jolqot il-viewer jew l-għodod l-oħra.
 
 Liċenzja: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Il-liċenzji
-tal-pakketti ta' terzi li juża, u dak li l-logħob li jaqra jeħtieġu, huma elenkati f'
+tal-pakketti ta' terzi li juża, u nota li ma jinġarr xejn minn logħba miegħu, huma elenkati f'
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

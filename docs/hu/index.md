@@ -137,5 +137,5 @@ frissíthető, karbantartható - vagy egy jogtulajdonos kérésére visszavonhat
 többi eszközt érintené.
 
 Licenc: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). A harmadik féltől származó
-csomagok licencei, és az, amit az általa olvasott játékok előírnak, a
+csomagok licencei, és a megjegyzés, hogy semmit sem szállít játékokból, a
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md) fájlban vannak felsorolva.

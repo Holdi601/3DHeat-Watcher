@@ -136,5 +136,5 @@ problema, pa se može instalirati, ažurirati, održavati - ili povući na zahtj
 zasebno, bez utjecaja na preglednik i ostale alate.
 
 Licenca: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Licence
-paketa trećih strana koje koristi, i što zahtijevaju igre koje čita, navedene su u
+paketa trećih strana koje koristi, i napomena da se uz njega ne isporučuje ništa iz igara, navedene su u
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

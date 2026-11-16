@@ -134,5 +134,5 @@ it can be installed, updated, maintained - or withdrawn on a rights holder's req
 without affecting the viewer or the other tools.
 
 Licence: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). The licences
-of the third-party packages it uses, and what the games it reads require, are listed in
+of the third-party packages it uses, and the note that nothing from a game ships with it, are listed in
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

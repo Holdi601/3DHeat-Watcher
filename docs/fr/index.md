@@ -3,7 +3,7 @@ title: "Accueil"
 nav_order: 1
 lang: "fr"
 source: index.md
-source_hash: "269b4c01a4af"
+source_hash: "09afd8dfdb26"
 nav_exclude: true
 search_exclude: true
 permalink: /fr/
@@ -145,5 +145,5 @@ versions et son suivi des tickets : il peut ainsi être installé, mis à jour, 
 demande d'un ayant droit - séparément, sans toucher au visualiseur ni aux autres outils.
 
 Licence : MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Les licences
-des paquets tiers qu'il utilise, et ce qu'imposent les jeux qu'il lit, sont listées dans
+des paquets tiers qu'il utilise, et la précision que rien d'un jeu n'est fourni avec lui, sont listées dans
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

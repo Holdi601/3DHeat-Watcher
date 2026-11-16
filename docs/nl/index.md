@@ -136,5 +136,5 @@ issuetracker, zodat hij los kan worden geïnstalleerd, bijgewerkt, onderhouden -
 rechthebbende teruggetrokken - zonder dat de viewer of de andere tools daar iets van merken.
 
 Licentie: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). De licenties
-van de pakketten van derden die het gebruikt, en wat de spellen die het leest vereisen, staan in
+van de pakketten van derden die het gebruikt, en de opmerking dat er niets uit een spel wordt meegeleverd, staan in
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).
