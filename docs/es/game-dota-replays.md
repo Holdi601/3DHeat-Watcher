@@ -3,7 +3,7 @@ title: "Dota 2 (repeticiones)"
 nav_order: 12
 lang: "es"
 source: game-dota-replays.md
-source_hash: "c0ed25c261f6"
+source_hash: "88539ee6dc65"
 nav_exclude: true
 search_exclude: true
 ---
@@ -56,7 +56,7 @@ en `<Dota>/game/dota/replays/<id de partida>.dem`; Valve conserva la repetición
 sus servidores durante unas semanas, y `python -m heat3d_watch dota-replay <id de partida>` descarga una por
 su id a través de OpenDota. El watcher no las lee por sí mismo: lo hace un lector externo (3DHeat Dota Replay,
 github.com/Holdi601/3DHeat-Ext-DotaReplay, `exporters/ext/dota-replay`, comando `heat3d-dota-replay`, que lee
-con gem-dota, MIT), separado para que un problema con él no afecte a nada más, y se ejecuta en un proceso propio
+con gem-dota, MIT), un proyecto propio, y se ejecuta en un proceso propio
 con cada repetición nueva cuando está en el PATH, instalado o junto al watcher; si falta, el watcher indica una
 sola vez cómo instalarlo. Escribe la posición, altura, salud, nivel, orientación, maná, experiencia, atributos
 y objetos de cada héroe 7,5 veces por segundo mientras está vivo; bajas y muertes donde ocurrieron; torres,

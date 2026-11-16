@@ -3,7 +3,7 @@ title: "Squad (tekrarlar)"
 nav_order: 40
 lang: "tr"
 source: game-squad-demos.md
-source_hash: "a908f7e6d9c3"
+source_hash: "ddec19ea89bf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -41,7 +41,7 @@ Bir klasör ilk kez görüldüğünde içindeki tekrarlar yalnızca not edilir, 
 
 #### Squad {#squad}
 
-Squad'ın özel sunucuları, `demos` yetkisi olan bir yönetici AdminDemoRec &lt;name> (ve AdminDemoStop) komutunu çalıştırdığında, bir maçın demosunu `<server>/SquadGame/Saved/Demos/<name>.replay` klasörüne kaydeder. Bu, sunucunun çoğaltığı her şeyi, her oyuncunun hareketi dahil, tutan bir Unreal Engine ağ tekrarıdır. Watcher bunları kendisi okumaz: dış bir okuyucu okur (3DHeat Squad demo okuyucusu, `exporters/ext/squad-demo`, komut `heat3d-squad-demo`). Bu, okuyucudaki bir sorunun başka hiçbir şeye dokunmamasını sağlar. Yerel bir sunucunun yazdığı klasörlerdeki her yeni demo için, ya da kiralık bir sunucudan kopyalanan demolar için ayarlara eklenen bir klasörde çalıştırılır; sonuç `<map>/<match>.parquet` ve `<match>.match.json` olarak oturum klasörüne yazılır. Katman, harita, oyuncu sayısı ve maç süresi oturumun istatistikleri olur.
+Squad'ın özel sunucuları, `demos` yetkisi olan bir yönetici AdminDemoRec &lt;name> (ve AdminDemoStop) komutunu çalıştırdığında, bir maçın demosunu `<server>/SquadGame/Saved/Demos/<name>.replay` klasörüne kaydeder. Bu, sunucunun çoğaltığı her şeyi, her oyuncunun hareketi dahil, tutan bir Unreal Engine ağ tekrarıdır. Watcher bunları kendisi okumaz: dış bir okuyucu okur (3DHeat Squad demo okuyucusu, `exporters/ext/squad-demo`, komut `heat3d-squad-demo`); kendi başına bir projedir. Yerel bir sunucunun yazdığı klasörlerdeki her yeni demo için, ya da kiralık bir sunucudan kopyalanan demolar için ayarlara eklenen bir klasörde çalıştırılır; sonuç `<map>/<match>.parquet` ve `<match>.match.json` olarak oturum klasörüne yazılır. Katman, harita, oyuncu sayısı ve maç süresi oturumun istatistikleri olur.
 
 Aynı modül şunlara da hizmet eder: [Counter-Strike 2 (tekrarlar)](game-cs2-demos.md), [Dota 2 (tekrarlar)](game-dota-replays.md), [War Thunder (tekrarlar)](game-warthunder-replays.md), [World of Tanks (tekrarlar)](game-wot-replays.md), [World of Warships (tekrarlar)](game-wows-replays.md).
 

@@ -3,7 +3,7 @@ title: "League of Legends (replayt)"
 nav_order: 30
 lang: "fi"
 source: game-lol-replays.md
-source_hash: "ed26619fa904"
+source_hash: "6a86dc8a45bb"
 nav_exclude: true
 search_exclude: true
 ---
@@ -38,16 +38,15 @@ League of Legends- ja Valorant-replayt: se osa, joka niistä voidaan lukea sella
 
 Molemmat pelit tallentavat replayt pelaajan levylle, ja molemmat suojaavat sisältönsä:
 hetkeltä toiselle tapahtuva pelidata on hämärretty, ja hämäröinti vaihtuu joka päivityksen mukana,
-jotta sitä ei voi käyttää huijaamiseen. Sen murtaminen tarkoittaisi pelin oman koodin purkamista, mitä Riotin
-käyttöehdot kieltävät (käyttöehdot 3.1 ja 7.1) - joten 3DHeatissa sitä ei tehdä missään. Se, mitä kukin tiedosto
+jotta sitä ei voi käyttää huijaamiseen. Tätä osaa ei pureta
+missään 3DHeatissa. Se, mitä kukin tiedosto
 kertoo avoimesti, luetaan, ja loppu tallennetaan sellaisenaan: jokainen tiedoston osa kokonaisena
 session `heat.raw.parquet`-tiedostossa (3DHeatin muunnossääntö, docs/converters.md katseluohjelman
 repositoriossa), ja se lasketaan meta.json:n `selfCheck.completeness`-kentässä.
 
 Watcher ei lue tiedostoja itse: sen tekee ulkoinen lukija (3DHeat
 Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`,
-komento `heat3d-riot-replays`). Se on erillään, jotta Riotin ehtoihin liittyvä ongelma
-koskee vain sitä. Jos lukija löytyy PATHista, on asennettu tai watcherin vieressä, se lukee jokaisen uuden replayn;
+komento `heat3d-riot-replays`), oma projektinsa. Jos lukija löytyy PATHista, on asennettu tai watcherin vieressä, se lukee jokaisen uuden replayn;
 jos sitä ei ole, watcher kertoo kerran, miten se asennetaan. Mitä lukija lukee, sen watcher tallentaa
 sessioon; alla oleva Match-V5-aikajana haetaan watcherin itsensä toimesta, koska sitä ei ole tiedostossa.
 
@@ -114,7 +113,7 @@ Watcher noudattaa 3DHeatin [muunnossääntöä](https://github.com/Holdi601/3DHe
 
 **Ei saatavilla**
 
-- itse peli (sijainnit, kyvyt, jokainen yksikkö hetkeltä toiselle): ROFL1:n osat ja ROFL2:n body ovat salattuja, ja paketit niiden sisällä hämärretään jokaisen päivityksen mukana; niiden läpi pääsy tarkoittaisi asiakasohjelman purkamista, mitä Riotin käyttöehdot kieltävät (3.1, 7.1). Tallennettu kokonaisena, ei luettu
+- itse peli (sijainnit, kyvyt, jokainen yksikkö hetkeltä toiselle): ROFL1:n osat ja ROFL2:n body ovat salattuja, ja paketit niiden sisällä hämärretään jokaisen päivityksen mukana. Tallennettu kokonaisena, ei luettu
 - sijainnit ilman omaa Riot API -avainta: tiedostossa niitä ei ole avoimena
 
 **Koko**: raakatallenne on noin replayn oman kokoinen: salatut osat eivät pakkaudu

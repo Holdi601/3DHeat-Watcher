@@ -53,8 +53,8 @@ search_exclude: true
 War Thunder зачувува повторување од секоја битка во `<War Thunder>/Replays/*.wrpl`
 кога зачувувањето на повторувања е вклучено во неговите опции. Watcher-от не ги чита
 самиот: тоа го прави надворешен конвертор (3DHeat War Thunder replay converter,
-`exporters/ext/warthunder-replay`, команда `heat3d-wt-replay`), чуван одвоено за
-проблем со него да не допира ништо друго. Кога командата е на PATH, или
+`exporters/ext/warthunder-replay`, команда `heat3d-wt-replay`), засебен
+проект. Кога командата е на PATH, или
 пакетот е инсталиран или покрај watcher-от, секое ново повторување се пушта низ
 неа во папката на сесијата како `<map>/<match>.parquet` и `<match>.match.json`;
 кога не е, watcher-от кажува еднаш како да се инсталира и ја остава папката

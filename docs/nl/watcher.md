@@ -25,13 +25,13 @@ zelf (`python -m heat3d_watch games --markdown`), dus het zegt wat de code doet.
 | platform | wat Steam en het grafische stuurprogramma bewaren: statistieken, prestaties, tijdlijnen, highlights | ja |
 | memory | het geheugen van het spel, alleen lezen - alleen enkelspelerspellen, achter elke controle hieronder | **nooit** |
 
-Niets wordt in een spel geïnjecteerd, gehaakt of veranderd. Een bron die door de voorwaarden van een spel of de
-anti-cheatregels wordt uitgesloten, is niet geïmplementeerd: de lockfile-eindpunten van de client van League of
+Niets wordt in een spel geïnjecteerd, gehaakt of veranderd. Beveiligde bronnen
+zijn niet geïmplementeerd: de lockfile-eindpunten van de client van League of
 Legends en VALORANT, de beschermde delen van replays (Fortnite, League of Legends, VALORANT), de versleutelde
 telemetrie van Gran Turismo 7 (dat zou een sleutel vereisen die uit het spel is gehaald). Replays van World of Tanks
 en World of Warships zijn ook versleuteld; de watcher leest ze niet, afzonderlijke converters buiten hem wel
 (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), alleen geïnstalleerd door een speler die dat beslist - zie
-hun README's voor de voorwaarden van Wargaming.
+hun README's.
 
 ## Wat een opname is {#what-a-recording-is}
 
@@ -150,10 +150,10 @@ bij zolang geen spel draait, en start opnieuw. `HEAT3D_NO_UPDATE=1` zet de contr
 
 | Spel | Waarom niet |
 |---|---|
-| VALORANT-posities | De spelstroom van de replays is verhuld met waarden uit het executable van elke build; die terugvinden is reverse engineering van het spel, wat de voorwaarden van Riot verbieden, en het spel draait onder Vanguard. Wat de replay open meeneemt - kaart, wedstrijd, agenten, de tijdlijn van kills en rondes - *wordt* wel gelezen. De lockfile-eindpunten van de client zijn geen gepubliceerde API en worden niet gebruikt. |
-| League of Legends-replays, in het spel | Het moment-tot-moment-deel van een `.rofl` is verhuld tegen valsspelen, elke patch anders; het decoderen ervan betekent het spel uit elkaar halen, wat de voorwaarden van Riot verbieden. Wat het bestand open meeneemt - de eindregel van elke speler - *wordt* wel gelezen, en posities komen uit de officiële wedstrijdtijdlijn van Riot met je eigen API-sleutel. |
-| Fortnite | Zijn replays zijn versleuteld, en de voorwaarden van Epic verbieden reverse engineering ervan. |
-| World of Tanks, World of Warships, door de watcher zelf | Hun replays zijn versleuteld. Afzonderlijke converters buiten de watcher lezen ze (zie de tabel hierboven), zodat een probleem met de voorwaarden van Wargaming alleen die raakt. |
+| VALORANT-posities | De spelstroom van de replays is verhuld met waarden uit het executable van elke build, en het spel draait onder Vanguard. Wat de replay open meeneemt - kaart, wedstrijd, agenten, de tijdlijn van kills en rondes - *wordt* wel gelezen. De lockfile-eindpunten van de client zijn geen gepubliceerde API en worden niet gebruikt. |
+| League of Legends-replays, in het spel | Het moment-tot-moment-deel van een `.rofl` is verhuld tegen valsspelen, elke patch anders, en wordt niet gedecodeerd. Wat het bestand open meeneemt - de eindregel van elke speler - *wordt* wel gelezen, en posities komen uit de officiële wedstrijdtijdlijn van Riot met je eigen API-sleutel. |
+| Fortnite | Zijn replays zijn versleuteld. |
+| World of Tanks, World of Warships, door de watcher zelf | Hun replays zijn versleuteld. Afzonderlijke converters buiten de watcher lezen ze (zie de tabel hierboven), elk een eigen project. |
 | Gran Turismo 7 | Alleen voor console; de telemetrie is versleuteld met een sleutel die uit het spel is gehaald. |
 | Apex Legends | Zijn LiveAPI stuurt volledige gebeurtenissen alleen in privé- en aangepaste lobby's; daarbuiten niets lokaals. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | Geen lokale replay, log of game-state-uitvoer om te lezen. Hun statistieken komen binnen waar Steam ze bewaart (Steam-statistieken, Steam Timeline) en als NVIDIA highlights. |

@@ -3,7 +3,7 @@ title: "Mapa de Dota 2"
 nav_order: 6.5
 lang: "es"
 source: dota-map.md
-source_hash: "3dcde11c7784"
+source_hash: "6c7a1c39d1bf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -13,9 +13,8 @@ El mapa de Dota 2 en 3D - el terreno, los acantilados, el agua, cada árbol y lo
 edificios, en el marco y las unidades en que se dibujan las [tablas de repeticiones de Dota 2](game-dota-replays.md) -
 lo hace su propia herramienta, **3DHeat Dota**
 ([3DHeat-Ext-Dota](https://github.com/Holdi601/3DHeat-Ext-Dota),
-[documentación](https://holdi601.github.io/3DHeat-Ext-Dota/)). Lee los archivos
-del juego de Valve, así que se mantiene fuera del watcher: si algún día hay que
-quitarla, el watcher se queda.
+[documentación](https://holdi601.github.io/3DHeat-Ext-Dota/)), un proyecto
+propio fuera del watcher.
 
 Instálala una vez, como indica su página [Antes de empezar](https://holdi601.github.io/3DHeat-Ext-Dota/before-you-start.html)
 (paquete de Python, más la línea de comandos de Source2Viewer), y luego ejecuta

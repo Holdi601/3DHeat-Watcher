@@ -3,7 +3,7 @@ title: "World of Warships (replayer)"
 nav_order: 48
 lang: "sv"
 source: game-wows-replays.md
-source_hash: "44a041452521"
+source_hash: "e7d24a56747e"
 nav_exclude: true
 search_exclude: true
 ---
@@ -51,8 +51,8 @@ Båda sparar en repris av varje strid till `<spel>/replays/` när inspelning är
 `*.wowsreplay`); installationerna hittas via Wargaming Game Centers lista, `C:/Games/World_of_Tanks*` /
 `World_of_Warships*`, och Steam. Precis som med War Thunder läser watchern inte filerna själv: en
 extern omvandlare gör det för vardera (`exporters/ext/wot-replay`, kommandot `heat3d-wot-replay`;
-`exporters/ext/wows-replay`, kommandot `heat3d-wows-replay`), hållna separat så att ett problem med
-Wargamings villkor bara berör den omvandlaren. Hittas på PATH, är installerad eller ligger bredvid
+`exporters/ext/wows-replay`, kommandot `heat3d-wows-replay`), vardera ett eget
+projekt. Hittas på PATH, är installerad eller ligger bredvid
 watchern, gör den varje ny repris till `<map>/<match>.parquet` och `<match>.match.json` i
 sessionsmappen; saknas den säger watchern en gång hur den installeras. Inspelarens rad – fordon eller
 fartyg, kills, skada (World of Tanks), om hen överlevde och resultatet (World of Tanks) – blir

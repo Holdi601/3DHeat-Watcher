@@ -3,7 +3,7 @@ title: "League of Legends (replay)"
 nav_order: 30
 lang: "it"
 source: game-lol-replays.md
-source_hash: "ed26619fa904"
+source_hash: "6a86dc8a45bb"
 nav_exclude: true
 search_exclude: true
 ---
@@ -38,17 +38,15 @@ League of Legends e Valorant replay: ciò che di essi si può leggere così com'
 
 Entrambi i giochi salvano i replay sul disco del giocatore, e proteggono ciò che c'è dentro:
 i dati di gioco momento per momento sono offuscati, e in modo diverso a ogni patch,
-per impedire che vengano usati per barare. Superarlo significa smontare il codice del
-gioco stesso, cosa che i termini di Riot vietano (Condizioni d'uso 3.1 e 7.1)
-- quindi in 3DHeat non si fa in nessun punto. Viene letto ciò che ogni file contiene in chiaro, e il resto
+per impedire che vengano usati per barare. Quella parte non viene
+decodificata in nessun punto di 3DHeat. Viene letto ciò che ogni file contiene in chiaro, e il resto
 viene conservato così com'è: ogni parte del file, intera, in `heat.raw.parquet` della
 sessione (regola del convertitore di 3DHeat, docs/converters.md nel repository del
 visualizzatore), conteggiata in `selfCheck.completeness` di meta.json.
 
 Il watcher non legge i file da sé: lo fa un lettore esterno (3DHeat
 Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`,
-comando `heat3d-riot-replays`), tenuto separato perché un problema con i termini di Riot
-tocchi solo quel lettore. Se viene trovato nel PATH, installato o accanto al watcher, legge
+comando `heat3d-riot-replays`), un progetto a sé. Se viene trovato nel PATH, installato o accanto al watcher, legge
 ogni nuovo replay; se manca, il watcher dice una volta come installarlo. Ciò che il lettore
 legge, il watcher lo registra nella sessione; la timeline Match-V5 qui sotto viene
 scaricata dal watcher stesso, perché non è nel file.
@@ -123,7 +121,7 @@ Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat
 
 **Non disponibile**
 
-- il gioco stesso (posizioni, abilità, ogni unità, momento per momento): i chunk di ROFL1 e il body di ROFL2 sono cifrati e i pacchetti al loro interno sono offuscati a ogni patch; superarlo significa smontare il client, cosa che i termini di Riot vietano (3.1, 7.1). Conservato intero, non letto
+- il gioco stesso (posizioni, abilità, ogni unità, momento per momento): i chunk di ROFL1 e il body di ROFL2 sono cifrati e i pacchetti al loro interno sono offuscati a ogni patch. Conservato intero, non letto
 - posizioni senza la tua chiave API Riot: il file non ne ha in chiaro
 
 **Dimensione**: il file accessorio grezzo è circa della dimensione del replay stesso: i chunk cifrati non si comprimono

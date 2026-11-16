@@ -3,7 +3,7 @@ title: "Tek tabloda tüm oyunlar"
 nav_order: 13
 lang: "tr"
 source: watcher.md
-source_hash: "8066a9f8a89c"
+source_hash: "e0c6d5b833cf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -22,7 +22,7 @@ Aşağıdaki tabloda oyununuzu bulun; neyin kaydedildiğini ve neyi açmanız ge
 | platform | Steam ve ekran kartı sürücüsünün tuttukları: istatistikler, başarımlar, zaman çizelgeleri, öne çıkanlar | evet |
 | memory (bellek) | oyunun belleği, salt okunur - yalnızca tek oyunculu oyunlar, aşağıdaki her denetimin arkasında | **asla** |
 
-Hiçbir oyuna bir şey eklenmez, kancalanmaz ya da değiştirilmez. Bir oyunun koşulları ya da anti-hile kuralları dışında tuttuğu bir kaynak uygulanmaz: League of Legends ve Valorant istemci kilit dosyası uç noktaları, replay'lerin korunan kısımları (Fortnite, League of Legends, Valorant), Gran Turismo 7'nin şifreli telemetrisi (oyundan geri kazanılmış bir anahtar gerekirdi). World of Tanks ve World of Warships replay'leri de şifrelidir; watcher bunları okumaz, ama ayrı dönüştürücüler okur (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`) ve bunları yalnızca karar veren oyuncu kurar - Wargaming'in koşulları için kendi README'lerine bakın.
+Hiçbir oyuna bir şey eklenmez, kancalanmaz ya da değiştirilmez. Korunan kaynaklar uygulanmaz: League of Legends ve Valorant istemci kilit dosyası uç noktaları, replay'lerin korunan kısımları (Fortnite, League of Legends, Valorant), Gran Turismo 7'nin şifreli telemetrisi (oyundan geri kazanılmış bir anahtar gerekirdi). World of Tanks ve World of Warships replay'leri de şifrelidir; watcher bunları okumaz, ama ayrı dönüştürücüler okur (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`) ve bunları yalnızca karar veren oyuncu kurar - kendi README'lerine bakın.
 
 ## Bir kayıt nedir {#what-a-recording-is}
 
@@ -114,10 +114,10 @@ Watcher, başladığında GitHub sürümlerini denetler (en fazla altı saatte b
 
 | Oyun | Neden değil |
 |---|---|
-| VALORANT konumları | Replay'lerinin oyun akışı, her sürümün çalıştırılabilir dosyasından alınan değerlerle karıştırılmıştır; bunları geri kazanmak, Riot'un koşullarının yasakladığı, oyunu tersine mühendislikle incelemektir ve oyun Vanguard altında çalışır. Replay'in açıkça taşıdığı şeyler - harita, maç, ajanlar, öldürme ve tur zaman çizelgesi - *okunur*. İstemcinin kilit dosyası uç noktaları yayımlanmış bir API değildir ve kullanılmaz. |
-| League of Legends replay'leri, oyun içinde | Bir `.rofl`'nin dakika dakika kısmı, hile karşıtı olarak her yamada farklı biçimde karıştırılmıştır; bunu çözmek, Riot'un koşullarının yasakladığı oyunu sökmektir. Dosyanın açıkça taşıdığı şey - her oyuncunun oyun sonu satırı - *okunur*, konumlar ise kendi API anahtarınızla Riot'un resmi maç zaman çizelgesinden gelir. |
-| Fortnite | Replay'leri şifrelidir ve Epic'in koşulları onları tersine mühendislikle incelemeyi yasaklar. |
-| World of Tanks, World of Warships, watcher'ın kendisi tarafından | Replay'leri şifrelidir. Onları ayrı dış dönüştürücüler okur (yukarıdaki tabloya bakın); böylece Wargaming'in koşullarıyla ilgili bir sorun yalnızca onlara dokunur. |
+| VALORANT konumları | Replay'lerinin oyun akışı, her sürümün çalıştırılabilir dosyasından alınan değerlerle karıştırılmıştır ve oyun Vanguard altında çalışır. Replay'in açıkça taşıdığı şeyler - harita, maç, ajanlar, öldürme ve tur zaman çizelgesi - *okunur*. İstemcinin kilit dosyası uç noktaları yayımlanmış bir API değildir ve kullanılmaz. |
+| League of Legends replay'leri, oyun içinde | Bir `.rofl`'nin dakika dakika kısmı, hile karşıtı olarak her yamada farklı biçimde karıştırılmıştır ve çözülmez. Dosyanın açıkça taşıdığı şey - her oyuncunun oyun sonu satırı - *okunur*, konumlar ise kendi API anahtarınızla Riot'un resmi maç zaman çizelgesinden gelir. |
+| Fortnite | Replay'leri şifrelidir. |
+| World of Tanks, World of Warships, watcher'ın kendisi tarafından | Replay'leri şifrelidir. Onları ayrı dış dönüştürücüler okur (yukarıdaki tabloya bakın); her biri kendi başına bir projedir. |
 | Gran Turismo 7 | Yalnızca konsol; telemetrisi oyundan geri kazanılmış bir anahtarla şifrelidir. |
 | Apex Legends | LiveAPI'si tam olayları yalnızca özel ve kişisel lobilerde gönderir; başka yerde yerelde hiçbir şey yoktur. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | Okunacak yerel bir replay, günlük ya da oyun durumu çıktısı yok. İstatistikleri Steam'in tuttuğu yerden gelir (Steam istatistikleri, Steam Timeline) ve NVIDIA highlights olarak. |

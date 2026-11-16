@@ -54,8 +54,8 @@ Dedikované servery Squad nahrávajú demo zápasu, keď administrátor s opráv
 `<server>/SquadGame/Saved/Demos/<name>.replay` - je to sieťový replay Unreal Engine
 obsahujúci to, čo server replikoval, vrátane pohybu každého hráča. Watcher ich
 nečíta sám: číta ich externá čítačka (3DHeat Squad demo reader,
-`exporters/ext/squad-demo`, príkaz `heat3d-squad-demo`), oddelená, aby problém
-s ňou nezasiahol nič iné. Spúšťa sa na každom novom deme v priečinkoch, kam
+`exporters/ext/squad-demo`, príkaz `heat3d-squad-demo`), samostatný
+projekt. Spúšťa sa na každom novom deme v priečinkoch, kam
 zapisuje lokálny server, alebo v priečinku, ktorý nastavenia pridajú pre dema
 skopírované z prenajatého servera, a výsledok ide do priečinka relácie ako
 `<map>/<match>.parquet` a `<match>.match.json`. Vrstva, mapa, počet hráčov

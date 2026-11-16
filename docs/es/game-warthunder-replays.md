@@ -3,7 +3,7 @@ title: "War Thunder (repeticiones)"
 nav_order: 45
 lang: "es"
 source: game-warthunder-replays.md
-source_hash: "23676a6c5441"
+source_hash: "4bf6e2f218cb"
 nav_exclude: true
 search_exclude: true
 ---
@@ -55,7 +55,7 @@ War Thunder guarda una repetición de cada batalla en `<War Thunder>/Replays/*.w
 cuando el guardado de repeticiones está activado en sus opciones. El watcher no
 las lee por sí mismo: lo hace un conversor externo (el conversor de repeticiones de
 War Thunder de 3DHeat, `exporters/ext/warthunder-replay`, comando
-`heat3d-wt-replay`), separado para que un problema en él no afecte a nada más.
+`heat3d-wt-replay`), un proyecto propio.
 Cuando el comando está en el PATH, o el paquete está instalado o junto al watcher,
 cada repetición nueva pasa por él y deja en la carpeta de la sesión
 `<mapa>/<partida>.parquet` y `<partida>.match.json`; cuando no lo está, el watcher

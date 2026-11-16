@@ -3,13 +3,13 @@ title: "Dota 2 haritası"
 nav_order: 6.5
 lang: "tr"
 source: dota-map.md
-source_hash: "3dcde11c7784"
+source_hash: "6c7a1c39d1bf"
 nav_exclude: true
 search_exclude: true
 ---
 # Dota 2 haritası, bir seviye olarak (`dota-map`) {#dota-2s-map-as-a-level-dota-map}
 
-Dota 2 haritası 3B olarak - zemin, uçurumlar, su, her ağaç ve binalar, [Dota 2 replay tablolarının](game-dota-replays.md) çizildiği çerçevede ve birimlerde - kendi aracı **3DHeat Dota** tarafından üretilir ([3DHeat-Ext-Dota](https://github.com/Holdi601/3DHeat-Ext-Dota), [belgeler](https://holdi601.github.io/3DHeat-Ext-Dota/)). Valve'in oyun dosyalarını okur, bu yüzden watcher'ın dışında tutulur: bir gün kaldırılması gerekirse watcher yerinde kalır.
+Dota 2 haritası 3B olarak - zemin, uçurumlar, su, her ağaç ve binalar, [Dota 2 replay tablolarının](game-dota-replays.md) çizildiği çerçevede ve birimlerde - kendi aracı **3DHeat Dota** tarafından üretilir ([3DHeat-Ext-Dota](https://github.com/Holdi601/3DHeat-Ext-Dota), [belgeler](https://holdi601.github.io/3DHeat-Ext-Dota/)). Watcher'ın dışında, kendi başına bir projedir.
 
 Bir kez kurun; aracın [Başlamadan önce](https://holdi601.github.io/3DHeat-Ext-Dota/before-you-start.html) sayfasında anlatıldığı gibi (bir Python paketi, artı Source2Viewer'ın komut satırı), sonra şunlardan birini çalıştırın
 

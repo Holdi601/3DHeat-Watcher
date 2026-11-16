@@ -130,6 +130,10 @@ python -m heat3d_watch stats --csv out  # сесије, догађаји и ст
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | DCS World мапе у 3D моделе | [сајт](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | мапе IL-2 Sturmovik у 3D моделе | [сајт](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+Сваки читач игре је засебан мали пројекат са сопственом датотеком лиценце, издањима и праћењем
+проблема, па се може инсталирати, ажурирати, одржавати - или повући на захтев носиоца права -
+засебно, без утицаја на приказивач и остале алате.
+
 Лиценца: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Лиценце
 пакета трећих страна које користите, и оно што игре које чита налажу, наведени су у
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

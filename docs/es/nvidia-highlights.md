@@ -3,7 +3,7 @@ title: NVIDIA Highlights
 nav_order: 8
 lang: "es"
 source: nvidia-highlights.md
-source_hash: "a3b769ab065c"
+source_hash: "cd2a5cc2c5fd"
 nav_exclude: true
 search_exclude: true
 ---
@@ -121,4 +121,4 @@ Cosas que hay que saber sobre la posición prestada:
 La otra forma de obtener una posición sería leerla de la memoria. Ninguna de las dos memorias funciona:
 
 - **La memoria de NVIDIA no tiene posición.** NVIDIA App recibe lo que transporta GfeSDK - un id de highlight y dos desplazamientos de tiempo - más el vídeo que graba. No hay posición en ningún lugar del lado de NVIDIA que leer. (El watcher no lee la memoria de NVIDIA de todos modos; lee los archivos de arriba.)
-- **La memoria del juego está fuera de alcance en multijugador.** La posición está en el proceso del juego, pero el watcher nunca lee la memoria de un juego multijugador: un adaptador de memoria para un juego marcado como jugado en línea se rechaza antes de abrir nada (véase [Lectura de memoria](memory-reading.md)). Los juegos multijugador se ejecutan bajo anti-trampas (Easy Anti-Cheat, BattlEye, Vanguard, ...) que consideran trampa que otro programa abra el proceso del juego, lo que puede llevar a suspender la cuenta. Además, leer el estado del juego desde fuera es algo que prohíben las condiciones de los juegos. Un highlight en un juego multijugador, por tanto, solo obtiene un lugar a partir de lo que publica el juego: su game-state integration o su telemetría, grabada por otro adaptador en el mismo momento.
+- **La memoria del juego está fuera de alcance en multijugador.** La posición está en el proceso del juego, pero el watcher nunca lee la memoria de un juego multijugador: un adaptador de memoria para un juego marcado como jugado en línea se rechaza antes de abrir nada (véase [Lectura de memoria](memory-reading.md)). Los juegos multijugador se ejecutan bajo anti-trampas (Easy Anti-Cheat, BattlEye, Vanguard, ...) que consideran trampa que otro programa abra el proceso del juego, lo que puede llevar a suspender la cuenta. Un highlight en un juego multijugador, por tanto, solo obtiene un lugar a partir de lo que publica el juego: su game-state integration o su telemetría, grabada por otro adaptador en el mismo momento.

@@ -3,7 +3,7 @@ title: "War Thunder (tallenteet)"
 nav_order: 45
 lang: "fi"
 source: game-warthunder-replays.md
-source_hash: "23676a6c5441"
+source_hash: "4bf6e2f218cb"
 nav_exclude: true
 search_exclude: true
 ---
@@ -42,7 +42,7 @@ Kun kansio nähdään ensimmäisen kerran, siinä jo olevia tallenteita vain mer
 
 #### War Thunder {#war-thunder}
 
-War Thunder tallentaa jokaisen taistelun tallenteen kansioon `<War Thunder>/Replays/*.wrpl`, kun tallennus on päällä sen asetuksissa. Vahti ei lue niitä itse: ulkoinen muunnin lukee (3DHeat War Thunder -tallennemuunnin, `exporters/ext/warthunder-replay`, komento `heat3d-wt-replay`), erillään, jotta muuntimen ongelma ei koske mihinkään muuhun. Kun komento on PATH:lla, tai paketti on asennettu tai vahdin vieressä, jokainen uusi tallenne ajetaan sen läpi sessiokansioon `<map>/<match>.parquet`- ja `<match>.match.json`-tiedostoina. Kun se ei ole, vahti kertoo kerran, miten se asennetaan, ja jättää kansion rauhaan. Mitä muunnin lukee ja mitä ei, on sen README:ssä. Tallenteen tekijän rivi tuloksista (tapot, maayksikkötapot, kuolemat, avustukset, pisteet, valtaukset) tulee session tilastoiksi.
+War Thunder tallentaa jokaisen taistelun tallenteen kansioon `<War Thunder>/Replays/*.wrpl`, kun tallennus on päällä sen asetuksissa. Vahti ei lue niitä itse: ulkoinen muunnin lukee (3DHeat War Thunder -tallennemuunnin, `exporters/ext/warthunder-replay`, komento `heat3d-wt-replay`), oma projektinsa. Kun komento on PATH:lla, tai paketti on asennettu tai vahdin vieressä, jokainen uusi tallenne ajetaan sen läpi sessiokansioon `<map>/<match>.parquet`- ja `<match>.match.json`-tiedostoina. Kun se ei ole, vahti kertoo kerran, miten se asennetaan, ja jättää kansion rauhaan. Mitä muunnin lukee ja mitä ei, on sen README:ssä. Tallenteen tekijän rivi tuloksista (tapot, maayksikkötapot, kuolemat, avustukset, pisteet, valtaukset) tulee session tilastoiksi.
 
 Saman moduulin kautta toimivat myös: [Counter-Strike 2 (tallenteet)](game-cs2-demos.md), [Dota 2 (tallenteet)](game-dota-replays.md), [Squad (tallenteet)](game-squad-demos.md), [World of Tanks (tallenteet)](game-wot-replays.md), [World of Warships (tallenteet)](game-wows-replays.md).
 

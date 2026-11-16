@@ -103,4 +103,6 @@ Görüntüleyici bir oturumun `heat.parquet` dosyasını hiçbir ayar gerektirme
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | DCS World haritalarını 3B modellere | [site](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | IL-2 Sturmovik haritalarını 3B modellere | [site](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+Her oyun okuyucusu kendi lisans dosyası, sürümleri ve hata takipçisi olan küçük, kendi başına bir projedir; böylece görüntüleyiciyi ya da öbür araçları etkilemeden tek başına kurulabilir, güncellenebilir, bakımı yapılabilir - ya da bir hak sahibinin isteği üzerine geri çekilebilir.
+
 Lisans: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Kullandığı üçüncü taraf paketlerin lisansları ve okuduğu oyunların gerektirdikleri, [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md) dosyasında listelenir.

@@ -3,7 +3,7 @@ title: "Dota 2-kort"
 nav_order: 6.5
 lang: "is"
 source: dota-map.md
-source_hash: "3dcde11c7784"
+source_hash: "6c7a1c39d1bf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -13,8 +13,8 @@ Dota 2-kortið í þrívídd - jörðin, klettarnir, vatnið, hvert einasta tré
 ramma og sömu einingum og [Dota 2 endursýningartöflurnar](game-dota-replays.md) eru teiknaðar í - er búið til með
 sérstöku verkfæri, **3DHeat Dota**
 ([3DHeat-Ext-Dota](https://github.com/Holdi601/3DHeat-Ext-Dota),
-[skjölun](https://holdi601.github.io/3DHeat-Ext-Dota/)). Það les leikjaskrár Valve og er því
-haldið utan við watcher: ef það þarf einhvern tíma að hverfa, þá stendur watcher eftir.
+[skjölun](https://holdi601.github.io/3DHeat-Ext-Dota/)), sjálfstætt
+verkefni utan við watcher.
 
 Settu það upp einu sinni, eins og síðan [Áður en þú byrjar](https://holdi601.github.io/3DHeat-Ext-Dota/before-you-start.html)
 segir til um (Python-pakki, auk skipanalínu Source2Viewer), og keyrðu svo annað hvort

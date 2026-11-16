@@ -3,7 +3,7 @@ title: "Heim"
 nav_order: 1
 lang: "is"
 source: index.md
-source_hash: "d74a4eae2685"
+source_hash: "269b4c01a4af"
 nav_exclude: true
 search_exclude: true
 permalink: /is/
@@ -138,6 +138,10 @@ til að umbreyta CS2 demóum). Hvert er sérstakt verkefni, með eigin útgáfur
 | [Ext-ACRally](https://github.com/Holdi601/3DHeat-Ext-ACRally) | Assetto Corsa Rally leiðir sem brautir | [vefsíða](https://holdi601.github.io/3DHeat-Ext-ACRally/) |
 | [Ext-Reforger](https://github.com/Holdi601/3DHeat-Ext-Reforger) | Arma Reforger heimar (Enfusion) sem þrívíddarborð | [vefsíða](https://holdi601.github.io/3DHeat-Ext-Reforger/) |
 | [Ext-R6](https://github.com/Holdi601/3DHeat-Ext-R6) | Rainbow Six Siege leikjaendursýningar | [vefsíða](https://holdi601.github.io/3DHeat-Ext-R6/) |
+
+Hver leikjalesari er sérstakt lítið verkefni með eigin leyfisskrá, eigin útgáfur og eigin villuskráningu,
+svo að hægt er að setja hann upp, uppfæra hann, viðhalda honum - eða draga hann til baka að beiðni
+rétthafa - einan og sér, án þess að það hafi áhrif á skoðarann eða hin verkfærin.
 
 Leyfi: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Leyfi
 þriðju aðila pakka sem það notar, og það sem leikirnir sem það les krefjast, eru talin upp í

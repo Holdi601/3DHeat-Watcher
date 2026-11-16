@@ -3,7 +3,7 @@ title: "World of Tanks (riprodhime)"
 nav_order: 47
 lang: "sq"
 source: game-wot-replays.md
-source_hash: "c3fbbeebfee0"
+source_hash: "2fa28633a0ee"
 nav_exclude: true
 search_exclude: true
 ---
@@ -55,8 +55,7 @@ Game Center, `C:/Games/World_of_Tanks*` / `World_of_Warships*`, dhe
 Steam. Si me War Thunder, watcher-i nuk i lexon vetë skedarët: i lexon një
 konverter i jashtëm për secilën (`exporters/ext/wot-replay`, komanda
 `heat3d-wot-replay`; `exporters/ext/wows-replay`, komanda
-`heat3d-wows-replay`), mbajtur të ndarë që një problem me kushtet e Wargaming
-të prekë vetëm atë konverter. Kur gjendet në PATH, i instaluar, ose pranë watcher-it,
+`heat3d-wows-replay`), secili një projekt më vete. Kur gjendet në PATH, i instaluar, ose pranë watcher-it,
 çdo riprodhim i ri kthehet në `<map>/<match>.parquet` dhe `<match>.match.json`
 në dosjen e sesionit; kur mungon, watcher-i thotë një herë si ta instalosh. Rreshti
 i lojtarit që regjistroi - mjeti ose anija, vrasjet, dëmi (World of Tanks),

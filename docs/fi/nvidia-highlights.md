@@ -3,7 +3,7 @@ title: NVIDIA Highlights
 nav_order: 8
 lang: "fi"
 source: nvidia-highlights.md
-source_hash: "a3b769ab065c"
+source_hash: "cd2a5cc2c5fd"
 nav_exclude: true
 search_exclude: true
 ---
@@ -82,4 +82,4 @@ Lainatusta sijainnista on hyvä tietää:
 Toinen tapa saada sijainti olisi lukea se muistista. Kumpikaan muisti ei toimi:
 
 - **NVIDIAn muistissa ei ole sijaintia.** NVIDIA App saa sen, mitä GfeSDK kuljettaa: kohokohdan tunnuksen ja kaksi aikasiirtymää, sekä videon, jonka se tallentaa. NVIDIAn puolella ei ole mitään sijaintia, jonka voisi lukea. (Watcher ei lue NVIDIAn muistia joka tapauksessa; se lukee yllä mainitut tiedostot.)
-- **Pelin muisti on moninpelissä koskematon.** Sijainti on pelin prosessissa, mutta watcher ei koskaan lue moninpelin muistia: verkkoon merkityn pelin muistisovitin hylätään ennen kuin mitään avataan (katso [Muistin lukeminen](memory-reading.md)). Moninpelit toimivat anti-cheat-järjestelmien alla (Easy Anti-Cheat, BattlEye, Vanguard ja muut), jotka pitävät toisen ohjelman avaamaa pelin prosessia huijauksena, mikä voi johtaa tilin bannaamiseen. Pelin tilan lukeminen ulkopuolelta on myös kielletty pelien käyttöehdoissa. Kohokohta moninpelissä saa siis paikan vain siitä, mitä peli julkaisee, eli sen game-state integration tai telemetria, jonka toinen adapteri tallentaa samaan aikaan.
+- **Pelin muisti on moninpelissä koskematon.** Sijainti on pelin prosessissa, mutta watcher ei koskaan lue moninpelin muistia: verkkoon merkityn pelin muistisovitin hylätään ennen kuin mitään avataan (katso [Muistin lukeminen](memory-reading.md)). Moninpelit toimivat anti-cheat-järjestelmien alla (Easy Anti-Cheat, BattlEye, Vanguard ja muut), jotka pitävät toisen ohjelman avaamaa pelin prosessia huijauksena, mikä voi johtaa tilin bannaamiseen. Kohokohta moninpelissä saa siis paikan vain siitä, mitä peli julkaisee, eli sen game-state integration tai telemetria, jonka toinen adapteri tallentaa samaan aikaan.

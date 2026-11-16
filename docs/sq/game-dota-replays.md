@@ -3,7 +3,7 @@ title: "Dota 2 (riluajtjet)"
 nav_order: 12
 lang: "sq"
 source: game-dota-replays.md
-source_hash: "c0ed25c261f6"
+source_hash: "88539ee6dc65"
 nav_exclude: true
 search_exclude: true
 ---
@@ -59,8 +59,8 @@ publike në serverët e vet për disa javë, dhe `python -m heat3d_watch
 dota-replay <match id>` e merr një me id-në e saj përmes OpenDota. Watcher-i
 nuk i lexon vetë: i lexon një lexues i jashtëm (3DHeat Dota Replay,
 github.com/Holdi601/3DHeat-Ext-DotaReplay, `exporters/ext/dota-replay`, komanda
-`heat3d-dota-replay`, që lexon përmes gem-dota, MIT), mbajtur veçmas që një
-problem me të të mos prekë asgjë tjetër, dhe ekzekutohet në një proces të vetin për çdo
+`heat3d-dota-replay`, që lexon përmes gem-dota, MIT), një projekt më vete,
+dhe ekzekutohet në një proces të vetin për çdo
 riluajtje të re kur është në PATH, i instaluar, ose pranë watcher-it; nëse mungon,
 watcher-i thotë një herë si të instalohet. Ai shkruan pozicionin, lartësinë, jetën, nivelin, drejtimin, manën, përvojën, atributet dhe sendet e çdo heroi, 7.5
 herë në sekondë ndërsa është gjallë, vrasjet dhe vdekjet aty ku ndodhën, kullat,

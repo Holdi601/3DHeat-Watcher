@@ -3,7 +3,7 @@ title: "Harta e Dota 2"
 nav_order: 6.5
 lang: "sq"
 source: dota-map.md
-source_hash: "3dcde11c7784"
+source_hash: "6c7a1c39d1bf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -12,9 +12,8 @@ search_exclude: true
 Harta e Dota 2 në 3D - toka, shkëmbinjtë, uji, çdo pemë dhe ndërtesat, në
 kuadrin dhe njësitë në të cilat vizatohen [tabelat e riluajtjeve të Dota 2](game-dota-replays.md) - bëhet nga mjeti i vet, **3DHeat Dota**
 ([3DHeat-Ext-Dota](https://github.com/Holdi601/3DHeat-Ext-Dota),
-[dokumentacioni](https://holdi601.github.io/3DHeat-Ext-Dota/)). Ai lexon
-skedarët e lojës të Valve, ndaj mbahet jashtë watcher-it: nëse ndonjëherë duhet të hiqet, watcher-i
-mbetet.
+[dokumentacioni](https://holdi601.github.io/3DHeat-Ext-Dota/)), një projekt
+më vete jashtë watcher-it.
 
 Instalo një herë, siç thotë faqja e tij [Para se të fillosh](https://holdi601.github.io/3DHeat-Ext-Dota/before-you-start.html)
 (paketa Python, plus rreshti i komandave i Source2Viewer), pastaj ose

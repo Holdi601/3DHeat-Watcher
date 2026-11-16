@@ -3,7 +3,7 @@ title: "Todos los juegos en una tabla"
 nav_order: 13
 lang: "es"
 source: watcher.md
-source_hash: "8066a9f8a89c"
+source_hash: "e0c6d5b833cf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -25,13 +25,12 @@ cada juego que conoce, qué graba y de dónde lo lee, generada a partir de los p
 | platform | lo que guardan Steam y el controlador gráfico: estadísticas, logros, cronologías, destacados | sí |
 | memory | la memoria del juego, solo lectura: solo juegos para un jugador, detrás de todas las comprobaciones siguientes | **nunca** |
 
-En ningún juego se inyecta, engancha ni cambia nada. Una fuente que las condiciones de un juego o sus reglas
-anticheat excluyen no está implementada: los endpoints del archivo de bloqueo del cliente de League of Legends y Valorant, las
+En ningún juego se inyecta, engancha ni cambia nada. Las fuentes protegidas
+no están implementadas: los endpoints del archivo de bloqueo del cliente de League of Legends y Valorant, las
 partes protegidas de las repeticiones (Fortnite, League of Legends, Valorant), la telemetría cifrada de Gran Turismo 7
 (haría falta una clave extraída del juego). Las repeticiones de World of Tanks y World of Warships también están
 cifradas; el watcher no las lee, las leen conversores separados fuera de él (`exporters/ext/wot-replay`,
-`exporters/ext/wows-replay`), que solo instala un jugador que lo decide: véanse sus READMEs para las condiciones de
-Wargaming.
+`exporters/ext/wows-replay`), que solo instala un jugador que lo decide: véanse sus READMEs.
 
 ## Qué es una grabación {#what-a-recording-is}
 
@@ -146,10 +145,10 @@ juego en marcha y vuelve a arrancar. `HEAT3D_NO_UPDATE=1` desactiva la comprobac
 
 | Juego | Por qué no |
 |---|---|
-| Posiciones de VALORANT | Su flujo de juego en las repeticiones está ofuscado con valores tomados del ejecutable de cada versión; recuperarlos sería ingeniería inversa del juego, que las condiciones de Riot prohíben, y el juego corre bajo Vanguard. Lo que la repetición lleva a la vista —mapa, partida, agentes, la cronología de bajas y rondas— *sí* se lee. Los endpoints del archivo de bloqueo del cliente no son una API publicada y no se usan. |
-| Repeticiones de League of Legends, en el juego | La parte momento a momento de un `.rofl` está ofuscada contra las trampas, de forma distinta en cada parche; descifrarla significaría desmontar el juego, que las condiciones de Riot prohíben. Lo que el archivo lleva a la vista —la línea de final de partida de cada jugador— *sí* se lee, y las posiciones vienen de la cronología oficial de Riot con tu propia clave de API. |
-| Fortnite | Sus repeticiones están cifradas, y las condiciones de Epic prohíben la ingeniería inversa. |
-| World of Tanks, World of Warships, por el propio watcher | Sus repeticiones están cifradas. Conversores separados fuera del watcher las leen (véase la tabla de arriba), así que un problema con las condiciones de Wargaming afecta solo a esos. |
+| Posiciones de VALORANT | Su flujo de juego en las repeticiones está ofuscado con valores tomados del ejecutable de cada versión, y el juego corre bajo Vanguard. Lo que la repetición lleva a la vista —mapa, partida, agentes, la cronología de bajas y rondas— *sí* se lee. Los endpoints del archivo de bloqueo del cliente no son una API publicada y no se usan. |
+| Repeticiones de League of Legends, en el juego | La parte momento a momento de un `.rofl` está ofuscada contra las trampas, de forma distinta en cada parche, y no se decodifica. Lo que el archivo lleva a la vista —la línea de final de partida de cada jugador— *sí* se lee, y las posiciones vienen de la cronología oficial de Riot con tu propia clave de API. |
+| Fortnite | Sus repeticiones están cifradas. |
+| World of Tanks, World of Warships, por el propio watcher | Sus repeticiones están cifradas. Conversores separados fuera del watcher las leen (véase la tabla de arriba), cada uno un proyecto propio. |
 | Gran Turismo 7 | Solo consola; su telemetría está cifrada con una clave extraída del juego. |
 | Apex Legends | Su LiveAPI envía eventos completos solo en salas privadas y personalizadas; en cualquier otro caso no hay nada local. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | No hay repetición local, registro ni salida de estado del juego que leer. Sus estadísticas llegan donde Steam las guarda (estadísticas de Steam, Steam Timeline) y como destacados de NVIDIA. |

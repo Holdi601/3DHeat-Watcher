@@ -3,7 +3,7 @@ title: "Squad (Replays)"
 nav_order: 40
 lang: "de"
 source: game-squad-demos.md
-source_hash: "a908f7e6d9c3"
+source_hash: "ddec19ea89bf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -41,7 +41,7 @@ Beim ersten Sehen eines Ordners werden die dort vorhandenen Replays nur vermerkt
 
 #### Squad {#squad}
 
-Die dedizierten Server von Squad zeichnen eine Demo eines Matches auf, wenn ein Admin mit der Berechtigung `demos` `AdminDemoRec <name>` (und `AdminDemoStop`) ausführt. Sie landet unter `<server>/SquadGame/Saved/Demos/<name>.replay`. Das ist ein Netzwerk-Replay der Unreal Engine mit allem, was der Server repliziert hat, einschließlich der gesamten Bewegung jedes Spielers. Der Watcher liest sie nicht selbst. Das macht ein externer Reader (3DHeat Squad-Demo-Reader, `exporters/ext/squad-demo`, Befehl `heat3d-squad-demo`), der getrennt gehalten wird, damit ein Problem mit ihm nichts anderes berührt. Er läuft für jede neue Demo in den Ordnern, in die ein lokaler Server schreibt, oder in einem Ordner, den die Einstellungen für Demos ergänzen, die von einem gemieteten Server kopiert wurden. Das Ergebnis landet im Sitzungsordner als `<map>/<match>.parquet` und `<match>.match.json`. Layer, Karte, Spielerzahl und Matchdauer werden zur Statistik der Sitzung.
+Die dedizierten Server von Squad zeichnen eine Demo eines Matches auf, wenn ein Admin mit der Berechtigung `demos` `AdminDemoRec <name>` (und `AdminDemoStop`) ausführt. Sie landet unter `<server>/SquadGame/Saved/Demos/<name>.replay`. Das ist ein Netzwerk-Replay der Unreal Engine mit allem, was der Server repliziert hat, einschließlich der gesamten Bewegung jedes Spielers. Der Watcher liest sie nicht selbst. Das macht ein externer Reader (3DHeat Squad-Demo-Reader, `exporters/ext/squad-demo`, Befehl `heat3d-squad-demo`), ein eigenes Projekt. Er läuft für jede neue Demo in den Ordnern, in die ein lokaler Server schreibt, oder in einem Ordner, den die Einstellungen für Demos ergänzen, die von einem gemieteten Server kopiert wurden. Das Ergebnis landet im Sitzungsordner als `<map>/<match>.parquet` und `<match>.match.json`. Layer, Karte, Spielerzahl und Matchdauer werden zur Statistik der Sitzung.
 
 Dasselbe Modul bedient außerdem: [Counter-Strike 2 (Replays)](game-cs2-demos.md), [Dota 2 (Replays)](game-dota-replays.md), [War Thunder (Replays)](game-warthunder-replays.md), [World of Tanks (Replays)](game-wot-replays.md), [World of Warships (Replays)](game-wows-replays.md).
 

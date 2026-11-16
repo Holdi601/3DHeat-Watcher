@@ -3,7 +3,7 @@ title: "War Thunder (replays)"
 nav_order: 45
 lang: "da"
 source: game-warthunder-replays.md
-source_hash: "23676a6c5441"
+source_hash: "4bf6e2f218cb"
 nav_exclude: true
 search_exclude: true
 ---
@@ -42,7 +42,7 @@ Første gang en mappe ses, bliver de replays, der allerede ligger i den, kun not
 
 #### War Thunder {#war-thunder}
 
-War Thunder gemmer en replay af hvert slag i `<War Thunder>/Replays/*.wrpl`, når replay-gemning er slået til i dets indstillinger. Watcheren læser dem ikke selv: det gør en ekstern konverter (3DHeat War Thunder replay-konverter, `exporters/ext/warthunder-replay`, kommandoen `heat3d-wt-replay`), holdt adskilt, så et problem med den ikke rører ved noget andet. Når kommandoen findes på PATH, eller pakken er installeret eller ligger ved siden af watcheren, køres hver ny replay gennem den og lægges i sessionsmappen som `<map>/<match>.parquet` og `<match>.match.json`; når den ikke er det, siger watcheren én gang, hvordan den installeres, og lader mappen være i fred. Hvad konverteren læser, og hvad den ikke gør, står i dens README. Replayens forfatters linje i resultaterne - drab, drab på jorden, dødsfald, assists, stilling, erobringer - bliver sessionens statistik.
+War Thunder gemmer en replay af hvert slag i `<War Thunder>/Replays/*.wrpl`, når replay-gemning er slået til i dets indstillinger. Watcheren læser dem ikke selv: det gør en ekstern konverter (3DHeat War Thunder replay-konverter, `exporters/ext/warthunder-replay`, kommandoen `heat3d-wt-replay`), et projekt for sig. Når kommandoen findes på PATH, eller pakken er installeret eller ligger ved siden af watcheren, køres hver ny replay gennem den og lægges i sessionsmappen som `<map>/<match>.parquet` og `<match>.match.json`; når den ikke er det, siger watcheren én gang, hvordan den installeres, og lader mappen være i fred. Hvad konverteren læser, og hvad den ikke gør, står i dens README. Replayens forfatters linje i resultaterne - drab, drab på jorden, dødsfald, assists, stilling, erobringer - bliver sessionens statistik.
 
 Det samme modul betjener også: [Counter-Strike 2 (replays)](game-cs2-demos.md), [Dota 2 (replays)](game-dota-replays.md), [Squad (replays)](game-squad-demos.md), [World of Tanks (replays)](game-wot-replays.md), [World of Warships (replays)](game-wows-replays.md).
 

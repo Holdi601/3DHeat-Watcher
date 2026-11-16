@@ -3,7 +3,7 @@ title: "World of Warships (endursýningar)"
 nav_order: 48
 lang: "is"
 source: game-wows-replays.md
-source_hash: "44a041452521"
+source_hash: "e7d24a56747e"
 nav_exclude: true
 search_exclude: true
 ---
@@ -55,8 +55,8 @@ Game Center, `C:/Games/World_of_Tanks*` / `World_of_Warships*`, og
 Steam. Eins og með War Thunder les watcher skrárnar ekki sjálfur: ytri
 umbreytir fyrir hvorn leik gerir það (`exporters/ext/wot-replay`, skipunin
 `heat3d-wot-replay`; `exporters/ext/wows-replay`, skipunin
-`heat3d-wows-replay`), hafðir sér svo vandamál með skilmála Wargaming
-snerti aðeins þann umbreyti. Þegar hann finnst á PATH, er uppsettur, eða er við hlið watcher,
+`heat3d-wows-replay`), hvor um sig sjálfstætt verkefni.
+Þegar hann finnst á PATH, er uppsettur, eða er við hlið watcher,
 breytir hann hverri nýrri endursýningu í `<map>/<match>.parquet` og `<match>.match.json`
 í lotumöppunni; vanti hann, segir watcher einu sinni hvernig á að setja hann upp. Lína
 spilarans sem tók upp - ökutæki eða skip, dráp, skaði (World of Tanks),

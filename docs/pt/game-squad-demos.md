@@ -53,8 +53,8 @@ permissão `demos` executa AdminDemoRec &lt;nome> (e AdminDemoStop), em
 `<servidor>/SquadGame/Saved/Demos/<nome>.replay` - um replay de rede da Unreal Engine que
 guarda o que o servidor replicou, inclusive o movimento de cada jogador. O watcher não lê
 essas demos sozinho: um leitor externo lê (leitor de demos do 3DHeat Squad,
-`exporters/ext/squad-demo`, comando `heat3d-squad-demo`), separado para que um problema nele
-não afete nada mais. Ele corre em cada demo nova nas pastas em que um servidor local grava, ou
+`exporters/ext/squad-demo`, comando `heat3d-squad-demo`), um projeto próprio.
+Ele corre em cada demo nova nas pastas em que um servidor local grava, ou
 numa pasta que as configurações acrescentam para demos copiadas de um servidor alugado, e gera
 na pasta da sessão `<mapa>/<partida>.parquet` e `<partida>.match.json`. A camada, o mapa, o
 número de jogadores e a duração da partida passam a ser as estatísticas da sessão.

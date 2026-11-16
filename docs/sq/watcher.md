@@ -3,7 +3,7 @@ title: "Të gjitha lojërat në një tabelë"
 nav_order: 13
 lang: "sq"
 source: watcher.md
-source_hash: "8066a9f8a89c"
+source_hash: "e0c6d5b833cf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -26,14 +26,14 @@ Kjo faqe thotë, për çdo lojë që njeh, çfarë regjistron dhe nga e lexon
 | platform | çfarë mbajnë Steam dhe drejtuesi grafik: statistika, arritje, afatkohë, momente të spikatura | po |
 | memory | memoria e lojës, vetëm për lexim - vetëm lojëra me një lojtar, pas çdo kontrolli më poshtë | **kurrë** |
 
-Asgjë nuk injektohet, nuk lidhet me hook dhe nuk ndryshohet në asnjë lojë. Një burim që e përjashtojnë kushtet e një loje ose
-rregullat e anti-cheat nuk implementohet: pikat fundore të skedarit lockfile të klientit të League of Legends dhe Valorant,
+Asgjë nuk injektohet, nuk lidhet me hook dhe nuk ndryshohet në asnjë lojë. Burimet e mbrojtura
+nuk implementohen: pikat fundore të skedarit lockfile të klientit të League of Legends dhe Valorant,
 pjesët e mbrojtura të riluajtjeve (Fortnite, League of
 Legends, Valorant), telemetria e enkriptuar e Gran Turismo 7 (do të duhej një
 çelës i nxjerrë nga loja). Riluajtjet e World of Tanks dhe World of Warships janë
 gjithashtu të shifruara; watcher-i nuk i lexon, konvertues të veçantë jashtë tij
 i lexojnë (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), të instaluar vetëm nga
-një lojtar që vendos ta bëjë - shih README-të e tyre për kushtet e Wargaming.
+një lojtar që vendos ta bëjë - shih README-të e tyre.
 
 ## Çfarë është një regjistrim {#what-a-recording-is}
 
@@ -159,10 +159,10 @@ Watcher-i përditësohet vetë ndërsa asnjë lojë nuk ekzekutohet dhe niset p�
 
 | Loja | Pse jo |
 |---|---|
-| Pozicionet e VALORANT | Rrjedha e lojës e riluajtjeve të tij është e errësuar me vlera të marra nga ekzekutuesja e secilit version; rikuperimi i tyre është inxhinieri e kundërt e lojës, që kushtet e Riot e ndalojnë, dhe loja ekzekutohet nën Vanguard. Çfarë mban riluajtja hapur - harta, ndeshja, agjentët, afatkohë e vrasjeve dhe raundeve - *lexohet*. Pikat fundore të lockfile të klientit nuk janë API e botuar dhe nuk përdoren. |
-| Riluajtjet e League of Legends, brenda lojës | Pjesa çast-pas-çasti e një `.rofl` është e errësuar kundër mashtrimit, ndryshe në çdo përditësim; dekodimi i saj do të thotë çmontimi i lojës, që kushtet e Riot e ndalojnë. Çfarë mban skedari hapur - rreshti i çdo lojtari në fund të lojës - *lexohet*, dhe pozicionet vijnë nga afatkohë zyrtare e ndeshjes e Riot me çelësin tënd API. |
-| Fortnite | Riluajtjet e tij janë të enkriptuara, dhe kushtet e Epic ndalojnë inxhinierinë e kundërt të tyre. |
-| World of Tanks, World of Warships, nga vetë watcher-i | Riluajtjet e tyre janë të shifruara. Konvertues të veçantë jashtë watcher-it i lexojnë (shih tabelën më sipër), që një problem me kushtet e Wargaming të prekë vetëm ata. |
+| Pozicionet e VALORANT | Rrjedha e lojës e riluajtjeve të tij është e errësuar me vlera të marra nga ekzekutuesja e secilit version, dhe loja ekzekutohet nën Vanguard. Çfarë mban riluajtja hapur - harta, ndeshja, agjentët, afatkohë e vrasjeve dhe raundeve - *lexohet*. Pikat fundore të lockfile të klientit nuk janë API e botuar dhe nuk përdoren. |
+| Riluajtjet e League of Legends, brenda lojës | Pjesa çast-pas-çasti e një `.rofl` është e errësuar kundër mashtrimit, ndryshe në çdo përditësim, dhe nuk dekodohet. Çfarë mban skedari hapur - rreshti i çdo lojtari në fund të lojës - *lexohet*, dhe pozicionet vijnë nga afatkohë zyrtare e ndeshjes e Riot me çelësin tënd API. |
+| Fortnite | Riluajtjet e tij janë të enkriptuara. |
+| World of Tanks, World of Warships, nga vetë watcher-i | Riluajtjet e tyre janë të shifruara. Konvertues të veçantë jashtë watcher-it i lexojnë (shih tabelën më sipër), secili një projekt më vete. |
 | Gran Turismo 7 | Vetëm konsolë; telemetria e tij është e enkriptuar me një çelës të nxjerrë nga loja. |
 | Apex Legends | LiveAPI i tij dërgon ngjarje të plota vetëm në lobi privatë dhe të personalizuar; asgjë lokale përndryshe. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | Nuk ka riluajtje lokale, log ose dalje gjendjeje loje për t'u lexuar. Statistikat e tyre vijnë aty ku i mban Steam (Steam statistics, Steam Timeline) dhe si NVIDIA highlights. |

@@ -34,9 +34,8 @@ League of Legends a Valorant replaye: co z nich lze přečíst tak, jak jsou.
 
 Obě hry ukládají replaye na disk hráče a obě chrání to, co je uvnitř:
 data průběhu hry okamžik po okamžiku jsou zamlžená, a to pokaždé jinak při každé záplatě,
-aby je nešlo použít k podvádění. Obejít to znamená rozebrat herní kód firmy,
-což zakazují podmínky Riotu (Podmínky služby 3.1 a 7.1)
-– proto se to tu nedělá. Co každý soubor nese otevřeně, se přečte, a zbytek se
+aby je nešlo použít k podvádění. Tato část se nikde v 3DHeat nedekóduje.
+Co každý soubor nese otevřeně, se přečte, a zbytek se
 uloží tak, jak je: každá část souboru celá v `heat.raw.parquet` relace (pravidlo
 převaděče 3DHeat, docs/converters.md v repozitáři prohlížeče), počítaná v
 `selfCheck.completeness` v meta.json.
@@ -109,7 +108,7 @@ Watcher se řídí [pravidlem převaděče](https://github.com/Holdi601/3DHeat/b
 
 **Nedostupné**
 
-- samotná hra (pozice, schopnosti, každá jednotka, okamžik po okamžiku): chunky ROFL1 a tělo ROFL2 jsou zašifrované a pakety uvnitř zamlžené s každou záplatou; obejít to znamená rozebrat klienta, což zakazují podmínky Riotu (3.1, 7.1). Uloženo celé, nečteno
+- samotná hra (pozice, schopnosti, každá jednotka, okamžik po okamžiku): chunky ROFL1 a tělo ROFL2 jsou zašifrované a pakety uvnitř zamlžené s každou záplatou. Uloženo celé, nečteno
 - pozice bez vašeho vlastního klíče Riot API: soubor je v otevřené podobě nemá
 
 **Velikost**: surová příloha má zhruba velikost samotného replaye: zašifrované chunky se nekomprimují

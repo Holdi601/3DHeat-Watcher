@@ -3,7 +3,7 @@ title: "VALORANT (riluajtje)"
 nav_order: 44
 lang: "sq"
 source: game-valorant-replays.md
-source_hash: "617e23a33a4c"
+source_hash: "a2c4144797e9"
 nav_exclude: true
 search_exclude: true
 ---
@@ -37,17 +37,15 @@ Riluajtjet e League of Legends dhe Valorant: çfarë prej tyre mund të lexohet 
 
 Të dy lojërat i ruajnë riluajtjet në diskun e lojtarit, dhe të dyja e mbrojnë çfarë ka brenda:
 të dhënat e lojës nga çasti në çast janë të turbulluara (obfuscated), dhe ndryshe me çdo patch,
-që të mos përdoren për të mashtruar. Të kalosh përmes kësaj do të thotë ta çmontosh kodin
-e vetë lojës, gjë që kushtet e Riot e ndalojnë (Terms of Service 3.1 dhe 7.1)
-- prandaj nuk bëhet askund në 3DHeat. Çfarë mban çdo skedar të hapur
+që të mos përdoren për të mashtruar. Kjo pjesë nuk dekodohet askund në
+3DHeat. Çfarë mban çdo skedar të hapur
 lexohet, dhe pjesa tjetër ruhet siç është: çdo pjesë e skedarit, e plotë, te
 `heat.raw.parquet` i sesionit (rregulli i konvertuesit të 3DHeat, docs/converters.md në
 depon e shikuesit), e numëruar te `selfCheck.completeness` i meta.json.
 
 Watcher nuk i lexon vetë skedarët: i lexon një lexues i jashtëm (3DHeat
 Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`,
-komanda `heat3d-riot-replays`), i mbajtur veçmas që një problem me kushtet e Riot
-të prekë vetëm atë lexues. Nëse gjendet në PATH, i instaluar, ose pranë watcher-it, ai
+komanda `heat3d-riot-replays`), një projekt më vete. Nëse gjendet në PATH, i instaluar, ose pranë watcher-it, ai
 lexon çdo riluajtje të re; nëse mungon, watcher thotë një herë si ta instalosh. Çfarë
 lexon ai, watcher e regjistron te sesioni; vijën kohore Match-V5 më poshtë
 e merr vetë watcher, sepse nuk është në skedar.
@@ -108,7 +106,7 @@ Watcher ndjek [rregullin e konvertuesit](https://github.com/Holdi601/3DHeat/blob
 
 **Nuk ofrohet**
 
-- pozicionet, emrat, rezultatet, aftësitë, çdo kuadër i lojës: chunk-et e të dhënave të riluajtjes dhe të checkpoint-it janë të turbulluara; leximi i tyre do të thotë ta çmontosh klientin, gjë që kushtet e Riot e ndalojnë. Ruhen të plota, nuk lexohen
+- pozicionet, emrat, rezultatet, aftësitë, çdo kuadër i lojës: chunk-et e të dhënave të riluajtjes dhe të checkpoint-it janë të turbulluara. Ruhen të plota, nuk lexohen
 - përmbajtja e një riluajtjeje të enkriptuar: kalohet dhe ruhet e plotë, nuk lexohet asgjë brenda
 
 **Madhësia**: skedari anësor i papërpunuar është rreth madhësisë së vetë riluajtjes: rrjedha e turbulluar nuk kompresohet

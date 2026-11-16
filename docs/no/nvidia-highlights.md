@@ -3,7 +3,7 @@ title: NVIDIA-høydepunkter
 nav_order: 8
 lang: "no"
 source: nvidia-highlights.md
-source_hash: "a3b769ab065c"
+source_hash: "cd2a5cc2c5fd"
 nav_exclude: true
 search_exclude: true
 ---
@@ -82,4 +82,4 @@ Ting du bør vite om den lånte posisjonen:
 Den andre måten å få en posisjon på ville vært å lese den ut av minnet. Ingen av minnene fungerer:
 
 - **NVIDIAs minne har ingen posisjon i seg.** NVIDIA-appen mottar det GfeSDK bærer - en høydepunkt-id og to tidsforskyvninger - pluss videoen den tar opp. Det finnes ingen posisjon hos NVIDIA å lese. (Watcheren leser ikke NVIDIAs minne uansett; den leser filene over.)
-- **Spillets minne er utenfor rekkevidde i flerspiller.** Posisjonen ligger i spillets prosess, men watcheren leser aldri minnet til et flerspillerspill: en minneadapter for et spill som er merket som spilt på nett, avvises før noe åpnes (se [Lese minne](memory-reading.md)). Flerspillerspill kjører under juks-beskyttelse (Easy Anti-Cheat, BattlEye, Vanguard, ...) som behandler at et annet program åpner spillets prosess som juks, noe som kan gi kontoen utestengelse. Å lese spillets tilstand utenfra er også det spillenes vilkår forbyr. Et høydepunkt i et flerspillerspill får derfor bare et sted fra det spillet publiserer: dets game-state integration eller telemetri, tatt opp av en annen adapter på samme tid.
+- **Spillets minne er utenfor rekkevidde i flerspiller.** Posisjonen ligger i spillets prosess, men watcheren leser aldri minnet til et flerspillerspill: en minneadapter for et spill som er merket som spilt på nett, avvises før noe åpnes (se [Lese minne](memory-reading.md)). Flerspillerspill kjører under juks-beskyttelse (Easy Anti-Cheat, BattlEye, Vanguard, ...) som behandler at et annet program åpner spillets prosess som juks, noe som kan gi kontoen utestengelse. Et høydepunkt i et flerspillerspill får derfor bare et sted fra det spillet publiserer: dets game-state integration eller telemetri, tatt opp av en annen adapter på samme tid.

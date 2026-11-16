@@ -3,7 +3,7 @@ title: "World of Warships (tekrarlar)"
 nav_order: 48
 lang: "tr"
 source: game-wows-replays.md
-source_hash: "44a041452521"
+source_hash: "e7d24a56747e"
 nav_exclude: true
 search_exclude: true
 ---
@@ -41,7 +41,7 @@ Bir klasör ilk kez görüldüğünde içindeki tekrarlar yalnızca not edilir, 
 
 #### World of Tanks ve World of Warships {#world-of-tanks-and-world-of-warships}
 
-İkisi de kayıt açıkken her savaşın tekrarını `<oyun>/replays/` klasörüne kaydeder (`*.wotreplay`, `*.wowsreplay`); kurulumlar Wargaming Game Center'ın listesinden, `C:/Games/World_of_Tanks*` / `World_of_Warships*` yollarından ve Steam'den bulunur. War Thunder'da olduğu gibi watcher bu dosyaları kendisi okumaz: her biri için dış bir çevirici okur (`exporters/ext/wot-replay`, komut `heat3d-wot-replay`; `exporters/ext/wows-replay`, komut `heat3d-wows-replay`). Bu, Wargaming'in koşullarıyla ilgili bir sorunun yalnızca o çeviriciye dokunmasını sağlar. PATH üzerinde, kurulu ya da watcher'ın yanında bulunursa, her yeni tekrarı oturum klasöründe `<map>/<match>.parquet` ve `<match>.match.json` olarak çevirir; yoksa watcher bir kez nasıl kurulacağını söyler. Kaydı yapan oyuncunun satırı — araç ya da gemi, öldürmeler, hasar (World of Tanks), hayatta kalıp kalmadığı ve sonuç (World of Tanks) — oturumun istatistikleri olur. Her çeviricinin neyi okuyup neyi okumadığı README dosyasındadır.
+İkisi de kayıt açıkken her savaşın tekrarını `<oyun>/replays/` klasörüne kaydeder (`*.wotreplay`, `*.wowsreplay`); kurulumlar Wargaming Game Center'ın listesinden, `C:/Games/World_of_Tanks*` / `World_of_Warships*` yollarından ve Steam'den bulunur. War Thunder'da olduğu gibi watcher bu dosyaları kendisi okumaz: her biri için dış bir çevirici okur (`exporters/ext/wot-replay`, komut `heat3d-wot-replay`; `exporters/ext/wows-replay`, komut `heat3d-wows-replay`); her biri kendi başına bir projedir. PATH üzerinde, kurulu ya da watcher'ın yanında bulunursa, her yeni tekrarı oturum klasöründe `<map>/<match>.parquet` ve `<match>.match.json` olarak çevirir; yoksa watcher bir kez nasıl kurulacağını söyler. Kaydı yapan oyuncunun satırı — araç ya da gemi, öldürmeler, hasar (World of Tanks), hayatta kalıp kalmadığı ve sonuç (World of Tanks) — oturumun istatistikleri olur. Her çeviricinin neyi okuyup neyi okumadığı README dosyasındadır.
 
 Aynı modül şunlara da hizmet eder: [Counter-Strike 2 (tekrarlar)](game-cs2-demos.md), [Dota 2 (tekrarlar)](game-dota-replays.md), [Squad (tekrarlar)](game-squad-demos.md), [War Thunder (tekrarlar)](game-warthunder-replays.md), [World of Tanks (tekrarlar)](game-wot-replays.md).
 

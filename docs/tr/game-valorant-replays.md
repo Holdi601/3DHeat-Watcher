@@ -3,7 +3,7 @@ title: "VALORANT (tekrarlar)"
 nav_order: 44
 lang: "tr"
 source: game-valorant-replays.md
-source_hash: "617e23a33a4c"
+source_hash: "a2c4144797e9"
 nav_exclude: true
 search_exclude: true
 ---
@@ -35,9 +35,9 @@ Ortam değişkenlerinden ayarlar:
 
 League of Legends ve Valorant tekrarları: bunların hangi kısmı olduğu gibi okunabilir.
 
-İki oyun da tekrarları oyuncunun diskine kaydeder ve ikisi de içindekini korur: an be an oyun verisi karıştırılmıştır ve her yamayla farklı şekilde, hile yapmak için kullanılmasın diye. Bunu aşmak, oyunun kendi kodunu tersine mühendislikle açmak demektir; Riot'un koşulları bunu yasaklar (Hizmet Koşulları 3.1 ve 7.1) - bu yüzden 3DHeat'te hiçbir yerde yapılmaz. Her dosyanın açıkta taşıdığı şey okunur, geri kalanı olduğu gibi saklanır: dosyanın her parçası, bütün olarak, oturumun `heat.raw.parquet` dosyasında (3DHeat'in dönüştürücü kuralı; görüntüleyicinin deposundaki docs/converters.md), meta.json içindeki `selfCheck.completeness` ile sayılır.
+İki oyun da tekrarları oyuncunun diskine kaydeder ve ikisi de içindekini korur: an be an oyun verisi karıştırılmıştır ve her yamayla farklı şekilde, hile yapmak için kullanılmasın diye. Bu kısım 3DHeat'te hiçbir yerde çözülmez. Her dosyanın açıkta taşıdığı şey okunur, geri kalanı olduğu gibi saklanır: dosyanın her parçası, bütün olarak, oturumun `heat.raw.parquet` dosyasında (3DHeat'in dönüştürücü kuralı; görüntüleyicinin deposundaki docs/converters.md), meta.json içindeki `selfCheck.completeness` ile sayılır.
 
-İzleyici dosyaları kendisi okumaz: bunu harici bir okuyucu yapar (3DHeat Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`, komut `heat3d-riot-replays`). Riot'un koşullarıyla ilgili bir sorunun yalnızca bu okuyucuya dokunması için ayrı tutulur. PATH üzerinde bulunursa, kuruluysa veya izleyicinin yanındaysa, her yeni tekrarı okur; yoksa izleyici nasıl kurulacağını bir kez söyler. Okuduğunu izleyici oturuma kaydeder; aşağıdaki Match-V5 zaman çizelgesi dosyada bulunmadığı için izleyicinin kendisi getirir.
+İzleyici dosyaları kendisi okumaz: bunu harici bir okuyucu yapar (3DHeat Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`, komut `heat3d-riot-replays`); kendi başına bir projedir. PATH üzerinde bulunursa, kuruluysa veya izleyicinin yanındaysa, her yeni tekrarı okur; yoksa izleyici nasıl kurulacağını bir kez söyler. Okuduğunu izleyici oturuma kaydeder; aşağıdaki Match-V5 zaman çizelgesi dosyada bulunmadığı için izleyicinin kendisi getirir.
 
 #### Valorant (.vrf) {#valorant-vrf}
 
@@ -87,7 +87,7 @@ Süslü parantez içindeki bir anahtar çalışma zamanında tamamlanır (`score
 
 **Mevcut olmayan**
 
-- konumlar, adlar, skorlar, yetenekler, oyunun her karesi: tekrar verisi ve kontrol noktası parçaları karıştırılmıştır; bunları okumak, istemciyi tersine mühendislikle açmak demektir ve Riot'un koşulları bunu yasaklar. Bütün olarak saklanır, okunmaz
+- konumlar, adlar, skorlar, yetenekler, oyunun her karesi: tekrar verisi ve kontrol noktası parçaları karıştırılmıştır. Bütün olarak saklanır, okunmaz
 - şifreli bir tekrarın içeriği: yürünür ve bütün olarak saklanır, içinde hiçbir şey okunmaz
 
 **Boyut**: ham yan dosya kabaca tekrarın kendi boyutudur: karıştırılmış akış sıkışmaz

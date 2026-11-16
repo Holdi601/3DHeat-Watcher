@@ -3,7 +3,7 @@ title: "Dota 2-kort"
 nav_order: 6.5
 lang: "da"
 source: dota-map.md
-source_hash: "3dcde11c7784"
+source_hash: "6c7a1c39d1bf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -13,9 +13,8 @@ Dota 2-kortet i 3D - terræn, klipper, vand, hvert træ og bygningerne, i de
 koordinater og enheder som [Dota 2-replay-tabellerne](game-dota-replays.md)
 er tegnet i - laves af sit eget værktøj, **3DHeat Dota**
 ([3DHeat-Ext-Dota](https://github.com/Holdi601/3DHeat-Ext-Dota),
-[dokumentation](https://holdi601.github.io/3DHeat-Ext-Dota/)). Det læser Valves
-spilfiler, så det holdes ude af watcheren: skulle det en dag fjernes, bliver
-watcheren, som den er.
+[dokumentation](https://holdi601.github.io/3DHeat-Ext-Dota/)), et projekt for
+sig uden for watcheren.
 
 Installer det én gang, som siden [Før du begynder](https://holdi601.github.io/3DHeat-Ext-Dota/before-you-start.html)
 beskriver (en Python-pakke og Source2Viewers kommandolinje), og kør derefter enten

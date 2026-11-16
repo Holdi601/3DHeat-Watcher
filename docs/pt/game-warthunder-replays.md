@@ -52,7 +52,7 @@ convertidos: quem tem anos de demos encontraria o watcher ocupado por um dia int
 O War Thunder guarda um replay de cada batalha em `<War Thunder>/Replays/*.wrpl` quando o
 gravação de replays está ligado nas opções. O watcher não os lê sozinho: um conversor externo
 lê (conversor de replays do 3DHeat para War Thunder, `exporters/ext/warthunder-replay`, comando
-`heat3d-wt-replay`), separado para que um problema nele não afete nada mais. Quando o comando
+`heat3d-wt-replay`), um projeto próprio. Quando o comando
 está no PATH, ou o pacote está instalado ou ao lado do watcher, cada replay novo passa por ele e
 passa a ser, na pasta da sessão, `<mapa>/<partida>.parquet` e `<partida>.match.json`; quando não está,
 o watcher avisa uma vez como instalar e deixa a pasta em paz. O que o conversor lê, e o que não

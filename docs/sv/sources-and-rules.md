@@ -3,7 +3,7 @@ title: Källor och regler
 nav_order: 7
 lang: "sv"
 source: sources-and-rules.md
-source_hash: "990402abdc5d"
+source_hash: "36c4836cad3f"
 nav_exclude: true
 search_exclude: true
 ---
@@ -86,15 +86,15 @@ Steam eller NVIDIA-appen redan har skrivit ut eller skickar.
 
 ## Vad som lämnas utanför, och varför {#what-is-declined-and-why}
 
-Vissa spel, och vissa delar av spel, spelas inte in eftersom det enda sättet att få dem skulle bryta ett
-skydd eller ett spels villkor:
+Vissa spel, och vissa delar av spel, spelas inte in: deras data är skyddade, inte publicerade eller finns
+inte alls på spelarens dator:
 
 | Spel | Vad som lämnas utanför | Varför |
 |---|---|---|
-| VALORANT | positioner, namn, poäng i repriser; klientens lockfile-endpoints | Repriserns spelström är förvrängd med värden tagna från varje builds körbara fil. Att återskapa dem innebär reverse engineering av spelet, vilket Riots användarvillkor förbjuder (avsnitt 3.1 och 7.1), och spelet körs under Vanguard. Riot-klientens lockfile-endpoints är inget publicerat API. **Läses:** det repriserna bär öppet – karta, match-id, agenter, serverns kill- och rondtidslinje. |
-| League of Legends | den minut-för-minut-delen av `.rofl`-repriser; klientens lockfile-endpoints | Förvrängd mot fusk, olika varje patch; att avkoda den innebär att ta isär spelet, vilket Riots villkor förbjuder. **Läses:** poängtavlan i slutet av matchen som varje repris bär som vanlig JSON, Live Client Data API under en match, och – med din egen utvecklarnyckel – den officiella Match-V5-tidslinjen (positioner en gång i minuten, kills där de skedde). |
-| Fortnite | repriser | Krypterade, och Epics villkor förbjuder reverse engineering av dem. |
-| World of Tanks, World of Warships | repriser, i watchern | Chifferade, med en nyckel som spelet bär och som communityverktyg publicerat i flera år. Watchern läser dem inte; separata omvandlare utanför den gör det (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), så att ett problem med Wargamings villkor – licensen förbjuder reverse engineering (5.3 b) och obehörig programvara som interagerar med deras produkter (12.1 k) – bara berör dem. **Läses, med en omvandlare installerad:** varje fordons eller fartygs position medan inspelningsklienten kände till det, och kills. |
+| VALORANT | positioner, namn, poäng i repriser; klientens lockfile-endpoints | Repriserns spelström är förvrängd med värden tagna från varje builds körbara fil. Spelet körs under Vanguard. Riot-klientens lockfile-endpoints är inget publicerat API. **Läses:** det repriserna bär öppet – karta, match-id, agenter, serverns kill- och rondtidslinje. |
+| League of Legends | den minut-för-minut-delen av `.rofl`-repriser; klientens lockfile-endpoints | Förvrängd mot fusk, olika varje patch, och avkodas inte. **Läses:** poängtavlan i slutet av matchen som varje repris bär som vanlig JSON, Live Client Data API under en match, och – med din egen utvecklarnyckel – den officiella Match-V5-tidslinjen (positioner en gång i minuten, kills där de skedde). |
+| Fortnite | repriser | Krypterade. |
+| World of Tanks, World of Warships | repriser, i watchern | Chifferade. Watchern läser dem inte; separata omvandlare utanför den gör det (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), vardera ett eget projekt. **Läses, med en omvandlare installerad:** varje fordons eller fartygs position medan inspelningsklienten kände till det, och kills. |
 | Gran Turismo 7 | telemetri | Bara konsol, och dess telemetri är krypterad med en nyckel som återskapats ur spelet. |
 | Apex Legends | allt | Dess LiveAPI skickar fullständiga händelser bara i privata och anpassade lobbyer; annars finns inget lokalt. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | livedata | Ingen lokal repris, logg eller spelstatusutdata att läsa. Deras statistik kommer in där Steam behåller den ([Steam-statistik](game-steam-stats.md), [Steam Timeline](game-steam-timeline.md)), och deras klipp som [NVIDIA-höjdpunkter](nvidia-highlights.md). |

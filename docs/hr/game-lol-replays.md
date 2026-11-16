@@ -33,9 +33,8 @@ spremite snimku u League klijentu (povijest mečeva > preuzmi); za položaje pos
 League of Legends i VALORANT snimke: što se od njih može pročitati kakvo jest.
 
 Obje igre spremaju snimke na disk igrača, i obje štite ono što je unutra:
-podaci igre od trenutka do trenutka zamagljeni su, i to drukčije sa svakom zakrpom, da se ne bi mogli koristiti za varanje. Probijanje te zaštite znači rastaviti
-vlastiti kod igre, što Riotovi uvjeti zabranjuju (Uvjeti korištenja 3.1 i 7.1)
-- zato se to ovdje ne radi. Čita se ono što svaka datoteka nosi otvoreno, a ostalo
+podaci igre od trenutka do trenutka zamagljeni su, i to drukčije sa svakom zakrpom, da se ne bi mogli koristiti za varanje. Taj se dio nigdje u 3DHeat ne dekodira.
+Čita se ono što svaka datoteka nosi otvoreno, a ostalo
 se čuva kakvo jest: svaki dio datoteke, cijel, u sesijskoj datoteci
 `heat.raw.parquet` (pravilo pretvarača 3DHeat, docs/converters.md u repozitoriju
 preglednika), i broji se u `selfCheck.completeness` u meta.json-u.
@@ -110,7 +109,7 @@ Watcher slijedi [pravilo pretvarača](https://github.com/Holdi601/3DHeat/blob/ma
 
 **Nije dostupno**
 
-- sama igra (položaji, sposobnosti, svaka jedinica, od trenutka do trenutka): dijelovi ROFL1 i tijelo ROFL2 su šifrirani, a paketi unutra zamagljeni sa svakom zakrpom; probijanje znači rastaviti klijent, što Riotovi uvjeti zabranjuju (3.1, 7.1). Čuva se cijelo, ne čita se
+- sama igra (položaji, sposobnosti, svaka jedinica, od trenutka do trenutka): dijelovi ROFL1 i tijelo ROFL2 su šifrirani, a paketi unutra zamagljeni sa svakom zakrpom. Čuva se cijelo, ne čita se
 - položaji bez vašeg vlastitog Riot API ključa: datoteka ih u otvorenom obliku nema
 
 **Veličina**: sirovi pomoćni dio je otprilike veličine same snimke: šifrirani dijelovi se ne sažimaju

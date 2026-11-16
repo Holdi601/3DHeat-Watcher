@@ -3,7 +3,7 @@ title: "Squad (replays)"
 nav_order: 40
 lang: "da"
 source: game-squad-demos.md
-source_hash: "a908f7e6d9c3"
+source_hash: "ddec19ea89bf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -41,7 +41,7 @@ Første gang en mappe ses, bliver de replays, der allerede ligger i den, kun not
 
 #### Squad {#squad}
 
-Squads dedikerede servere optager en demo af en kamp, når en admin med `demos`-tilladelsen kører AdminDemoRec &lt;name> (og AdminDemoStop), i `<server>/SquadGame/Saved/Demos/<name>.replay` - en Unreal Engine-netværksreplay, der indeholder det, serveren replikerede, inklusive hver spillers bevægelse. Watcheren læser dem ikke selv: det gør en ekstern læser (3DHeat Squad demo-læser, `exporters/ext/squad-demo`, kommandoen `heat3d-squad-demo`), holdt adskilt, så et problem med den ikke rører ved noget andet. Den køres på hver ny demo i de mapper, en lokal server skriver til, eller i en mappe, indstillingerne tilføjer til demoer kopieret fra en lejet server, og lægges i sessionsmappen som `<map>/<match>.parquet` og `<match>.match.json`. Laget, kortet, antallet af spillere og kampens længde bliver sessionens statistik.
+Squads dedikerede servere optager en demo af en kamp, når en admin med `demos`-tilladelsen kører AdminDemoRec &lt;name> (og AdminDemoStop), i `<server>/SquadGame/Saved/Demos/<name>.replay` - en Unreal Engine-netværksreplay, der indeholder det, serveren replikerede, inklusive hver spillers bevægelse. Watcheren læser dem ikke selv: det gør en ekstern læser (3DHeat Squad demo-læser, `exporters/ext/squad-demo`, kommandoen `heat3d-squad-demo`), et projekt for sig. Den køres på hver ny demo i de mapper, en lokal server skriver til, eller i en mappe, indstillingerne tilføjer til demoer kopieret fra en lejet server, og lægges i sessionsmappen som `<map>/<match>.parquet` og `<match>.match.json`. Laget, kortet, antallet af spillere og kampens længde bliver sessionens statistik.
 
 Det samme modul betjener også: [Counter-Strike 2 (replays)](game-cs2-demos.md), [Dota 2 (replays)](game-dota-replays.md), [War Thunder (replays)](game-warthunder-replays.md), [World of Tanks (replays)](game-wot-replays.md), [World of Warships (replays)](game-wows-replays.md).
 

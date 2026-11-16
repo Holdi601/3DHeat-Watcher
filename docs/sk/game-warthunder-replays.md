@@ -53,8 +53,8 @@ na požiadanie.
 War Thunder ukladá replay každej bitky do `<War Thunder>/Replays/*.wrpl`, keď je
 ukladanie replayov zapnuté v jeho nastaveniach. Watcher ich nečíta sám: číta ich
 externý konvertor (3DHeat War Thunder replay converter,
-`exporters/ext/warthunder-replay`, príkaz `heat3d-wt-replay`), oddelený, aby problém
-s ním nezasiahol nič iné. Keď je príkaz v PATH, alebo je balík nainštalovaný
+`exporters/ext/warthunder-replay`, príkaz `heat3d-wt-replay`), samostatný
+projekt. Keď je príkaz v PATH, alebo je balík nainštalovaný
 alebo vedľa watchera, každý nový replay sa spustí cez neho do priečinka relácie
 ako `<map>/<match>.parquet` a `<match>.match.json`; keď nie, watcher raz napíše,
 ako ho nainštalovať, a priečinok nechá na pokoji. Čo konvertor číta a čo nie, je

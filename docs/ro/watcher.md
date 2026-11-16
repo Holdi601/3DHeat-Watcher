@@ -25,13 +25,12 @@ pentru fiecare joc pe care îl cunoaște, ce înregistrează și de unde citeșt
 | platformă | ce țin Steam și driverul grafic: statistici, realizări, cronologii, momente evidențiate | da |
 | memorie | memoria jocului, doar în citire - doar jocuri pentru un singur jucător, în spatele fiecărei verificări de mai jos | **niciodată** |
 
-Nimic nu este injectat, agățat (hooked) sau schimbat în niciun joc. O sursă pe care termenii unui joc sau regulile
-anti-cheat o exclud nu este implementată: punctele de capăt ale fișierului de blocare client din League of Legends și
+Nimic nu este injectat, agățat (hooked) sau schimbat în niciun joc. Sursele protejate
+nu sunt implementate: punctele de capăt ale fișierului de blocare client din League of Legends și
 Valorant, părțile protejate ale replay-urilor (Fortnite, League of Legends, Valorant), telemetria criptată a Gran Turismo 7
 (ar avea nevoie de o cheie recuperată din joc). Replay-urile World of Tanks și World of Warships sunt și ele criptate;
 watcher-ul nu le citește, convertoare separate din afara lui le citesc (`exporters/ext/wot-replay`,
-`exporters/ext/wows-replay`), instalate doar de un jucător care decide asta - vezi README-urile lor pentru termenii
-Wargaming.
+`exporters/ext/wows-replay`), instalate doar de un jucător care decide asta - vezi README-urile lor.
 
 ## Ce este o înregistrare {#what-a-recording-is}
 
@@ -149,10 +148,10 @@ joc nu rulează și pornește din nou. `HEAT3D_NO_UPDATE=1` oprește verificarea
 
 | Joc | De ce nu |
 |---|---|
-| Pozițiile VALORANT | Fluxul de joc al replay-urilor sale este ofuscat cu valori luate din executabilul fiecărei versiuni; a le recupera înseamnă ingineria inversă a jocului, ceea ce interzic termenii Riot, iar jocul rulează sub Vanguard. Ce duce replay-ul pe față - harta, meciul, agenții, cronologia eliminărilor și a rundelor - *este* citit. Punctele de capăt ale fișierului de blocare al clientului nu sunt o interfață publicată și nu se folosesc. |
-| Replay-urile League of Legends, în joc | Partea de la moment la moment a unui `.rofl` este ofuscată împotriva trișării, diferit la fiecare patch; a-l decoda înseamnă a desface jocul, ceea ce interzic termenii Riot. Ce duce fișierul pe față - rândul fiecărui jucător de la sfârșitul jocului - *este* citit, iar pozițiile vin din cronologia oficială a meciului Riot, cu propria cheie API. |
-| Fortnite | Replay-urile sale sunt criptate, iar termenii Epic interzic ingineria inversă a lor. |
-| World of Tanks, World of Warships, de watcher însuși | Replay-urile lor sunt criptate. Convertoare separate din afara watcher-ului le citesc (vezi tabelul de mai sus), ca o problemă cu termenii Wargaming să atingă doar acestea. |
+| Pozițiile VALORANT | Fluxul de joc al replay-urilor sale este ofuscat cu valori luate din executabilul fiecărei versiuni, iar jocul rulează sub Vanguard. Ce duce replay-ul pe față - harta, meciul, agenții, cronologia eliminărilor și a rundelor - *este* citit. Punctele de capăt ale fișierului de blocare al clientului nu sunt o interfață publicată și nu se folosesc. |
+| Replay-urile League of Legends, în joc | Partea de la moment la moment a unui `.rofl` este ofuscată împotriva trișării, diferit la fiecare patch, și nu este decodată. Ce duce fișierul pe față - rândul fiecărui jucător de la sfârșitul jocului - *este* citit, iar pozițiile vin din cronologia oficială a meciului Riot, cu propria cheie API. |
+| Fortnite | Replay-urile sale sunt criptate. |
+| World of Tanks, World of Warships, de watcher însuși | Replay-urile lor sunt criptate. Convertoare separate din afara watcher-ului le citesc (vezi tabelul de mai sus), fiecare un proiect de sine stătător. |
 | Gran Turismo 7 | Doar consolă; telemetria sa este criptată cu o cheie recuperată din joc. |
 | Apex Legends | LiveAPI-ul său trimite evenimente complete doar în lobby-urile private și personalizate; altfel nimic local. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | Niciun replay local, jurnal sau ieșire a stării jocului de citit. Statisticile lor intră acolo unde le ține Steam (statisticile Steam, Steam Timeline) și ca momente NVIDIA evidențiate. |

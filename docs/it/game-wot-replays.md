@@ -3,7 +3,7 @@ title: "World of Tanks (replay)"
 nav_order: 47
 lang: "it"
 source: game-wot-replays.md
-source_hash: "c3fbbeebfee0"
+source_hash: "2fa28633a0ee"
 nav_exclude: true
 search_exclude: true
 ---
@@ -41,7 +41,7 @@ La prima volta che una cartella viene vista, i replay già presenti vengono solo
 
 #### World of Tanks e World of Warships {#world-of-tanks-and-world-of-warships}
 
-Entrambi salvano il replay di ogni battaglia in `<gioco>/replays/` quando la registrazione è attiva (`*.wotreplay`, `*.wowsreplay`); le installazioni si trovano tramite l'elenco del Wargaming Game Center, `C:/Games/World_of_Tanks*` / `World_of_Warships*`, e Steam. Come per War Thunder, il watcher non legge i file da solo: lo fa un convertitore esterno per ciascuno (`exporters/ext/wot-replay`, comando `heat3d-wot-replay`; `exporters/ext/wows-replay`, comando `heat3d-wows-replay`), tenuto separato in modo che un problema con le condizioni di Wargaming tocchi solo quel convertitore. Trovato nel PATH, installato o accanto al watcher, trasforma ogni nuovo replay in `<mappa>/<partita>.parquet` e `<partita>.match.json` nella cartella della sessione; se manca, il watcher lo segnala una volta con le istruzioni per installarlo. La riga del giocatore che ha registrato - veicolo o nave, uccisioni, danni (World of Tanks), se è sopravvissuto e il risultato (World of Tanks) - diventa le statistiche della sessione. Ciò che ogni convertitore legge, e ciò che non legge, è nel suo README.
+Entrambi salvano il replay di ogni battaglia in `<gioco>/replays/` quando la registrazione è attiva (`*.wotreplay`, `*.wowsreplay`); le installazioni si trovano tramite l'elenco del Wargaming Game Center, `C:/Games/World_of_Tanks*` / `World_of_Warships*`, e Steam. Come per War Thunder, il watcher non legge i file da solo: lo fa un convertitore esterno per ciascuno (`exporters/ext/wot-replay`, comando `heat3d-wot-replay`; `exporters/ext/wows-replay`, comando `heat3d-wows-replay`), ciascuno un progetto a sé. Trovato nel PATH, installato o accanto al watcher, trasforma ogni nuovo replay in `<mappa>/<partita>.parquet` e `<partita>.match.json` nella cartella della sessione; se manca, il watcher lo segnala una volta con le istruzioni per installarlo. La riga del giocatore che ha registrato - veicolo o nave, uccisioni, danni (World of Tanks), se è sopravvissuto e il risultato (World of Tanks) - diventa le statistiche della sessione. Ciò che ogni convertitore legge, e ciò che non legge, è nel suo README.
 
 Lo stesso modulo serve anche: [Counter-Strike 2 (replay)](game-cs2-demos.md), [Dota 2 (replay)](game-dota-replays.md), [Squad (replay)](game-squad-demos.md), [War Thunder (replay)](game-warthunder-replays.md), [World of Warships (replay)](game-wows-replays.md).
 

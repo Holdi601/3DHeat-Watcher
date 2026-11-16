@@ -3,13 +3,13 @@ title: "Dota-2-Karte"
 nav_order: 6.5
 lang: "de"
 source: dota-map.md
-source_hash: "3dcde11c7784"
+source_hash: "6c7a1c39d1bf"
 nav_exclude: true
 search_exclude: true
 ---
 # Die Dota-2-Karte als Level (`dota-map`) {#dota-2s-map-as-a-level-dota-map}
 
-Die Dota-2-Karte in 3D - Boden, Klippen, Wasser, jeder Baum und die Gebäude, im Rahmen und in den Einheiten, in denen die [Dota-2-Replay-Tabellen](game-dota-replays.md) gezeichnet sind - wird von einem eigenen Werkzeug erstellt, **3DHeat Dota** ([3DHeat-Ext-Dota](https://github.com/Holdi601/3DHeat-Ext-Dota), [Dokumentation](https://holdi601.github.io/3DHeat-Ext-Dota/)). Es liest Valves Spieldateien, deshalb wird es vom Watcher ferngehalten: Falls es je entfernt werden muss, bleibt der Watcher bestehen.
+Die Dota-2-Karte in 3D - Boden, Klippen, Wasser, jeder Baum und die Gebäude, im Rahmen und in den Einheiten, in denen die [Dota-2-Replay-Tabellen](game-dota-replays.md) gezeichnet sind - wird von einem eigenen Werkzeug erstellt, **3DHeat Dota** ([3DHeat-Ext-Dota](https://github.com/Holdi601/3DHeat-Ext-Dota), [Dokumentation](https://holdi601.github.io/3DHeat-Ext-Dota/)), ein eigenes Projekt außerhalb des Watchers.
 
 Installiere es einmal, wie es die Seite [Bevor du anfängst](https://holdi601.github.io/3DHeat-Ext-Dota/before-you-start.html) beschreibt (Python-Paket plus die Kommandozeile von Source2Viewer). Danach führst du entweder
 

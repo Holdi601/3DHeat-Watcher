@@ -129,6 +129,10 @@ tema [`.3dheat` konteineri](https://holdi601.github.io/3DHeat/container.html) le
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | DCS Worldi kaardid 3D-mudeliteks | [sait](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | IL-2 Sturmovigi kaardid 3D-mudeliteks | [sait](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+Iga mängulugeja on omaette väike projekt oma litsentsifaili, väljalasete ja veajälgijaga, nii et seda
+saab paigaldada, uuendada, hooldada - või õiguste omaniku palvel tagasi võtta - eraldi, ilma et see
+mõjutaks vaatajat või teisi tööriistu.
+
 Litsents: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Kolmanda osapoole pakettide
 litsentsid ja see, mida loetavad mängud nõuavad, on loetletud failis
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

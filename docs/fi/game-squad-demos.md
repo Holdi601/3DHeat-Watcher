@@ -3,7 +3,7 @@ title: "Squad (tallenteet)"
 nav_order: 40
 lang: "fi"
 source: game-squad-demos.md
-source_hash: "a908f7e6d9c3"
+source_hash: "ddec19ea89bf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -41,7 +41,7 @@ Kun kansio nähdään ensimmäisen kerran, siinä jo olevia tallenteita vain mer
 
 #### Squad {#squad}
 
-Squadin dedikoidut palvelimet tallentavat ottelun demon, kun ylläpitäjä, jolla on `demos`-oikeus, ajaa komennon AdminDemoRec &lt;name> (ja AdminDemoStop), kansioon `<server>/SquadGame/Saved/Demos/<name>.replay`. Se on Unreal Enginen verkkotallenne, joka sisältää sen, minkä palvelin replikoi, myös jokaisen pelaajan liikkeen. Vahti ei lue niitä itse: sen lukee ulkoinen lukija (3DHeat Squad demo -lukija, `exporters/ext/squad-demo`, komento `heat3d-squad-demo`), erillään, jotta lukijan ongelma ei koske mihinkään muuhun. Lukijaa ajetaan jokaiselle uudelle demolle kansioissa, joihin paikallinen palvelin kirjoittaa, tai kansiossa, jonka asetukset lisäävät vuokratulta palvelimelta kopioituja demoja varten, ja tulos menee sessiokansioon `<map>/<match>.parquet`- ja `<match>.match.json`-tiedostoina. Taso, kartta, pelaajamäärä ja ottelun kesto tulevat session tilastoiksi.
+Squadin dedikoidut palvelimet tallentavat ottelun demon, kun ylläpitäjä, jolla on `demos`-oikeus, ajaa komennon AdminDemoRec &lt;name> (ja AdminDemoStop), kansioon `<server>/SquadGame/Saved/Demos/<name>.replay`. Se on Unreal Enginen verkkotallenne, joka sisältää sen, minkä palvelin replikoi, myös jokaisen pelaajan liikkeen. Vahti ei lue niitä itse: sen lukee ulkoinen lukija (3DHeat Squad demo -lukija, `exporters/ext/squad-demo`, komento `heat3d-squad-demo`), oma projektinsa. Lukijaa ajetaan jokaiselle uudelle demolle kansioissa, joihin paikallinen palvelin kirjoittaa, tai kansiossa, jonka asetukset lisäävät vuokratulta palvelimelta kopioituja demoja varten, ja tulos menee sessiokansioon `<map>/<match>.parquet`- ja `<match>.match.json`-tiedostoina. Taso, kartta, pelaajamäärä ja ottelun kesto tulevat session tilastoiksi.
 
 Saman moduulin kautta toimivat myös: [Counter-Strike 2 (tallenteet)](game-cs2-demos.md), [Dota 2 (tallenteet)](game-dota-replays.md), [War Thunder (tallenteet)](game-warthunder-replays.md), [World of Tanks (tallenteet)](game-wot-replays.md), [World of Warships (tallenteet)](game-wows-replays.md).
 

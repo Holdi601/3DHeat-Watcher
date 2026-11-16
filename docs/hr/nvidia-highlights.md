@@ -3,7 +3,7 @@ title: "NVIDIA Highlights"
 nav_order: 8
 lang: "hr"
 source: nvidia-highlights.md
-source_hash: "a3b769ab065c"
+source_hash: "cd2a5cc2c5fd"
 nav_exclude: true
 search_exclude: true
 ---
@@ -82,4 +82,4 @@ Stvari koje treba znati o posuđenoj poziciji:
 Drugi način da se dobije pozicija bio bi čitanje iz memorije. Nijedan ne radi:
 
 - **NVIDIA-ina memorija nema poziciju.** NVIDIA aplikacija prima ono što GfeSDK nosi - ID istaknutog trenutka i dva vremenska pomaka - plus video koji snimi. Nigdje na NVIDIA-inoj strani nema pozicije koju bi se moglo pročitati. (Watcher svejedno ne čita NVIDIA-inu memoriju; čita gore navedene datoteke.)
-- **Memorija igre je izvan dosega u multiplayeru.** Pozicija je u procesu igre, ali watcher nikad ne čita memoriju igre za više igrača: adapter memorije za igru označenu kao igra na mreži odbija se prije nego se išta otvori (vidi [Čitanje memorije](memory-reading.md)). Igre za više igrača rade pod anti-cheat sustavima (Easy Anti-Cheat, BattlEye, Vanguard, ...) koji smatraju da drugi program koji otvori proces igre znači varanje, što može dovesti do zabrane računa. Čitanje stanja igre izvana je i ono što uvjeti igara zabranjuju. Istaknuti trenutak u igri za više igrača zato dobiva mjesto samo iz onoga što igra objavljuje: njezine game-state integracije ili telemetrije, koju u isto vrijeme bilježi drugi adapter.
+- **Memorija igre je izvan dosega u multiplayeru.** Pozicija je u procesu igre, ali watcher nikad ne čita memoriju igre za više igrača: adapter memorije za igru označenu kao igra na mreži odbija se prije nego se išta otvori (vidi [Čitanje memorije](memory-reading.md)). Igre za više igrača rade pod anti-cheat sustavima (Easy Anti-Cheat, BattlEye, Vanguard, ...) koji smatraju da drugi program koji otvori proces igre znači varanje, što može dovesti do zabrane računa. Istaknuti trenutak u igri za više igrača zato dobiva mjesto samo iz onoga što igra objavljuje: njezine game-state integracije ili telemetrije, koju u isto vrijeme bilježi drugi adapter.

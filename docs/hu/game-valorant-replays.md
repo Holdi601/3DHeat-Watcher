@@ -31,7 +31,7 @@ Mentsd el a visszajátszást a VALORANTban (karrier > meccs > visszajátszás le
 
 League of Legends és VALORANT visszajátszások: amit belőlük nyíltan lehet olvasni.
 
-Mindkét játék a játékos lemezére menti a visszajátszásokat, és mindkettő védi a tartalmát: a pillanatról pillanatra zajló játékadatok megzavarozottak, és minden javítással másképp, hogy ne lehessen csalásra használni. Ezen átjutni azt jelentené, hogy a játék saját kódját szedjük szét, amit a Riot szerződési feltételei tiltanak (Szolgáltatási feltételek 3.1 és 7.1 pont) – ezért ezt nem tesszük meg. Amit minden fájl nyíltan hordoz, azt beolvassuk, a többit érintetlenül megtartjuk: a fájl minden része egészben, a munkamenet `heat.raw.parquet` fájljában (a 3DHeat konvertálási szabálya, a megjelenítő tárolójában a docs/converters.md), és a meta.json `selfCheck.completeness` adatai számolják.
+Mindkét játék a játékos lemezére menti a visszajátszásokat, és mindkettő védi a tartalmát: a pillanatról pillanatra zajló játékadatok megzavarozottak, és minden javítással másképp, hogy ne lehessen csalásra használni. Ezt a részt a 3DHeat sehol sem dekódolja. Amit minden fájl nyíltan hordoz, azt beolvassuk, a többit érintetlenül megtartjuk: a fájl minden része egészben, a munkamenet `heat.raw.parquet` fájljában (a 3DHeat konvertálási szabálya, a megjelenítő tárolójában a docs/converters.md), és a meta.json `selfCheck.completeness` adatai számolják.
 
 #### Valorant (.vrf) {#valorant-vrf}
 
@@ -81,7 +81,7 @@ A watcher követi a 3DHeat [konvertálási szabályát](https://github.com/Holdi
 
 **Nem elérhető**
 
-- pozíciók, nevek, pontszámok, képességek, a játék minden képkockája: a visszajátszás-adat és az ellenőrzőpont-darabok megzavarozottak; ezek olvasása azt jelentené, hogy a kliens szét van szedve, amit a Riot feltételei tiltanak. Egészben megtartva, nincs olvasva
+- pozíciók, nevek, pontszámok, képességek, a játék minden képkockája: a visszajátszás-adat és az ellenőrzőpont-darabok megzavarozottak. Egészben megtartva, nincs olvasva
 - titkosított visszajátszás tartalma: bejárva és egészben megtartva, belül semmi sincs olvasva
 
 **Méret**: a nyers melléklet nagyjából a visszajátszás saját mérete: a megzavarozott folyam nem tömörül

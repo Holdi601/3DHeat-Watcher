@@ -52,8 +52,8 @@ Game Center's list, `C:/Games/World_of_Tanks*` / `World_of_Warships*`, and
 Steam. As with War Thunder, the watcher does not read the files itself: an
 external converter of each does (`exporters/ext/wot-replay`, command
 `heat3d-wot-replay`; `exporters/ext/wows-replay`, command
-`heat3d-wows-replay`), kept apart so that a problem with Wargaming's terms
-touches only that converter. Found on PATH, installed, or beside the watcher,
+`heat3d-wows-replay`), each a project of its own. Found on PATH, installed,
+or beside the watcher,
 it turns each new replay into `<map>/<match>.parquet` and `<match>.match.json`
 in the session folder; missing, the watcher says once how to install it. The
 recording player's line - vehicle or ship, kills, damage (World of Tanks),

@@ -3,7 +3,7 @@ title: "Squad (endursýningar)"
 nav_order: 40
 lang: "is"
 source: game-squad-demos.md
-source_hash: "a908f7e6d9c3"
+source_hash: "ddec19ea89bf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -54,8 +54,8 @@ Sérþjónar Squad taka upp demó af viðureign þegar stjórnandi með
 `<server>/SquadGame/Saved/Demos/<name>.replay` - netendursýning í Unreal Engine
 sem geymir það sem þjónninn afritaði, þar á meðal hreyfingu hvers spilara.
 Watcher les þau ekki sjálfur: ytri lesari gerir það (3DHeat Squad
-demo reader, `exporters/ext/squad-demo`, skipunin `heat3d-squad-demo`), hafður
-sér svo vandamál í honum snerti ekkert annað. Hann er keyrður á hvert nýtt
+demo reader, `exporters/ext/squad-demo`, skipunin `heat3d-squad-demo`), sjálfstætt
+verkefni. Hann er keyrður á hvert nýtt
 demó í möppunum sem staðbundinn þjónn skrifar í, eða í möppu sem stillingarnar bæta við
 fyrir demó afrituð af leigðum þjóni, inn í lotumöppuna sem
 `<map>/<match>.parquet` og `<match>.match.json`. Lagið (layer), kortið, fjöldi

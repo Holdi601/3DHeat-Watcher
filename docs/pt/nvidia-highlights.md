@@ -3,7 +3,7 @@ title: NVIDIA Highlights
 nav_order: 8
 lang: "pt"
 source: nvidia-highlights.md
-source_hash: "a3b769ab065c"
+source_hash: "cd2a5cc2c5fd"
 nav_exclude: true
 search_exclude: true
 ---
@@ -138,7 +138,7 @@ A outra forma de obter uma posição seria lê-la da memória. Nenhuma das duas 
   nunca lê a memória de um jogo multijogador: um adaptador de memória para um jogo marcado como jogado online é
   recusado antes de qualquer coisa ser aberta (veja [Ler a memória](memory-reading.md)). Os jogos multijogador
   correm sob anti-cheats (Easy Anti-Cheat, BattlEye, Vanguard, ...) que tratam outro programa a abrir o processo
-  do jogo como batota, o que pode levar ao banimento da conta. Ler o estado do jogo de fora também é algo
-  que os termos dos jogos proíbem. Um destaque num jogo multijogador, portanto, só ganha um lugar a partir do
+  do jogo como batota, o que pode levar ao banimento da conta.
+  Um destaque num jogo multijogador, portanto, só ganha um lugar a partir do
   que o jogo publica: a integração de estado ou a telemetria dele, gravadas por outro adaptador no mesmo
   momento.

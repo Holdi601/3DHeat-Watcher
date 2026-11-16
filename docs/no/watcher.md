@@ -3,7 +3,7 @@ title: Alle spill i én tabell
 nav_order: 13
 lang: "no"
 source: watcher.md
-source_hash: "8066a9f8a89c"
+source_hash: "e0c6d5b833cf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -22,7 +22,7 @@ Finn spillet ditt i tabellen under for å se hva som tas opp og hva du må slå 
 | plattform | det Steam og grafikkdriveren beholder: statistikk, prestasjoner, tidslinjer, høydepunkter | ja |
 | minne | spillets minne, skrivebeskyttet - bare enkeltspillerspill, bak hver sjekk under | **aldri** |
 
-Ingenting injiseres, kobles inn eller endres i noe spill. En kilde et spills vilkår eller anti-juks-regler utelukker, er ikke implementert: League of Legends- og Valorant-klientens lockfile-endepunkter, de beskyttede delene av replayer (Fortnite, League of Legends, Valorant), og Gran Turismo 7s krypterte telemetri (det ville kreve en nøkkel hentet ut av spillet). World of Tanks- og World of Warships-replayer er også kryptert; watcheren leser dem ikke, men separate konvertere utenfor den gjør det (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), og de installeres bare av en spiller som bestemmer det - se deres README for Wargamings vilkår.
+Ingenting injiseres, kobles inn eller endres i noe spill. Beskyttede kilder er ikke implementert: League of Legends- og Valorant-klientens lockfile-endepunkter, de beskyttede delene av replayer (Fortnite, League of Legends, Valorant), og Gran Turismo 7s krypterte telemetri (det ville kreve en nøkkel hentet ut av spillet). World of Tanks- og World of Warships-replayer er også kryptert; watcheren leser dem ikke, men separate konvertere utenfor den gjør det (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), og de installeres bare av en spiller som bestemmer det - se deres README.
 
 ## Hva et opptak er {#what-a-recording-is}
 
@@ -113,10 +113,10 @@ Watcheren sjekker sine GitHub-utgivelser når den starter (høyst hver sjette ti
 
 | Spill | Hvorfor ikke |
 |---|---|
-| VALORANT-posisjoner | Strømmen i replayene er forvirret med verdier hentet fra hvert bygs programfil; å gjenopprette dem er reverse engineering av spillet, som Riots vilkår forbyr, og spillet kjører under Vanguard. Det replayet bærer åpent - kart, kamp, agenter, drap- og rundetidslinjen - *leses*. Klientens lockfile-endepunkter er ikke et publisert API og brukes ikke. |
-| League of Legends-replayer, i spillet | Den øyeblikkelige delen av en `.rofl` er forvirret mot juks, forskjellig for hver oppdatering; å dekode den betyr å demontere spillet, som Riots vilkår forbyr. Det filen bærer åpent - hver spillers linje ved kampslutt - *leses*, og posisjoner kommer fra Riots offisielle kamptidslinje med din egen API-nøkkel. |
-| Fortnite | Replayene er kryptert, og Epics vilkår forbyr reverse engineering av dem. |
-| World of Tanks, World of Warships, av watcheren selv | Replayene deres er kryptert. Separate konvertere utenfor watcheren leser dem (se tabellen over), slik at et problem med Wargamings vilkår bare berører dem. |
+| VALORANT-posisjoner | Strømmen i replayene er forvirret med verdier hentet fra hvert bygs programfil, og spillet kjører under Vanguard. Det replayet bærer åpent - kart, kamp, agenter, drap- og rundetidslinjen - *leses*. Klientens lockfile-endepunkter er ikke et publisert API og brukes ikke. |
+| League of Legends-replayer, i spillet | Den øyeblikkelige delen av en `.rofl` er forvirret mot juks, forskjellig for hver oppdatering, og dekodes ikke. Det filen bærer åpent - hver spillers linje ved kampslutt - *leses*, og posisjoner kommer fra Riots offisielle kamptidslinje med din egen API-nøkkel. |
+| Fortnite | Replayene er kryptert. |
+| World of Tanks, World of Warships, av watcheren selv | Replayene deres er kryptert. Separate konvertere utenfor watcheren leser dem (se tabellen over), hver et eget prosjekt. |
 | Gran Turismo 7 | Bare konsoll; telemetrien er kryptert med en nøkkel hentet fra spillet. |
 | Apex Legends | Dets LiveAPI sender fulle hendelser bare i private og egendefinerte lobbyer; ingenting lokalt ellers. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | Ingen lokal replay, logg eller spilltilstandsutdata å lese. Deres statistikk kommer inn der Steam holder den (Steam-statistikk, Steam Timeline) og som NVIDIA-høydepunkter. |

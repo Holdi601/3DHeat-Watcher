@@ -50,8 +50,8 @@ existing ones on request.
 War Thunder saves a replay of each battle to `<War Thunder>/Replays/*.wrpl`
 when replay saving is on in its options. The watcher does not read them
 itself: an external converter does (3DHeat War Thunder replay converter,
-`exporters/ext/warthunder-replay`, command `heat3d-wt-replay`), kept apart so
-that a problem with it touches nothing else. When the command is on PATH, or
+`exporters/ext/warthunder-replay`, command `heat3d-wt-replay`), a project of
+its own. When the command is on PATH, or
 the package is installed or beside the watcher, each new replay is run through
 it into the session folder as `<map>/<match>.parquet` and `<match>.match.json`;
 when it is not, the watcher says once how to install it and leaves the folder

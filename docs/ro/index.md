@@ -131,6 +131,10 @@ iar coloanele fiecărui tabel în [Datele](the-data.md).
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | hărțile DCS World în modele 3D | [site](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | hărțile IL-2 Sturmovik în modele 3D | [site](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+Fiecare cititor de joc este un mic proiect de sine stătător, cu propriul fișier de licență, propriile versiuni și propriul
+sistem de raportare a problemelor, astfel încât poate fi instalat, actualizat, întreținut - sau retras la cererea unui
+deținător de drepturi - separat, fără să afecteze vizualizatorul sau celelalte unelte.
+
 Licență: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Licențele
 pachetelor terțe pe care le folosește, și ce cer jocurile pe care le citește, sunt enumerate în
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

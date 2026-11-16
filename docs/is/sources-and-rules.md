@@ -3,7 +3,7 @@ title: "Heimildir og reglur"
 nav_order: 7
 lang: "is"
 source: sources-and-rules.md
-source_hash: "990402abdc5d"
+source_hash: "36c4836cad3f"
 nav_exclude: true
 search_exclude: true
 ---
@@ -90,15 +90,15 @@ Steam eða NVIDIA App hefur þegar skrifað út eða sendir.
 
 ## Hvað er hafnað og hvers vegna {#what-is-declined-and-why}
 
-Sumir leikir, og sumir hlutar leikja, eru ekki skráðir því eina leiðin til að ná þeim myndi brjóta
-vernd eða skilmála leiks:
+Sumir leikir, og sumir hlutar leikja, eru ekki skráðir: gögn þeirra eru varin, ekki birt eða alls ekki
+á vél spilarans:
 
 | Leikur | Hvað er sleppt | Hvers vegna |
 |---|---|---|
-| VALORANT | staðsetningar, nöfn, stig í endursýningum; lockfile-endapunktar biðlarans | Leikjastraumur endursýningarinnar er dulinn með gildum úr keyrsluskrá hverrar útgáfu. Að endurheimta þau þýðir að brjóta leikinn niður (reverse engineering), sem skilmálar Riot banna (hlutar 3.1 og 7.1), og leikurinn keyrir undir Vanguard. Lockfile-endapunktar Riot-biðlarans eru ekki útgefið API. **Lesið:** það sem endursýningin ber í opnu - kort, viðureignarauðkenni, agents, tímalína dráps og lotna frá þjóninum. |
-| League of Legends | augnabliksþáttur `.rofl` endursýninga; lockfile-endapunktar biðlarans | Dulið gegn svindli, á annan hátt í hverri uppfærslu; að afkóða það þýðir að taka leikinn í sundur, sem skilmálar Riot banna. **Lesið:** lokastigatöflu leiksins sem hver endursýning ber sem venjulegt JSON, Live Client Data API meðan á viðureign stendur, og - með þínum eigin þróunarlykli - opinbera Match-V5 tímalínu (staðsetningar einu sinni á mínútu, dráp þar sem þau gerðust). |
-| Fortnite | endursýningar | Dulkóðaðar, og skilmálar Epic banna að brjóta þær niður. |
-| World of Tanks, World of Warships | endursýningar, í watcher | Dulritaðar, með lykli sem leikurinn ber og samfélagsverkfæri hafa gefið út árum saman. Watcher les þær ekki; aðskildir umbreytar utan þess gera það (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), svo vandamál með skilmála Wargaming - leyfi þess bannar að brjóta niður (5.3 b) og óheimilan hugbúnað sem hefur samskipti við vörur þess (12.1 k) - snerti aðeins þá. **Lesið, með umbreyti uppsettum:** staða hvers farartækis eða skips meðan upptökubiðlarinn vissi af því, og dráp. |
+| VALORANT | staðsetningar, nöfn, stig í endursýningum; lockfile-endapunktar biðlarans | Leikjastraumur endursýningarinnar er dulinn með gildum úr keyrsluskrá hverrar útgáfu. Leikurinn keyrir undir Vanguard. Lockfile-endapunktar Riot-biðlarans eru ekki útgefið API. **Lesið:** það sem endursýningin ber í opnu - kort, viðureignarauðkenni, agents, tímalína dráps og lotna frá þjóninum. |
+| League of Legends | augnabliksþáttur `.rofl` endursýninga; lockfile-endapunktar biðlarans | Dulið gegn svindli, á annan hátt í hverri uppfærslu, og ekki afkóðað. **Lesið:** lokastigatöflu leiksins sem hver endursýning ber sem venjulegt JSON, Live Client Data API meðan á viðureign stendur, og - með þínum eigin þróunarlykli - opinbera Match-V5 tímalínu (staðsetningar einu sinni á mínútu, dráp þar sem þau gerðust). |
+| Fortnite | endursýningar | Dulkóðaðar. |
+| World of Tanks, World of Warships | endursýningar, í watcher | Dulritaðar. Watcher les þær ekki; aðskildir umbreytar utan þess gera það (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), hvor um sig sjálfstætt verkefni. **Lesið, með umbreyti uppsettum:** staða hvers farartækis eða skips meðan upptökubiðlarinn vissi af því, og dráp. |
 | Gran Turismo 7 | fjarmæling | Aðeins leikjatölva, og fjarmæling hans er dulkóðuð með lykli sem var endurheimtur úr leiknum. |
 | Apex Legends | allt | LiveAPI hans sendir full atvik aðeins í einkasölum og sérsniðnum sölum; ekkert er tiltækt staðbundið annars. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | lifandi gögn | Engin staðbundin endursýning, annáll eða game-state úttak til að lesa. Tölfræði þeirra kemur inn þar sem Steam geymir hana ([Steam statistics](game-steam-stats.md), [Steam Timeline](game-steam-timeline.md)), og klippur þeirra sem [NVIDIA highlights](nvidia-highlights.md). |

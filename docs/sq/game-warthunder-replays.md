@@ -3,7 +3,7 @@ title: "War Thunder (riprodhime)"
 nav_order: 45
 lang: "sq"
 source: game-warthunder-replays.md
-source_hash: "23676a6c5441"
+source_hash: "4bf6e2f218cb"
 nav_exclude: true
 search_exclude: true
 ---
@@ -53,8 +53,8 @@ ato ekzistueset sipas kërkesës.
 War Thunder ruan një riprodhim të çdo beteje te `<War Thunder>/Replays/*.wrpl`
 kur ruajtja e riprodhimeve është e ndezur te opsionet e saj. Watcher-i nuk i lexon
 vetë: i lexon një konverter i jashtëm (konverteri i riprodhimeve War Thunder i 3DHeat,
-`exporters/ext/warthunder-replay`, komanda `heat3d-wt-replay`), mbajtur i ndarë që
-një problem me të të mos prekë asgjë tjetër. Kur komanda është në PATH, ose
+`exporters/ext/warthunder-replay`, komanda `heat3d-wt-replay`), një projekt më
+vete. Kur komanda është në PATH, ose
 paketa është e instaluar ose pranë watcher-it, çdo riprodhim i ri kalon përmes saj
 drejt dosjes së sesionit si `<map>/<match>.parquet` dhe `<match>.match.json`;
 kur nuk është, watcher-i thotë një herë si ta instalosh dhe e lë dosjen

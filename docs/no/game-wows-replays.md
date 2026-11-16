@@ -3,7 +3,7 @@ title: "World of Warships (repriser)"
 nav_order: 48
 lang: "no"
 source: game-wows-replays.md
-source_hash: "44a041452521"
+source_hash: "e7d24a56747e"
 nav_exclude: true
 search_exclude: true
 ---
@@ -53,8 +53,7 @@ Begge lagrer en reprise av hvert slag til `<spill>/replays/` når opptak er på
 `C:/Games/World_of_Tanks*` / `World_of_Warships*`, og Steam. Som for War Thunder leser
 watcheren ikke filene selv: en ekstern konverterer for hvert gjør det (`exporters/ext/wot-replay`,
 kommandoen `heat3d-wot-replay`; `exporters/ext/wows-replay`, kommandoen
-`heat3d-wows-replay`), holdt for seg selv slik at et problem med Wargamings vilkår bare
-berører den konverteren. Funnet på PATH, installert, eller ved siden av watcheren gjør den
+`heat3d-wows-replay`), hver et eget prosjekt. Funnet på PATH, installert, eller ved siden av watcheren gjør den
 hver ny reprise om til `<map>/<match>.parquet` og `<match>.match.json` i sesjonsmappen; mangler
 den, sier watcheren én gang hvordan den installeres. Opptakerens linje - kjøretøy eller skip,
 drap, skade (World of Tanks), om vedkommende overlevde, og resultatet (World of Tanks) - blir

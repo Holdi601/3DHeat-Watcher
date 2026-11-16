@@ -3,7 +3,7 @@ title: "League of Legends (Wiederholungen)"
 nav_order: 30
 lang: "de"
 source: game-lol-replays.md
-source_hash: "ed26619fa904"
+source_hash: "6a86dc8a45bb"
 nav_exclude: true
 search_exclude: true
 ---
@@ -36,9 +36,9 @@ Einstellungen aus Umgebungsvariablen:
 
 League of Legends und Valorant, Wiederholungen: was davon sich unverschlüsselt lesen lässt.
 
-Beide Spiele speichern Wiederholungen auf der Festplatte des Spielers, und beide schützen den Inhalt: Das Spielgeschehen Moment für Moment ist verschleiert, und bei jedem Patch anders, damit es nicht zum Schummeln benutzt werden kann. Um dort hindurchzukommen, müsste man den Code des Spiels selbst auseinandernehmen, was Riots Nutzungsbedingungen untersagen (Nutzungsbedingungen 3.1 und 7.1) – deshalb geschieht es hier nicht. Was jede Datei unverschlüsselt enthält, wird gelesen, und der Rest wird unverändert behalten: jeder Teil der Datei, vollständig, in der `heat.raw.parquet` der Sitzung (Regel des 3DHeat-Konverters, docs/converters.md im Repository des Viewers), gezählt in `selfCheck.completeness` der meta.json.
+Beide Spiele speichern Wiederholungen auf der Festplatte des Spielers, und beide schützen den Inhalt: Das Spielgeschehen Moment für Moment ist verschleiert, und bei jedem Patch anders, damit es nicht zum Schummeln benutzt werden kann. Dieser Teil wird nirgends in 3DHeat dekodiert. Was jede Datei unverschlüsselt enthält, wird gelesen, und der Rest wird unverändert behalten: jeder Teil der Datei, vollständig, in der `heat.raw.parquet` der Sitzung (Regel des 3DHeat-Konverters, docs/converters.md im Repository des Viewers), gezählt in `selfCheck.completeness` der meta.json.
 
-Der Watcher liest die Dateien nicht selbst: Das tut ein externer Leser (3DHeat Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`, Befehl `heat3d-riot-replays`). Er ist getrennt gehalten, damit ein Problem mit Riots Bedingungen nur diesen Leser berührt. Auf dem PATH, installiert oder neben dem Watcher gefunden, liest er jedes neue Replay; fehlt er, sagt der Watcher einmal, wie man ihn installiert. Was der Leser liest, schreibt der Watcher in die Sitzung; die Match-V5-Zeitleiste unten holt der Watcher selbst, weil sie nicht in der Datei steht.
+Der Watcher liest die Dateien nicht selbst: Das tut ein externer Leser (3DHeat Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`, Befehl `heat3d-riot-replays`), ein eigenes Projekt. Auf dem PATH, installiert oder neben dem Watcher gefunden, liest er jedes neue Replay; fehlt er, sagt der Watcher einmal, wie man ihn installiert. Was der Leser liest, schreibt der Watcher in die Sitzung; die Match-V5-Zeitleiste unten holt der Watcher selbst, weil sie nicht in der Datei steht.
 
 #### League of Legends (.rofl) {#league-of-legends-rofl}
 
@@ -92,7 +92,7 @@ Der Watcher folgt der [Konverterregel](https://github.com/Holdi601/3DHeat/blob/m
 
 **Nicht verfügbar**
 
-- das Spiel selbst (Positionen, Fähigkeiten, jede Einheit, Moment für Moment): die Chunks von ROFL1 und der Body von ROFL2 sind verschlüsselt, und die Pakete darin werden bei jedem Patch verschleiert; hindurchzukommen hieße, den Client auseinanderzunehmen, was Riots Nutzungsbedingungen untersagen (3.1, 7.1). Vollständig behalten, nicht gelesen
+- das Spiel selbst (Positionen, Fähigkeiten, jede Einheit, Moment für Moment): die Chunks von ROFL1 und der Body von ROFL2 sind verschlüsselt, und die Pakete darin werden bei jedem Patch verschleiert. Vollständig behalten, nicht gelesen
 - Positionen ohne deinen eigenen Riot-API-Schlüssel: die Datei hat keine im Klartext
 
 **Größe**: der Roh-Speicher ist etwa so groß wie die Wiederholung selbst: die verschlüsselten Chunks lassen sich nicht komprimieren

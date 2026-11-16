@@ -3,7 +3,7 @@ title: NVIDIA Highlights
 nav_order: 8
 lang: "da"
 source: nvidia-highlights.md
-source_hash: "a3b769ab065c"
+source_hash: "cd2a5cc2c5fd"
 nav_exclude: true
 search_exclude: true
 ---
@@ -84,4 +84,4 @@ Ting at vide om den lånte position:
 Den anden måde at få en position på ville være at læse den ud af hukommelsen. Ingen af hukommelserne virker:
 
 - **NVIDIAs hukommelse har ingen position i sig.** NVIDIA-appen modtager det, GfeSDK bærer - et highlight-id og to tidsforskydninger - plus videoen den optager. Der er ingen position nogen steder på NVIDIAs side at læse. (Watcheren læser alligevel ikke NVIDIAs hukommelse; den læser filerne ovenfor.)
-- **Spillets hukommelse er utilgængelig i multiplayer.** Positionen ligger i spillets proces, men watcheren læser aldrig et multiplayer-spils hukommelse: en hukommelsesadapter for et spil markeret som spillet online afvises, før noget åbnes (se [Læsning af hukommelse](memory-reading.md)). Multiplayer-spil kører under anti-cheats (Easy Anti-Cheat, BattlEye, Vanguard, ...), der behandler et andet program, der åbner spillets proces, som snyd, hvilket kan give kontoen et forbud. At læse spillets tilstand udefra er også det, spillenes vilkår forbyder. Et highlight i et multiplayer-spil får derfor kun et sted ud fra det, spillet selv udgiver: dets game-state integration eller telemetri, optaget af en anden adapter på samme tidspunkt.
+- **Spillets hukommelse er utilgængelig i multiplayer.** Positionen ligger i spillets proces, men watcheren læser aldrig et multiplayer-spils hukommelse: en hukommelsesadapter for et spil markeret som spillet online afvises, før noget åbnes (se [Læsning af hukommelse](memory-reading.md)). Multiplayer-spil kører under anti-cheats (Easy Anti-Cheat, BattlEye, Vanguard, ...), der behandler et andet program, der åbner spillets proces, som snyd, hvilket kan give kontoen et forbud. Et highlight i et multiplayer-spil får derfor kun et sted ud fra det, spillet selv udgiver: dets game-state integration eller telemetri, optaget af en anden adapter på samme tidspunkt.

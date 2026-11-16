@@ -31,7 +31,7 @@ zapisz powtórkę w VALORANT (kariera > mecz > pobierz powtórkę)
 
 League of Legends i powtórki VALORANT: to, co z nich można odczytać bez zmian.
 
-Obie gry zapisują powtórki na dysku gracza i obie chronią to, co jest w środku: dane rozgrywki z chwili na chwilę są zaciemnione, i to inaczej przy każdej aktualizacji, by nie dało się ich użyć do oszustwa. Przejście przez to oznacza rozbieranie na części kodu gry, czego zabraniają warunki Riot (Warunki usługi 3.1 i 7.1) – więc tego tu nie robimy. Czytane jest to, co każdy plik zawiera jawnie, a reszta jest zachowana tak jak jest: każda część pliku w całości w `heat.raw.parquet` sesji (zasada konwertera 3DHeat, docs/converters.md w repozytorium przeglądarki), liczona w `selfCheck.completeness` w meta.json.
+Obie gry zapisują powtórki na dysku gracza i obie chronią to, co jest w środku: dane rozgrywki z chwili na chwilę są zaciemnione, i to inaczej przy każdej aktualizacji, by nie dało się ich użyć do oszustwa. Ta część nie jest nigdzie w 3DHeat dekodowana. Czytane jest to, co każdy plik zawiera jawnie, a reszta jest zachowana tak jak jest: każda część pliku w całości w `heat.raw.parquet` sesji (zasada konwertera 3DHeat, docs/converters.md w repozytorium przeglądarki), liczona w `selfCheck.completeness` w meta.json.
 
 #### Valorant (.vrf) {#valorant-vrf}
 
@@ -81,7 +81,7 @@ Watcher stosuje [zasadę konwertera](https://github.com/Holdi601/3DHeat/blob/mai
 
 **Niedostępne**
 
-- pozycje, nazwy, wyniki, zdolności, każda klatka gry: fragmenty danych powtórki i punktów kontrolnych są zaciemnione; ich odczyt oznacza rozbieranie klienta na części, czego zabraniają warunki Riot. Zachowane w całości, nieodczytane
+- pozycje, nazwy, wyniki, zdolności, każda klatka gry: fragmenty danych powtórki i punktów kontrolnych są zaciemnione. Zachowane w całości, nieodczytane
 - zawartość zaszyfrowanej powtórki: przejrzana i zachowana w całości, nic w środku nie jest odczytywane
 
 **Rozmiar**: surowy zapis towarzyszący ma w przybliżeniu rozmiar samej powtórki: zaciemniony strumień się nie kompresuje

@@ -3,7 +3,7 @@ title: "NVIDIA Highlights"
 nav_order: 8
 lang: "fr"
 source: nvidia-highlights.md
-source_hash: "a3b769ab065c"
+source_hash: "cd2a5cc2c5fd"
 nav_exclude: true
 search_exclude: true
 ---
@@ -83,4 +83,4 @@ Points à connaître sur la position empruntée :
 L'autre façon d'obtenir une position serait de la lire dans la mémoire. Aucune des deux mémoires ne convient :
 
 - **La mémoire de NVIDIA ne contient pas de position.** L'application NVIDIA reçoit ce que le GfeSDK transporte - un identifiant de moment fort et deux décalages temporels - plus la vidéo qu'elle enregistre. Il n'y a nulle part de position côté NVIDIA à lire. (Le watcher ne lit de toute façon pas la mémoire de NVIDIA ; il lit les fichiers ci-dessus.)
-- **La mémoire du jeu est interdite en multijoueur.** La position est dans le processus du jeu, mais le watcher ne lit jamais la mémoire d'un jeu multijoueur : un adaptateur mémoire pour un jeu marqué comme joué en ligne est refusé avant que quoi que ce soit ne soit ouvert (voir [Lecture de la mémoire](memory-reading.md)). Les jeux multijoueurs tournent sous des anti-triches (Easy Anti-Cheat, BattlEye, Vanguard, ...) qui considèrent comme de la triche qu'un autre programme ouvre le processus du jeu, ce qui peut faire bannir le compte. Lire l'état du jeu de l'extérieur est aussi ce que les conditions des jeux interdisent. Un moment fort dans un jeu multijoueur n'a donc un lieu que grâce à ce que le jeu publie : son intégration d'état de jeu ou sa télémétrie, enregistrées par un autre adaptateur au même moment.
+- **La mémoire du jeu est interdite en multijoueur.** La position est dans le processus du jeu, mais le watcher ne lit jamais la mémoire d'un jeu multijoueur : un adaptateur mémoire pour un jeu marqué comme joué en ligne est refusé avant que quoi que ce soit ne soit ouvert (voir [Lecture de la mémoire](memory-reading.md)). Les jeux multijoueurs tournent sous des anti-triches (Easy Anti-Cheat, BattlEye, Vanguard, ...) qui considèrent comme de la triche qu'un autre programme ouvre le processus du jeu, ce qui peut faire bannir le compte. Un moment fort dans un jeu multijoueur n'a donc un lieu que grâce à ce que le jeu publie : son intégration d'état de jeu ou sa télémétrie, enregistrées par un autre adaptateur au même moment.

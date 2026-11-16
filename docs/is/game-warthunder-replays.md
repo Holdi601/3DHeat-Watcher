@@ -3,7 +3,7 @@ title: "War Thunder (endursýningar)"
 nav_order: 45
 lang: "is"
 source: game-warthunder-replays.md
-source_hash: "23676a6c5441"
+source_hash: "4bf6e2f218cb"
 nav_exclude: true
 search_exclude: true
 ---
@@ -53,8 +53,8 @@ ekki umbreyttar: spilari með ára gömul demó myndi annars sjá watcher upptek
 War Thunder vistar endursýningu af hverri orrustu í `<War Thunder>/Replays/*.wrpl`
 þegar vistun endursýninga er kveikt í valkostum leiksins. Watcher les þær ekki
 sjálfur: ytri umbreytir gerir það (3DHeat War Thunder replay converter,
-`exporters/ext/warthunder-replay`, skipunin `heat3d-wt-replay`), hafður sér svo
-vandamál í honum snerti ekkert annað. Þegar skipunin er á PATH, eða
+`exporters/ext/warthunder-replay`, skipunin `heat3d-wt-replay`), sjálfstætt
+verkefni. Þegar skipunin er á PATH, eða
 pakkinn er uppsettur eða við hlið watcher, er hver ný endursýning keyrð í gegnum
 hana inn í lotumöppuna sem `<map>/<match>.parquet` og `<match>.match.json`;
 þegar hún er það ekki, segir watcher einu sinni hvernig á að setja hana upp og lætur möppuna

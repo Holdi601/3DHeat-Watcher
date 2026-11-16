@@ -33,9 +33,8 @@ League of Legends- en VALORANT-replays: wat ervan zonder meer gelezen kan worden
 
 Beide spellen slaan replays op de schijf van de speler op, en beide beschermen wat erin zit:
 de gegevens van het spel van moment tot moment zijn verhuld, en bij elke patch anders,
-zodat ze niet gebruikt kunnen worden om te valsspelen. Erdoorheen komen betekent de
-eigen code van het spel uit elkaar halen, wat de gebruiksvoorwaarden van Riot verbieden (Terms of Service 3.1 en 7.1)
-- daarom wordt dat hier niet gedaan. Wat elk bestand open bevat, wordt gelezen, en de rest
+zodat ze niet gebruikt kunnen worden om te valsspelen. Dat deel wordt nergens in
+3DHeat gedecodeerd. Wat elk bestand open bevat, wordt gelezen, en de rest
 wordt bewaard zoals het is: elk deel van het bestand, geheel, in de `heat.raw.parquet` van de sessie
 (de converterregel van 3DHeat, docs/converters.md in de repository van de
 viewer), geteld in `selfCheck.completeness` van meta.json.
@@ -96,7 +95,7 @@ De watcher volgt de [converterregel](https://github.com/Holdi601/3DHeat/blob/mai
 
 **Niet beschikbaar**
 
-- posities, namen, standen, vaardigheden, elk frame van het spel: de replaydata- en checkpoint-chunks zijn verhuld; ze lezen betekent de client uit elkaar halen, wat de voorwaarden van Riot verbieden. Geheel bewaard, niet gelezen
+- posities, namen, standen, vaardigheden, elk frame van het spel: de replaydata- en checkpoint-chunks zijn verhuld. Geheel bewaard, niet gelezen
 - de inhoud van een versleuteld replay: doorlopen en geheel bewaard, binnenin niets gelezen
 
 **Grootte**: het ruwe bijbestand is ongeveer zo groot als het replay zelf: de verhulde stroom wordt niet kleiner

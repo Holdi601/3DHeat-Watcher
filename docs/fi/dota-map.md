@@ -3,13 +3,13 @@ title: Dota 2 -kartta
 nav_order: 6.5
 lang: "fi"
 source: dota-map.md
-source_hash: "3dcde11c7784"
+source_hash: "6c7a1c39d1bf"
 nav_exclude: true
 search_exclude: true
 ---
 # Dota 2 -kartta tasona (`dota-map`) {#dota-2s-map-as-a-level-dota-map}
 
-Dota 2 -kartan kolmiulotteisen version — maan, kallioiden, veden, jokaisen puun ja rakennukset siinä kehyksessä ja yksiköissä, joissa [Dota 2 -tallennetaulukot](game-dota-replays.md) piirretään — tekee oma työkalunsa, **3DHeat Dota** ([3DHeat-Ext-Dota](https://github.com/Holdi601/3DHeat-Ext-Dota), [dokumentaatio](https://holdi601.github.io/3DHeat-Ext-Dota/)). Se lukee Valven pelitiedostoja, joten se on pidetty vahdin ulkopuolella: jos se joskus pitää poistaa, vahti pysyy.
+Dota 2 -kartan kolmiulotteisen version — maan, kallioiden, veden, jokaisen puun ja rakennukset siinä kehyksessä ja yksiköissä, joissa [Dota 2 -tallennetaulukot](game-dota-replays.md) piirretään — tekee oma työkalunsa, **3DHeat Dota** ([3DHeat-Ext-Dota](https://github.com/Holdi601/3DHeat-Ext-Dota), [dokumentaatio](https://holdi601.github.io/3DHeat-Ext-Dota/)), oma projektinsa vahdin ulkopuolella.
 
 Asenna se kerran, kuten sen [Ennen aloitusta](https://holdi601.github.io/3DHeat-Ext-Dota/before-you-start.html)-sivu kertoo (Python-paketti sekä Source2Viewerin komentorivityökalu). Aja sen jälkeen jompikumpi:
 

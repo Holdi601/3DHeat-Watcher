@@ -25,12 +25,12 @@ ismert játékhoz megmondja, mit rögzít, és honnan olvassa - magukból az ada
 | platform | amit a Steam és a grafikus illesztőprogram tárol: statisztikák, eredmények, idővonalak, kiemelések | igen |
 | memória | a játék memóriája, csak olvasva - csak egyjátékos játékoknál, az alábbi ellenőrzések mögött | **soha** |
 
-Semmibe nem injektálnak, nem horgonyoznak, és semmit nem módosítanak egyik játékban sem. Az a forrás, amelyet egy játék
-feltételei vagy csalásellenes szabályai kizárnak, nincs megvalósítva: a League of Legends és a Valorant kliens
+Semmibe nem injektálnak, nem horgonyoznak, és semmit nem módosítanak egyik játékban sem. A védett források
+nincsenek megvalósítva: a League of Legends és a Valorant kliens
 lockfile-végpontjai, a visszajátszások védett részei (Fortnite, League of Legends, Valorant), a Gran Turismo 7 titkosított
 telemetriája (ehhez egy a játékból visszanyert kulcs kellene). A World of Tanks és World of Warships visszajátszások is
 titkosítottak; a figyelő nem olvassa őket, a figyelőn kívüli külön konverterek viszont igen (`exporters/ext/wot-replay`,
-`exporters/ext/wows-replay`), és csak az a játékos telepíti, aki ezt eldönti - a Wargaming feltételeihez lásd a saját
+`exporters/ext/wows-replay`), és csak az a játékos telepíti, aki ezt eldönti - lásd a saját
 READMEjüket.
 
 ## Mi a felvétel {#what-a-recording-is}
@@ -147,10 +147,10 @@ letöltött példánynál a fájlok cseréjével a kiadási archívumból. A fig
 
 | Játék | Miért nem |
 |---|---|
-| VALORANT pozíciók | A visszajátszások játékfolyama minden build futtatható fájljából vett értékekkel van elhomályosítva; ezek visszanyerése a játék visszafejtése lenne, amit a Riot feltételei tiltanak, a játék pedig a Vanguard alatt fut. Ami a visszajátszás nyíltan hordoz - a térkép, a mérkőzés, az ügynökök, az ölés- és fordulóidővonal - *az* olvasott. A kliens lockfile-végpontjai nem nyilvános API, és nem használjuk őket. |
-| League of Legends visszajátszások, a játékban | A `.rofl` pillanatról pillanatra zajló része csalás ellen elhomályosított, minden javításkor másképp; dekódolása azt jelentené, hogy szétszedjük a játékot, amit a Riot feltételei tiltanak. Ami a fájl nyíltan hordoz - minden játékos mérkőzés végi sora - *az* olvasott, a pozíciók pedig a Riot hivatalos mérkőzés-idővonalából jönnek, a saját API-kulcsoddal. |
-| Fortnite | A visszajátszásai titkosítottak, és az Epic feltételei tiltják a visszafejtésüket. |
-| World of Tanks, World of Warships, maga a figyelő által | A visszajátszásaik titkosítottak. A figyelőn kívüli külön konverterek olvassák őket (lásd a fenti táblázatot), így a Wargaming feltételeivel kapcsolatos bármilyen probléma csak azokat érinti. |
+| VALORANT pozíciók | A visszajátszások játékfolyama minden build futtatható fájljából vett értékekkel van elhomályosítva, a játék pedig a Vanguard alatt fut. Ami a visszajátszás nyíltan hordoz - a térkép, a mérkőzés, az ügynökök, az ölés- és fordulóidővonal - *az* olvasott. A kliens lockfile-végpontjai nem nyilvános API, és nem használjuk őket. |
+| League of Legends visszajátszások, a játékban | A `.rofl` pillanatról pillanatra zajló része csalás ellen elhomályosított, minden javításkor másképp, és nincs dekódolva. Ami a fájl nyíltan hordoz - minden játékos mérkőzés végi sora - *az* olvasott, a pozíciók pedig a Riot hivatalos mérkőzés-idővonalából jönnek, a saját API-kulcsoddal. |
+| Fortnite | A visszajátszásai titkosítottak. |
+| World of Tanks, World of Warships, maga a figyelő által | A visszajátszásaik titkosítottak. A figyelőn kívüli külön konverterek olvassák őket (lásd a fenti táblázatot), mindegyik önálló projekt. |
 | Gran Turismo 7 | Csak konzolon fut; a telemetriája egy, a játékból visszanyert kulccsal van titkosítva. |
 | Apex Legends | A LiveAPI teljes eseményeket csak privát és egyedi lobbikban küld; máshol semmi helyi. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | Nincs helyi visszajátszás, napló vagy játékállapot-kimenet, amit olvasni lehetne. A statisztikáik ott érkeznek be, ahol a Steam tárolja őket (Steam-statisztika, Steam Timeline), és NVIDIA-kiemelésként. |

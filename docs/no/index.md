@@ -3,7 +3,7 @@ title: Hjem
 nav_order: 1
 lang: "no"
 source: index.md
-source_hash: "d74a4eae2685"
+source_hash: "269b4c01a4af"
 nav_exclude: true
 search_exclude: true
 permalink: /no/
@@ -136,6 +136,10 @@ til å konvertere CS2-demoer). Hvert er et eget prosjekt, med egne utgivelser og
 | [Ext-ACRally](https://github.com/Holdi601/3DHeat-Ext-ACRally) | Assetto Corsa Rally-etapper som baner | [nettsted](https://holdi601.github.io/3DHeat-Ext-ACRally/) |
 | [Ext-Reforger](https://github.com/Holdi601/3DHeat-Ext-Reforger) | Arma Reforger-verdener (Enfusion) som 3D-nivåer | [nettsted](https://holdi601.github.io/3DHeat-Ext-Reforger/) |
 | [Ext-R6](https://github.com/Holdi601/3DHeat-Ext-R6) | Rainbow Six Siege-kampreplays | [nettsted](https://holdi601.github.io/3DHeat-Ext-R6/) |
+
+Hver spilleser er sitt eget lille prosjekt med egen lisensfil, egne utgivelser og egen saksliste, slik
+at den kan installeres, oppdateres, vedlikeholdes - eller trekkes tilbake etter ønske fra en
+rettighetshaver - for seg selv, uten at det påvirker visningsprogrammet eller de andre verktøyene.
 
 Lisens: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Lisensene til
 tredjepartspakkene den bruker, og hva spillene den leser krever, står i

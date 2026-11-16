@@ -3,7 +3,7 @@ title: NVIDIA Highlights
 nav_order: 8
 lang: "it"
 source: nvidia-highlights.md
-source_hash: "a3b769ab065c"
+source_hash: "cd2a5cc2c5fd"
 nav_exclude: true
 search_exclude: true
 ---
@@ -83,4 +83,4 @@ Cose da sapere sulla posizione presa in prestito:
 L'altro modo per ottenere una posizione sarebbe leggerla dalla memoria. Nessuna delle due memorie funziona:
 
 - **La memoria di NVIDIA non contiene alcuna posizione.** L'app NVIDIA riceve ciò che il GfeSDK trasporta - un id di highlight e due scarti temporali - più il video che registra. Non c'è nessuna posizione da leggere dal lato di NVIDIA. (Il watcher comunque non legge la memoria di NVIDIA; legge i file sopra.)
-- **La memoria del gioco è fuori dai limiti nel multigiocatore.** La posizione è nel processo del gioco, ma il watcher non legge mai la memoria di un gioco multigiocatore: un adattatore di memoria per un gioco segnato come giocato online viene rifiutato prima ancora che venga aperto qualcosa (vedi [Lettura della memoria](memory-reading.md)). I giochi multigiocatore girano sotto anti-cheat (Easy Anti-Cheat, BattlEye, Vanguard, ...) che trattano un altro programma che apre il processo del gioco come un imbroglio, cosa che può far bannare l'account. Leggere lo stato del gioco dall'esterno è anche ciò che i termini dei giochi vietano. Un highlight in un gioco multigiocatore riceve quindi un luogo solo da ciò che il gioco pubblica: la sua game-state integration o la sua telemetria, registrate da un altro adattatore nello stesso momento.
+- **La memoria del gioco è fuori dai limiti nel multigiocatore.** La posizione è nel processo del gioco, ma il watcher non legge mai la memoria di un gioco multigiocatore: un adattatore di memoria per un gioco segnato come giocato online viene rifiutato prima ancora che venga aperto qualcosa (vedi [Lettura della memoria](memory-reading.md)). I giochi multigiocatore girano sotto anti-cheat (Easy Anti-Cheat, BattlEye, Vanguard, ...) che trattano un altro programma che apre il processo del gioco come un imbroglio, cosa che può far bannare l'account. Un highlight in un gioco multigiocatore riceve quindi un luogo solo da ciò che il gioco pubblica: la sua game-state integration o la sua telemetria, registrate da un altro adattatore nello stesso momento.

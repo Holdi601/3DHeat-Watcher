@@ -3,7 +3,7 @@ title: "League of Legends (replays)"
 nav_order: 30
 lang: "da"
 source: game-lol-replays.md
-source_hash: "ed26619fa904"
+source_hash: "6a86dc8a45bb"
 nav_exclude: true
 search_exclude: true
 ---
@@ -38,16 +38,14 @@ League of Legends og Valorant replays: det, der kan læses af dem som de er.
 
 Begge spil gemmer replays på spillerens disk, og begge beskytter det, der er indeni:
 spilledata i bevægelse er forvansket, og forskelligt med hver patch,
-for at forhindre, at det bruges til at snyde. At komme igennem det betyder at adskille
-spillets egen kode, hvilket Riots vilkår forbyder (Terms of Service 3.1 og 7.1)
-- så det gøres ingen steder i 3DHeat. Det, hver fil bærer åbent, læses, og resten
+for at forhindre, at det bruges til at snyde. Den del afkodes ingen
+steder i 3DHeat. Det, hver fil bærer åbent, læses, og resten
 gemmes, som den er: hver del af filen, hel, i sessionens `heat.raw.parquet` (3DHeats
 konverterregel, docs/converters.md i viewerens repository), talt i meta.jsons `selfCheck.completeness`.
 
 Watcheren læser ikke filerne selv: det gør en ekstern læser (3DHeat
 Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`,
-kommandoen `heat3d-riot-replays`), holdt adskilt, så et problem med Riots
-vilkår kun rammer den læser. Findes den på PATH, er installeret eller ligger ved siden af watcheren, læser den
+kommandoen `heat3d-riot-replays`), et projekt for sig. Findes den på PATH, er installeret eller ligger ved siden af watcheren, læser den
 hver ny replay; mangler den, siger watcheren én gang, hvordan den installeres. Det, den
 læser, lægger watcheren ind i sessionen; Match-V5-tidslinjen nedenfor hentes af
 watcheren selv, da den ikke findes i filen.
@@ -117,7 +115,7 @@ Watcheren følger 3DHeats [konverterregel](https://github.com/Holdi601/3DHeat/bl
 
 **Ikke tilgængeligt**
 
-- selve spillet (positioner, evner, hver enhed, øjeblik for øjeblik): ROFL1's chunks og ROFL2's body er krypteret, og pakkerne indeni forvanskes med hver patch; at komme igennem betyder at adskille klienten, hvilket Riots vilkår forbyder (3.1, 7.1). Gemt hel, ikke læst
+- selve spillet (positioner, evner, hver enhed, øjeblik for øjeblik): ROFL1's chunks og ROFL2's body er krypteret, og pakkerne indeni forvanskes med hver patch. Gemt hel, ikke læst
 - positioner uden din egen Riot API-nøgle: filen har ingen åbent
 
 **Størrelse**: det rå sidefil er cirka replayens egen størrelse: de krypterede chunks komprimerer ikke

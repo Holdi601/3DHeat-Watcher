@@ -3,7 +3,7 @@ title: "Χάρτης Dota 2"
 nav_order: 6.5
 lang: "el"
 source: dota-map.md
-source_hash: "3dcde11c7784"
+source_hash: "6c7a1c39d1bf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -12,8 +12,8 @@ search_exclude: true
 Ο χάρτης του Dota 2 σε τρεις διαστάσεις - έδαφος, γκρεμοί, νερό, κάθε δέντρο και τα κτίρια, στο πλαίσιο και στις μονάδες
 στα οποία σχεδιάζονται οι [πίνακες replay του Dota 2](game-dota-replays.md) - φτιάχνεται από το δικό του εργαλείο,
 το **3DHeat Dota** ([3DHeat-Ext-Dota](https://github.com/Holdi601/3DHeat-Ext-Dota),
-[τεκμηρίωση](https://holdi601.github.io/3DHeat-Ext-Dota/)). Διαβάζει τα αρχεία παιχνιδιού της Valve, γι' αυτό
-βρίσκεται έξω από τον watcher: αν χρειαστεί ποτέ να αφαιρεθεί, ο watcher μένει.
+[τεκμηρίωση](https://holdi601.github.io/3DHeat-Ext-Dota/)), ένα αυτόνομο
+έργο έξω από τον watcher.
 
 Εγκαταστήστε το μία φορά, όπως λέει η σελίδα του [Πριν ξεκινήσετε](https://holdi601.github.io/3DHeat-Ext-Dota/before-you-start.html)
 του (πακέτο Python, και η γραμμή εντολών του Source2Viewer). Μετά, είτε

@@ -130,6 +130,10 @@ biex jikkonverti demos ta' CS2). Kull waħda hija proġett tagħha, bir-rilaxxi 
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | mapep ta' DCS World f'mudelli 3D | [sit](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | mapep ta' IL-2 Sturmovik f'mudelli 3D | [sit](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+Kull qarrej ta' logħba huwa proġett żgħir tiegħu, bil-fajl tal-liċenzja, ir-rilaxxi u l-issue tracker tiegħu,
+hekk li jista' jiġi installat, aġġornat, miżmum - jew irtirat fuq talba ta' detentur tad-drittijiet - waħdu,
+mingħajr ma jolqot il-viewer jew l-għodod l-oħra.
+
 Liċenzja: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Il-liċenzji
 tal-pakketti ta' terzi li juża, u dak li l-logħob li jaqra jeħtieġu, huma elenkati f'
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

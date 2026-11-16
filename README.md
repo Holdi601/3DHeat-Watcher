@@ -135,8 +135,7 @@ The viewer's one-file-a-match format, which the replay converters can write, is 
 watcher: [3DHeat-Ext-WarThunder](https://github.com/Holdi601/3DHeat-Ext-WarThunder)
 (`exporters/ext/warthunder-replay` in 3DHeat), which installs the
 `heat3d-wt-replay` command (`pip install -e <3DHeat>/exporters/ext/warthunder-replay`).
-The format is undocumented and Gaijin's EULA forbids reverse engineering the
-game, so it is kept apart: without it the watcher runs as before and says once
+It is a project of its own: without it the watcher runs as before and says once
 that it is missing. With it, each new replay in `<War Thunder>/Replays` becomes
 a session with every aircraft's track, the kills and hits where they happened,
 and who was who where the replay says so. What it reads and does not read is in
@@ -146,9 +145,8 @@ its own README.
 are read the same way, by a converter of each outside the watcher:
 [3DHeat-Ext-WoT](https://github.com/Holdi601/3DHeat-Ext-WoT) (`heat3d-wot-replay`) and
 [3DHeat-Ext-WoWs](https://github.com/Holdi601/3DHeat-Ext-WoWs) (`heat3d-wows-replay`), each installed with `pip install -e` on its folder.
-Wargaming's licence forbids reverse engineering and "unauthorized software ...
-that interacts with a Product", and the replays are enciphered, so these too
-are kept apart. With them, each new replay in the game's `replays` folder
+Each is a project of its own, like the War Thunder converter. With them, each
+new replay in the game's `replays` folder
 becomes a session with every tank's or ship's position while the recording
 player's client knew of it - its own team throughout, enemies while spotted -
 and the kills where they happened. Their READMEs say what they read, on which
@@ -218,6 +216,15 @@ own project, with its own releases and licence:
 | [Ext-ACRally](https://github.com/Holdi601/3DHeat-Ext-ACRally) | Assetto Corsa Rally stages as courses | [site](https://holdi601.github.io/3DHeat-Ext-ACRally/) |
 | [Ext-Reforger](https://github.com/Holdi601/3DHeat-Ext-Reforger) | Arma Reforger worlds (Enfusion) as 3D levels | [site](https://holdi601.github.io/3DHeat-Ext-Reforger/) |
 | [Ext-R6](https://github.com/Holdi601/3DHeat-Ext-R6) | Rainbow Six Siege match replays | [site](https://holdi601.github.io/3DHeat-Ext-R6/) |
+
+Each game reader is its own small project with its own licence file, releases
+and issue tracker, so it can be installed, updated, maintained - or withdrawn on
+a rights holder's request - on its own, without affecting the viewer or the
+other tools. 3DHeat is not affiliated with or endorsed by the publishers of the
+games it reads; the games and related names and trademarks belong to their
+owners. Rights holders: open an issue at
+[3DHeat-Watcher/issues](https://github.com/Holdi601/3DHeat-Watcher/issues) - we
+respond quickly and remove anything on request.
 
 ## Updates
 

@@ -52,14 +52,14 @@ Jen `memory` otevírá jiný proces, a jen pro čtení. Ostatních pět druhů �
 
 ## Co se vynechává a proč {#what-is-declined-and-why}
 
-Některé hry a některé části her se nenahrávají, protože jediný způsob, jak je získat, by porušil ochranu nebo podmínky hry:
+Některé hry a některé části her se nenahrávají: jejich data jsou chráněná, nezveřejněná nebo na počítači hráče vůbec nejsou:
 
 | Hra | Co se vynechává | Proč |
 |---|---|---|
-| VALORANT | pozice, jména, skóre v replayích; koncové body lockfile klienta | Herní proud replaye je zakryt hodnotami, které se berou z spustitelného souboru každé verze. Jejich získání znamená reverzní inženýrství hry, které zakazují podmínky služby Riot (oddíly 3.1 a 7.1), a hra běží pod Vanguardem. Koncové body lockfile klienta Riot nejsou zveřejněné API. **Čte se:** co replay nese otevřeně – mapa, id zápasu, agenti, časová osa serveru pro zabití a kola. |
-| League of Legends | pohybová část replayů `.rofl`; koncové body lockfile klienta | Zakryto proti podvádění, jinak při každém patchi; dekódování znamená rozebrat hru, což zakazují podmínky Riotu. **Čte se:** koncový přehled statistik, který každý replay nese jako obyčejný JSON, Live Client Data API během zápasu a – s vlastním vývojářským klíčem – oficiální časová osa Match-V5 (pozice jednou za minutu, zabití tam, kde se staly). |
-| Fortnite | replaye | Zašifrované a podmínky Epicu zakazují jejich reverzní inženýrství. |
-| World of Tanks, World of Warships | replaye, v Watcheru | Zašifrované, s klíčem, který hra nese a který komunitní nástroje zveřejnily už léta. Watcher je nečte; čtou je samostatné převodníky mimo něj (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), aby se případný problém s podmínkami Wargamingu – jeho licence zakazuje reverzní inženýrství (5.3 b) a neautorizovaný software, který s jeho produkty interaguje (12.1 k) – dotkl jen jich. **Čte se, když je nainstalovaný převodník:** pozice každého vozidla nebo lodi, dokud ho nahrávací klient znal, a zabití. |
+| VALORANT | pozice, jména, skóre v replayích; koncové body lockfile klienta | Herní proud replaye je zakryt hodnotami, které se berou z spustitelného souboru každé verze. Hra běží pod Vanguardem. Koncové body lockfile klienta Riot nejsou zveřejněné API. **Čte se:** co replay nese otevřeně – mapa, id zápasu, agenti, časová osa serveru pro zabití a kola. |
+| League of Legends | pohybová část replayů `.rofl`; koncové body lockfile klienta | Zakryto proti podvádění, jinak při každém patchi, a nedekóduje se. **Čte se:** koncový přehled statistik, který každý replay nese jako obyčejný JSON, Live Client Data API během zápasu a – s vlastním vývojářským klíčem – oficiální časová osa Match-V5 (pozice jednou za minutu, zabití tam, kde se staly). |
+| Fortnite | replaye | Zašifrované. |
+| World of Tanks, World of Warships | replaye, v Watcheru | Zašifrované. Watcher je nečte; čtou je samostatné převodníky mimo něj (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), každý jako samostatný projekt. **Čte se, když je nainstalovaný převodník:** pozice každého vozidla nebo lodi, dokud ho nahrávací klient znal, a zabití. |
 | Gran Turismo 7 | telemetrie | Jen na konzolích a její telemetrie je šifrovaná klíčem, který byl z hry získán. |
 | Apex Legends | všechno | Jeho LiveAPI posílá plné události jen v soukromých a vlastních lobby; jinak není nic dostupné lokálně. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | živá data | Žádný místní replay, log ani výstup game-state ke čtení. Jejich statistiky přicházejí tam, kde je drží Steam ([Statistiky Steamu](game-steam-stats.md), [Steam Timeline](game-steam-timeline.md)), a jejich klipy jako [NVIDIA highlights](nvidia-highlights.md). |

@@ -51,8 +51,8 @@ Squad's dedicated servers record a demo of a match when an admin with the
 `<server>/SquadGame/Saved/Demos/<name>.replay` - an Unreal Engine network
 replay holding what the server replicated, every player's movement included.
 The watcher does not read them itself: an external reader does (3DHeat Squad
-demo reader, `exporters/ext/squad-demo`, command `heat3d-squad-demo`), kept
-apart so that a problem with it touches nothing else. It is run on each new
+demo reader, `exporters/ext/squad-demo`, command `heat3d-squad-demo`), a
+project of its own. It is run on each new
 demo in the folders a local server writes to, or in a folder the settings add
 for demos copied off a rented server, into the session folder as
 `<map>/<match>.parquet` and `<match>.match.json`. The layer, the map, the

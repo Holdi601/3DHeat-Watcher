@@ -22,7 +22,7 @@ Znajdź swoją grę w tabeli poniżej, by zobaczyć, co jest zapisywane i co trz
 | platform | to, co trzymają Steam i sterownik karty graficznej: statystyki, osiągnięcia, osie czasu, najlepsze momenty | tak |
 | memory | pamięć gry, tylko do odczytu – wyłącznie gry jednoosobowe, za każdym z poniższych sprawdzeń | **nigdy** |
 
-Niczego nie wstrzykuje się, nie przechwytuje ani nie zmienia w żadnej grze. Źródło, które wykluczają warunki gry albo zasady anty-cheatu, nie jest zaimplementowane: endpointy plików blokady klienta League of Legends i Valorant, chronione części powtórek (Fortnite, League of Legends, Valorant), zaszyfrowana telemetria Gran Turismo 7 (wymagałaby klucza odzyskanego z gry). Powtórki World of Tanks i World of Warships są również zaszyfrowane; watcher ich nie czyta, robią to osobne konwertery spoza niego (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), instalowane tylko przez gracza, który tak postanowi – warunki Wargaming opisują ich READMEs.
+Niczego nie wstrzykuje się, nie przechwytuje ani nie zmienia w żadnej grze. Chronione źródła nie są zaimplementowane: endpointy plików blokady klienta League of Legends i Valorant, chronione części powtórek (Fortnite, League of Legends, Valorant), zaszyfrowana telemetria Gran Turismo 7 (wymagałaby klucza odzyskanego z gry). Powtórki World of Tanks i World of Warships są również zaszyfrowane; watcher ich nie czyta, robią to osobne konwertery spoza niego (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), instalowane tylko przez gracza, który tak postanowi – zob. ich README.
 
 ## Czym jest nagranie {#what-a-recording-is}
 
@@ -114,10 +114,10 @@ Watcher sprawdza swoje wydania na GitHubie przy starcie (najwyżej co sześć go
 
 | Gra | Dlaczego nie |
 |---|---|
-| Pozycje VALORANT | Strumień gry w powtórkach jest zaciemniony wartościami wziętymi z pliku wykonywalnego każdej wersji; odzyskanie ich to inżynieria wsteczna gry, czego zabraniają warunki Riot, a gra działa pod Vanguard. To, co powtórka zawiera jawnie – mapa, mecz, agenci, oś czasu zabójstw i rund – *jest* czytane. Endpointy pliku blokady klienta nie są opublikowanym API i nie są używane. |
-| Powtórki League of Legends, w grze | Część `.rofl` dotycząca rozgrywki minuta po minucie jest zaciemniona przeciw oszustwom, inaczej za każdym razem w łatce; jej dekodowanie oznacza rozebranie gry, czego zabraniają warunki Riot. To, co plik zawiera jawnie – linię końcową każdego gracza – *jest* czytane, a pozycje pochodzą z oficjalnej osi czasu meczu Riot z twoim własnym kluczem API. |
-| Fortnite | Jego powtórki są zaszyfrowane, a warunki Epic zabraniają inżynierii wstecznej. |
-| World of Tanks, World of Warships – przez sam watcher | Ich powtórki są szyfrowane. Osobne konwertery spoza watchera je czytają (zob. tabelę wyżej), więc problem z warunkami Wargaming dotyczy tylko ich. |
+| Pozycje VALORANT | Strumień gry w powtórkach jest zaciemniony wartościami wziętymi z pliku wykonywalnego każdej wersji, a gra działa pod Vanguard. To, co powtórka zawiera jawnie – mapa, mecz, agenci, oś czasu zabójstw i rund – *jest* czytane. Endpointy pliku blokady klienta nie są opublikowanym API i nie są używane. |
+| Powtórki League of Legends, w grze | Część `.rofl` dotycząca rozgrywki minuta po minucie jest zaciemniona przeciw oszustwom, inaczej za każdym razem w łatce, i nie jest dekodowana. To, co plik zawiera jawnie – linię końcową każdego gracza – *jest* czytane, a pozycje pochodzą z oficjalnej osi czasu meczu Riot z twoim własnym kluczem API. |
+| Fortnite | Jego powtórki są zaszyfrowane. |
+| World of Tanks, World of Warships – przez sam watcher | Ich powtórki są szyfrowane. Osobne konwertery spoza watchera je czytają (zob. tabelę wyżej), każdy jako osobny projekt. |
 | Gran Turismo 7 | Tylko konsola; jej telemetria jest zaszyfrowana kluczem odzyskanym z gry. |
 | Apex Legends | Jego LiveAPI wysyła pełne zdarzenia tylko w prywatnych i niestandardowych lobby; poza tym nic lokalnie. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | Brak lokalnej powtórki, dziennika ani wyjścia stanu gry do odczytu. Ich statystyki trafiają tam, gdzie Steam je trzyma (statystyki Steam, Steam Timeline), oraz jako najlepsze momenty NVIDIA. |

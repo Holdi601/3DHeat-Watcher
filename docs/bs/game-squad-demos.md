@@ -54,8 +54,8 @@ Squadovi dedicirani serveri snimaju demo meča kad admin s dozvolom
 `<server>/SquadGame/Saved/Demos/<name>.replay` - mrežni snimak Unreal Enginea
 koji sadrži ono što je server replicirao, uključujući kretanje svakog igrača.
 Watcher ih ne čita sam: čita ih vanjski čitač (3DHeat Squad
-demo reader, `exporters/ext/squad-demo`, komanda `heat3d-squad-demo`), držan
-odvojeno da problem s njim ne dira ništa drugo. Pokreće se na svakom novom
+demo reader, `exporters/ext/squad-demo`, komanda `heat3d-squad-demo`), zaseban
+projekat. Pokreće se na svakom novom
 demu u folderima u koje piše lokalni server, ili u folderu koji postavke dodaju
 za demo-datoteke kopirane s iznajmljenog servera, u folder sesije kao
 `<map>/<match>.parquet` i `<match>.match.json`. Layer, mapa, broj

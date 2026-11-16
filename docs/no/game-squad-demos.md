@@ -3,7 +3,7 @@ title: "Squad (repriser)"
 nav_order: 40
 lang: "no"
 source: game-squad-demos.md
-source_hash: "a908f7e6d9c3"
+source_hash: "ddec19ea89bf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -53,8 +53,8 @@ kjører AdminDemoRec &lt;navn> (og AdminDemoStop), inn i
 `<server>/SquadGame/Saved/Demos/<navn>.replay` - en nettverksreprise fra Unreal Engine som
 inneholder det serveren replikerte, hver spillers bevegelse inkludert. Watcheren leser dem
 ikke selv: en ekstern leser gjør det (3DHeat Squad demo reader, `exporters/ext/squad-demo`,
-kommandoen `heat3d-squad-demo`), holdt for seg selv slik at et problem med den ikke berører
-noe annet. Den kjøres på hver ny demo i mappene en lokal server skriver til, eller i en mappe
+kommandoen `heat3d-squad-demo`), et eget prosjekt.
+Den kjøres på hver ny demo i mappene en lokal server skriver til, eller i en mappe
 innstillingene legger til for demoer kopiert fra en leid server, inn i sesjonsmappen som
 `<map>/<match>.parquet` og `<match>.match.json`. Laget, kartet, antallet spillere og
 kampens lengde blir sesjonens statistikk.

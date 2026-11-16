@@ -3,7 +3,7 @@ title: "VALORANT (replayt)"
 nav_order: 44
 lang: "fi"
 source: game-valorant-replays.md
-source_hash: "617e23a33a4c"
+source_hash: "a2c4144797e9"
 nav_exclude: true
 search_exclude: true
 ---
@@ -37,16 +37,15 @@ League of Legends- ja Valorant-replayt: se osa, joka niistä voidaan lukea sella
 
 Molemmat pelit tallentavat replayt pelaajan levylle, ja molemmat suojaavat sisältönsä:
 hetkeltä toiselle tapahtuva pelidata on hämärretty, ja hämäröinti vaihtuu joka päivityksen mukana,
-jotta sitä ei voi käyttää huijaamiseen. Sen murtaminen tarkoittaisi pelin oman koodin purkamista, mitä Riotin
-käyttöehdot kieltävät (käyttöehdot 3.1 ja 7.1) - joten 3DHeatissa sitä ei tehdä missään. Se, mitä kukin tiedosto
+jotta sitä ei voi käyttää huijaamiseen. Tätä osaa ei pureta
+missään 3DHeatissa. Se, mitä kukin tiedosto
 kertoo avoimesti, luetaan, ja loppu tallennetaan sellaisenaan: jokainen tiedoston osa kokonaisena
 session `heat.raw.parquet`-tiedostossa (3DHeatin muunnossääntö, docs/converters.md katseluohjelman
 repositoriossa), ja se lasketaan meta.json:n `selfCheck.completeness`-kentässä.
 
 Watcher ei lue tiedostoja itse: sen tekee ulkoinen lukija (3DHeat
 Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`,
-komento `heat3d-riot-replays`). Se on erillään, jotta Riotin ehtoihin liittyvä ongelma
-koskee vain sitä. Jos lukija löytyy PATHista, on asennettu tai watcherin vieressä, se lukee jokaisen uuden replayn;
+komento `heat3d-riot-replays`), oma projektinsa. Jos lukija löytyy PATHista, on asennettu tai watcherin vieressä, se lukee jokaisen uuden replayn;
 jos sitä ei ole, watcher kertoo kerran, miten se asennetaan. Mitä lukija lukee, sen watcher tallentaa
 sessioon; alla oleva Match-V5-aikajana haetaan watcherin itsensä toimesta, koska sitä ei ole tiedostossa.
 
@@ -103,7 +102,7 @@ Watcher noudattaa 3DHeatin [muunnossääntöä](https://github.com/Holdi601/3DHe
 
 **Ei saatavilla**
 
-- sijainnit, nimet, pisteet, kyvyt, jokainen pelin kehys: replay-data- ja checkpoint-osat ovat hämärrettyjä; niiden lukeminen tarkoittaisi asiakasohjelman purkamista, mitä Riotin käyttöehdot kieltävät. Tallennettu kokonaisena, ei luettu
+- sijainnit, nimet, pisteet, kyvyt, jokainen pelin kehys: replay-data- ja checkpoint-osat ovat hämärrettyjä. Tallennettu kokonaisena, ei luettu
 - salatun replayn sisältö: käyty läpi ja tallennettu kokonaisena, sisältöä ei luettu
 
 **Koko**: raakatallenne on noin replayn oman kokoinen: hämärretty virta ei pakkaudu

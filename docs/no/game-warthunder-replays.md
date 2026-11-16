@@ -3,7 +3,7 @@ title: "War Thunder (repriser)"
 nav_order: 45
 lang: "no"
 source: game-warthunder-replays.md
-source_hash: "23676a6c5441"
+source_hash: "4bf6e2f218cb"
 nav_exclude: true
 search_exclude: true
 ---
@@ -52,7 +52,7 @@ ikke: en spiller med år med demoer ville ellers fått watcheren opptatt i en da
 War Thunder lagrer en reprise av hver slag til `<War Thunder>/Replays/*.wrpl` når lagring av
 repriser er på i innstillingene. Watcheren leser dem ikke selv: en ekstern konverterer gjør
 det (3DHeat War Thunder replay converter, `exporters/ext/warthunder-replay`, kommandoen
-`heat3d-wt-replay`), holdt for seg selv slik at et problem med den ikke berører noe annet.
+`heat3d-wt-replay`), et eget prosjekt.
 Når kommandoen er på PATH, eller pakken er installert eller ligger ved siden av watcheren,
 kjøres hver ny reprise gjennom den inn i sesjonsmappen som `<map>/<match>.parquet` og
 `<match>.match.json`; når den ikke er det, sier watcheren én gang hvordan den installeres,

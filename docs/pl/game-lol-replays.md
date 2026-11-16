@@ -32,7 +32,7 @@ zapisz powtórkę w kliencie League (historia meczów > pobierz); dla pozycji us
 
 League of Legends i powtórki VALORANT: to, co z nich można odczytać bez zmian.
 
-Obie gry zapisują powtórki na dysku gracza i obie chronią to, co jest w środku: dane rozgrywki z chwili na chwilę są zaciemnione, i to inaczej przy każdej aktualizacji, by nie dało się ich użyć do oszustwa. Przejście przez to oznacza rozbieranie na części kodu gry, czego zabraniają warunki Riot (Warunki usługi 3.1 i 7.1) – więc tego tu nie robimy. Czytane jest to, co każdy plik zawiera jawnie, a reszta jest zachowana tak jak jest: każda część pliku w całości w `heat.raw.parquet` sesji (zasada konwertera 3DHeat, docs/converters.md w repozytorium przeglądarki), liczona w `selfCheck.completeness` w meta.json.
+Obie gry zapisują powtórki na dysku gracza i obie chronią to, co jest w środku: dane rozgrywki z chwili na chwilę są zaciemnione, i to inaczej przy każdej aktualizacji, by nie dało się ich użyć do oszustwa. Ta część nie jest nigdzie w 3DHeat dekodowana. Czytane jest to, co każdy plik zawiera jawnie, a reszta jest zachowana tak jak jest: każda część pliku w całości w `heat.raw.parquet` sesji (zasada konwertera 3DHeat, docs/converters.md w repozytorium przeglądarki), liczona w `selfCheck.completeness` w meta.json.
 
 #### League of Legends (.rofl) {#league-of-legends-rofl}
 
@@ -86,7 +86,7 @@ Watcher stosuje [zasadę konwertera](https://github.com/Holdi601/3DHeat/blob/mai
 
 **Niedostępne**
 
-- sama gra (pozycje, zdolności, każda jednostka, z chwili na chwilę): fragmenty ROFL1 i ciało ROFL2 są zaszyfrowane, a pakiety w środku zaciemnione przy każdej łatce; przejście przez to oznacza rozbieranie klienta na części, czego zabraniają warunki Riot (3.1, 7.1). Zachowane w całości, nieodczytane
+- sama gra (pozycje, zdolności, każda jednostka, z chwili na chwilę): fragmenty ROFL1 i ciało ROFL2 są zaszyfrowane, a pakiety w środku zaciemnione przy każdej łatce. Zachowane w całości, nieodczytane
 - pozycje bez własnego klucza Riot API: plik nie ma ich jawnie
 
 **Rozmiar**: surowy zapis towarzyszący ma w przybliżeniu rozmiar samej powtórki: zaszyfrowane fragmenty się nie kompresują

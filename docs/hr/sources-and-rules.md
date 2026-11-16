@@ -52,14 +52,14 @@ Samo `memory` otvara drugi proces, i to samo za čitanje. Ostalih pet vrsta čit
 
 ## Što je odbijeno i zašto {#what-is-declined-and-why}
 
-Neke igre, i neki dijelovi igara, se ne bilježe jer bi jedini način da se dođe do njih narušio zaštitu ili uvjete igre:
+Neke igre, i neki dijelovi igara, se ne bilježe: njihovi su podaci zaštićeni, nisu objavljeni ili ih uopće nema na računalu igrača:
 
 | Igra | Što je izostavljeno | Zašto |
 |---|---|---|
-| VALORANT | pozicije, imena, rezultati u replayima; krajnje točke lockfile-a klijenta | Tok igre u replayu je zamagljen vrijednostima uzetim iz izvršne datoteke svake verzije. Njihovo vraćanje znači reverzno inženjerstvo igre, što zabranjuju Riotovi uvjeti korištenja (odjeljci 3.1 i 7.1), a igra radi pod Vanguardom. Krajnje točke lockfile-a Riot klijenta nisu objavljeni API. **Čita se:** što replay nosi u otvorenom obliku - mapa, ID utakmice, agenti, vremenska crta ubojstava i rundi koju bilježi poslužitelj. |
-| League of Legends | trenutačni dio `.rofl` replayeva; krajnje točke lockfile-a klijenta | Zamagljeno protiv varanja, drugačije svaki patch; dekodiranje znači rastavljanje igre, što Riotovi uvjeti zabranjuju. **Čita se:** završni zbirni prikaz utakmice koji svaki replay nosi kao običan JSON, Live Client Data API tijekom utakmice i - uz vlastiti ključ za razvojne programere - službena Match-V5 vremenska crta (pozicije jednom u minuti, ubojstva tamo gdje su se dogodila). |
-| Fortnite | replayi | Šifrirani su, a Epicovi uvjeti zabranjuju reverzno inženjerstvo. |
-| World of Tanks, World of Warships | replayi, u watcheru | Šifrirani, s ključem koji igra nosi i koji zajednički alati objavljuju već godinama. Watcher ih ne čita; to rade zasebni pretvarači izvan njega (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), pa se problem s Wargamingovim uvjetima - njegova licenca zabranjuje reverzno inženjerstvo (5.3 b) i neovlašten softver koji djeluje s njegovim proizvodima (12.1 k) - odnosi samo na njih. **Čita se, uz instaliran pretvarač:** pozicija svakog vozila ili broda dok ju je snimajući klijent znao, i ubojstva. |
+| VALORANT | pozicije, imena, rezultati u replayima; krajnje točke lockfile-a klijenta | Tok igre u replayu je zamagljen vrijednostima uzetim iz izvršne datoteke svake verzije. Igra radi pod Vanguardom. Krajnje točke lockfile-a Riot klijenta nisu objavljeni API. **Čita se:** što replay nosi u otvorenom obliku - mapa, ID utakmice, agenti, vremenska crta ubojstava i rundi koju bilježi poslužitelj. |
+| League of Legends | trenutačni dio `.rofl` replayeva; krajnje točke lockfile-a klijenta | Zamagljeno protiv varanja, drugačije svaki patch, i ne dekodira se. **Čita se:** završni zbirni prikaz utakmice koji svaki replay nosi kao običan JSON, Live Client Data API tijekom utakmice i - uz vlastiti ključ za razvojne programere - službena Match-V5 vremenska crta (pozicije jednom u minuti, ubojstva tamo gdje su se dogodila). |
+| Fortnite | replayi | Šifrirani su. |
+| World of Tanks, World of Warships | replayi, u watcheru | Šifrirani. Watcher ih ne čita; to rade zasebni pretvarači izvan njega (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), svaki zaseban projekt. **Čita se, uz instaliran pretvarač:** pozicija svakog vozila ili broda dok ju je snimajući klijent znao, i ubojstva. |
 | Gran Turismo 7 | telemetrija | Samo na konzoli, a telemetrija joj je šifrirana ključem izvučenim iz igre. |
 | Apex Legends | sve | Njegov LiveAPI šalje potpune događaje samo u privatnim i prilagođenim lobijima; inače ništa nije dostupno lokalno. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | živi podaci | Nema lokalnog replaya, zapisnika ni izlaza game-state integracije za čitanje. Njihova statistika dolazi tamo gdje je Steam čuva ([Steam statistika](game-steam-stats.md), [Steam Timeline](game-steam-timeline.md)), a njihovi isječci kao [NVIDIA highlights](nvidia-highlights.md). |

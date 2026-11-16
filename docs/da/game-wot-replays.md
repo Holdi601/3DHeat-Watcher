@@ -3,7 +3,7 @@ title: "World of Tanks (replays)"
 nav_order: 47
 lang: "da"
 source: game-wot-replays.md
-source_hash: "c3fbbeebfee0"
+source_hash: "2fa28633a0ee"
 nav_exclude: true
 search_exclude: true
 ---
@@ -41,7 +41,7 @@ Første gang en mappe ses, bliver de replays, der allerede ligger i den, kun not
 
 #### World of Tanks og World of Warships {#world-of-tanks-and-world-of-warships}
 
-Begge gemmer en replay af hvert slag i `<game>/replays/`, når optagelse er slået til (`*.wotreplay`, `*.wowsreplay`); installationerne findes gennem Wargaming Game Centers liste, `C:/Games/World_of_Tanks*` / `World_of_Warships*`, og Steam. Ligesom med War Thunder læser watcheren ikke filerne selv: en ekstern konverter af hver gør det (`exporters/ext/wot-replay`, kommandoen `heat3d-wot-replay`; `exporters/ext/wows-replay`, kommandoen `heat3d-wows-replay`), holdt adskilt, så et problem med Wargamings vilkår kun rammer den konverter. Fundet på PATH, installeret eller ved siden af watcheren laver den hver ny replay om til `<map>/<match>.parquet` og `<match>.match.json` i sessionsmappen; mangler den, siger watcheren én gang, hvordan den installeres. Optagerens linje - køretøj eller skib, drab, skade (World of Tanks), om de overlevede, og resultatet (World of Tanks) - bliver sessionens statistik. Hvad hver konverter læser, og hvad den ikke gør, står i dens README.
+Begge gemmer en replay af hvert slag i `<game>/replays/`, når optagelse er slået til (`*.wotreplay`, `*.wowsreplay`); installationerne findes gennem Wargaming Game Centers liste, `C:/Games/World_of_Tanks*` / `World_of_Warships*`, og Steam. Ligesom med War Thunder læser watcheren ikke filerne selv: en ekstern konverter af hver gør det (`exporters/ext/wot-replay`, kommandoen `heat3d-wot-replay`; `exporters/ext/wows-replay`, kommandoen `heat3d-wows-replay`), hver et projekt for sig. Fundet på PATH, installeret eller ved siden af watcheren laver den hver ny replay om til `<map>/<match>.parquet` og `<match>.match.json` i sessionsmappen; mangler den, siger watcheren én gang, hvordan den installeres. Optagerens linje - køretøj eller skib, drab, skade (World of Tanks), om de overlevede, og resultatet (World of Tanks) - bliver sessionens statistik. Hvad hver konverter læser, og hvad den ikke gør, står i dens README.
 
 Det samme modul betjener også: [Counter-Strike 2 (replays)](game-cs2-demos.md), [Dota 2 (replays)](game-dota-replays.md), [Squad (replays)](game-squad-demos.md), [War Thunder (replays)](game-warthunder-replays.md), [World of Warships (replays)](game-wows-replays.md).
 

@@ -25,11 +25,11 @@ zapiše in od kod to bere - ustvarjeno iz samih vmesnikov (`python -m heat3d_wat
 | platform | kar hranita Steam in grafični gonilnik: statistike, dosežki, časovnice, posnetki | da |
 | memory | pomnilnik igre, samo za branje - samo enoigralske igre, za vsakim od spodnjih preverjanj | **nikoli** |
 
-Nič se ne vbrizga, ne prestreže ali spremeni v nobeni igri. Vir, ki ga pogoji igre ali pravila anti-cheata izključujejo, ni
-izveden: končne točke lockfile odjemalca League of Legends in Valorant, zaščiteni deli ponovitev (Fortnite, League of
+Nič se ne vbrizga, ne prestreže ali spremeni v nobeni igri. Zaščiteni viri niso
+izvedeni: končne točke lockfile odjemalca League of Legends in Valorant, zaščiteni deli ponovitev (Fortnite, League of
 Legends, Valorant), šifrirana telemetrija Gran Turismo 7 (potrebovala bi ključ, pridobljen iz igre). Tudi ponovitve World of
 Tanks in World of Warships so šifrirane; watcher jih ne bere, ločeni pretvorniki zunaj njega pa da (`exporters/ext/wot-replay`,
-`exporters/ext/wows-replay`), namestijo pa se samo, če se igralec sam odloči - za pogoje Wargaming glejte njihove README.
+`exporters/ext/wows-replay`), namestijo pa se samo, če se igralec sam odloči - glejte njihove README.
 
 ## Kaj je posnetek {#what-a-recording-is}
 
@@ -138,10 +138,10 @@ Watcher se posodobi sam, medtem ko nobena igra ne teče, in se znova zažene. `H
 
 | Igra | Zakaj ne |
 |---|---|
-| položaji VALORANT | Pretočni tok igre v ponovitvah je zakrit z vrednostmi, vzetimi iz izvršljive datoteke vsake različice; njihovo obnavljanje je inženiring igre, kar pogoji Riot prepovedujejo, igra pa teče pod Vanguardom. Kar ponovitev nosi odprto - zemljevid, tekma, agenti, časovnica ubijanj in rund - *je* prebrano. Končne točke lockfile odjemalca niso javno dokumentiran API in se ne uporabljajo. |
-| ponovitve League of Legends, v igri | Gibljivi del `.rofl` je zakrit proti goljufanju, vsakič drugače po popravku; dekodiranje pomeni razstavljanje igre, kar pogoji Riot prepovedujejo. Kar datoteka nosi odprto - vrstica vsakega igralca ob koncu tekme - *je* prebrano, položaji pa prihajajo iz uradne tekmovalne časovnice Riot z vašim lastnim ključem API. |
-| Fortnite | Ponovitve so šifrirane, pogoji Epic pa prepovedujejo inženiring za njihovo obnavljanje. |
-| World of Tanks, World of Warships, sam watcher | Ponovitve so šifrirane. Ločeni pretvorniki zunaj watcherja jih berejo (glejte zgornjo tabelo), tako da se težava s pogoji Wargaming dotakne samo njih. |
+| položaji VALORANT | Pretočni tok igre v ponovitvah je zakrit z vrednostmi, vzetimi iz izvršljive datoteke vsake različice, igra pa teče pod Vanguardom. Kar ponovitev nosi odprto - zemljevid, tekma, agenti, časovnica ubijanj in rund - *je* prebrano. Končne točke lockfile odjemalca niso javno dokumentiran API in se ne uporabljajo. |
+| ponovitve League of Legends, v igri | Gibljivi del `.rofl` je zakrit proti goljufanju, vsakič drugače po popravku, in se ne dekodira. Kar datoteka nosi odprto - vrstica vsakega igralca ob koncu tekme - *je* prebrano, položaji pa prihajajo iz uradne tekmovalne časovnice Riot z vašim lastnim ključem API. |
+| Fortnite | Ponovitve so šifrirane. |
+| World of Tanks, World of Warships, sam watcher | Ponovitve so šifrirane. Ločeni pretvorniki zunaj watcherja jih berejo (glejte zgornjo tabelo); vsak je samostojen projekt. |
 | Gran Turismo 7 | Samo konzola; njena telemetrija je šifrirana s ključem, pridobljenim iz igre. |
 | Apex Legends | Njen LiveAPI pošilja polne dogodke samo v zasebnih in po meri narejenih avlah; lokalno drugače nič. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | Ni lokalne ponovitve, dnevnika ali izhoda stanja igre, ki bi ga lahko prebrali. Njihove statistike pridejo tja, kjer jih hrani Steam (statistike Steama, Steam Timeline), in kot highlighti NVIDIA. |

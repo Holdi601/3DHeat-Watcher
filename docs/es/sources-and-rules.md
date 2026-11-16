@@ -3,7 +3,7 @@ title: "Fuentes y reglas"
 nav_order: 7
 lang: "es"
 source: sources-and-rules.md
-source_hash: "990402abdc5d"
+source_hash: "36c4836cad3f"
 nav_exclude: true
 search_exclude: true
 ---
@@ -79,15 +79,15 @@ Steam o NVIDIA App ya han escrito o envían.
   memoria. No impide que los otros tipos graben el juego en línea.
 
 ## Lo que se rechaza y por qué {#what-is-declined-and-why}
-Algunos juegos, y algunas partes de juegos, no se graban porque la única forma de obtenerlos rompería una protección o las
-condiciones de un juego:
+Algunos juegos, y algunas partes de juegos, no se graban: sus datos están protegidos, no se publican o
+ni siquiera están en la máquina del jugador:
 
 | Juego | Qué se deja fuera | Por qué |
 |---|---|---|
-| VALORANT | posiciones, nombres, marcadores en las repeticiones; los endpoints del archivo de bloqueo del cliente | El flujo de juego de la repetición está ofuscado con valores tomados del ejecutable de cada compilación. Recuperarlos supone hacer ingeniería inversa al juego, lo que prohíben los Términos de Servicio de Riot (secciones 3.1 y 7.1), y el juego se ejecuta bajo Vanguard. Los endpoints del archivo de bloqueo del cliente de Riot no son una API publicada. **Se lee:** lo que la repetición lleva en claro - el mapa, el id de partida, los agentes, la línea de tiempo de bajas y rondas del servidor. |
-| League of Legends | la parte momento a momento de las repeticiones `.rofl`; los endpoints del archivo de bloqueo del cliente | Ofuscada contra las trampas, distinta en cada parche; descifrarla supone desmontar el juego, lo que prohíben las condiciones de Riot. **Se lee:** el recuadro de estadísticas del final de partida que cada repetición lleva como JSON sin cifrar, la Live Client Data API durante una partida y - con tu propia clave de desarrollador - la línea de tiempo oficial de Match-V5 (posiciones una vez por minuto, bajas donde ocurrieron). |
-| Fortnite | repeticiones | Cifradas, y las condiciones de Epic prohíben hacer ingeniería inversa. |
-| World of Tanks, World of Warships | repeticiones, en el watcher | Cifradas, con una clave que lleva el juego y que las herramientas de la comunidad publican desde hace años. El watcher no las lee; las leen conversores separados fuera de él (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), de modo que un problema con las condiciones de Wargaming - su licencia prohíbe la ingeniería inversa (5.3 b) y el software no autorizado que interactúa con sus productos (12.1 k) - afecta solo a esos. **Se lee, con un conversor instalado:** la posición de cada vehículo o barco mientras el cliente que grababa lo conocía, y las bajas. |
+| VALORANT | posiciones, nombres, marcadores en las repeticiones; los endpoints del archivo de bloqueo del cliente | El flujo de juego de la repetición está ofuscado con valores tomados del ejecutable de cada compilación. El juego se ejecuta bajo Vanguard. Los endpoints del archivo de bloqueo del cliente de Riot no son una API publicada. **Se lee:** lo que la repetición lleva en claro - el mapa, el id de partida, los agentes, la línea de tiempo de bajas y rondas del servidor. |
+| League of Legends | la parte momento a momento de las repeticiones `.rofl`; los endpoints del archivo de bloqueo del cliente | Ofuscada contra las trampas, distinta en cada parche, y no se decodifica. **Se lee:** el recuadro de estadísticas del final de partida que cada repetición lleva como JSON sin cifrar, la Live Client Data API durante una partida y - con tu propia clave de desarrollador - la línea de tiempo oficial de Match-V5 (posiciones una vez por minuto, bajas donde ocurrieron). |
+| Fortnite | repeticiones | Cifradas. |
+| World of Tanks, World of Warships | repeticiones, en el watcher | Cifradas. El watcher no las lee; las leen conversores separados fuera de él (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), cada uno un proyecto propio. **Se lee, con un conversor instalado:** la posición de cada vehículo o barco mientras el cliente que grababa lo conocía, y las bajas. |
 | Gran Turismo 7 | telemetría | Solo en consola, y su telemetría está cifrada con una clave obtenida del juego. |
 | Apex Legends | todo | Su LiveAPI envía eventos completos solo en lobbies privados y personalizados; por lo demás no hay nada disponible en local. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | datos en vivo | No hay salida local de repeticiones, registros ni game-state que leer. Sus estadísticas llegan donde Steam las guarda ([Estadísticas de Steam](game-steam-stats.md), [Steam Timeline](game-steam-timeline.md)), y sus clips como [NVIDIA highlights](nvidia-highlights.md). |

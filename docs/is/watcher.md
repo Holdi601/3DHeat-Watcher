@@ -3,7 +3,7 @@ title: "Allir leikir í einni töflu"
 nav_order: 13
 lang: "is"
 source: watcher.md
-source_hash: "8066a9f8a89c"
+source_hash: "e0c6d5b833cf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -26,14 +26,14 @@ spilun í bakgrunni (sjá [README](https://github.com/Holdi601/3DHeat-Watcher/bl
 | platform | það sem Steam og skjákortsreklarinn geyma: tölfræði, afrek, tímalínur, hápunktar | já |
 | memory | minni leiksins, aðeins lesið - aðeins einspilunarleikir, á bak við allar athuganirnar hér að neðan | **aldrei** |
 
-Engu er sprautað inn, krækt í eða breytt í neinum leik. Heimild sem skilmálar leiks eða
-svindlvarnarreglur útiloka er ekki útfærð: lockfile-endapunktar League of Legends og Valorant
+Engu er sprautað inn, krækt í eða breytt í neinum leik. Varðar heimildir eru
+ekki útfærðar: lockfile-endapunktar League of Legends og Valorant
 forritsins, vernduðu hlutar endursýninga (Fortnite, League of
 Legends, Valorant), dulkóðuð fjarmæling Gran Turismo 7 (það þyrfti
 lykil sem væri endurheimtur úr leiknum). Endursýningar World of Tanks og World of Warships eru
 líka dulrituð; watcher les þær ekki, aðskildir breytar utan þess
 gera það (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), settir upp aðeins af
-spilara sem ákveður það - sjá README þeirra um skilmála Wargaming.
+spilara sem ákveður það - sjá README þeirra.
 
 ## Hvað upptaka er {#what-a-recording-is}
 
@@ -159,10 +159,10 @@ Watcher uppfærir sig meðan enginn leikur er í gangi og ræsist aftur.
 
 | Leikur | Hvers vegna ekki |
 |---|---|
-| VALORANT staðsetningar | Leikjastraumur endursýninga þess er torrýndur með gildum sem eru tekin úr keyrsluskrá hverrar útgáfu; að endurheimta þau er að taka leikinn í sundur, sem skilmálar Riot banna, og leikurinn keyrir undir Vanguard. Það sem endursýningin ber opið - kort, leikur, hetjur, dráps- og umferðatímalínan - *er* lesið. Lockfile-endapunktar forritsins eru ekki útgefið API og eru ekki notaðir. |
-| League of Legends endursýningar, í leiknum | Hluti `.rofl` skrár sem sýnir leikinn frá stund til stundar er torrýndur gegn svindli, á annan hátt í hverri uppfærslu; að afkóða hann þýðir að taka leikinn í sundur, sem skilmálar Riot banna. Það sem skráin ber opið - lína hvers leikmanns í leikslok - *er* lesið, og staðsetningar koma úr opinberri leikjatímalínu Riot með þínum eigin API-lykli. |
-| Fortnite | Endursýningar þess eru dulkóðaðar, og skilmálar Epic banna að þær séu raktar til upprunans (reverse engineering). |
-| World of Tanks, World of Warships, af watcher sjálfum | Endursýningar þeirra eru dulritaðar. Aðskildir breytar utan watcher lesa þær (sjá töfluna hér að ofan), svo vandamál með skilmála Wargaming snerti aðeins þá. |
+| VALORANT staðsetningar | Leikjastraumur endursýninga þess er torrýndur með gildum sem eru tekin úr keyrsluskrá hverrar útgáfu, og leikurinn keyrir undir Vanguard. Það sem endursýningin ber opið - kort, leikur, hetjur, dráps- og umferðatímalínan - *er* lesið. Lockfile-endapunktar forritsins eru ekki útgefið API og eru ekki notaðir. |
+| League of Legends endursýningar, í leiknum | Hluti `.rofl` skrár sem sýnir leikinn frá stund til stundar er torrýndur gegn svindli, á annan hátt í hverri uppfærslu, og er ekki afkóðaður. Það sem skráin ber opið - lína hvers leikmanns í leikslok - *er* lesið, og staðsetningar koma úr opinberri leikjatímalínu Riot með þínum eigin API-lykli. |
+| Fortnite | Endursýningar þess eru dulkóðaðar. |
+| World of Tanks, World of Warships, af watcher sjálfum | Endursýningar þeirra eru dulritaðar. Aðskildir breytar utan watcher lesa þær (sjá töfluna hér að ofan), hvor um sig sjálfstætt verkefni. |
 | Gran Turismo 7 | Aðeins leikjatölva; fjarmæling þess er dulkóðuð með lykli sem er endurheimtur úr leiknum. |
 | Apex Legends | LiveAPI þess sendir heila atburði aðeins í einkaherbergjum og sérsniðnum herbergjum; ekkert staðbundið annars. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | Engin staðbundin endursýning, loggur eða game-state úttak til að lesa. Tölfræði þeirra kemur inn þar sem Steam geymir hana (Steam statistics, Steam Timeline) og sem NVIDIA hápunktar. |

@@ -3,7 +3,7 @@ title: "VALORANT (repriser)"
 nav_order: 44
 lang: "sv"
 source: game-valorant-replays.md
-source_hash: "617e23a33a4c"
+source_hash: "a2c4144797e9"
 nav_exclude: true
 search_exclude: true
 ---
@@ -37,17 +37,15 @@ League of Legends- och Valorant-repriser: vad av dem som kan läsas som de är.
 
 Båda spelen sparar reprisar på spelarens disk, och båda skyddar det som finns
 inuti: den ögonblick-för-ögonblick-speldatan är förvrängd, och olika för varje patch,
-för att hindra att den används för att fuska. Att komma förbi det innebär att ta spelets
-egen kod isär, vilket Riots villkor förbjuder (användarvillkoren 3.1 och 7.1)
-- så det görs inte någonstans i 3DHeat. Vad varje fil bär öppet
+för att hindra att den används för att fuska. Den delen avkodas inte
+någonstans i 3DHeat. Vad varje fil bär öppet
 läses, och resten sparas som det är: varje del av filen, helt, i sessionens
 `heat.raw.parquet` (3DHeats konverterarregel, docs/converters.md i
 visarens förråd), räknad i meta.json:s `selfCheck.completeness`.
 
 watchern läser inte filerna själv: en extern läsare gör det (3DHeat
 Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`,
-kommandot `heat3d-riot-replays`), hållen skild så att ett problem med Riots
-villkor bara berör den läsaren. Hittas den på PATH, är installerad eller bredvid watchern, läser den
+kommandot `heat3d-riot-replays`), ett eget projekt. Hittas den på PATH, är installerad eller bredvid watchern, läser den
 varje ny repris; saknas den säger watchern en gång hur den installeras. Vad
 den läser sparar watchern i sessionen; Match-V5-tidslinjen nedan hämtas
 av watchern själv, eftersom den inte finns i filen.
@@ -107,7 +105,7 @@ watchern följer 3DHeats [konverterarregel](https://github.com/Holdi601/3DHeat/b
 
 **Finns inte**
 
-- positioner, namn, poäng, förmågor, varje bildruta från spelet: repriens data- och checkpoint-chunkar är förvrängda; att läsa dem innebär att ta klienten isär, vilket Riots villkor förbjuder. Sparat helt, inte läst
+- positioner, namn, poäng, förmågor, varje bildruta från spelet: repriens data- och checkpoint-chunkar är förvrängda. Sparat helt, inte läst
 - en krypterad repris innehåll: genomgången och sparad helt, inget läst inuti
 
 **Storlek**: den råa sidofilen är ungefär reprisens egen storlek: den förvrängda strömmen komprimeras inte

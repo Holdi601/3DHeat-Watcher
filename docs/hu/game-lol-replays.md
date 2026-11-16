@@ -32,7 +32,7 @@ Mentsd el a visszajátszást a League kliensben (meccselőzmények > letöltés)
 
 League of Legends és VALORANT visszajátszások: amit belőlük nyíltan lehet olvasni.
 
-Mindkét játék a játékos lemezére menti a visszajátszásokat, és mindkettő védi a tartalmát: a pillanatról pillanatra zajló játékadatok megzavarozottak, és minden javítással másképp, hogy ne lehessen csalásra használni. Ezen átjutni azt jelentené, hogy a játék saját kódját szedjük szét, amit a Riot szerződési feltételei tiltanak (Szolgáltatási feltételek 3.1 és 7.1 pont) – ezért ezt nem tesszük meg. Amit minden fájl nyíltan hordoz, azt beolvassuk, a többit érintetlenül megtartjuk: a fájl minden része egészben, a munkamenet `heat.raw.parquet` fájljában (a 3DHeat konvertálási szabálya, a megjelenítő tárolójában a docs/converters.md), és a meta.json `selfCheck.completeness` adatai számolják.
+Mindkét játék a játékos lemezére menti a visszajátszásokat, és mindkettő védi a tartalmát: a pillanatról pillanatra zajló játékadatok megzavarozottak, és minden javítással másképp, hogy ne lehessen csalásra használni. Ezt a részt a 3DHeat sehol sem dekódolja. Amit minden fájl nyíltan hordoz, azt beolvassuk, a többit érintetlenül megtartjuk: a fájl minden része egészben, a munkamenet `heat.raw.parquet` fájljában (a 3DHeat konvertálási szabálya, a megjelenítő tárolójában a docs/converters.md), és a meta.json `selfCheck.completeness` adatai számolják.
 
 #### League of Legends (.rofl) {#league-of-legends-rofl}
 
@@ -86,7 +86,7 @@ A watcher követi a 3DHeat [konvertálási szabályát](https://github.com/Holdi
 
 **Nem elérhető**
 
-- maga a játék (pozíciók, képességek, minden egység, pillanatról pillanatra): a ROFL1 darabjai és a ROFL2 törzse titkosított, a bennük lévő csomagok pedig minden javítással megzavarozottak; ezen átjutni azt jelentené, hogy a kliensünket szétszedjük, amit a Riot feltételei tiltanak (3.1, 7.1). Egészben megtartva, nincs olvasva
+- maga a játék (pozíciók, képességek, minden egység, pillanatról pillanatra): a ROFL1 darabjai és a ROFL2 törzse titkosított, a bennük lévő csomagok pedig minden javítással megzavarozottak. Egészben megtartva, nincs olvasva
 - pozíciók a saját Riot API-kulcs nélkül: a fájl nyíltan nem tartalmaz ilyet
 
 **Méret**: a nyers melléklet nagyjából a visszajátszás saját mérete: a titkosított darabok nem tömörülnek

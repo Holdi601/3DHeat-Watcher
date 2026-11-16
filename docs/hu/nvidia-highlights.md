@@ -3,7 +3,7 @@ title: NVIDIA Highlights
 nav_order: 8
 lang: "hu"
 source: nvidia-highlights.md
-source_hash: "a3b769ab065c"
+source_hash: "cd2a5cc2c5fd"
 nav_exclude: true
 search_exclude: true
 ---
@@ -82,4 +82,4 @@ Amit a kölcsönzött pozícióról tudni kell:
 A másik mód egy pozíció megszerzésére az lenne, ha kiolvasnánk a memóriából. Egyik memória sem működik:
 
 - **Az NVIDIA memóriájában nincs pozíció.** Az NVIDIA App azt kapja, amit a GfeSDK hordoz – egy kiemelés-azonosítót és két időeltolást –, valamint a rögzített videót. Az NVIDIA oldalán nincs semmi pozíció, amit ki lehetne olvasni. (A watcher amúgy sem olvas NVIDIA-memóriát; a fenti fájlokat olvassa.)
-- **A játék memóriája többjátékos módban tilos.** A pozíció a játék folyamatában van, de a watcher soha nem olvas többjátékos játék memóriáját: az online játszottként jelölt játékhoz tartozó memória-adaptert semmi nem nyitja meg (lásd [Memória olvasása](memory-reading.md)). A többjátékos játékok anti-csalás rendszerek alatt futnak (Easy Anti-Cheat, BattlEye, Vanguard, ...), amelyek csalásnak tekintik, ha más program nyit meg a játék folyamatát, és ez a fiók tiltásához vezethet. A játék állapotának kívülről való olvasása a játékok feltételei szerint is tilos. Ezért egy többjátékos játékban egy kiemelés csak attól kap helyet, amit a játék maga közzétesz: a játékállapot-integrációjából vagy telemetriájából, amelyet egy másik adapter rögzít ugyanabban az időben.
+- **A játék memóriája többjátékos módban tilos.** A pozíció a játék folyamatában van, de a watcher soha nem olvas többjátékos játék memóriáját: az online játszottként jelölt játékhoz tartozó memória-adaptert semmi nem nyitja meg (lásd [Memória olvasása](memory-reading.md)). A többjátékos játékok anti-csalás rendszerek alatt futnak (Easy Anti-Cheat, BattlEye, Vanguard, ...), amelyek csalásnak tekintik, ha más program nyit meg a játék folyamatát, és ez a fiók tiltásához vezethet. Ezért egy többjátékos játékban egy kiemelés csak attól kap helyet, amit a játék maga közzétesz: a játékállapot-integrációjából vagy telemetriájából, amelyet egy másik adapter rögzít ugyanabban az időben.

@@ -3,7 +3,7 @@ title: "NVIDIA Highlights"
 nav_order: 8
 lang: "is"
 source: nvidia-highlights.md
-source_hash: "a3b769ab065c"
+source_hash: "cd2a5cc2c5fd"
 nav_exclude: true
 search_exclude: true
 ---
@@ -143,7 +143,7 @@ Hin leiðin til að fá staðsetningu væri að lesa hana úr minni. Hvorugt min
   watcher les aldrei minni fjölspilunarleiks: minnismillistykki fyrir leik sem er merktur spilaður á netinu
   er hafnað áður en nokkuð er opnað (sjá [Minnislestur](memory-reading.md)). Fjölspilunarleikir keyra
   undir svindlvörnum (Easy Anti-Cheat, BattlEye, Vanguard, ...) sem líta á það sem svindl þegar annað forrit opnar
-  ferli leiksins, og það getur leitt til banns á aðganginum. Að lesa stöðu leiksins utan frá
-  er einnig það sem skilmálar leikjanna banna. Highlight í fjölspilunarleik fær því stað aðeins
+  ferli leiksins, og það getur leitt til banns á aðganginum.
+  Highlight í fjölspilunarleik fær því stað aðeins
   úr því sem leikurinn birtir: game-state integration hans eða fjarmælingu, skráð af öðru millistykki á
   sama tíma.

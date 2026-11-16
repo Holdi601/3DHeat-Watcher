@@ -32,7 +32,7 @@ shranite posnetek v odjemalcu League (zgodovina tekem > prenesite); za položaje
 
 League of Legends in VALORANT: kar se od njunih posnetkov da prebrati tako, kot je.
 
-Obe igri shranita posnetke na igralčev disk in obe zaščitita vsebino: podatki igre minuto za minuto so zakriti in pri vsaki zakrpi drugače, da jih ni mogoče uporabiti za goljufanje. Da bi prišli do njih, bi bilo treba razstaviti igrino lastno kodo, kar Riotovi pogoji prepovedujejo (pogoji storitve 3.1 in 7.1) - zato tu ni narejeno. Prebere se, kar je v datoteki odprto, ostalo pa se ohrani tako, kot je: vsak del datoteke cel v `heat.raw.parquet` seje (pravilo pretvornika 3DHeat, docs/converters.md v repozitoriju pregledovalnikja), štet v `selfCheck.completeness` v meta.json.
+Obe igri shranita posnetke na igralčev disk in obe zaščitita vsebino: podatki igre minuto za minuto so zakriti in pri vsaki zakrpi drugače, da jih ni mogoče uporabiti za goljufanje. Ta del se nikjer v 3DHeat ne dekodira. Prebere se, kar je v datoteki odprto, ostalo pa se ohrani tako, kot je: vsak del datoteke cel v `heat.raw.parquet` seje (pravilo pretvornika 3DHeat, docs/converters.md v repozitoriju pregledovalnikja), štet v `selfCheck.completeness` v meta.json.
 
 #### League of Legends (.rofl) {#league-of-legends-rofl}
 
@@ -86,7 +86,7 @@ Watcher sledi [pravilu pretvornika](https://github.com/Holdi601/3DHeat/blob/main
 
 **Ni na voljo**
 
-- sama igra (položaji, sposobnosti, vsaka enota, potek minuto za minuto): kosi ROFL1 in telo ROFL2 sta šifrirana, paketi znotraj pa zakriti in z vsako zakrpo drugačni; priti do njih pomeni razstaviti odjemalca, kar Riotovi pogoji prepovedujejo (3.1, 7.1). Shranjeno cel, neprebrano
+- sama igra (položaji, sposobnosti, vsaka enota, potek minuto za minuto): kosi ROFL1 in telo ROFL2 sta šifrirana, paketi znotraj pa zakriti in z vsako zakrpo drugačni. Shranjeno cel, neprebrano
 - položaji brez vašega lastnega ključa Riot API: datoteka jih nima odprte
 
 **Velikost**: surovi zapis je približno enako velik kot sam posnetek: šifrirani kosi se ne stisnejo

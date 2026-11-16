@@ -319,8 +319,8 @@ def dota_maps_folder() -> Path | None:
 
 def dota_maps_converter() -> list[str] | None:
     """
-    How to run the Dota 2 map converter, an extension kept outside the watcher
-    because it reads Valve's files: its `heat3d-dota-maps` command when it is
+    How to run the Dota 2 map converter, an extension kept outside the watcher:
+    its `heat3d-dota-maps` command when it is
     on PATH, else `python -m heat3d_ext_dota` when the package is installed or
     its folder is found. None when it is nowhere. Nothing of it is imported
     here; it is only run.

@@ -3,7 +3,7 @@ title: "League of Legends (endursýningar)"
 nav_order: 30
 lang: "is"
 source: game-lol-replays.md
-source_hash: "ed26619fa904"
+source_hash: "6a86dc8a45bb"
 nav_exclude: true
 search_exclude: true
 ---
@@ -38,17 +38,15 @@ Endursýningar League of Legends og Valorant: það af þeim sem hægt er að le
 
 Báðir leikirnir vista endursýningar á disk spilarans, og báðir verja það sem er inni í þeim:
 leikjagögnin frá augnabliki til augnabliks eru gerð óskýr (obfuscated), og öðruvísi í hverri uppfærslu,
-til að koma í veg fyrir að þau séu notuð til að svindla. Að komast í gegnum það þýðir að taka
-eigin kóða leiksins í sundur, sem skilmálar Riot banna (Terms of Service 3.1 og 7.1)
-- svo það er hvergi gert í 3DHeat. Það sem hver skrá ber opið
+til að koma í veg fyrir að þau séu notuð til að svindla. Sá hluti er hvergi
+afkóðaður í 3DHeat. Það sem hver skrá ber opið
 er lesið, og afgangurinn er geymdur eins og hann er: sérhver hluti skrárinnar, heill, í
 `heat.raw.parquet` lotunnar (umbreytingarregla 3DHeat, docs/converters.md í
 safni skoðarans), talinn í `selfCheck.completeness` í meta.json.
 
 Watcher les skrárnar ekki sjálft: ytri lesari gerir það (3DHeat
 Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`,
-skipunin `heat3d-riot-replays`), hafður sér svo að vandamál með skilmála Riot
-snerti aðeins þann lesara. Finnist hann á PATH, uppsettur, eða við hlið watcher, les hann
+skipunin `heat3d-riot-replays`), sjálfstætt verkefni. Finnist hann á PATH, uppsettur, eða við hlið watcher, les hann
 hverja nýja endursýningu; vanti hann segir watcher einu sinni hvernig á að setja hann upp. Það sem
 hann les skráir watcher í lotuna; Match-V5-tímalínan hér að neðan er
 sótt af watcher sjálfu, þar sem hún er ekki í skránni.
@@ -123,7 +121,7 @@ Watcher fylgir [umbreytingarreglu](https://github.com/Holdi601/3DHeat/blob/main/
 
 **Ekki fáanlegt**
 
-- leikurinn sjálfur (stöður, hæfileikar, sérhver eining, frá augnabliki til augnabliks): bitar ROFL1 og meginmál ROFL2 eru dulkóðuð og pakkarnir inni í þeim gerðir óskýrir í hverri uppfærslu; að komast í gegn þýðir að taka forritið í sundur, sem skilmálar Riot banna (3.1, 7.1). Geymt heilt, ekki lesið
+- leikurinn sjálfur (stöður, hæfileikar, sérhver eining, frá augnabliki til augnabliks): bitar ROFL1 og meginmál ROFL2 eru dulkóðuð og pakkarnir inni í þeim gerðir óskýrir í hverri uppfærslu. Geymt heilt, ekki lesið
 - stöður án þíns eigin Riot API-lykils: skráin hefur engar opnar
 
 **Stærð**: hrá hliðarskráin er um það bil jafn stór og endursýningin sjálf: dulkóðuðu bitarnir þjappast ekki

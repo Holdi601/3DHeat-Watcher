@@ -130,6 +130,10 @@ za pretvaranje CS2 demoa). Svaki je zaseban projekat, s vlastitim izdanjima i li
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | DCS World mape u 3D modele | [stranica](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | IL-2 Sturmovik mape u 3D modele | [stranica](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+Svaki čitač igre je zaseban mali projekat s vlastitom datotekom licence, izdanjima i praćenjem
+problema, pa se može instalirati, ažurirati, održavati - ili povući na zahtjev nosioca prava -
+zasebno, bez uticaja na preglednik i ostale alate.
+
 Licenca: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Licence
 paketa trećih strana koje koristi i ono što zahtijevaju igre koje čita navedene su u
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

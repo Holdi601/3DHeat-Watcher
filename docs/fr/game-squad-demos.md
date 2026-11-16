@@ -3,7 +3,7 @@ title: "Squad (replays)"
 nav_order: 40
 lang: "fr"
 source: game-squad-demos.md
-source_hash: "a908f7e6d9c3"
+source_hash: "ddec19ea89bf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -53,7 +53,7 @@ Les serveurs dédiés de Squad enregistrent une démo d'une partie quand un admi
 `<server>/SquadGame/Saved/Demos/<name>.replay` — un replay de réseau Unreal Engine contenant ce que le
 serveur a répliqué, mouvements de tous les joueurs compris. Le watcher ne les lit pas lui-même : un
 lecteur externe le fait (lecteur de démos 3DHeat Squad, `exporters/ext/squad-demo`, commande
-`heat3d-squad-demo`), gardé à part pour qu'un problème dans celui-ci ne touche à rien d'autre. Il est
+`heat3d-squad-demo`), un projet à part entière. Il est
 lancé sur chaque nouvelle démo des dossiers où écrit un serveur local, ou dans un dossier que les
 paramètres ajoutent pour les démos copiées depuis un serveur loué, et produit dans le dossier de
 session `<map>/<match>.parquet` et `<match>.match.json`. La variante (layer), la carte, le nombre de joueurs et

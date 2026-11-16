@@ -33,9 +33,8 @@ League of Legends i VALORANT snimke: što se od njih može pročitati kakvo jest
 
 Obje igre spremaju snimke na disk igrača, i obje štite ono što je unutra:
 podaci igre od trenutka do trenutka zamagljeni su, i to drukčije sa svakom zakrpom,
-da se ne bi mogli koristiti za varanje. Probijanje te zaštite znači rastaviti
-vlastiti kod igre, što Riotovi uvjeti zabranjuju (Uvjeti korištenja 3.1 i 7.1)
-- zato se to ovdje ne radi. Čita se ono što svaka datoteka nosi otvoreno, a ostalo
+da se ne bi mogli koristiti za varanje. Taj se dio nigdje u 3DHeat ne dekodira.
+Čita se ono što svaka datoteka nosi otvoreno, a ostalo
 se čuva kakvo jest: svaki dio datoteke, cijel, u sesijskoj datoteci
 `heat.raw.parquet` (pravilo pretvarača 3DHeat, docs/converters.md u repozitoriju
 preglednika), i broji se u `selfCheck.completeness` u meta.json-u.
@@ -97,7 +96,7 @@ Watcher slijedi [pravilo pretvarača](https://github.com/Holdi601/3DHeat/blob/ma
 
 **Nije dostupno**
 
-- položaji, imena, rezultati, sposobnosti, svaki okvir igre: podaci snimke i dijelovi kontrolnih točaka su zamagljeni; čitanje znači rastaviti klijent, što Riotovi uvjeti zabranjuju. Čuva se cijelo, ne čita se
+- položaji, imena, rezultati, sposobnosti, svaki okvir igre: podaci snimke i dijelovi kontrolnih točaka su zamagljeni. Čuva se cijelo, ne čita se
 - sadržaj šifrirane snimke: prolazi se i čuva cijela, ništa se ne čita unutra
 
 **Veličina**: sirovi pomoćni dio je otprilike veličine same snimke: zamagljeni tok se ne sažima

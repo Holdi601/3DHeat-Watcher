@@ -131,6 +131,10 @@ python -m heat3d_watch stats --csv out  # сессии, события и ста
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | карты DCS World в 3D-модели | [сайт](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | карты IL-2 Sturmovik в 3D-модели | [сайт](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+Каждый модуль чтения игры — отдельный небольшой проект со своим файлом лицензии, выпусками и трекером
+задач, поэтому его можно установить, обновить, сопровождать — или отозвать по запросу правообладателя —
+отдельно, не затрагивая просмотрщик и другие инструменты.
+
 Лицензия: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Лицензии
 сторонних пакетов, которые он использует, и то, что требуют игры, которые он читает, перечислены в
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

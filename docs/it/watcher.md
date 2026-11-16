@@ -3,7 +3,7 @@ title: Tutti i giochi in una tabella
 nav_order: 13
 lang: "it"
 source: watcher.md
-source_hash: "8066a9f8a89c"
+source_hash: "e0c6d5b833cf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -22,7 +22,7 @@ Trova il tuo gioco nella tabella qui sotto per vedere cosa viene registrato e co
 | platform | ciò che Steam e il driver della scheda grafica conservano: statistiche, obiettivi, timeline, highlight | sì |
 | memory | la memoria del gioco, in sola lettura - solo giochi per giocatore singolo, dietro ogni controllo qui sotto | **mai** |
 
-Non viene iniettato, agganciato né cambiato nulla in alcun gioco. Una fonte che i termini di un gioco o le sue regole anti-cheat escludono non è implementata: gli endpoint del lockfile del client di League of Legends e di Valorant, le parti protette dei replay (Fortnite, League of Legends, Valorant), la telemetria cifrata di Gran Turismo 7 (servirebbe una chiave recuperata dal gioco). Anche i replay di World of Tanks e World of Warships sono cifrati; il watcher non li legge, mentre convertitori separati fuori da esso sì (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), installati solo da un giocatore che decide di farlo - vedi i loro README per i termini di Wargaming.
+Non viene iniettato, agganciato né cambiato nulla in alcun gioco. Le fonti protette non sono implementate: gli endpoint del lockfile del client di League of Legends e di Valorant, le parti protette dei replay (Fortnite, League of Legends, Valorant), la telemetria cifrata di Gran Turismo 7 (servirebbe una chiave recuperata dal gioco). Anche i replay di World of Tanks e World of Warships sono cifrati; il watcher non li legge, mentre convertitori separati fuori da esso sì (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), installati solo da un giocatore che decide di farlo - vedi i loro README.
 
 ## Cos'è una registrazione {#what-a-recording-is}
 
@@ -113,10 +113,10 @@ Il watcher controlla le sue release su GitHub all'avvio (al massimo ogni sei ore
 
 | Gioco | Perché no |
 |---|---|
-| Posizioni di VALORANT | Il flusso di gioco dei suoi replay è offuscato con valori presi dall'eseguibile di ogni build; recuperarli significa fare reverse engineering del gioco, cosa che i termini di Riot vietano, e il gioco gira sotto Vanguard. Ciò che il replay contiene in chiaro - mappa, partita, agenti, la timeline di uccisioni e round - *viene* letto. Gli endpoint del lockfile del client non sono un'API pubblicata e non vengono usati. |
-| Replay di League of Legends, in partita | La parte momento per momento di un `.rofl` è offuscata contro i bari, in modo diverso a ogni patch; decodificarla significa smontare il gioco, cosa che i termini di Riot vietano. Ciò che il file contiene in chiaro - la riga di fine partita di ogni giocatore - *viene* letto, e le posizioni vengono dalla timeline ufficiale di Riot con la tua chiave API. |
-| Fortnite | I suoi replay sono cifrati, e i termini di Epic vietano il reverse engineering. |
-| World of Tanks, World of Warships, dal watcher stesso | I loro replay sono cifrati. Convertitori separati fuori dal watcher li leggono (vedi la tabella sopra), così che un problema con i termini di Wargaming tocca solo quelli. |
+| Posizioni di VALORANT | Il flusso di gioco dei suoi replay è offuscato con valori presi dall'eseguibile di ogni build, e il gioco gira sotto Vanguard. Ciò che il replay contiene in chiaro - mappa, partita, agenti, la timeline di uccisioni e round - *viene* letto. Gli endpoint del lockfile del client non sono un'API pubblicata e non vengono usati. |
+| Replay di League of Legends, in partita | La parte momento per momento di un `.rofl` è offuscata contro i bari, in modo diverso a ogni patch, e non viene decodificata. Ciò che il file contiene in chiaro - la riga di fine partita di ogni giocatore - *viene* letto, e le posizioni vengono dalla timeline ufficiale di Riot con la tua chiave API. |
+| Fortnite | I suoi replay sono cifrati. |
+| World of Tanks, World of Warships, dal watcher stesso | I loro replay sono cifrati. Convertitori separati fuori dal watcher li leggono (vedi la tabella sopra), ciascuno un progetto a sé. |
 | Gran Turismo 7 | Solo console; la sua telemetria è cifrata con una chiave recuperata dal gioco. |
 | Apex Legends | La sua LiveAPI invia eventi completi solo nelle lobby private e personalizzate; nient'altro in locale. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | Nessun replay, log o uscita di stato di gioco locale da leggere. Le loro statistiche arrivano dove Steam le conserva (statistiche di Steam, Timeline di Steam) e come highlight NVIDIA. |

@@ -103,5 +103,7 @@ python -m heat3d_watch stats --csv out  # 会话、事件和统计数据，写�
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | 将 DCS World 地图转为 3D 模型 | [站点](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | 将 IL-2 Sturmovik 地图转为 3D 模型 | [站点](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+每个游戏读取器都是一个独立的小项目，有自己的许可证文件、发行版本和问题跟踪器，因此可以单独安装、更新、维护，或应权利人的要求单独撤回，而不影响查看器或其他工具。
+
 许可证：MIT（[LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)）。它所使用的第三方软件包的许可证，以及它所读取的游戏的要求，列在
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md) 中。

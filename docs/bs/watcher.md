@@ -26,14 +26,14 @@ Ova stranica kaže, za svaku igru koju poznaje, šta snima i odakle to čita
 | platform | ono što čuvaju Steam i grafički driver: statistike, postignuća, vremenske linije, highlighti | da |
 | memory | memorija igre, samo čitanje - samo single-player igre, iza svake provjere ispod | **nikad** |
 
-Ništa se ne injektira, ne hookuje i ne mijenja ni u jednoj igri. Izvor koji igrini uvjeti ili
-anti-cheat pravila isključuju nije implementiran: lockfile endpointi klijenata League of Legends i Valorant,
+Ništa se ne injektira, ne hookuje i ne mijenja ni u jednoj igri. Zaštićeni izvori
+nisu implementirani: lockfile endpointi klijenata League of Legends i Valorant,
 zaštićeni dijelovi snimaka (Fortnite, League of
 Legends, Valorant), šifrirana telemetrija Gran Turismo 7 (trebao bi
 ključ izvučen iz igre). Snimci World of Tanks i World of Warships također su
 šifrirani; watcher ih ne čita, a odvojeni konverteri izvan njega čitaju
 (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), i instalira ih samo
-igrač koji tako odluči - za Wargaming uvjete vidite njihove README datoteke.
+igrač koji tako odluči - vidite njihove README datoteke.
 
 ## Šta je snimak {#what-a-recording-is}
 
@@ -160,10 +160,10 @@ Watcher se ažurira sam dok nijedna igra ne radi i ponovo se pokreće.
 
 | Igra | Zašto ne |
 |---|---|
-| VALORANT pozicije | Tok igre u njegovim snimcima je obfusciran vrijednostima uzetim iz izvršne datoteke svake verzije; njihovo izvlačenje je reverzni inženjering igre, što Riotovi uvjeti zabranjuju, a igra radi pod Vanguardom. Ono što snimak nosi otvoreno - mapa, meč, agenti, vremenska linija ubistava i rundi - *čita se*. Lockfile endpointi klijenta nisu objavljen API i ne koriste se. |
-| League of Legends snimci, u igri | Dio `.rofl` koji prati igru trenutak po trenutak obfusciran je protiv varanja, drugačije svakog patcha; njegovo dekodiranje znači rastavljanje igre, što Riotovi uvjeti zabranjuju. Ono što datoteka nosi otvoreno - završna linija svakog igrača - *čita se*, a pozicije dolaze iz Riotove službene vremenske linije meča s vašim vlastitim API ključem. |
-| Fortnite | Njegovi snimci su šifrirani, a Epicovi uvjeti zabranjuju njihov reverzni inženjering. |
-| World of Tanks, World of Warships, od strane samog watchera | Njihovi snimci su šifrirani. Odvojeni konverteri izvan watchera čitaju ih (vidite tabelu iznad), pa se problem s Wargamingovim uvjetima tiče samo njih. |
+| VALORANT pozicije | Tok igre u njegovim snimcima je obfusciran vrijednostima uzetim iz izvršne datoteke svake verzije, a igra radi pod Vanguardom. Ono što snimak nosi otvoreno - mapa, meč, agenti, vremenska linija ubistava i rundi - *čita se*. Lockfile endpointi klijenta nisu objavljen API i ne koriste se. |
+| League of Legends snimci, u igri | Dio `.rofl` koji prati igru trenutak po trenutak obfusciran je protiv varanja, drugačije svakog patcha, i ne dekodira se. Ono što datoteka nosi otvoreno - završna linija svakog igrača - *čita se*, a pozicije dolaze iz Riotove službene vremenske linije meča s vašim vlastitim API ključem. |
+| Fortnite | Njegovi snimci su šifrirani. |
+| World of Tanks, World of Warships, od strane samog watchera | Njihovi snimci su šifrirani. Odvojeni konverteri izvan watchera čitaju ih (vidite tabelu iznad), svaki kao zaseban projekat. |
 | Gran Turismo 7 | Samo konzola; njegova telemetrija je šifrirana ključem izvučenim iz igre. |
 | Apex Legends | Njegov LiveAPI šalje pune događaje samo u privatnim i prilagođenim lobijima; inače ništa lokalno. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | Nema lokalnog snimka, loga ni game-state izlaza za čitanje. Njihove statistike dolaze tamo gdje ih Steam čuva (Steam statistics, Steam Timeline) i kao NVIDIA highlighti. |

@@ -3,7 +3,7 @@ title: "Tous les jeux dans un seul tableau"
 nav_order: 13
 lang: "fr"
 source: watcher.md
-source_hash: "8066a9f8a89c"
+source_hash: "e0c6d5b833cf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -26,13 +26,13 @@ généré à partir des adaptateurs eux-mêmes (`python -m heat3d_watch games
 | platform | ce que Steam et le pilote graphique conservent : statistiques, succès, chronologies, moments forts | oui |
 | memory | la mémoire du jeu, en lecture seule - jeux solo seulement, derrière tous les contrôles ci-dessous | **jamais** |
 
-Rien n'est injecté, accroché ou modifié dans aucun jeu. Une source que les conditions d'un jeu ou ses règles anti-triche
-excluent n'est pas implémentée : les points de terminaison du fichier de verrouillage du client de League of Legends et de Valorant, les
+Rien n'est injecté, accroché ou modifié dans aucun jeu. Les sources protégées
+ne sont pas implémentées : les points de terminaison du fichier de verrouillage du client de League of Legends et de Valorant, les
 parties protégées des replays (Fortnite, League of Legends, Valorant), la télémétrie chiffrée de Gran Turismo 7 (il faudrait
 une clé récupérée depuis le jeu). Les replays de World of Tanks et de World of Warships sont aussi chiffrés ;
 le watcher ne les lit pas, des convertisseurs séparés en dehors de lui le font
 (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), installés seulement par
-un joueur qui le décide - voir leurs READMEs pour les conditions de Wargaming.
+un joueur qui le décide - voir leurs READMEs.
 
 ## Ce qu'est un enregistrement {#what-a-recording-is}
 
@@ -158,10 +158,10 @@ Le watcher se met à jour tant qu'aucun jeu ne tourne, puis redémarre.
 
 | Jeu | Pourquoi pas |
 |---|---|
-| Positions de VALORANT | Le flux de jeu de ses replays est obscurci avec des valeurs tirées de l'exécutable de chaque version ; les retrouver serait de la rétro-ingénierie du jeu, interdite par les conditions de Riot, et le jeu tourne sous Vanguard. Ce qu'un replay porte à découvert - carte, match, agents, la chronologie des éliminations et des manches - *est* lu. Les points de terminaison du fichier de verrouillage du client ne sont pas une API publiée et ne sont pas utilisés. |
-| Replays de League of Legends, en jeu | La partie au tour par tour d'un `.rofl` est obscurcie contre la triche, différemment à chaque correctif ; la décoder reviendrait à démonter le jeu, ce qu'interdisent les conditions de Riot. Ce que le fichier porte à découvert - la ligne de fin de partie de chaque joueur - *est* lu, et les positions viennent de la chronologie officielle de Riot avec votre propre clé d'API. |
-| Fortnite | Ses replays sont chiffrés, et les conditions d'Epic interdisent de les rétro-concevoir. |
-| World of Tanks, World of Warships, par le watcher lui-même | Leurs replays sont chiffrés. Des convertisseurs séparés en dehors du watcher les lisent (voir le tableau ci-dessus), pour qu'un problème avec les conditions de Wargaming ne touche que ceux-ci. |
+| Positions de VALORANT | Le flux de jeu de ses replays est obscurci avec des valeurs tirées de l'exécutable de chaque version, et le jeu tourne sous Vanguard. Ce qu'un replay porte à découvert - carte, match, agents, la chronologie des éliminations et des manches - *est* lu. Les points de terminaison du fichier de verrouillage du client ne sont pas une API publiée et ne sont pas utilisés. |
+| Replays de League of Legends, en jeu | La partie au tour par tour d'un `.rofl` est obscurcie contre la triche, différemment à chaque correctif, et n'est pas décodée. Ce que le fichier porte à découvert - la ligne de fin de partie de chaque joueur - *est* lu, et les positions viennent de la chronologie officielle de Riot avec votre propre clé d'API. |
+| Fortnite | Ses replays sont chiffrés. |
+| World of Tanks, World of Warships, par le watcher lui-même | Leurs replays sont chiffrés. Des convertisseurs séparés en dehors du watcher les lisent (voir le tableau ci-dessus), chacun un projet à part entière. |
 | Gran Turismo 7 | Console seulement ; sa télémétrie est chiffrée avec une clé récupérée depuis le jeu. |
 | Apex Legends | Son LiveAPI n'envoie des événements complets que dans les salons privés et personnalisés ; rien de local sinon. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | Aucun replay, journal ou sortie d'état de jeu local à lire. Leurs statistiques arrivent là où Steam les conserve (statistiques Steam, Steam Timeline) et sous forme de NVIDIA highlights. |

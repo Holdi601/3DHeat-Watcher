@@ -32,7 +32,7 @@ uložte replay v klientovi League (história zápasov > stiahnuť); pre polohy n
 
 Replaye League of Legends a VALORANT: čo sa z nich dá prečítať tak, ako sú.
 
-Obe hry ukladajú replaye na disk hráča a obe chránia to, čo je vo vnútri: dáta hry od okamihu k okamihu sú zamaskované a pri každej záplate inak, aby sa nedali použiť na podvádzanie. Prekonať to by znamenalo rozobrať kód samotnej hry, čo zakazujú podmienky Riotu (Podmienky služby 3.1 a 7.1) - preto sa to tu nerobí. Čo každý súbor nesie otvorene, sa načíta, a zvyšok sa uchová tak, ako je: každá časť súboru celá v `heat.raw.parquet` relácie (pravidlo konvertorov 3DHeat, docs/converters.md v repozitári prehliadača), počítaná v `selfCheck.completeness` v meta.json.
+Obe hry ukladajú replaye na disk hráča a obe chránia to, čo je vo vnútri: dáta hry od okamihu k okamihu sú zamaskované a pri každej záplate inak, aby sa nedali použiť na podvádzanie. Táto časť sa nikde v 3DHeat nedekóduje. Čo každý súbor nesie otvorene, sa načíta, a zvyšok sa uchová tak, ako je: každá časť súboru celá v `heat.raw.parquet` relácie (pravidlo konvertorov 3DHeat, docs/converters.md v repozitári prehliadača), počítaná v `selfCheck.completeness` v meta.json.
 
 #### League of Legends (.rofl) {#league-of-legends-rofl}
 
@@ -86,7 +86,7 @@ Watcher sa riadi pravidlom konvertorov 3DHeat ([pravidlo konvertorov](https://gi
 
 **Nie je k dispozícii**
 
-- samotná hra (polohy, schopnosti, každá jednotka, dianie od okamihu k okamihu): bloky ROFL1 a telo ROFL2 sú zašifrované a pakety vnútri sú zamaskované pri každej záplate; prekonať to znamená rozobrať klienta, čo zakazujú podmienky Riotu (3.1, 7.1). Uchované celé, nečítané
+- samotná hra (polohy, schopnosti, každá jednotka, dianie od okamihu k okamihu): bloky ROFL1 a telo ROFL2 sú zašifrované a pakety vnútri sú zamaskované pri každej záplate. Uchované celé, nečítané
 - polohy bez vášho vlastného kľúča Riot API: súbor ich otvorene nemá
 
 **Veľkosť**: surový sprievodný súbor má približne veľkosť samotného replaye: zašifrované bloky sa nedajú skomprimovať

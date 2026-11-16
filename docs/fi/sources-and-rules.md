@@ -3,7 +3,7 @@ title: Lähteet ja säännöt
 nav_order: 7
 lang: "fi"
 source: sources-and-rules.md
-source_hash: "990402abdc5d"
+source_hash: "36c4836cad3f"
 nav_exclude: true
 search_exclude: true
 ---
@@ -52,14 +52,14 @@ Vain `memory` avaa toisen prosessin, ja vain lukemista varten. Muut viisi tyyppi
 
 ## Mistä on luovuttu ja miksi {#what-is-declined-and-why}
 
-Joitakin pelejä, ja joitakin pelien osia, ei tallenneta, koska ainoa tapa saada ne rikkoisi suojauksen tai pelin käyttöehdot:
+Joitakin pelejä, ja joitakin pelien osia, ei tallenneta: niiden data on suojattu, julkaisematon tai ei lainkaan pelaajan koneella:
 
 | Peli | Mitä jätetään pois | Miksi |
 |---|---|---|
-| VALORANT | sijainnit, nimet, pistemäärät toistoissa; asiakkaan lockfile-päätepisteet | Toiston pelivirta on hämärretty arvoilla, jotka on otettu kunkin version suoritettavasta tiedostosta. Ne palauttaminen vaatisi pelin purkamista käänteisesti, minkä Riotin käyttöehdot kieltävät (kohdat 3.1 ja 7.1), ja peli toimii Vanguardin alla. Riotin asiakkaan lockfile-päätepisteet eivät ole julkaistu API. **Luetaan:** se, minkä toisto kantaa avoimena: kartta, ottelun tunnus, agentit, palvelimen tappo- ja kierrosaikajana. |
-| League of Legends | `.rofl`-toistojen liikkeet hetki hetkeltä; asiakkaan lockfile-päätepisteet | Hämärretty huijaamisen estämiseksi, ja se muuttuu joka päivityksellä. Sen purkaminen vaatisi pelin purkamista, mitä Riotin ehdot kieltävät. **Luetaan:** pelin lopun tulostaulu, jonka jokainen toisto kantaa selkeänä JSON-muodossa, Live Client Data API ottelun aikana, ja oman kehittäjäavaimesi kanssa virallinen Match-V5-aikajana (sijainnit kerran minuutissa, tappot siellä, missä ne tapahtuivat). |
-| Fortnite | toistot | Salattu, ja Epicin ehdot kieltävät niiden purkamisen käänteisesti. |
-| World of Tanks, World of Warships | toistot, watcherissä | Salattu avaimella, jonka peli kantaa ja jonka yhteisön työkalut ovat julkaisseet vuosia. Watcher ei lue niitä; erilliset muuntimet ulkopuolella lukevat (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), jotta Wargamingin ehtojen ongelma - lisenssi kieltää käänteisen suunnittelun (5.3 b) ja luvattoman ohjelmiston, joka on vuorovaikutuksessa sen tuotteiden kanssa (12.1 k) - koskee vain niitä. **Luetaan, kun muunnin on asennettu:** jokaisen ajoneuvon tai laivan sijainti niin kauan kuin tallennusasiakas tiesi siitä, ja tappot. |
+| VALORANT | sijainnit, nimet, pistemäärät toistoissa; asiakkaan lockfile-päätepisteet | Toiston pelivirta on hämärretty arvoilla, jotka on otettu kunkin version suoritettavasta tiedostosta. Peli toimii Vanguardin alla. Riotin asiakkaan lockfile-päätepisteet eivät ole julkaistu API. **Luetaan:** se, minkä toisto kantaa avoimena: kartta, ottelun tunnus, agentit, palvelimen tappo- ja kierrosaikajana. |
+| League of Legends | `.rofl`-toistojen liikkeet hetki hetkeltä; asiakkaan lockfile-päätepisteet | Hämärretty huijaamisen estämiseksi, ja se muuttuu joka päivityksellä, eikä sitä pureta. **Luetaan:** pelin lopun tulostaulu, jonka jokainen toisto kantaa selkeänä JSON-muodossa, Live Client Data API ottelun aikana, ja oman kehittäjäavaimesi kanssa virallinen Match-V5-aikajana (sijainnit kerran minuutissa, tappot siellä, missä ne tapahtuivat). |
+| Fortnite | toistot | Salattu. |
+| World of Tanks, World of Warships | toistot, watcherissä | Salattu. Watcher ei lue niitä; erilliset muuntimet ulkopuolella lukevat (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), kukin oma projektinsa. **Luetaan, kun muunnin on asennettu:** jokaisen ajoneuvon tai laivan sijainti niin kauan kuin tallennusasiakas tiesi siitä, ja tappot. |
 | Gran Turismo 7 | telemetria | Vain konsolissa, ja sen telemetria on salattu avaimella, joka on palautettu pelistä. |
 | Apex Legends | kaikki | Sen LiveAPI lähettää täydet tapahtumat vain yksityisissä ja mukautetuissa aulissa. Muuten mitään ei ole saatavilla paikallisesti. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | live-data | Ei paikallista toistoa, lokia tai pelitilan tulostetta luettavaksi. Niiden tilastot tulevat sieltä, missä Steam ne pitää ([Steam-tilastot](game-steam-stats.md), [Steam Timeline](game-steam-timeline.md)), ja niiden klipit [NVIDIA-kohokohtina](nvidia-highlights.md). |

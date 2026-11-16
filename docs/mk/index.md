@@ -130,6 +130,10 @@ Ctrl+C или го затворите прозорецот.
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | мапи од DCS World во 3D модели | [сајт](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | мапи од IL-2 Sturmovik во 3D модели | [сајт](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+Секој читач на игра е мал засебен проект со своја датотека со лиценца, свои изданија и свој систем за пријавување
+проблеми, па може да се инсталира, ажурира, одржува - или повлече на барање на носител на права - самостојно, без да
+влијае на прегледувачот или на другите алатки.
+
 Лиценца: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Лиценците
 на пакетите од трети страни што ги користи, и што бараат игрите што ги чита, се наведени во
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

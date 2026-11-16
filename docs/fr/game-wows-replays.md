@@ -3,7 +3,7 @@ title: "World of Warships (replays)"
 nav_order: 48
 lang: "fr"
 source: game-wows-replays.md
-source_hash: "44a041452521"
+source_hash: "e7d24a56747e"
 nav_exclude: true
 search_exclude: true
 ---
@@ -53,8 +53,8 @@ activé (`*.wotreplay`, `*.wowsreplay`) ; les installations sont trouvées via l
 Center, `C:/Games/World_of_Tanks*` / `World_of_Warships*`, et via Steam. Comme pour War Thunder, le
 watcher ne lit pas les fichiers lui-même : un convertisseur externe de chacun le fait
 (`exporters/ext/wot-replay`, commande `heat3d-wot-replay` ; `exporters/ext/wows-replay`, commande
-`heat3d-wows-replay`), gardé à part pour qu'un problème avec les conditions de Wargaming ne touche que ce
-convertisseur. Trouvé dans le PATH, installé ou à côté du watcher, il transforme chaque nouveau replay en
+`heat3d-wows-replay`), chacun un projet à part entière.
+Trouvé dans le PATH, installé ou à côté du watcher, il transforme chaque nouveau replay en
 `<map>/<match>.parquet` et `<match>.match.json` dans le dossier de session ; sinon, le watcher le signale
 une fois avec la marche à suivre pour l'installer. La ligne du joueur qui enregistrait — véhicule ou
 navire, kills, dégâts (World of Tanks), survie, et résultat (World of Tanks) — devient les statistiques de

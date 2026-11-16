@@ -132,6 +132,10 @@ konvertálására). Mindegyik külön projekt, saját kiadásokkal és licenccel
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | DCS World térképek 3D-modellként | [oldal](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | IL-2 Sturmovik térképek 3D-modellként | [oldal](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+Minden játékolvasó egy kis önálló projekt saját licencfájllal, kiadásokkal és hibakövetővel, így külön telepíthető,
+frissíthető, karbantartható - vagy egy jogtulajdonos kérésére visszavonható -, anélkül hogy a megjelenítőt vagy a
+többi eszközt érintené.
+
 Licenc: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). A harmadik féltől származó
 csomagok licencei, és az, amit az általa olvasott játékok előírnak, a
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md) fájlban vannak felsorolva.

@@ -126,6 +126,10 @@ Kiekvienas yra atskiras projektas su savo išleidimais ir licencija:
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | DCS World žemėlapiai į 3D modelius | [svetainė](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | IL-2 Sturmovik žemėlapiai į 3D modelius | [svetainė](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+Kiekviena žaidimo skaitymo priemonė yra atskiras nedidelis projektas su savo licencijos failu, išleidimais
+ir problemų sekimo sistema, todėl ją galima įdiegti, atnaujinti, prižiūrėti – arba atšaukti teisių turėtojo
+prašymu – atskirai, nepaveikiant žiūryklės ir kitų įrankių.
+
 Licencija: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Trečiųjų šalių paketų, kuriuos
 jis naudoja, licencijos ir tai, ko reikalauja žaidimai, kuriuos jis skaito, išvardytos
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

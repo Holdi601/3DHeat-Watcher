@@ -3,7 +3,7 @@ title: "League of Legends (tekrarlar)"
 nav_order: 30
 lang: "tr"
 source: game-lol-replays.md
-source_hash: "ed26619fa904"
+source_hash: "6a86dc8a45bb"
 nav_exclude: true
 search_exclude: true
 ---
@@ -36,9 +36,9 @@ Ortam değişkenlerinden ayarlar:
 
 League of Legends ve Valorant tekrarları: bunların hangi kısmı olduğu gibi okunabilir.
 
-İki oyun da tekrarları oyuncunun diskine kaydeder ve ikisi de içindekini korur: an be an oyun verisi karıştırılmıştır ve her yamayla farklı şekilde, hile yapmak için kullanılmasın diye. Bunu aşmak, oyunun kendi kodunu tersine mühendislikle açmak demektir; Riot'un koşulları bunu yasaklar (Hizmet Koşulları 3.1 ve 7.1) - bu yüzden 3DHeat'te hiçbir yerde yapılmaz. Her dosyanın açıkta taşıdığı şey okunur, geri kalanı olduğu gibi saklanır: dosyanın her parçası, bütün olarak, oturumun `heat.raw.parquet` dosyasında (3DHeat'in dönüştürücü kuralı; görüntüleyicinin deposundaki docs/converters.md), meta.json içindeki `selfCheck.completeness` ile sayılır.
+İki oyun da tekrarları oyuncunun diskine kaydeder ve ikisi de içindekini korur: an be an oyun verisi karıştırılmıştır ve her yamayla farklı şekilde, hile yapmak için kullanılmasın diye. Bu kısım 3DHeat'te hiçbir yerde çözülmez. Her dosyanın açıkta taşıdığı şey okunur, geri kalanı olduğu gibi saklanır: dosyanın her parçası, bütün olarak, oturumun `heat.raw.parquet` dosyasında (3DHeat'in dönüştürücü kuralı; görüntüleyicinin deposundaki docs/converters.md), meta.json içindeki `selfCheck.completeness` ile sayılır.
 
-İzleyici dosyaları kendisi okumaz: bunu harici bir okuyucu yapar (3DHeat Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`, komut `heat3d-riot-replays`). Riot'un koşullarıyla ilgili bir sorunun yalnızca bu okuyucuya dokunması için ayrı tutulur. PATH üzerinde bulunursa, kuruluysa veya izleyicinin yanındaysa, her yeni tekrarı okur; yoksa izleyici nasıl kurulacağını bir kez söyler. Okuduğunu izleyici oturuma kaydeder; aşağıdaki Match-V5 zaman çizelgesi dosyada bulunmadığı için izleyicinin kendisi getirir.
+İzleyici dosyaları kendisi okumaz: bunu harici bir okuyucu yapar (3DHeat Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`, komut `heat3d-riot-replays`); kendi başına bir projedir. PATH üzerinde bulunursa, kuruluysa veya izleyicinin yanındaysa, her yeni tekrarı okur; yoksa izleyici nasıl kurulacağını bir kez söyler. Okuduğunu izleyici oturuma kaydeder; aşağıdaki Match-V5 zaman çizelgesi dosyada bulunmadığı için izleyicinin kendisi getirir.
 
 #### League of Legends (.rofl) {#league-of-legends-rofl}
 
@@ -92,7 +92,7 @@ Süslü parantez içindeki bir anahtar çalışma zamanında tamamlanır (`score
 
 **Mevcut olmayan**
 
-- oyunun kendisi (konumlar, yetenekler, her birim, an be an): ROFL1'in parçaları ve ROFL2'nin gövdesi şifrelidir ve içindeki paketler her yamayla karıştırılır; bunu aşmak, istemciyi tersine mühendislikle açmak demektir, Riot'un koşulları (3.1, 7.1) bunu yasaklar. Bütün olarak saklanır, okunmaz
+- oyunun kendisi (konumlar, yetenekler, her birim, an be an): ROFL1'in parçaları ve ROFL2'nin gövdesi şifrelidir ve içindeki paketler her yamayla karıştırılır. Bütün olarak saklanır, okunmaz
 - kendi Riot API anahtarınız olmadan konumlar: dosyada açıkta yoktur
 
 **Boyut**: ham yan dosya kabaca tekrarın kendi boyutudur: şifreli parçalar sıkışmaz

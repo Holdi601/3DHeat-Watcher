@@ -130,6 +130,10 @@ fir CS2-Demoen ze konvertéieren). All ass e getrennte Projet, mat eegene Releas
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | DCS-World-Mappen a 3D-Modeller | [Site](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | IL-2-Sturmovik-Mappen a 3D-Modeller | [Site](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+All Spill-Lieser ass e klenge Projet fir sech, mat senger eegener Lizenzdatei, sengen eegene Releases a
+sengem eegenen Issue-Tracker, sou datt e fir sech eleng installéiert, aktualiséiert, gefleegt - oder op
+Ufro vun engem Rechteinhaber zréckgezunn - gi kann, ouni de Viewer oder déi aner Tools ze beréieren.
+
 Lizenz: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). D'Lizenze
 vun den Drëtt-Packagen, déi et benotzt, a wat d'Spiller, déi et liest, verlaangen, stinn an
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

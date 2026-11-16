@@ -3,7 +3,7 @@ title: "VALORANT (repriser)"
 nav_order: 44
 lang: "no"
 source: game-valorant-replays.md
-source_hash: "617e23a33a4c"
+source_hash: "a2c4144797e9"
 nav_exclude: true
 search_exclude: true
 ---
@@ -37,16 +37,15 @@ League of Legends og Valorant-repriser: det som kan leses av dem slik de er.
 
 Begge spillene lagrer repriser på spillerens disk, og begge beskytter det som ligger inni:
 dataene om spillet fra øyeblikk til øyeblikk er forvirret, og på ulike måter med hver oppdatering,
-for å hindre at de brukes til juks. Å komme forbi det betyr å demontere spillets egen kode,
-noe Riots vilkår forbyr (Terms of Service 3.1 og 7.1) - så det gjøres ikke noe sted i 3DHeat. Det
+for å hindre at de brukes til juks. Den delen dekodes ikke noe sted
+i 3DHeat. Det
 som hver fil bærer åpent, leses, og resten lagres slik det er: hver del av filen, hel, i øktens
 `heat.raw.parquet` (3DHeat sin regel for konvertering, docs/converters.md i vieweren sitt depot),
 og telles i `selfCheck.completeness` i meta.json.
 
 Watcheren leser ikke filene selv: en ekstern leser gjør det (3DHeat
 Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`,
-kommandoen `heat3d-riot-replays`), holdt adskilt slik at et problem med Riots
-vilkår bare berører den leseren. Finnes den på PATH, er installert, eller ligger ved siden av watcheren,
+kommandoen `heat3d-riot-replays`), et eget prosjekt. Finnes den på PATH, er installert, eller ligger ved siden av watcheren,
 leser den hver ny reprise; mangler den, sier watcheren én gang hvordan den installeres. Det
 leseren får ut, skriver watcheren inn i økten; Match-V5-tidslinjen under hentes av watcheren selv,
 siden den ikke finnes i filen.
@@ -105,7 +104,7 @@ Watcheren følger 3DHeat sin [regel for konvertering](https://github.com/Holdi60
 
 **Ikke tilgjengelig**
 
-- posisjoner, navn, poeng, evner, hver ramme i spillet: reprisedata- og sjekkpunktdelene er forvirret; å lese dem betyr å demontere klienten, noe Riots vilkår forbyr. Lagret hel, ikke lest
+- posisjoner, navn, poeng, evner, hver ramme i spillet: reprisedata- og sjekkpunktdelene er forvirret. Lagret hel, ikke lest
 - innholdet i en kryptert reprise: gjennomgått og lagret hel, ingenting leses inni
 
 **Størrelse**: rå sidefil er omtrent reprisens egen størrelse: den forvirrede strømmen komprimeres ikke

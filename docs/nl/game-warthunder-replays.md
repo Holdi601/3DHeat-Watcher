@@ -53,8 +53,8 @@ bestaande replays op verzoek om.
 War Thunder slaat een replay van elk gevecht op in `<War Thunder>/Replays/*.wrpl`
 wanneer het opslaan van replays aan staat in de opties. De watcher leest die zelf niet:
 een externe converter doet dat (de 3DHeat War Thunder-replayconverter,
-`exporters/ext/warthunder-replay`, opdracht `heat3d-wt-replay`), apart gehouden zodat
-een probleem daarmee niets anders raakt. Als de opdracht op het PAD staat, of het
+`exporters/ext/warthunder-replay`, opdracht `heat3d-wt-replay`), een eigen project.
+Als de opdracht op het PAD staat, of het
 pakket is geïnstalleerd of staat naast de watcher, wordt elke nieuwe replay erdoor
 gehaald en levert hij de sessiemap op als `<map>/<match>.parquet` en `<match>.match.json`;
 als dat niet zo is, zegt de watcher één keer hoe de converter geïnstalleerd wordt en

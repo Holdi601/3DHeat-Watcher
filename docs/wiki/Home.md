@@ -129,6 +129,10 @@ to convert CS2 demos). Each is its own project, with its own releases and licenc
 | [Ext-Reforger](https://github.com/Holdi601/3DHeat-Ext-Reforger) | Arma Reforger worlds (Enfusion) as 3D levels | [site](https://holdi601.github.io/3DHeat-Ext-Reforger/) |
 | [Ext-R6](https://github.com/Holdi601/3DHeat-Ext-R6) | Rainbow Six Siege match replays | [site](https://holdi601.github.io/3DHeat-Ext-R6/) |
 
+Each game reader is its own small project with its own licence file, releases and issue tracker, so
+it can be installed, updated, maintained - or withdrawn on a rights holder's request - on its own,
+without affecting the viewer or the other tools.
+
 Licence: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). The licences
 of the third-party packages it uses, and what the games it reads require, are listed in
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

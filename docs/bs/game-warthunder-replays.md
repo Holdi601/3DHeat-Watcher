@@ -53,8 +53,8 @@ postojeće na zahtjev.
 War Thunder sprema snimak svake bitke u `<War Thunder>/Replays/*.wrpl`
 kad je spremanje snimaka uključeno u njegovim opcijama. Watcher ih ne čita
 sam: čita ih vanjski konverter (3DHeat War Thunder replay converter,
-`exporters/ext/warthunder-replay`, komanda `heat3d-wt-replay`), držan odvojeno da
-problem s njim ne dira ništa drugo. Kad je komanda na PATH-u, ili je
+`exporters/ext/warthunder-replay`, komanda `heat3d-wt-replay`), zaseban
+projekat. Kad je komanda na PATH-u, ili je
 paket instaliran ili pored watchera, svaki novi snimak se propušta kroz
 nju u folder sesije kao `<map>/<match>.parquet` i `<match>.match.json`;
 kad nije, watcher jednom kaže kako je instalirati i ostavlja folder na miru.

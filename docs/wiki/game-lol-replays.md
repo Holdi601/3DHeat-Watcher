@@ -29,17 +29,16 @@ League of Legends and Valorant replays: what of them can be read as it is.
 
 Both games save replays to the player's disk, and both protect what is inside:
 the moment-to-moment game data is obfuscated, and differently with every patch,
-to keep it from being used to cheat. Getting through that means taking the
-game's own code apart, which Riot's terms forbid (Terms of Service 3.1 and 7.1)
-- so it is not done anywhere in 3DHeat. What each file carries in the open
+to keep it from being used to cheat. That part is not decoded anywhere in
+3DHeat. What each file carries in the open
 is read, and the rest is kept as it is: every part of the file, whole, in the
 session's `heat.raw.parquet` (3DHeat's converter rule, docs/converters.md in
 the viewer's repository), counted in meta.json's `selfCheck.completeness`.
 
 The watcher does not read the files itself: an external reader does (3DHeat
 Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`,
-command `heat3d-riot-replays`), kept apart so that a problem with Riot's terms
-touches only that reader. Found on PATH, installed, or beside the watcher, it
+command `heat3d-riot-replays`), a project of its own. Found on PATH,
+installed, or beside the watcher, it
 reads each new replay; missing, the watcher says once how to install it. What
 it reads, the watcher records into the session; the Match-V5 timeline below is
 fetched by the watcher itself, as it is not in the file.
@@ -114,7 +113,7 @@ The watcher follows 3DHeat's [converter rule](https://github.com/Holdi601/3DHeat
 
 **Not available**
 
-- the game itself (positions, abilities, every unit, moment to moment): ROFL1's chunks and ROFL2's body are encrypted and the packets inside obfuscated with every patch; getting through means taking the client apart, which Riot's terms forbid (3.1, 7.1). Kept whole, not read
+- the game itself (positions, abilities, every unit, moment to moment): ROFL1's chunks and ROFL2's body are encrypted and the packets inside obfuscated with every patch. Kept whole, not read
 - positions without your own Riot API key: the file has none in the open
 
 **Size**: the raw sidecar is about the replay's own size: the encrypted chunks do not compress

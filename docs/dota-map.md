@@ -9,9 +9,8 @@ The Dota 2 map in 3D - ground, cliffs, water, every tree and the buildings, in
 the frame and units the [Dota 2 replay tables](game-dota-replays.md) are drawn
 in - is made by its own tool, **3DHeat Dota**
 ([3DHeat-Ext-Dota](https://github.com/Holdi601/3DHeat-Ext-Dota),
-[documentation](https://holdi601.github.io/3DHeat-Ext-Dota/)). It reads Valve's
-game files, so it is kept out of the watcher: if it ever has to go, the watcher
-stays.
+[documentation](https://holdi601.github.io/3DHeat-Ext-Dota/)), a project of
+its own outside the watcher.
 
 Install it once, as its [Before you start](https://holdi601.github.io/3DHeat-Ext-Dota/before-you-start.html)
 page says (Python package, plus Source2Viewer's command line), then either

@@ -32,7 +32,7 @@ guarde uma repetição no cliente do League (histórico de partidas > transferir
 
 League of Legends e VALORANT (repetições): o que delas pode ser lido como está.
 
-Os dois jogos guardam repetições no disco do jogador, e os dois protegem o que está dentro: os dados do jogo momento a momento são ofuscados, e de forma diferente a cada atualização, para impedir que sejam usados para trapacear. Vencer isso significa desmontar o código do próprio jogo, o que os termos da Riot proíbem (Termos de Serviço 3.1 e 7.1) - então isso não é feito aqui. O que cada ficheiro traz às claras é lido, e o resto é guardado como está: cada parte do ficheiro, inteira, no `heat.raw.parquet` da sessão (regra do conversor do 3DHeat, docs/converters.md no repositório do visualizador), contada no `selfCheck.completeness` do meta.json.
+Os dois jogos guardam repetições no disco do jogador, e os dois protegem o que está dentro: os dados do jogo momento a momento são ofuscados, e de forma diferente a cada atualização, para impedir que sejam usados para trapacear. Essa parte não é decodificada em nenhum lugar do 3DHeat. O que cada ficheiro traz às claras é lido, e o resto é guardado como está: cada parte do ficheiro, inteira, no `heat.raw.parquet` da sessão (regra do conversor do 3DHeat, docs/converters.md no repositório do visualizador), contada no `selfCheck.completeness` do meta.json.
 
 #### League of Legends (.rofl) {#league-of-legends-rofl}
 
@@ -86,7 +86,7 @@ O watcher segue a [regra do conversor do 3DHeat](https://github.com/Holdi601/3DH
 
 **Não disponível**
 
-- o próprio jogo (posições, habilidades, cada unidade, momento a momento): os blocos do ROFL1 e o corpo do ROFL2 são cifrados, e os pacotes internos são ofuscados a cada atualização; passar por isso significa desmontar o cliente, o que os termos da Riot proíbem (3.1, 7.1). Guardado inteiro, não lido
+- o próprio jogo (posições, habilidades, cada unidade, momento a momento): os blocos do ROFL1 e o corpo do ROFL2 são cifrados, e os pacotes internos são ofuscados a cada atualização. Guardado inteiro, não lido
 - posições sem a própria chave de API da Riot: o ficheiro não as tem às claras
 
 **Tamanho**: o ficheiro bruto tem cerca do tamanho da própria repetição: os blocos cifrados não comprimem

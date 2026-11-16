@@ -3,7 +3,7 @@ title: "Sources et règles"
 nav_order: 7
 lang: "fr"
 source: sources-and-rules.md
-source_hash: "990402abdc5d"
+source_hash: "36c4836cad3f"
 nav_exclude: true
 search_exclude: true
 ---
@@ -52,14 +52,14 @@ Seul `memory` ouvre un autre processus, et seulement en lecture. Les cinq autres
 
 ## Ce qui est refusé, et pourquoi {#what-is-declined-and-why}
 
-Certains jeux, et certaines parties de jeux, ne sont pas enregistrés parce que le seul moyen de les obtenir casserait une protection ou les conditions d'un jeu :
+Certains jeux, et certaines parties de jeux, ne sont pas enregistrés : leurs données sont protégées, non publiées, ou absentes de la machine du joueur :
 
 | Jeu | Ce qui est laissé de côté | Pourquoi |
 |---|---|---|
-| VALORANT | positions, noms, scores dans les replays ; les points d'accès du fichier lockfile du client | Le flux de jeu du replay est obscurci avec des valeurs tirées de l'exécutable de chaque version. Les retrouver implique de faire de la rétro-ingénierie du jeu, ce que les Conditions d'utilisation de Riot interdisent (sections 3.1 et 7.1), et le jeu tourne sous Vanguard. Les points d'accès du fichier lockfile du client Riot ne sont pas une API publiée. **Lu :** ce que le replay contient en clair - la carte, l'identifiant du match, les agents, la chronologie des frags et des manches du serveur. |
-| League of Legends | la partie moment par moment des replays `.rofl` ; les points d'accès du fichier lockfile du client | Obscurci contre la triche, différemment à chaque patch ; le décoder reviendrait à démonter le jeu, ce que les conditions de Riot interdisent. **Lu :** la fiche de fin de partie que chaque replay contient en JSON clair, l'API Live Client Data pendant un match, et - avec votre propre clé développeur - la chronologie officielle Match-V5 (positions une fois par minute, frags là où ils ont eu lieu). |
-| Fortnite | replays | Chiffrés, et les conditions d'Epic interdisent de les rétro-concevoir. |
-| World of Tanks, World of Warships | replays, dans le watcher | Chiffrés, avec une clé que le jeu contient et que des outils communautaires publient depuis des années. Le watcher ne les lit pas ; des convertisseurs séparés, hors du watcher, le font (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), pour qu'un problème avec les conditions de Wargaming - sa licence interdit la rétro-ingénierie (5.3 b) et les logiciels non autorisés qui interagissent avec ses produits (12.1 k) - ne touche que ces convertisseurs. **Lu, avec un convertisseur installé :** la position de chaque véhicule ou navire tant que le client d'enregistrement le connaissait, et les frags. |
+| VALORANT | positions, noms, scores dans les replays ; les points d'accès du fichier lockfile du client | Le flux de jeu du replay est obscurci avec des valeurs tirées de l'exécutable de chaque version. Le jeu tourne sous Vanguard. Les points d'accès du fichier lockfile du client Riot ne sont pas une API publiée. **Lu :** ce que le replay contient en clair - la carte, l'identifiant du match, les agents, la chronologie des frags et des manches du serveur. |
+| League of Legends | la partie moment par moment des replays `.rofl` ; les points d'accès du fichier lockfile du client | Obscurci contre la triche, différemment à chaque patch, et non décodé. **Lu :** la fiche de fin de partie que chaque replay contient en JSON clair, l'API Live Client Data pendant un match, et - avec votre propre clé développeur - la chronologie officielle Match-V5 (positions une fois par minute, frags là où ils ont eu lieu). |
+| Fortnite | replays | Chiffrés. |
+| World of Tanks, World of Warships | replays, dans le watcher | Chiffrés. Le watcher ne les lit pas ; des convertisseurs séparés, hors du watcher, le font (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), chacun un projet à part entière. **Lu, avec un convertisseur installé :** la position de chaque véhicule ou navire tant que le client d'enregistrement le connaissait, et les frags. |
 | Gran Turismo 7 | télémétrie | Console uniquement, et sa télémétrie est chiffrée avec une clé retrouvée à partir du jeu. |
 | Apex Legends | tout | Son LiveAPI n'envoie les événements complets que dans les salons privés et personnalisés ; rien n'est disponible localement sinon. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | données en direct | Aucune sortie locale de replay, de journal ou d'état de jeu à lire. Leurs statistiques arrivent là où Steam les garde ([Statistiques Steam](game-steam-stats.md), [Steam Timeline](game-steam-timeline.md)), et leurs clips sous forme de [moments forts NVIDIA](nvidia-highlights.md). |

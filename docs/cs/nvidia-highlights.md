@@ -3,7 +3,7 @@ title: NVIDIA Highlights
 nav_order: 8
 lang: "cs"
 source: nvidia-highlights.md
-source_hash: "a3b769ab065c"
+source_hash: "cd2a5cc2c5fd"
 nav_exclude: true
 search_exclude: true
 ---
@@ -84,4 +84,4 @@ Věci, které je dobré vědět o vypůjčené pozici:
 Druhým způsobem, jak získat pozici, by bylo číst ji z paměti. Ani jedna paměť to neumožní:
 
 - **Paměť NVIDIA žádnou pozici neobsahuje.** Aplikace NVIDIA App dostane to, co nese GfeSDK – id highlightu a dva časové posuny – plus video, které nahraje. Na straně NVIDIA není nikde žádná pozice, kterou by bylo možné přečíst. (Watcher stejně paměť NVIDIA nečte; čte výše uvedené soubory.)
-- **Paměť hry je v hrách pro více hráčů mimo dosah.** Pozice je v procesu hry, ale Watcher paměť hry pro více hráčů nikdy nečte: adaptér paměti pro hru označenou jako hraná online se odmítne ještě předtím, než se cokoli otevře (viz [Čtení paměti](memory-reading.md)). Hry pro více hráčů běží pod anti-cheaty (Easy Anti-Cheat, BattlEye, Vanguard, ...), které považují otevření procesu hry jiným programem za podvádění, což může vést k zablokování účtu. Čtení stavu hry zvenku je navíc v rozporu s podmínkami těchto her. Highlight ve hře pro více hráčů tedy dostane místo jen z toho, co hra zveřejňuje: z její game-state integration nebo telemetrie, zaznamenané jiným adaptérem ve stejnou dobu.
+- **Paměť hry je v hrách pro více hráčů mimo dosah.** Pozice je v procesu hry, ale Watcher paměť hry pro více hráčů nikdy nečte: adaptér paměti pro hru označenou jako hraná online se odmítne ještě předtím, než se cokoli otevře (viz [Čtení paměti](memory-reading.md)). Hry pro více hráčů běží pod anti-cheaty (Easy Anti-Cheat, BattlEye, Vanguard, ...), které považují otevření procesu hry jiným programem za podvádění, což může vést k zablokování účtu. Highlight ve hře pro více hráčů tedy dostane místo jen z toho, co hra zveřejňuje: z její game-state integration nebo telemetrie, zaznamenané jiným adaptérem ve stejnou dobu.

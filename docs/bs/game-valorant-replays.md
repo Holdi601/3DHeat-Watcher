@@ -33,9 +33,8 @@ Snimke League of Legends i Valorant: ono što se iz njih može pročitati takvo 
 
 Obje igre spremaju snimke na igračev disk i obje štite ono što je unutra:
 podaci igre iz trenutka u trenutak su obfuskirani, i to drugačije sa svakim patchem,
-da se ne bi mogli koristiti za varanje. Probiti se kroz to znači rastaviti
-vlastiti kod igre, što Riotovi uvjeti zabranjuju (Terms of Service 3.1 i 7.1)
-- pa se ovdje ne radi. Čita se ono što svaka datoteka nosi otvoreno, a
+da se ne bi mogli koristiti za varanje. Taj dio se nigdje u 3DHeat ne dekodira.
+Čita se ono što svaka datoteka nosi otvoreno, a
 ostatak se čuva takav kakav jest: svaki dio datoteke, cijel, u
 `heat.raw.parquet` sesije (3DHeat-ovo pravilo konvertera, docs/converters.md u
 repozitoriju preglednika), a broji se u `selfCheck.completeness` u meta.json.
@@ -97,7 +96,7 @@ Watcher slijedi 3DHeat-ovo [pravilo konvertera](https://github.com/Holdi601/3DHe
 
 **Nije dostupno**
 
-- položaji, imena, rezultati, sposobnosti, svaki frejm igre: chunkovi podataka snimke i checkpointa su obfuskirani; njihovo čitanje znači rastaviti klijent, što Riotovi uvjeti zabranjuju. Čuva se cijelo, ne čita se
+- položaji, imena, rezultati, sposobnosti, svaki frejm igre: chunkovi podataka snimke i checkpointa su obfuskirani. Čuva se cijelo, ne čita se
 - sadržaj šifrovane snimke: prolazi se i čuva cijela, unutra se ništa ne čita
 
 **Veličina**: sirovi sidecar je otprilike veličine same snimke: obfuskirani tok se ne kompresuje

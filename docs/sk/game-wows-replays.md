@@ -54,8 +54,8 @@ Obe ukladajú replay každej bitky do `<game>/replays/`, keď je nahrávanie zap
 Game Center, `C:/Games/World_of_Tanks*` / `World_of_Warships*`, a Steam. Ako pri
 War Thunder, watcher súbory sám nečíta: číta ich externý konvertor každej z nich
 (`exporters/ext/wot-replay`, príkaz `heat3d-wot-replay`; `exporters/ext/wows-replay`,
-príkaz `heat3d-wows-replay`), oddelený, aby problém s podmienkami Wargamingu
-zasiahol len tento konvertor. Keď sa nájde v PATH, je nainštalovaný alebo vedľa
+príkaz `heat3d-wows-replay`), každý
+samostatný projekt. Keď sa nájde v PATH, je nainštalovaný alebo vedľa
 watchera, premení každý nový replay na `<map>/<match>.parquet` a `<match>.match.json`
 v priečinku relácie; keď chýba, watcher raz napíše, ako ho nainštalovať. Riadok
 nahrávajúceho hráča - vozidlo alebo loď, zabitia, poškodenie (World of Tanks),

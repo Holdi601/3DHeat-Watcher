@@ -31,7 +31,7 @@ uložte replay vo VALORANT (kariéra > zápas > stiahnuť replay)
 
 Replaye League of Legends a VALORANT: čo sa z nich dá prečítať tak, ako sú.
 
-Obe hry ukladajú replaye na disk hráča a obe chránia to, čo je vo vnútri: dáta hry od okamihu k okamihu sú zamaskované a pri každej záplate inak, aby sa nedali použiť na podvádzanie. Prekonať to by znamenalo rozobrať kód samotnej hry, čo zakazujú podmienky Riotu (Podmienky služby 3.1 a 7.1) - preto sa to tu nerobí. Čo každý súbor nesie otvorene, sa načíta, a zvyšok sa uchová tak, ako je: každá časť súboru celá v `heat.raw.parquet` relácie (pravidlo konvertorov 3DHeat, docs/converters.md v repozitári prehliadača), počítaná v `selfCheck.completeness` v meta.json.
+Obe hry ukladajú replaye na disk hráča a obe chránia to, čo je vo vnútri: dáta hry od okamihu k okamihu sú zamaskované a pri každej záplate inak, aby sa nedali použiť na podvádzanie. Táto časť sa nikde v 3DHeat nedekóduje. Čo každý súbor nesie otvorene, sa načíta, a zvyšok sa uchová tak, ako je: každá časť súboru celá v `heat.raw.parquet` relácie (pravidlo konvertorov 3DHeat, docs/converters.md v repozitári prehliadača), počítaná v `selfCheck.completeness` v meta.json.
 
 #### Valorant (.vrf) {#valorant-vrf}
 
@@ -81,7 +81,7 @@ Watcher sa riadi pravidlom konvertorov 3DHeat ([pravidlo konvertorov](https://gi
 
 **Nie je k dispozícii**
 
-- polohy, mená, skóre, schopnosti, každý rámec hry: bloky dát replaye a kontrolné body sú zamaskované; čítať ich znamená rozobrať klienta, čo zakazujú podmienky Riotu. Uchované celé, nečítané
+- polohy, mená, skóre, schopnosti, každý rámec hry: bloky dát replaye a kontrolné body sú zamaskované. Uchované celé, nečítané
 - obsah zašifrovaného replaye: prejdený a uchovaný celý, vnútri nič nečítané
 
 **Veľkosť**: surový sprievodný súbor má približne veľkosť samotného replaye: zamaskovaný prúd sa nedá skomprimovať

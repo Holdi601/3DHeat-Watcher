@@ -49,7 +49,15 @@ files the watcher writes on `setup --apply` are its own, MIT like the rest.
 
 Only what the games hand out, and files on the player's own machine. Reading a
 game's memory is limited to single-player games behind the checks in
-`docs/watcher.md`, read only, off by default; no profiles ship.
+`docs/watcher.md`, read only, off by default; no profiles ship. Nothing of any
+game is shipped or redistributed - no game assets, no game code, no DLLs - and
+what the watcher writes stays on the player's machine.
+
+3DHeat Watcher is not affiliated with or endorsed by the publishers of the games
+it reads; the games and related names and trademarks belong to their owners.
+Rights holders: open an issue at
+[3DHeat-Watcher/issues](https://github.com/Holdi601/3DHeat-Watcher/issues) - we
+respond quickly and remove anything on request.
 
 ---
 
@@ -59,9 +67,6 @@ game's memory is limited to single-player games behind the checks in
 - [facebook/VGGT-1B](https://huggingface.co/facebook/VGGT-1B) — CC-BY-NC-4.0
 - [ReShade — PCGamingWiki](https://www.pcgamingwiki.com/wiki/ReShade) — anti-cheat position
 - [ReShade forum, depth buffer detection](https://reshade.me/forum/general-discussion/4083-depth-buffer-detection-modifications?start=1200) — multiplayer depth disabling
-- [Reverse engineering and the law](https://ipwatchdog.com/2021/03/27/reverse-engineering-law-understand-restrictions-minimize-risks/) — EULA and DMCA position
-- [DMCA §1201 anti-circumvention](https://copyrightalliance.org/education/copyright-law-explained/the-digital-millennium-copyright-act-dmca/section-1201-technology-protection/) — the tools provisions reach technologies, not only acts
-- [FModel setup](https://modding.wiki/en/aewff/developers/fmodel) — established extractors require a user-supplied AES key rather than shipping one
 - [facebook/VGGT-1B-Commercial](https://huggingface.co/facebook/VGGT-1B-Commercial) — gated; access is granted per account, so it cannot be a default
 - [Oodle Data Compression](http://www.radgametools.com/oodle.htm) — proprietary, no redistributable build, hence found rather than bundled
 - [Review of Feed-forward 3D Reconstruction: DUSt3R to VGGT](https://arxiv.org/abs/2507.08448)

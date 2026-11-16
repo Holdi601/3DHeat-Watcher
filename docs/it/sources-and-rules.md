@@ -3,7 +3,7 @@ title: "Fonti e regole"
 nav_order: 7
 lang: "it"
 source: sources-and-rules.md
-source_hash: "990402abdc5d"
+source_hash: "36c4836cad3f"
 nav_exclude: true
 search_exclude: true
 ---
@@ -52,14 +52,14 @@ Solo `memory` apre un altro processo, e solo per leggere. Gli altri cinque tipi 
 
 ## Cosa viene escluso e perché {#what-is-declined-and-why}
 
-Alcuni giochi, e alcune parti di giochi, non vengono registrati perché l'unico modo per ottenerli romperebbe una protezione o i termini di un gioco:
+Alcuni giochi, e alcune parti di giochi, non vengono registrati: i loro dati sono protetti, non pubblicati o del tutto assenti dalla macchina del giocatore:
 
 | Gioco | Cosa viene lasciato fuori | Perché |
 |---|---|---|
-| VALORANT | posizioni, nomi, punteggi nei replay; gli endpoint del lockfile del client | Il flusso di gioco del replay è offuscato con valori ricavati dall'eseguibile di ogni build. Recuperarli significherebbe fare reverse engineering del gioco, che i Termini di servizio di Riot vietano (sezioni 3.1 e 7.1), e il gioco gira sotto Vanguard. Gli endpoint del lockfile del client Riot non sono un'API pubblicata. **Letto:** ciò che il replay porta in chiaro - mappa, id della partita, agenti, la timeline di uccisioni e round del server. |
-| League of Legends | la parte momento per momento dei replay `.rofl`; gli endpoint del lockfile del client | Offuscata contro i cheat, in modo diverso a ogni patch; decodificarla significa smontare il gioco, cosa che i termini di Riot vietano. **Letto:** il tabellone di fine partita che ogni replay porta come JSON semplice, la Live Client Data API durante una partita e - con una tua chiave per sviluppatori - la timeline ufficiale Match-V5 (posizioni una volta al minuto, uccisioni dove sono avvenute). |
-| Fortnite | replay | Cifrati, e i termini di Epic vietano il reverse engineering. |
-| World of Tanks, World of Warships | replay, nel watcher | Cifrati, con una chiave che il gioco porta e che gli strumenti della comunità pubblicano da anni. Il watcher non li legge; li leggono convertitori separati al di fuori di esso (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), così che un problema con i termini di Wargaming - la sua licenza vieta il reverse engineering (5.3 b) e il software non autorizzato che interagisce con i suoi prodotti (12.1 k) - tocchi solo quelli. **Letto, con un convertitore installato:** la posizione di ogni veicolo o nave mentre il client di registrazione ne era a conoscenza, e le uccisioni. |
+| VALORANT | posizioni, nomi, punteggi nei replay; gli endpoint del lockfile del client | Il flusso di gioco del replay è offuscato con valori ricavati dall'eseguibile di ogni build. Il gioco gira sotto Vanguard. Gli endpoint del lockfile del client Riot non sono un'API pubblicata. **Letto:** ciò che il replay porta in chiaro - mappa, id della partita, agenti, la timeline di uccisioni e round del server. |
+| League of Legends | la parte momento per momento dei replay `.rofl`; gli endpoint del lockfile del client | Offuscata contro i cheat, in modo diverso a ogni patch, e non decodificata. **Letto:** il tabellone di fine partita che ogni replay porta come JSON semplice, la Live Client Data API durante una partita e - con una tua chiave per sviluppatori - la timeline ufficiale Match-V5 (posizioni una volta al minuto, uccisioni dove sono avvenute). |
+| Fortnite | replay | Cifrati. |
+| World of Tanks, World of Warships | replay, nel watcher | Cifrati. Il watcher non li legge; li leggono convertitori separati al di fuori di esso (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), ciascuno un progetto a sé. **Letto, con un convertitore installato:** la posizione di ogni veicolo o nave mentre il client di registrazione ne era a conoscenza, e le uccisioni. |
 | Gran Turismo 7 | telemetria | Solo console, e la sua telemetria è cifrata con una chiave recuperata dal gioco. |
 | Apex Legends | tutto | La sua LiveAPI invia eventi completi solo nelle lobby private e personalizzate; altrimenti nulla è disponibile in locale. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | dati in tempo reale | Nessun replay, log o output di game-state locale da leggere. Le loro statistiche arrivano dove le conserva Steam ([Statistiche Steam](game-steam-stats.md), [Steam Timeline](game-steam-timeline.md)), e i loro clip come [NVIDIA highlights](nvidia-highlights.md). |

@@ -127,6 +127,10 @@ demojev CS2). Vsako je svoj projekt, z lastnimi izdajami in licenco:
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | karte DCS World v 3D modele | [spletno mesto](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | karte IL-2 Sturmovik v 3D modele | [spletno mesto](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+Vsak bralnik iger je samostojen majhen projekt z lastno datoteko licence, izdajami in sledilnikom težav,
+zato ga je mogoče namestiti, posodobiti, vzdrževati - ali na zahtevo imetnika pravic umakniti - samostojno,
+brez vpliva na pregledovalnik in druga orodja.
+
 Licenca: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Licence tretjih oseb paketov,
 ki jih uporablja, in to, kar zahtevajo igre, ki jih bere, so navedene v
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

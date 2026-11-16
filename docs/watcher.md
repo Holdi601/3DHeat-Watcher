@@ -22,14 +22,14 @@ from - generated from the adapters themselves (`python -m heat3d_watch games
 | platform | what Steam and the graphics driver keep: statistics, achievements, timelines, highlights | yes |
 | memory | the game's memory, read only - single-player games only, behind every check below | **never** |
 
-Nothing is injected, hooked or changed in any game. A source a game's terms or
-anti-cheat rules out is not implemented: the League of Legends and Valorant
+Nothing is injected, hooked or changed in any game. Protected sources are not
+implemented: the League of Legends and Valorant
 client lockfile endpoints, the protected parts of replays (Fortnite, League of
 Legends, Valorant), Gran Turismo 7's encrypted telemetry (it would need a
 key recovered from the game). World of Tanks and World of Warships replays are
 enciphered too; the watcher does not read them, separate converters outside it
 do (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), installed only by
-a player who decides to - see their READMEs for Wargaming's terms.
+a player who decides to - see their READMEs.
 
 ## What a recording is
 
@@ -155,10 +155,10 @@ archive. The watcher updates itself while no game is running and starts again.
 
 | Game | Why not |
 |---|---|
-| VALORANT positions | Its replays' game stream is obfuscated with values taken from each build's executable; recovering them is reverse engineering the game, which Riot's terms forbid, and the game runs under Vanguard. What the replay carries in the open - map, match, agents, the kill and round timeline - *is* read. The client's lockfile endpoints are not a published API and are not used. |
-| League of Legends replays, in-game | The moment-to-moment part of a `.rofl` is obfuscated against cheating, differently every patch; decoding it means taking the game apart, which Riot's terms forbid. What the file carries in the open - every player's end-of-game line - *is* read, and positions come from Riot's official match timeline with your own API key. |
-| Fortnite | Its replays are encrypted, and Epic's terms forbid reverse engineering them. |
-| World of Tanks, World of Warships, by the watcher itself | Their replays are enciphered. Separate converters outside the watcher read them (see the table above), so that a problem with Wargaming's terms touches only those. |
+| VALORANT positions | Its replays' game stream is obfuscated with values taken from each build's executable, and the game runs under Vanguard. What the replay carries in the open - map, match, agents, the kill and round timeline - *is* read. The client's lockfile endpoints are not a published API and are not used. |
+| League of Legends replays, in-game | The moment-to-moment part of a `.rofl` is obfuscated against cheating, differently every patch, and is not decoded. What the file carries in the open - every player's end-of-game line - *is* read, and positions come from Riot's official match timeline with your own API key. |
+| Fortnite | Its replays are encrypted. |
+| World of Tanks, World of Warships, by the watcher itself | Their replays are enciphered. Separate converters outside the watcher read them (see the table above), each a project of its own. |
 | Gran Turismo 7 | Console only; its telemetry is encrypted with a key recovered from the game. |
 | Apex Legends | Its LiveAPI sends full events only in private and custom lobbies; nothing local otherwise. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | No local replay, log or game-state output to read. Their statistics come in where Steam keeps them (Steam statistics, Steam Timeline) and as NVIDIA highlights. |

@@ -31,7 +31,7 @@ guarde uma repetição no VALORANT (carreira > partida > transferir repetição)
 
 League of Legends e VALORANT (repetições): o que delas pode ser lido como está.
 
-Os dois jogos guardam repetições no disco do jogador, e os dois protegem o que está dentro: os dados do jogo momento a momento são ofuscados, e de forma diferente a cada atualização, para impedir que sejam usados para trapacear. Vencer isso significa desmontar o código do próprio jogo, o que os termos da Riot proíbem (Termos de Serviço 3.1 e 7.1) - então isso não é feito aqui. O que cada ficheiro traz às claras é lido, e o resto é guardado como está: cada parte do ficheiro, inteira, no `heat.raw.parquet` da sessão (regra do conversor do 3DHeat, docs/converters.md no repositório do visualizador), contada no `selfCheck.completeness` do meta.json.
+Os dois jogos guardam repetições no disco do jogador, e os dois protegem o que está dentro: os dados do jogo momento a momento são ofuscados, e de forma diferente a cada atualização, para impedir que sejam usados para trapacear. Essa parte não é decodificada em nenhum lugar do 3DHeat. O que cada ficheiro traz às claras é lido, e o resto é guardado como está: cada parte do ficheiro, inteira, no `heat.raw.parquet` da sessão (regra do conversor do 3DHeat, docs/converters.md no repositório do visualizador), contada no `selfCheck.completeness` do meta.json.
 
 #### VALORANT (.vrf) {#valorant-vrf}
 
@@ -81,7 +81,7 @@ O watcher segue a [regra do conversor do 3DHeat](https://github.com/Holdi601/3DH
 
 **Não disponível**
 
-- posições, nomes, placares, habilidades, cada quadro do jogo: os blocos de dados da repetição e de checkpoint são ofuscados; lê-los significa desmontar o cliente, o que os termos da Riot proíbem. Guardados inteiros, não lidos
+- posições, nomes, placares, habilidades, cada quadro do jogo: os blocos de dados da repetição e de checkpoint são ofuscados. Guardados inteiros, não lidos
 - o conteúdo de uma repetição cifrada: percorrida e guardada inteira, nada é lido por dentro
 
 **Tamanho**: o ficheiro bruto tem cerca do tamanho da própria repetição: o fluxo ofuscado não comprime

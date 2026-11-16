@@ -123,6 +123,10 @@ konvertētu CS2 demo). Katrs ir atsevišķs projekts ar savām izlaidēm un lice
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | DCS World kartes 3D modeļos | [vietne](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | IL-2 Sturmovik kartes 3D modeļos | [vietne](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+Katrs spēļu lasītājs ir atsevišķs neliels projekts ar savu licences failu, laidieniem un problēmu
+izsekotāju, tāpēc to var instalēt, atjaunināt, uzturēt - vai pēc tiesību turētāja lūguma atsaukt -
+atsevišķi, neietekmējot skatītāju vai pārējos rīkus.
+
 Licence: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Trešo pušu pakotņu
 licences, ko tas izmanto, un to, ko prasa spēles, ko tas nolasa, uzskaitītas lapā
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

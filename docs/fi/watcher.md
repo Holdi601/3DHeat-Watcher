@@ -3,7 +3,7 @@ title: "Kaikki pelit yhdessä taulukossa"
 nav_order: 13
 lang: "fi"
 source: watcher.md
-source_hash: "8066a9f8a89c"
+source_hash: "e0c6d5b833cf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -26,12 +26,11 @@ sen - luotu suoraan sovittimista (`python -m heat3d_watch games
 | platform | se, minkä Steam ja näytönohjain tallentavat: tilastot, saavutukset, aikajanat, kohokohdat | kyllä |
 | memory | pelin muisti, vain luku - vain yksinpelit, kaikkien alla olevien tarkistusten takana | **ei koskaan** |
 
-Mitään ei injektoida, koukuteta tai muuteta missään pelissä. Lähdettä, jonka pelin ehdot tai huijauksenestosäännöt kieltävät,
+Mitään ei injektoida, koukuteta tai muuteta missään pelissä. Suojattuja lähteitä
 ei toteuteta: League of Legendsin ja Valorantin asiakkaan lukkotiedoston päätepisteet, replayjen suojatut osat (Fortnite,
 League of Legends, Valorant), Gran Turismo 7:n salattu telemetria (se vaatisi avaimen, joka pitäisi palauttaa pelistä). World of
 Tanksin ja World of Warshipsin replayt ovat myös salattuja; watcher ei lue niitä, erilliset muuntajat watcherin ulkopuolella lukevat
-(`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), ja pelaaja asentaa ne vain jos päättää niin - katso niiden READMEt
-Wargamingin ehdoista.
+(`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), ja pelaaja asentaa ne vain jos päättää niin - katso niiden READMEt.
 
 ## Mitä tallenne on {#what-a-recording-is}
 
@@ -142,10 +141,10 @@ korvaamalla sen tiedostot julkaisun arkistosta. Watcher päivittää itsensä, k
 
 | Peli | Miksi ei |
 |---|---|
-| VALORANTin sijainnit | Sen replayjen pelivirta on hämärretty arvoilla, jotka otetaan kunkin buildin suoritettavasta tiedostosta; niiden palauttaminen on pelin käänteistä suunnittelua, jonka Riotin ehdot kieltävät, ja peli toimii Vanguardin alla. Se, mitä replay kantaa avoimesti - kartan, ottelun, agentit, tappo- ja kierrosaikajanan - *luetaan*. Asiakkaan lukkotiedoston päätepisteitä ei ole julkinen rajapinta, eikä niitä käytetä. |
-| League of Legendsin replayt, pelissä | `.rofl`-tiedoston hetki hetkeltä -osa on hämärretty huijausta vastaan, eri tavalla joka päivityksellä; sen purkaminen tarkoittaisi pelin purkamista osiin, mitä Riotin ehdot kieltävät. Se, mitä tiedosto kantaa avoimesti - jokaisen pelaajan loppuvaiheen rivin - *luetaan*, ja sijainnit tulevat Riotin virallisesta ottoaikajanasta omalla API-avaimellasi. |
-| Fortnite | Sen replayt on salattu, ja Epicin ehdot kieltävät niiden käänteisen suunnittelun. |
-| World of Tanks ja World of Warships, watcher itse | Niiden replayt on salattu. Erilliset muuntajat watcherin ulkopuolella lukevat ne (katso yllä oleva taulukko), joten Wargamingin ehtoihin liittyvä ongelma koskee vain niitä. |
+| VALORANTin sijainnit | Sen replayjen pelivirta on hämärretty arvoilla, jotka otetaan kunkin buildin suoritettavasta tiedostosta, ja peli toimii Vanguardin alla. Se, mitä replay kantaa avoimesti - kartan, ottelun, agentit, tappo- ja kierrosaikajanan - *luetaan*. Asiakkaan lukkotiedoston päätepisteitä ei ole julkinen rajapinta, eikä niitä käytetä. |
+| League of Legendsin replayt, pelissä | `.rofl`-tiedoston hetki hetkeltä -osa on hämärretty huijausta vastaan, eri tavalla joka päivityksellä, eikä sitä pureta. Se, mitä tiedosto kantaa avoimesti - jokaisen pelaajan loppuvaiheen rivin - *luetaan*, ja sijainnit tulevat Riotin virallisesta ottoaikajanasta omalla API-avaimellasi. |
+| Fortnite | Sen replayt on salattu. |
+| World of Tanks ja World of Warships, watcher itse | Niiden replayt on salattu. Erilliset muuntajat watcherin ulkopuolella lukevat ne (katso yllä oleva taulukko), kumpikin oma projektinsa. |
 | Gran Turismo 7 | Vain konsolille; sen telemetria on salattu avaimella, joka pitäisi palauttaa pelistä. |
 | Apex Legends | Sen LiveAPI lähettää täydet tapahtumat vain yksityisissä ja mukautetuissa aulissa; muuten paikallisesti ei mitään. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | Ei paikallista replayta, lokia eikä pelitilatulostetta luettavaksi. Niiden tilastot tulevat sinne, missä Steam ne pitää (Steamin tilastot, Steam Timeline), ja NVIDIA-kohokohtina. |

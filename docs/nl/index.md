@@ -131,6 +131,10 @@ om CS2-demo's om te zetten). Elk is een eigen project, met eigen releases en lic
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | DCS World-kaarten naar 3D-modellen | [site](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | IL-2 Sturmovik-kaarten naar 3D-modellen | [site](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+Elke spellezer is een eigen klein project met een eigen licentiebestand, eigen releases en een eigen
+issuetracker, zodat hij los kan worden geïnstalleerd, bijgewerkt, onderhouden - of op verzoek van een
+rechthebbende teruggetrokken - zonder dat de viewer of de andere tools daar iets van merken.
+
 Licentie: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). De licenties
 van de pakketten van derden die het gebruikt, en wat de spellen die het leest vereisen, staan in
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

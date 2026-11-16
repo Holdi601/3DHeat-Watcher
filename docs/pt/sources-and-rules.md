@@ -88,15 +88,15 @@ ou o NVIDIA App já escreveram ou enviam.
 
 ## O que é recusado, e porquê {#what-is-declined-and-why}
 
-Alguns jogos, e algumas partes de jogos, não são gravados porque a única forma de os obter quebraria uma
-proteção ou os termos de um jogo:
+Alguns jogos, e algumas partes de jogos, não são gravados: os dados deles são protegidos, não publicados ou
+nem sequer estão no computador do jogador:
 
 | Jogo | O que fica de fora | Porquê |
 |---|---|---|
-| VALORANT | posições, nomes, placares em replays; os endpoints do lockfile do cliente | O fluxo de jogo do replay é ofuscado com valores tirados do executável de cada build. Recuperá-los significa fazer engenharia reversa do jogo, o que os Termos de Serviço da Riot proíbem (secções 3.1 e 7.1), e o jogo corre sob o Vanguard. Os endpoints do lockfile do cliente da Riot não são uma API publicada. **Lido:** o que o replay traz às claras - mapa, id da partida, agentes, a linha do tempo de rondas e abates do servidor. |
-| League of Legends | a parte momento a momento dos replays `.rofl`; os endpoints do lockfile do cliente | Ofuscada contra batotas, de forma diferente em cada patch; decodificá-la significa desmontar o jogo, o que os termos da Riot proíbem. **Lido:** o placar final que todo replay traz como JSON simples, a Live Client Data API durante uma partida e, com a chave de programador própria, a linha do tempo oficial Match-V5 (posições uma vez por minuto, abates onde aconteceram). |
-| Fortnite | replays | Cifrados, e os termos da Epic proíbem fazer engenharia reversa deles. |
-| World of Tanks, World of Warships | replays, dentro do watcher | Cifrados, com uma chave que o jogo traz e que ferramentas da comunidade publicam há anos. O watcher não os lê; conversores separados, fora dele, os leem (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), para que um problema com os termos da Wargaming - a licença proíbe engenharia reversa (5.3 b) e software não autorizado que interage com os produtos dela (12.1 k) - afete apenas esses conversores. **Lido, com um conversor instalado:** a posição de cada veículo ou navio enquanto o cliente que gravou o replay a conhecia, e os abates. |
+| VALORANT | posições, nomes, placares em replays; os endpoints do lockfile do cliente | O fluxo de jogo do replay é ofuscado com valores tirados do executável de cada build. O jogo corre sob o Vanguard. Os endpoints do lockfile do cliente da Riot não são uma API publicada. **Lido:** o que o replay traz às claras - mapa, id da partida, agentes, a linha do tempo de rondas e abates do servidor. |
+| League of Legends | a parte momento a momento dos replays `.rofl`; os endpoints do lockfile do cliente | Ofuscada contra batotas, de forma diferente em cada patch, e não decodificada. **Lido:** o placar final que todo replay traz como JSON simples, a Live Client Data API durante uma partida e, com a chave de programador própria, a linha do tempo oficial Match-V5 (posições uma vez por minuto, abates onde aconteceram). |
+| Fortnite | replays | Cifrados. |
+| World of Tanks, World of Warships | replays, dentro do watcher | Cifrados. O watcher não os lê; conversores separados, fora dele, os leem (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), cada um um projeto próprio. **Lido, com um conversor instalado:** a posição de cada veículo ou navio enquanto o cliente que gravou o replay a conhecia, e os abates. |
 | Gran Turismo 7 | telemetria | Só consola, e a telemetria dele é cifrada com uma chave recuperada do jogo. |
 | Apex Legends | tudo | A LiveAPI dele envia eventos completos só em lobbies privados e personalizados; fora deles, nada fica disponível localmente. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | dados ao vivo | Nenhum replay local, log ou saída de integração de estado para ler. As estatísticas delas entram onde a Steam as guarda ([Estatísticas da Steam](game-steam-stats.md), [Linha do tempo da Steam](game-steam-timeline.md)), e os clipes como [NVIDIA highlights](nvidia-highlights.md). |

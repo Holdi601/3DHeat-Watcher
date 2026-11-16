@@ -3,7 +3,7 @@ title: "Kaynaklar ve kurallar"
 nav_order: 7
 lang: "tr"
 source: sources-and-rules.md
-source_hash: "990402abdc5d"
+source_hash: "36c4836cad3f"
 nav_exclude: true
 search_exclude: true
 ---
@@ -52,14 +52,14 @@ Yalnızca `memory` bir başka süreci açar, ve yalnızca okumak için. Diğer b
 
 ## Reddedilenler ve nedenleri {#what-is-declined-and-why}
 
-Bazı oyunlar ve oyun bölümleri kaydedilmez, çünkü onlara ulaşmanın tek yolu bir korumayı ya da bir oyunun koşullarını bozmak olurdu:
+Bazı oyunlar ve oyun bölümleri kaydedilmez: verileri korumalıdır, yayımlanmaz ya da oyuncunun makinesinde hiç bulunmaz:
 
 | Oyun | Neler dışarıda bırakılır | Neden |
 |---|---|---|
-| VALORANT | tekrarlarda konumlar, adlar, skorlar; istemcinin lockfile uç noktaları | Tekrarın oyun akışı, her derlemenin çalıştırılabilir dosyasından alınan değerlerle karartılmıştır. Bunları geri kazanmak oyunun tersine mühendisliği anlamına gelir; Riot'un Hizmet Koşulları bunu yasaklar (bölüm 3.1 ve 7.1) ve oyun Vanguard altında çalışır. Riot istemcisinin lockfile uç noktaları yayımlanmış bir API değildir. **Okunan:** tekrarın açıkta taşıdığı şeyler - harita, maç kimliği, ajanlar, sunucunun öldürme ve tur zaman çizelgesi. |
-| League of Legends | `.rofl` tekrarlarının an be an kısmı; istemcinin lockfile uç noktaları | Her yamada farklı biçimde hileye karşı karartılmış; çözmek oyunu parçalara ayırmak demektir, Riot'un koşulları bunu yasaklar. **Okunan:** her tekrarın düz JSON olarak taşıdığı maç sonu kutusu, bir maç sırasında Canlı İstemci Verisi API'si ve - kendi geliştirici anahtarınızla - resmi Match-V5 zaman çizelgesi (dakikada bir konumlar, öldürmeler olduğu yerde). |
-| Fortnite | tekrarlar | Şifreli ve Epic'in koşulları tersine mühendisliği yasaklar. |
-| World of Tanks, World of Warships | tekrarlar, izleyicinin içinde | Şifreli, oyunun taşıdığı ve topluluk araçlarının yıllardır yayımladığı bir anahtarla. İzleyici bunları okumaz; ayrı dönüştürücüler dışarıda okur (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), böylece Wargaming'in koşullarındaki bir sorun - lisansı tersine mühendisliği (5.3 b) ve ürünleriyle etkileşen yetkisiz yazılımı (12.1 k) yasaklar - yalnızca onları etkiler. **Okunan, bir dönüştürücü kuruluyken:** kaydetme istemcisinin bildiği her araç ya da geminin konumu ve öldürmeler. |
+| VALORANT | tekrarlarda konumlar, adlar, skorlar; istemcinin lockfile uç noktaları | Tekrarın oyun akışı, her derlemenin çalıştırılabilir dosyasından alınan değerlerle karartılmıştır. Oyun Vanguard altında çalışır. Riot istemcisinin lockfile uç noktaları yayımlanmış bir API değildir. **Okunan:** tekrarın açıkta taşıdığı şeyler - harita, maç kimliği, ajanlar, sunucunun öldürme ve tur zaman çizelgesi. |
+| League of Legends | `.rofl` tekrarlarının an be an kısmı; istemcinin lockfile uç noktaları | Her yamada farklı biçimde hileye karşı karartılmış ve çözülmez. **Okunan:** her tekrarın düz JSON olarak taşıdığı maç sonu kutusu, bir maç sırasında Canlı İstemci Verisi API'si ve - kendi geliştirici anahtarınızla - resmi Match-V5 zaman çizelgesi (dakikada bir konumlar, öldürmeler olduğu yerde). |
+| Fortnite | tekrarlar | Şifreli. |
+| World of Tanks, World of Warships | tekrarlar, izleyicinin içinde | Şifreli. İzleyici bunları okumaz; ayrı dönüştürücüler dışarıda okur (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), her biri kendi başına bir proje. **Okunan, bir dönüştürücü kuruluyken:** kaydetme istemcisinin bildiği her araç ya da geminin konumu ve öldürmeler. |
 | Gran Turismo 7 | telemetri | Yalnızca konsolda ve telemetrisi oyundan kurtarılan bir anahtarla şifreli. |
 | Apex Legends | her şey | LiveAPI'si tam olayları yalnızca özel ve kişisel lobilerde gönderir; aksi halde yerelde hiçbir şey yoktur. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | canlı veri | Okunacak yerel tekrar, günlük ya da oyun durumu çıktısı yok. İstatistikleri Steam'in tuttuğu yere gelir ([Steam istatistikleri](game-steam-stats.md), [Steam Timeline](game-steam-timeline.md)), klipleri ise [NVIDIA highlights](nvidia-highlights.md) olarak. |

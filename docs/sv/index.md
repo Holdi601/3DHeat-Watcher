@@ -128,6 +128,10 @@ för att konvertera CS2-demos). Vart och ett är ett eget projekt, med egna utg�
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | DCS World-kartor till 3D-modeller | [webbplats](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | IL-2 Sturmovik-kartor till 3D-modeller | [webbplats](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+Varje spelläsare är ett eget litet projekt med egen licensfil, egna releaser och egen ärendehantering,
+så att den kan installeras, uppdateras, underhållas – eller dras tillbaka på en rättighetshavares
+begäran – för sig, utan att det påverkar visaren eller de andra verktygen.
+
 Licens: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Licenserna
 för tredjepartspaketen den använder, och vad spelen den läser kräver, finns i
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

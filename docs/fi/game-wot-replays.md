@@ -3,7 +3,7 @@ title: "World of Tanks (tallenteet)"
 nav_order: 47
 lang: "fi"
 source: game-wot-replays.md
-source_hash: "c3fbbeebfee0"
+source_hash: "2fa28633a0ee"
 nav_exclude: true
 search_exclude: true
 ---
@@ -41,7 +41,7 @@ Kun kansio nähdään ensimmäisen kerran, siinä jo olevia tallenteita vain mer
 
 #### World of Tanks ja World of Warships {#world-of-tanks-and-world-of-warships}
 
-Molemmat tallentavat jokaisen taistelun tallenteen kansioon `<game>/replays/`, kun tallennus on päällä (`*.wotreplay`, `*.wowsreplay`). Asennukset löytyvät Wargaming Game Centerin listasta, `C:/Games/World_of_Tanks*` ja `World_of_Warships*`, sekä Steamista. Kuten War Thunderissa, vahti ei lue tiedostoja itse: kummankin ulkoinen muunnin lukee (`exporters/ext/wot-replay`, komento `heat3d-wot-replay`; `exporters/ext/wows-replay`, komento `heat3d-wows-replay`), erillään, jotta Wargamingin ehtoihin liittyvä ongelma koskee vain sitä muunninta. Kun muunnin löytyy PATH:lta, on asennettu tai vahdin vieressä, se muuntaa jokaisen uuden tallenteen tiedostoiksi `<map>/<match>.parquet` ja `<match>.match.json` sessiokansioon; kun se puuttuu, vahti kertoo kerran, miten se asennetaan. Tallentavan pelaajan rivi (ajoneuvo tai laiva, tapot, vahinko (World of Tanks), selvisikö hän ja tulos (World of Tanks)) tulee session tilastoiksi. Mitä kukin muunnin lukee ja mitä ei, on sen README:ssä.
+Molemmat tallentavat jokaisen taistelun tallenteen kansioon `<game>/replays/`, kun tallennus on päällä (`*.wotreplay`, `*.wowsreplay`). Asennukset löytyvät Wargaming Game Centerin listasta, `C:/Games/World_of_Tanks*` ja `World_of_Warships*`, sekä Steamista. Kuten War Thunderissa, vahti ei lue tiedostoja itse: kummankin ulkoinen muunnin lukee (`exporters/ext/wot-replay`, komento `heat3d-wot-replay`; `exporters/ext/wows-replay`, komento `heat3d-wows-replay`), kumpikin oma projektinsa. Kun muunnin löytyy PATH:lta, on asennettu tai vahdin vieressä, se muuntaa jokaisen uuden tallenteen tiedostoiksi `<map>/<match>.parquet` ja `<match>.match.json` sessiokansioon; kun se puuttuu, vahti kertoo kerran, miten se asennetaan. Tallentavan pelaajan rivi (ajoneuvo tai laiva, tapot, vahinko (World of Tanks), selvisikö hän ja tulos (World of Tanks)) tulee session tilastoiksi. Mitä kukin muunnin lukee ja mitä ei, on sen README:ssä.
 
 Saman moduulin kautta toimivat myös: [Counter-Strike 2 (tallenteet)](game-cs2-demos.md), [Dota 2 (tallenteet)](game-dota-replays.md), [Squad (tallenteet)](game-squad-demos.md), [War Thunder (tallenteet)](game-warthunder-replays.md), [World of Warships (tallenteet)](game-wows-replays.md).
 

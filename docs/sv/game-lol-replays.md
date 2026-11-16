@@ -3,7 +3,7 @@ title: "League of Legends (repriser)"
 nav_order: 30
 lang: "sv"
 source: game-lol-replays.md
-source_hash: "ed26619fa904"
+source_hash: "6a86dc8a45bb"
 nav_exclude: true
 search_exclude: true
 ---
@@ -38,17 +38,15 @@ League of Legends- och Valorant-repriser: vad av dem som kan läsas som de är.
 
 Båda spelen sparar reprisar på spelarens disk, och båda skyddar det som finns
 inuti: den ögonblick-för-ögonblick-speldatan är förvrängd, och olika för varje patch,
-för att hindra att den används för att fuska. Att komma förbi det innebär att ta spelets
-egen kod isär, vilket Riots villkor förbjuder (användarvillkoren 3.1 och 7.1)
-- så det görs inte någonstans i 3DHeat. Vad varje fil bär öppet
+för att hindra att den används för att fuska. Den delen avkodas inte
+någonstans i 3DHeat. Vad varje fil bär öppet
 läses, och resten sparas som det är: varje del av filen, helt, i sessionens
 `heat.raw.parquet` (3DHeats konverterarregel, docs/converters.md i
 visarens förråd), räknad i meta.json:s `selfCheck.completeness`.
 
 watchern läser inte filerna själv: en extern läsare gör det (3DHeat
 Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`,
-kommandot `heat3d-riot-replays`), hållen skild så att ett problem med Riots
-villkor bara berör den läsaren. Hittas den på PATH, är installerad eller bredvid watchern, läser den
+kommandot `heat3d-riot-replays`), ett eget projekt. Hittas den på PATH, är installerad eller bredvid watchern, läser den
 varje ny repris; saknas den säger watchern en gång hur den installeras. Vad
 den läser sparar watchern i sessionen; Match-V5-tidslinjen nedan hämtas
 av watchern själv, eftersom den inte finns i filen.
@@ -122,7 +120,7 @@ watchern följer 3DHeats [konverterarregel](https://github.com/Holdi601/3DHeat/b
 
 **Finns inte**
 
-- spelet självt (positioner, förmågor, varje enhet, ögonblick för ögonblick): ROFL1:s chunkar och ROFL2:s body är krypterade och paketen inuti förvrängda med varje patch; att komma förbi kräver att klienten tas isär, vilket Riots villkor förbjuder (3.1, 7.1). Sparat helt, inte läst
+- spelet självt (positioner, förmågor, varje enhet, ögonblick för ögonblick): ROFL1:s chunkar och ROFL2:s body är krypterade och paketen inuti förvrängda med varje patch. Sparat helt, inte läst
 - positioner utan din egen Riot API-nyckel: filen har inga i det öppna
 
 **Storlek**: den råa sidofilen är ungefär reprisens egen storlek: de krypterade chunkarna komprimeras inte

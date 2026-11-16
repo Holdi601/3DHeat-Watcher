@@ -3,7 +3,7 @@ title: NVIDIA Highlights
 nav_order: 8
 lang: "pl"
 source: nvidia-highlights.md
-source_hash: "a3b769ab065c"
+source_hash: "cd2a5cc2c5fd"
 nav_exclude: true
 search_exclude: true
 ---
@@ -82,4 +82,4 @@ Rzeczy, które warto wiedzieć o pożyczonej pozycji:
 Drugim sposobem na pozycję byłoby odczytanie jej z pamięci. Żaden z nich nie działa:
 
 - **Pamięć NVIDIA nie ma pozycji.** Aplikacja NVIDIA App dostaje to, co przenosi GfeSDK - identyfikator highlightu i dwa przesunięcia czasu - plus wideo, które nagrywa. Nie ma nigdzie po stronie NVIDIA pozycji do odczytania. (Watcher i tak nie czyta pamięci NVIDIA; czyta pliki wymienione wyżej.)
-- **Pamięć gry jest nietykalna w grze wieloosobowej.** Pozycja jest w procesie gry, ale watcher nigdy nie czyta pamięci gry wieloosobowej: adapter `memory` dla gry oznaczonej jako grana online jest odrzucany, zanim cokolwiek zostanie otwarte (zobacz [Czytanie pamięci](memory-reading.md)). Gry wieloosobowe działają z systemami anty-cheat (Easy Anti-Cheat, BattlEye, Vanguard, ...), które traktują inny program otwierający proces gry jako oszustwo, co może skutkować zbanowaniem konta. Odczyt stanu gry z zewnątrz jest też zakazany przez regulaminy gier. Highlight w grze wieloosobowej dostaje więc miejsce tylko z tego, co gra publikuje: jej interfejsu stanu gry albo telemetrii, zapisanych przez inny adapter w tym samym czasie.
+- **Pamięć gry jest nietykalna w grze wieloosobowej.** Pozycja jest w procesie gry, ale watcher nigdy nie czyta pamięci gry wieloosobowej: adapter `memory` dla gry oznaczonej jako grana online jest odrzucany, zanim cokolwiek zostanie otwarte (zobacz [Czytanie pamięci](memory-reading.md)). Gry wieloosobowe działają z systemami anty-cheat (Easy Anti-Cheat, BattlEye, Vanguard, ...), które traktują inny program otwierający proces gry jako oszustwo, co może skutkować zbanowaniem konta. Highlight w grze wieloosobowej dostaje więc miejsce tylko z tego, co gra publikuje: jej interfejsu stanu gry albo telemetrii, zapisanych przez inny adapter w tym samym czasie.

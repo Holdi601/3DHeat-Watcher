@@ -134,7 +134,6 @@ The other way to get a position would be to read it out of memory. Neither memor
   watcher never reads a multiplayer game's memory: a memory adapter for a game marked as played online
   is refused before anything is opened (see [Reading memory](memory-reading)). Multiplayer games run
   under anti-cheats (Easy Anti-Cheat, BattlEye, Vanguard, ...) that treat another program opening the
-  game's process as cheating, which can get the account banned. Reading the game's state from outside
-  is also what the games' terms forbid. A highlight in a multiplayer game therefore gets a place only
-  from what the game publishes: its game-state integration or telemetry, recorded by another adapter at
-  the same time.
+  game's process as cheating, which can get the account banned. A highlight in a multiplayer game
+  therefore gets a place only from what the game publishes: its game-state integration or telemetry,
+  recorded by another adapter at the same time.

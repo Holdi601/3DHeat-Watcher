@@ -52,8 +52,8 @@ Os dois guardam um replay de cada batalha em `<jogo>/replays/` quando a gravaç�
 (`*.wotreplay`, `*.wowsreplay`); as instalações são encontradas pela lista do Wargaming Game
 Center, `C:/Games/World_of_Tanks*` / `World_of_Warships*`, e pelo Steam. Como no War Thunder, o
 watcher não lê os ficheiros sozinho: um conversor externo de cada um lê (`exporters/ext/wot-replay`,
-comando `heat3d-wot-replay`; `exporters/ext/wows-replay`, comando `heat3d-wows-replay`), separados
-para que um problema com os termos de uso da Wargaming afete só aquele conversor. Encontrado no
+comando `heat3d-wot-replay`; `exporters/ext/wows-replay`, comando `heat3d-wows-replay`), cada um
+um projeto próprio. Encontrado no
 PATH, instalado ou ao lado do watcher, ele transforma cada replay novo em `<mapa>/<partida>.parquet`
 e `<partida>.match.json` na pasta da sessão; quando falta, o watcher avisa uma vez como instalar.
 A linha do jogador que gravou - veículo ou navio, abates, dano (World of Tanks), se sobreviveu e o

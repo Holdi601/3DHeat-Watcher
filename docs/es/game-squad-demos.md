@@ -3,7 +3,7 @@ title: "Squad (repeticiones)"
 nav_order: 40
 lang: "es"
 source: game-squad-demos.md
-source_hash: "a908f7e6d9c3"
+source_hash: "ddec19ea89bf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -56,8 +56,8 @@ AdminDemoStop), en `<servidor>/SquadGame/Saved/Demos/<nombre>.replay`: una
 repetición de red de Unreal Engine que contiene lo que el servidor replicó,
 incluido el movimiento de cada jugador. El watcher no las lee por sí mismo: lo
 hace un lector externo (el lector de demos de Squad de 3DHeat,
-`exporters/ext/squad-demo`, comando `heat3d-squad-demo`), separado para que un
-problema en él no afecte a nada más. Se ejecuta en cada demo nueva de las carpetas
+`exporters/ext/squad-demo`, comando `heat3d-squad-demo`), un proyecto
+propio. Se ejecuta en cada demo nueva de las carpetas
 donde escribe un servidor local, o en una carpeta que añaden los ajustes para las
 demos copiadas de un servidor alquilado, y deja en la carpeta de la sesión
 `<mapa>/<partida>.parquet` y `<partida>.match.json`. La capa, el mapa, el número de

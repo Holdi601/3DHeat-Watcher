@@ -3,7 +3,7 @@ title: "War Thunder (Replays)"
 nav_order: 45
 lang: "de"
 source: game-warthunder-replays.md
-source_hash: "23676a6c5441"
+source_hash: "4bf6e2f218cb"
 nav_exclude: true
 search_exclude: true
 ---
@@ -42,7 +42,7 @@ Beim ersten Sehen eines Ordners werden die dort vorhandenen Replays nur vermerkt
 
 #### War Thunder {#war-thunder}
 
-War Thunder speichert ein Replay jeder Schlacht unter `<War Thunder>/Replays/*.wrpl`, wenn das Speichern von Replays in den Optionen eingeschaltet ist. Der Watcher liest sie nicht selbst. Das macht ein externer Konverter (3DHeat-War-Thunder-Replay-Konverter, `exporters/ext/warthunder-replay`, Befehl `heat3d-wt-replay`), der getrennt gehalten wird, damit ein Problem mit ihm nichts anderes berührt. Ist der Befehl im PATH, oder ist das Paket installiert oder liegt neben dem Watcher, läuft jedes neue Replay durch ihn. Das Ergebnis landet im Sitzungsordner als `<map>/<match>.parquet` und `<match>.match.json`. Ist er nicht da, sagt der Watcher einmal, wie man ihn installiert, und lässt den Ordner in Ruhe. Was der Konverter liest und was nicht, steht in seiner README. Die Ergebniszeile des Autors des Replays - Kills, Bodenkills, Tode, Assists, Punkte, Eroberungen - wird zur Statistik der Sitzung.
+War Thunder speichert ein Replay jeder Schlacht unter `<War Thunder>/Replays/*.wrpl`, wenn das Speichern von Replays in den Optionen eingeschaltet ist. Der Watcher liest sie nicht selbst. Das macht ein externer Konverter (3DHeat-War-Thunder-Replay-Konverter, `exporters/ext/warthunder-replay`, Befehl `heat3d-wt-replay`), ein eigenes Projekt. Ist der Befehl im PATH, oder ist das Paket installiert oder liegt neben dem Watcher, läuft jedes neue Replay durch ihn. Das Ergebnis landet im Sitzungsordner als `<map>/<match>.parquet` und `<match>.match.json`. Ist er nicht da, sagt der Watcher einmal, wie man ihn installiert, und lässt den Ordner in Ruhe. Was der Konverter liest und was nicht, steht in seiner README. Die Ergebniszeile des Autors des Replays - Kills, Bodenkills, Tode, Assists, Punkte, Eroberungen - wird zur Statistik der Sitzung.
 
 Dasselbe Modul bedient außerdem: [Counter-Strike 2 (Replays)](game-cs2-demos.md), [Dota 2 (Replays)](game-dota-replays.md), [Squad (Replays)](game-squad-demos.md), [World of Tanks (Replays)](game-wot-replays.md), [World of Warships (Replays)](game-wows-replays.md).
 

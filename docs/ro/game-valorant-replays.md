@@ -31,7 +31,7 @@ salvați o reluare în VALORANT (carieră > meci > descărcare reluare)
 
 League of Legends și reluările VALORANT: ce se poate citi din ele așa cum sunt.
 
-Ambele jocuri salvează reluările pe discul jucătorului și protejează ce se află înăuntru: datele jocului clip cu clip sunt ofuscate, și diferit la fiecare actualizare, ca să nu poată fi folosite pentru trișare. A le trece de această protecție înseamnă a desface codul jocului, ceea ce termenii Riot interzic (Termenii de utilizare 3.1 și 7.1) - deci nu se face aici. Ce transportă fiecare fișier în clar se citește, iar restul se păstrează așa cum este: fiecare parte a fișierului, întreagă, în `heat.raw.parquet` al sesiunii (regula convertorului 3DHeat, docs/converters.md din repository-ul vizualizatorului), numărată în `selfCheck.completeness` din meta.json.
+Ambele jocuri salvează reluările pe discul jucătorului și protejează ce se află înăuntru: datele jocului clip cu clip sunt ofuscate, și diferit la fiecare actualizare, ca să nu poată fi folosite pentru trișare. Această parte nu este decodată nicăieri în 3DHeat. Ce transportă fiecare fișier în clar se citește, iar restul se păstrează așa cum este: fiecare parte a fișierului, întreagă, în `heat.raw.parquet` al sesiunii (regula convertorului 3DHeat, docs/converters.md din repository-ul vizualizatorului), numărată în `selfCheck.completeness` din meta.json.
 
 #### Valorant (.vrf) {#valorant-vrf}
 
@@ -81,7 +81,7 @@ Watcher-ul urmează regula de convertor a 3DHeat: ce conține sursa este citit s
 
 **Nu este disponibil**
 
-- pozițiile, numele, scorurile, abilitățile, fiecare cadru al jocului: chunk-urile de date ale reluării și de checkpoint sunt ofuscate; a le citi înseamnă a desface clientul, ceea ce termenii Riot interzic. Păstrate întregi, nu citite
+- pozițiile, numele, scorurile, abilitățile, fiecare cadru al jocului: chunk-urile de date ale reluării și de checkpoint sunt ofuscate. Păstrate întregi, nu citite
 - conținutul unei reluări criptate: parcursă și păstrată întreagă, nimic citit înăuntru
 
 **Dimensiune**: sidecarul brut are cam dimensiunea reluării: fluxul ofuscat nu se comprimă

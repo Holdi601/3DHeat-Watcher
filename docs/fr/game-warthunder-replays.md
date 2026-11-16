@@ -3,7 +3,7 @@ title: "War Thunder (replays)"
 nav_order: 45
 lang: "fr"
 source: game-warthunder-replays.md
-source_hash: "23676a6c5441"
+source_hash: "4bf6e2f218cb"
 nav_exclude: true
 search_exclude: true
 ---
@@ -52,8 +52,8 @@ un joueur avec des années de démos verrait sinon le watcher occupé pendant un
 War Thunder sauvegarde un replay de chaque bataille dans `<War Thunder>/Replays/*.wrpl` quand la
 sauvegarde des replays est activée dans ses options. Le watcher ne les lit pas lui-même : un
 convertisseur externe le fait (convertisseur de replays War Thunder 3DHeat,
-`exporters/ext/warthunder-replay`, commande `heat3d-wt-replay`), gardé à part pour qu'un problème
-dans celui-ci ne touche à rien d'autre. Quand la commande est dans le PATH, ou que le paquet est
+`exporters/ext/warthunder-replay`, commande `heat3d-wt-replay`), un projet à part
+entière. Quand la commande est dans le PATH, ou que le paquet est
 installé ou à côté du watcher, chaque nouveau replay passe dedans et produit dans le dossier de session
 `<map>/<match>.parquet` et `<match>.match.json` ; sinon, le watcher le signale une fois avec la marche à
 suivre pour l'installer, et laisse le dossier tranquille. Ce que lit le convertisseur, et ce qu'il ne

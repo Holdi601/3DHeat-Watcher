@@ -3,7 +3,7 @@ title: Alla spel i en tabell
 nav_order: 13
 lang: "sv"
 source: watcher.md
-source_hash: "8066a9f8a89c"
+source_hash: "e0c6d5b833cf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -23,7 +23,7 @@ Den här sidan säger, för varje spel den känner till, vad den spelar in och v
 | platform | det Steam och grafikdrivrutinen sparar: statistik, prestationer, tidslinjer, höjdpunkter | ja |
 | memory | spelets minne, skrivskyddat – bara enspelarspel, bakom varje kontroll nedan | **aldrig** |
 
-Ingenting injiceras, kopplas in i eller ändras i något spel. En källa som ett spels villkor eller anti-cheat-regler utesluter implementeras inte: League of Legends- och Valorant-klientens lockfile-endpoints, de skyddade delarna av replayer (Fortnite, League of Legends, Valorant), Gran Turismo 7:s krypterade telemetri (den skulle kräva en nyckel som återskapas ur spelet). World of Tanks- och World of Warships-replayer är också krypterade; watchern läser dem inte, separata konverterare utanför den gör det (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), installerade bara av en spelare som bestämmer sig för det – se deras README för Wargamings villkor.
+Ingenting injiceras, kopplas in i eller ändras i något spel. Skyddade källor implementeras inte: League of Legends- och Valorant-klientens lockfile-endpoints, de skyddade delarna av replayer (Fortnite, League of Legends, Valorant), Gran Turismo 7:s krypterade telemetri (den skulle kräva en nyckel som återskapas ur spelet). World of Tanks- och World of Warships-replayer är också krypterade; watchern läser dem inte, separata konverterare utanför den gör det (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), installerade bara av en spelare som bestämmer sig för det – se deras README.
 
 ## Vad en inspelning är {#what-a-recording-is}
 
@@ -114,10 +114,10 @@ Watchern kontrollerar sina GitHub-utgåvor när den startar (högst var sjätte 
 
 | Spel | Varför inte |
 |---|---|
-| VALORANT-positioner | Dess replayers spelström är förvirrad med värden hämtade ur varje versions körbara fil; att återskapa dem är att reverse-engineera spelet, vilket Riots villkor förbjuder, och spelet körs under Vanguard. Det som replayn bär öppet – karta, match, agenter, kill- och omgångstidslinjen – *läses* nog. Klientens lockfile-endpoints är inget publicerat API och används inte. |
-| League of Legends-replayer, i spelet | Den moment-för-moment-delen av en `.rofl` är förvirrad mot fusk, olika varje patch; att avkoda den innebär att ta isär spelet, vilket Riots villkor förbjuder. Det som filen bär öppet – varje spelares rad i slutet av matchen – *läses*, och positioner kommer från Riots officiella matchtidslinje med din egen API-nyckel. |
-| Fortnite | Dess replayer är krypterade, och Epics villkor förbjuder att reverse-engineera dem. |
-| World of Tanks, World of Warships, av watchern själv | Deras replayer är chiffrerade. Separata konverterare utanför watchern läser dem (se tabellen ovan), så att ett problem med Wargamings villkor bara berör dem. |
+| VALORANT-positioner | Dess replayers spelström är förvirrad med värden hämtade ur varje versions körbara fil, och spelet körs under Vanguard. Det som replayn bär öppet – karta, match, agenter, kill- och omgångstidslinjen – *läses* nog. Klientens lockfile-endpoints är inget publicerat API och används inte. |
+| League of Legends-replayer, i spelet | Den moment-för-moment-delen av en `.rofl` är förvirrad mot fusk, olika varje patch, och avkodas inte. Det som filen bär öppet – varje spelares rad i slutet av matchen – *läses*, och positioner kommer från Riots officiella matchtidslinje med din egen API-nyckel. |
+| Fortnite | Dess replayer är krypterade. |
+| World of Tanks, World of Warships, av watchern själv | Deras replayer är chiffrerade. Separata konverterare utanför watchern läser dem (se tabellen ovan), vardera ett eget projekt. |
 | Gran Turismo 7 | Bara konsol; dess telemetri är krypterad med en nyckel som återskapats ur spelet. |
 | Apex Legends | Dess LiveAPI skickar fullständiga händelser bara i privata och anpassade lobbyer; inget lokalt annars. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | Ingen lokal replay, logg eller spelstatusutdata att läsa. Deras statistik kommer in där Steam sparar den (Steam-statistik, Steam Timeline) och som NVIDIA-höjdpunkter. |

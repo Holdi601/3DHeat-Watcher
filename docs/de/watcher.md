@@ -3,7 +3,7 @@ title: "Alle Spiele in einer Tabelle"
 nav_order: 13
 lang: "de"
 source: watcher.md
-source_hash: "8066a9f8a89c"
+source_hash: "e0c6d5b833cf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -25,13 +25,13 @@ erzeugt (`python -m heat3d_watch games --markdown`), damit sie sagt, was der Cod
 | platform | was Steam und der Grafiktreiber speichern: Statistiken, Erfolge, Zeitleisten, Highlights | ja |
 | memory | der Speicher des Spiels, nur lesend – nur Einzelspieler-Spiele, hinter allen Prüfungen unten | **nie** |
 
-In keinem Spiel wird etwas eingeschleust, eingehakt oder verändert. Eine Quelle, die von den Bedingungen eines
-Spiels oder seinen Anti-Cheat-Regeln ausgeschlossen wird, ist nicht umgesetzt: die Client-Lockfile-Endpunkte von
+In keinem Spiel wird etwas eingeschleust, eingehakt oder verändert. Geschützte Quellen
+sind nicht umgesetzt: die Client-Lockfile-Endpunkte von
 League of Legends und VALORANT, die geschützten Teile von Replays (Fortnite, League of Legends, VALORANT), die
 verschlüsselte Telemetrie von Gran Turismo 7 (dafür müsste ein Schlüssel aus dem Spiel gewonnen werden). Auch
 Replays von World of Tanks und World of Warships sind verschlüsselt; der Watcher liest sie nicht, separate
 Konverter außerhalb von ihm tun es (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), und sie werden nur
-von einem Spieler installiert, der sich dafür entscheidet – siehe deren READMEs zu den Bedingungen von Wargaming.
+von einem Spieler installiert, der sich dafür entscheidet – siehe deren READMEs.
 
 ## Was eine Aufnahme ist {#what-a-recording-is}
 
@@ -150,10 +150,10 @@ sich selbst, solange kein Spiel läuft, und startet neu. `HEAT3D_NO_UPDATE=1` sc
 
 | Spiel | Warum nicht |
 |---|---|
-| VALORANT-Positionen | Sein Spielstrom in Replays ist verschleiert, mit Werten, die aus der Programmdatei jedes Builds stammen; ihn wiederherzustellen ist Reverse Engineering des Spiels, was Riots Bedingungen verbieten, und das Spiel läuft unter Vanguard. Was das Replay offen enthält – Karte, Match, Agenten, die Zeitleiste der Abschüsse und Runden – *wird* gelesen. Die Lockfile-Endpunkte des Clients sind keine veröffentlichte API und werden nicht genutzt. |
-| League-of-Legends-Replays, im Spiel | Der Moment-für-Moment-Teil einer `.rofl` ist gegen Schummeln verschleiert, bei jedem Patch anders; ihn zu decodieren hieße, das Spiel auseinanderzunehmen, was Riots Bedingungen verbieten. Was die Datei offen enthält – die Endzeile jedes Spielers – *wird* gelesen, und Positionen kommen aus Riots offizieller Match-Zeitleiste mit deinem eigenen API-Schlüssel. |
-| Fortnite | Seine Replays sind verschlüsselt, und Epics Bedingungen verbieten das Reverse Engineering. |
-| World of Tanks, World of Warships, durch den Watcher selbst | Ihre Replays sind verschlüsselt. Separate Konverter außerhalb des Watchers lesen sie (siehe Tabelle oben), damit ein Problem mit Wargamings Bedingungen nur diese berührt. |
+| VALORANT-Positionen | Sein Spielstrom in Replays ist verschleiert, mit Werten, die aus der Programmdatei jedes Builds stammen, und das Spiel läuft unter Vanguard. Was das Replay offen enthält – Karte, Match, Agenten, die Zeitleiste der Abschüsse und Runden – *wird* gelesen. Die Lockfile-Endpunkte des Clients sind keine veröffentlichte API und werden nicht genutzt. |
+| League-of-Legends-Replays, im Spiel | Der Moment-für-Moment-Teil einer `.rofl` ist gegen Schummeln verschleiert, bei jedem Patch anders, und wird nicht decodiert. Was die Datei offen enthält – die Endzeile jedes Spielers – *wird* gelesen, und Positionen kommen aus Riots offizieller Match-Zeitleiste mit deinem eigenen API-Schlüssel. |
+| Fortnite | Seine Replays sind verschlüsselt. |
+| World of Tanks, World of Warships, durch den Watcher selbst | Ihre Replays sind verschlüsselt. Separate Konverter außerhalb des Watchers lesen sie (siehe Tabelle oben), jeder ein eigenes Projekt. |
 | Gran Turismo 7 | Nur für Konsolen; seine Telemetrie ist mit einem Schlüssel verschlüsselt, der aus dem Spiel gewonnen wurde. |
 | Apex Legends | Seine LiveAPI sendet vollständige Ereignisse nur in privaten und benutzerdefinierten Lobbys; sonst nichts lokal. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | Kein lokales Replay, keine lokale Log- oder Spielzustands-Ausgabe zum Lesen. Ihre Statistiken kommen dort herein, wo Steam sie speichert (Steam-Statistiken, Steam-Timeline), und als NVIDIA-Highlights. |

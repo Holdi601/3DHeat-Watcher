@@ -3,7 +3,7 @@ title: "Etusivu"
 nav_order: 1
 lang: "fi"
 source: index.md
-source_hash: "d74a4eae2685"
+source_hash: "269b4c01a4af"
 nav_exclude: true
 search_exclude: true
 permalink: /fi/
@@ -138,6 +138,10 @@ CS2-demojen muuntamiseen). Jokainen on oma projektinsa, omilla julkaisuillaan ja
 | [Ext-ACRally](https://github.com/Holdi601/3DHeat-Ext-ACRally) | Assetto Corsa Rally -osuudet radoiksi | [sivusto](https://holdi601.github.io/3DHeat-Ext-ACRally/) |
 | [Ext-Reforger](https://github.com/Holdi601/3DHeat-Ext-Reforger) | Arma Reforger -maailmat (Enfusion) 3D-kenttinä | [sivusto](https://holdi601.github.io/3DHeat-Ext-Reforger/) |
 | [Ext-R6](https://github.com/Holdi601/3DHeat-Ext-R6) | Rainbow Six Siege -ottelutallenteet | [sivusto](https://holdi601.github.io/3DHeat-Ext-R6/) |
+
+Jokainen pelinlukija on oma pieni projektinsa, jolla on oma lisenssitiedosto, omat julkaisut ja oma
+vianseuranta, joten sen voi asentaa, päivittää, ylläpitää - tai vetää pois oikeudenhaltijan pyynnöstä -
+erikseen ilman, että se vaikuttaa katselimeen tai muihin työkaluihin.
 
 Lisenssi: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Käyttämiensä kolmansien
 osapuolten pakettien lisenssit ja lukemiensa pelien vaatimukset on lueteltu tiedostossa

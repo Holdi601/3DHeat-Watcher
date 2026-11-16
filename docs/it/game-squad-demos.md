@@ -3,7 +3,7 @@ title: "Squad (replay)"
 nav_order: 40
 lang: "it"
 source: game-squad-demos.md
-source_hash: "a908f7e6d9c3"
+source_hash: "ddec19ea89bf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -43,7 +43,7 @@ La prima volta che una cartella viene vista, i replay già presenti vengono solo
 
 I server dedicati di Squad registrano un demo di una partita quando un amministratore con il permesso `demos` esegue AdminDemoRec &lt;nome&gt; (e AdminDemoStop), in `<server>/SquadGame/Saved/Demos/<nome>.replay` - un replay di rete di Unreal Engine che contiene ciò che il server ha replicato, compreso il movimento di ogni giocatore.
 
-Il watcher non li legge da solo: lo fa un lettore esterno (il lettore demo 3DHeat Squad, `exporters/ext/squad-demo`, comando `heat3d-squad-demo`), tenuto separato in modo che un problema con esso non tocchi nient'altro. Viene eseguito su ogni nuovo demo nelle cartelle in cui scrive un server locale, oppure in una cartella aggiunta nelle impostazioni per i demo copiati da un server noleggiato, e produce nella cartella della sessione `<mappa>/<partita>.parquet` e `<partita>.match.json`. Il livello, la mappa, il numero di giocatori e la durata della partita diventano le statistiche della sessione.
+Il watcher non li legge da solo: lo fa un lettore esterno (il lettore demo 3DHeat Squad, `exporters/ext/squad-demo`, comando `heat3d-squad-demo`), un progetto a sé. Viene eseguito su ogni nuovo demo nelle cartelle in cui scrive un server locale, oppure in una cartella aggiunta nelle impostazioni per i demo copiati da un server noleggiato, e produce nella cartella della sessione `<mappa>/<partita>.parquet` e `<partita>.match.json`. Il livello, la mappa, il numero di giocatori e la durata della partita diventano le statistiche della sessione.
 
 Lo stesso modulo serve anche: [Counter-Strike 2 (replay)](game-cs2-demos.md), [Dota 2 (replay)](game-dota-replays.md), [War Thunder (replay)](game-warthunder-replays.md), [World of Tanks (replay)](game-wot-replays.md), [World of Warships (replay)](game-wows-replays.md).
 

@@ -130,6 +130,10 @@ Ctrl+C або не зачыніце акно.
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | карты DCS World у 3D-мадэлі | [сайт](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | карты IL-2 Sturmovik у 3D-мадэлі | [сайт](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+Кожны модуль чытання гульні — асобны невялікі праект са сваім файлам ліцэнзіі, выпускамі і трэкерам
+праблем, таму яго можна ўсталяваць, абнавіць, падтрымліваць — або адклікаць па просьбе праваўладальніка —
+асобна, не закранаючы праглядальнік і іншыя інструменты.
+
 Ліцэнзія: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Ліцэнзіі
 староніх пакетаў, якія ён выкарыстоўвае, і тое, што патрабуюць гульні, якія ён чытае, пералічаны ў
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

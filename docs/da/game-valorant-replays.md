@@ -3,7 +3,7 @@ title: "VALORANT (replays)"
 nav_order: 44
 lang: "da"
 source: game-valorant-replays.md
-source_hash: "617e23a33a4c"
+source_hash: "a2c4144797e9"
 nav_exclude: true
 search_exclude: true
 ---
@@ -37,16 +37,14 @@ League of Legends og Valorant replays: det, der kan læses af dem som de er.
 
 Begge spil gemmer replays på spillerens disk, og begge beskytter det, der er indeni:
 spilledata i bevægelse er forvansket, og forskelligt med hver patch,
-for at forhindre, at det bruges til at snyde. At komme igennem det betyder at adskille
-spillets egen kode, hvilket Riots vilkår forbyder (Terms of Service 3.1 og 7.1)
-- så det gøres ingen steder i 3DHeat. Det, hver fil bærer åbent, læses, og resten
+for at forhindre, at det bruges til at snyde. Den del afkodes ingen
+steder i 3DHeat. Det, hver fil bærer åbent, læses, og resten
 gemmes, som den er: hver del af filen, hel, i sessionens `heat.raw.parquet` (3DHeats
 konverterregel, docs/converters.md i viewerens repository), talt i meta.jsons `selfCheck.completeness`.
 
 Watcheren læser ikke filerne selv: det gør en ekstern læser (3DHeat
 Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`,
-kommandoen `heat3d-riot-replays`), holdt adskilt, så et problem med Riots
-vilkår kun rammer den læser. Findes den på PATH, er installeret eller ligger ved siden af watcheren, læser den
+kommandoen `heat3d-riot-replays`), et projekt for sig. Findes den på PATH, er installeret eller ligger ved siden af watcheren, læser den
 hver ny replay; mangler den, siger watcheren én gang, hvordan den installeres. Det, den
 læser, lægger watcheren ind i sessionen; Match-V5-tidslinjen nedenfor hentes af
 watcheren selv, da den ikke findes i filen.
@@ -106,7 +104,7 @@ Watcheren følger 3DHeats [konverterregel](https://github.com/Holdi601/3DHeat/bl
 
 **Ikke tilgængeligt**
 
-- positioner, navne, score, evner, hver frame af spillet: replaydata- og checkpoint-chunks er forvanskede; at læse dem betyder at adskille klienten, hvilket Riots vilkår forbyder. Gemt hel, ikke læst
+- positioner, navne, score, evner, hver frame af spillet: replaydata- og checkpoint-chunks er forvanskede. Gemt hel, ikke læst
 - indholdet af en krypteret replay: gennemgået og gemt hel, ikke læst indeni
 
 **Størrelse**: det rå sidefil er cirka replayens egen størrelse: den forvanskede strøm komprimerer ikke

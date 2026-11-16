@@ -130,6 +130,10 @@ për të konvertuar demot e CS2). Secili është projekt më vete, me botimet dh
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | harta të DCS World në modele 3D | [faqja](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | harta të IL-2 Sturmovik në modele 3D | [faqja](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+Çdo lexues loje është një projekt i vogël më vete, me skedarin e vet të licencës, versionet e veta dhe gjurmuesin e vet
+të problemeve, që të mund të instalohet, përditësohet, mirëmbahet - ose tërhiqet me kërkesë të një mbajtësi të drejtash -
+më vete, pa prekur shikuesin ose mjetet e tjera.
+
 Licenca: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Licencat
 e paketave të palëve të treta që përdor, dhe çfarë kërkojnë lojërat që lexon, listohen te
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

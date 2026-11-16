@@ -130,6 +130,10 @@ chun demos CS2 a thiontú). Is tionscadal ar leith é gach ceann, lena eisiúint
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | léarscáileanna DCS World ina samhlacha 3D | [suíomh](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | léarscáileanna IL-2 Sturmovik ina samhlacha 3D | [suíomh](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+Is tionscadal beag ar leith é gach léitheoir cluiche, lena chomhad ceadúnais, a eisiúintí agus a rianaitheoir
+fadhbanna féin, ionas gur féidir é a shuiteáil, a nuashonrú, a chothabháil - nó a tharraingt siar ar iarratas ó
+shealbhóir ceart - ina aonar, gan tionchar a imirt ar an amharcán ná ar na huirlisí eile.
+
 Ceadúnas: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Tá ceadúnais
 na bpacáistí tríú páirtí a úsáideann sé, agus an méid a éilíonn na cluichí a léann sé, liostaithe in
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

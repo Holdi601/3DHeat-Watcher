@@ -3,8 +3,8 @@
 ## Unreleased
 
 - osu! replays removed: out of scope (2D game).
-- Dota 2, League of Legends and VALORANT replays are read by tools of their own, so a licensing or takedown
-  problem with one touches nothing else: [3DHeat-Ext-DotaReplay](https://github.com/Holdi601/3DHeat-Ext-DotaReplay)
+- Dota 2, League of Legends and VALORANT replays are read by tools of their own, each its own
+  project: [3DHeat-Ext-DotaReplay](https://github.com/Holdi601/3DHeat-Ext-DotaReplay)
   (`heat3d-dota-replay`, which brings gem-dota) and [3DHeat-Ext-Riot](https://github.com/Holdi601/3DHeat-Ext-Riot)
   (`heat3d-riot-replays`). The `dota-replays`, `lol-replays` and `valorant-replays` adapters,
   `replays <adapter>` and `dota-replay --convert` run them when they are on PATH, installed, or beside the

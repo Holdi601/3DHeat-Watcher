@@ -133,6 +133,10 @@ Ctrl+C або не закриєте вікно.
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | карти DCS World у 3D-моделі | [сайт](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | карти IL-2 Sturmovik у 3D-моделі | [сайт](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+Кожен зчитувач гри — окремий невеликий проєкт із власним файлом ліцензії, випусками та трекером проблем,
+тож його можна встановити, оновити, підтримувати — або відкликати на прохання правовласника — окремо,
+не зачіпаючи переглядач та інші інструменти.
+
 Ліцензія: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Ліцензії
 сторонніх пакетів, які він використовує, і те, чого вимагають ігри, які він читає, перелічено в
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

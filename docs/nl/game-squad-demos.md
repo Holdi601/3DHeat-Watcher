@@ -54,8 +54,8 @@ beheerder met de bevoegdheid `demos` AdminDemoRec &lt;naam> uitvoert (en AdminDe
 in `<server>/SquadGame/Saved/Demos/<naam>.replay` - een netwerkreplay van de Unreal
 Engine met wat de server heeft doorgegeven, inclusief elke beweging van elke speler.
 De watcher leest die zelf niet: een externe lezer doet dat (de 3DHeat Squad-demolezer,
-`exporters/ext/squad-demo`, opdracht `heat3d-squad-demo`), apart gehouden zodat een
-probleem daarmee niets anders raakt. Hij draait op elke nieuwe demo in de mappen waar
+`exporters/ext/squad-demo`, opdracht `heat3d-squad-demo`), een eigen project.
+Hij draait op elke nieuwe demo in de mappen waar
 een lokale server naartoe schrijft, of in een map die de instellingen toevoegen voor
 demo's die van een gehuurde server zijn gekopieerd, en levert de sessiemap op als
 `<map>/<match>.parquet` en `<match>.match.json`. De laag, de kaart, het aantal spelers

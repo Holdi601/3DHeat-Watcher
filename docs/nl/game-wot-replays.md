@@ -55,8 +55,7 @@ van de Wargaming Game Center, `C:/Games/World_of_Tanks*` / `World_of_Warships*`,
 Steam. Net als bij War Thunder leest de watcher de bestanden zelf niet: een externe
 converter van elk doet dat (`exporters/ext/wot-replay`, opdracht
 `heat3d-wot-replay`; `exporters/ext/wows-replay`, opdracht `heat3d-wows-replay`),
-apart gehouden zodat een probleem met de voorwaarden van Wargaming alleen die
-converter raakt. Gevonden op het PAD, geïnstalleerd, of naast de watcher, zet hij elke
+elk een eigen project. Gevonden op het PAD, geïnstalleerd, of naast de watcher, zet hij elke
 nieuwe replay om in `<map>/<match>.parquet` en `<match>.match.json` in de sessiemap;
 ontbreekt hij, dan zegt de watcher één keer hoe hij geïnstalleerd wordt. De regel van
 de opnemende speler - voertuig of schip, kills, schade (World of Tanks), of hij

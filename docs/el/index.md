@@ -130,6 +130,10 @@ Ctrl+C ή να κλείσετε το παράθυρο.
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | χάρτες του DCS World σε τρισδιάστατα μοντέλα | [σελίδα](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | χάρτες του IL-2 Sturmovik σε τρισδιάστατα μοντέλα | [σελίδα](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+Κάθε αναγνώστης παιχνιδιού είναι ένα μικρό αυτόνομο έργο με δικό του αρχείο άδειας, δικές του εκδόσεις και δικό
+του σύστημα αναφοράς προβλημάτων, ώστε να μπορεί να εγκατασταθεί, να ενημερωθεί, να συντηρηθεί - ή να αποσυρθεί
+κατόπιν αιτήματος ενός δικαιούχου - ανεξάρτητα, χωρίς να επηρεάζει τον προβολέα ή τα άλλα εργαλεία.
+
 Άδεια: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Οι άδειες των πακέτων τρίτων που
 χρησιμοποιεί, και όσα απαιτούν τα παιχνίδια που διαβάζει, είναι γραμμένα στο
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

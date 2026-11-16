@@ -3,7 +3,7 @@ title: "League of Legends (repriser)"
 nav_order: 30
 lang: "no"
 source: game-lol-replays.md
-source_hash: "ed26619fa904"
+source_hash: "6a86dc8a45bb"
 nav_exclude: true
 search_exclude: true
 ---
@@ -38,16 +38,15 @@ League of Legends og Valorant-repriser: det som kan leses av dem slik de er.
 
 Begge spillene lagrer repriser på spillerens disk, og begge beskytter det som ligger inni:
 dataene om spillet fra øyeblikk til øyeblikk er forvirret, og på ulike måter med hver oppdatering,
-for å hindre at de brukes til juks. Å komme forbi det betyr å demontere spillets egen kode,
-noe Riots vilkår forbyr (Terms of Service 3.1 og 7.1) - så det gjøres ikke noe sted i 3DHeat. Det
+for å hindre at de brukes til juks. Den delen dekodes ikke noe sted
+i 3DHeat. Det
 som hver fil bærer åpent, leses, og resten lagres slik det er: hver del av filen, hel, i øktens
 `heat.raw.parquet` (3DHeat sin regel for konvertering, docs/converters.md i vieweren sitt depot),
 og telles i `selfCheck.completeness` i meta.json.
 
 Watcheren leser ikke filene selv: en ekstern leser gjør det (3DHeat
 Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`,
-kommandoen `heat3d-riot-replays`), holdt adskilt slik at et problem med Riots
-vilkår bare berører den leseren. Finnes den på PATH, er installert, eller ligger ved siden av watcheren,
+kommandoen `heat3d-riot-replays`), et eget prosjekt. Finnes den på PATH, er installert, eller ligger ved siden av watcheren,
 leser den hver ny reprise; mangler den, sier watcheren én gang hvordan den installeres. Det
 leseren får ut, skriver watcheren inn i økten; tidslinjen fra Match-V5 under hentes av watcheren selv,
 siden den ikke finnes i filen.
@@ -118,7 +117,7 @@ Watcheren følger 3DHeat sin [regel for konvertering](https://github.com/Holdi60
 
 **Ikke tilgjengelig**
 
-- selve spillet (posisjoner, evner, hver enhet, fra øyeblikk til øyeblikk): ROFL1s deler og ROFL2s body er kryptert, og pakkene inni er forvirret med hver oppdatering; å komme forbi det betyr å demontere klienten, noe Riots vilkår forbyr (3.1, 7.1). Lagret hel, ikke lest
+- selve spillet (posisjoner, evner, hver enhet, fra øyeblikk til øyeblikk): ROFL1s deler og ROFL2s body er kryptert, og pakkene inni er forvirret med hver oppdatering. Lagret hel, ikke lest
 - posisjoner uten din egen Riot API-nøkkel: filen har ingen åpent
 
 **Størrelse**: rå sidefil er omtrent repriseens egen størrelse: de krypterte delene komprimeres ikke

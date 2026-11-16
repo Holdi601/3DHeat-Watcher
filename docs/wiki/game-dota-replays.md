@@ -50,8 +50,8 @@ match's replay on its servers for a few weeks, and `python -m heat3d_watch
 dota-replay <match id>` fetches one by its id through OpenDota. The watcher
 does not read them itself: an external reader does (3DHeat Dota Replay,
 github.com/Holdi601/3DHeat-Ext-DotaReplay, `exporters/ext/dota-replay`, command
-`heat3d-dota-replay`, reading through gem-dota, MIT), kept apart so that a
-problem with it touches nothing else, and run in a process of its own on each
+`heat3d-dota-replay`, reading through gem-dota, MIT), a project of its own,
+run in a process of its own on each
 new replay when it is on PATH, installed, or beside the watcher; missing, the
 watcher says once how to install it. It writes every hero's position,
 height, health, level, facing, mana, experience, attributes and items 7.5

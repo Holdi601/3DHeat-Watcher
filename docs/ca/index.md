@@ -133,6 +133,10 @@ per convertir les demos de CS2). Cada una és un projecte propi, amb les seves v
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | mapes de DCS World en models 3D | [lloc](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | mapes d'IL-2 Sturmovik en models 3D | [lloc](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+Cada lector de joc és un petit projecte propi, amb el seu fitxer de llicència, les seves versions i el seu
+gestor d'incidències, de manera que es pot instal·lar, actualitzar, mantenir - o retirar a petició d'un titular
+de drets - per separat, sense afectar el visualitzador ni les altres eines.
+
 Llicència: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Les llicències
 dels paquets de tercers que fa servir, i el que exigeixen els jocs que llegeix, figuren a
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

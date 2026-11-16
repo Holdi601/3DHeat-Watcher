@@ -3,7 +3,7 @@ title: Inicio
 nav_order: 1
 lang: "es"
 source: index.md
-source_hash: "d74a4eae2685"
+source_hash: "269b4c01a4af"
 nav_exclude: true
 search_exclude: true
 permalink: /es/
@@ -141,6 +141,10 @@ para convertir las demos de CS2). Cada una es un proyecto propio, con sus versio
 | [Ext-ACRally](https://github.com/Holdi601/3DHeat-Ext-ACRally) | tramos de Assetto Corsa Rally como circuitos | [sitio](https://holdi601.github.io/3DHeat-Ext-ACRally/) |
 | [Ext-Reforger](https://github.com/Holdi601/3DHeat-Ext-Reforger) | mundos de Arma Reforger (Enfusion) como niveles 3D | [sitio](https://holdi601.github.io/3DHeat-Ext-Reforger/) |
 | [Ext-R6](https://github.com/Holdi601/3DHeat-Ext-R6) | repeticiones de partidas de Rainbow Six Siege | [sitio](https://holdi601.github.io/3DHeat-Ext-R6/) |
+
+Cada lector de juego es un pequeño proyecto propio, con su propio archivo de licencia, sus versiones y su
+gestor de incidencias, así que puede instalarse, actualizarse, mantenerse - o retirarse a petición de un
+titular de derechos - por separado, sin afectar al visor ni a las demás herramientas.
 
 Licencia: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Las licencias de los
 paquetes de terceros que usa, y lo que exigen los juegos que lee, están en

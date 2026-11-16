@@ -3,7 +3,7 @@ title: "World of Tanks (repeticiones)"
 nav_order: 47
 lang: "es"
 source: game-wot-replays.md
-source_hash: "c3fbbeebfee0"
+source_hash: "2fa28633a0ee"
 nav_exclude: true
 search_exclude: true
 ---
@@ -56,8 +56,8 @@ encuentran por la lista del Wargaming Game Center, `C:/Games/World_of_Tanks*` /
 `World_of_Warships*`, y por Steam. Como con War Thunder, el watcher no lee los
 archivos por sí mismo: lo hace un conversor externo de cada uno
 (`exporters/ext/wot-replay`, comando `heat3d-wot-replay`; `exporters/ext/wows-replay`,
-comando `heat3d-wows-replay`), separados para que un problema con las condiciones de
-Wargaming afecte solo a ese conversor. Si se encuentra en el PATH, está instalado o
+comando `heat3d-wows-replay`), cada uno un proyecto propio.
+Si se encuentra en el PATH, está instalado o
 junto al watcher, convierte cada repetición nueva en `<mapa>/<partida>.parquet` y
 `<partida>.match.json` en la carpeta de la sesión; si falta, el watcher dice una vez
 cómo instalarlo. La línea del jugador que grabó - vehículo o barco, bajas, daño

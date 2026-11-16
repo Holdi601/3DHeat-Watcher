@@ -32,7 +32,7 @@ salvați o reluare în clientul League (istoric meciuri > descărcare); pentru p
 
 League of Legends și reluările VALORANT: ce se poate citi din ele așa cum sunt.
 
-Ambele jocuri salvează reluările pe discul jucătorului și protejează ce se află înăuntru: datele jocului clip cu clip sunt ofuscate, și diferit la fiecare actualizare, ca să nu poată fi folosite pentru trișare. A le trece de această protecție înseamnă a desface codul jocului, ceea ce termenii Riot interzic (Termenii de utilizare 3.1 și 7.1) - deci nu se face aici. Ce transportă fiecare fișier în clar se citește, iar restul se păstrează așa cum este: fiecare parte a fișierului, întreagă, în `heat.raw.parquet` al sesiunii (regula convertorului 3DHeat, docs/converters.md din repository-ul vizualizatorului), numărată în `selfCheck.completeness` din meta.json.
+Ambele jocuri salvează reluările pe discul jucătorului și protejează ce se află înăuntru: datele jocului clip cu clip sunt ofuscate, și diferit la fiecare actualizare, ca să nu poată fi folosite pentru trișare. Această parte nu este decodată nicăieri în 3DHeat. Ce transportă fiecare fișier în clar se citește, iar restul se păstrează așa cum este: fiecare parte a fișierului, întreagă, în `heat.raw.parquet` al sesiunii (regula convertorului 3DHeat, docs/converters.md din repository-ul vizualizatorului), numărată în `selfCheck.completeness` din meta.json.
 
 #### League of Legends (.rofl) {#league-of-legends-rofl}
 
@@ -86,7 +86,7 @@ Watcher-ul urmează regula de convertor a 3DHeat: ce conține sursa este citit s
 
 **Nu este disponibil**
 
-- jocul însuși (pozițiile, abilitățile, fiecare unitate, clip cu clip): chunk-urile ROFL1 și corpul ROFL2 sunt criptate, iar pachetele din interior sunt ofuscate la fiecare patch; a le trece înseamnă a desface clientul, ceea ce termenii Riot interzic (3.1, 7.1). Păstrate întregi, nu citite
+- jocul însuși (pozițiile, abilitățile, fiecare unitate, clip cu clip): chunk-urile ROFL1 și corpul ROFL2 sunt criptate, iar pachetele din interior sunt ofuscate la fiecare patch. Păstrate întregi, nu citite
 - pozițiile fără cheia proprie de API Riot: fișierul nu le are în clar
 
 **Dimensiune**: sidecarul brut are cam dimensiunea reluării: chunk-urile criptate nu se comprimă

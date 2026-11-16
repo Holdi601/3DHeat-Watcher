@@ -3,7 +3,7 @@ title: "Mappa di Dota 2"
 nav_order: 6.5
 lang: "it"
 source: dota-map.md
-source_hash: "3dcde11c7784"
+source_hash: "6c7a1c39d1bf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -11,7 +11,7 @@ search_exclude: true
 
 La mappa di Dota 2 in 3D - terreno, scogliere, acqua, ogni albero e gli edifici, nel sistema di riferimento e nelle unità in cui sono disegnate le [tabelle dei replay di Dota 2](game-dota-replays.md) - è creata dal suo strumento, **3DHeat Dota**
 ([3DHeat-Ext-Dota](https://github.com/Holdi601/3DHeat-Ext-Dota),
-[documentazione](https://holdi601.github.io/3DHeat-Ext-Dota/)). Legge i file di gioco di Valve, quindi resta fuori dal watcher: se un giorno dovrà essere tolto, il watcher resta com'è.
+[documentazione](https://holdi601.github.io/3DHeat-Ext-Dota/)), un progetto a sé, fuori dal watcher.
 
 Installalo una volta, come dice la sua pagina [Prima di iniziare](https://holdi601.github.io/3DHeat-Ext-Dota/before-you-start.html)
 (pacchetto Python, più la riga di comando di Source2Viewer), poi esegui

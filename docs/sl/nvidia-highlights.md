@@ -3,7 +3,7 @@ title: "NVIDIA Highlights"
 nav_order: 8
 lang: "sl"
 source: nvidia-highlights.md
-source_hash: "a3b769ab065c"
+source_hash: "cd2a5cc2c5fd"
 nav_exclude: true
 search_exclude: true
 ---
@@ -82,4 +82,4 @@ Stvari, ki jih je treba vedeti o izposojenem položaju:
 Drug način, kako dobiti položaj, bi bil, da ga preberemo iz pomnilnika. Nobeden ne deluje:
 
 - **Pomnilnik NVIDIA nima položaja.** NVIDIA App prejme, kar prenaša GfeSDK - id izpostavljenega dela in dva časovna zamika - plus video, ki ga posname. Na strani NVIDIA ni nikjer položaja, ki bi ga lahko prebrali. (Watcher tako ali tako ne bere pomnilnika NVIDIA; bere zgoraj naštete datoteke.)
-- **Pomnilnik igre je v več igralcih nedotakljiv.** Položaj je v procesu igre, watcher pa pomnilnika igre za več igralcev nikoli ne bere: adapter pomnilnika za igro, označeno kot igrano na spletu, se zavrne, preden se kaj odpre (glej [Branje pomnilnika](memory-reading.md)). Igre z več igralci tečejo pod zaščito proti goljufanju (Easy Anti-Cheat, BattlEye, Vanguard, ...), ki štejejo, da drug program, ki odpre proces igre, pomeni goljufanje, kar lahko račun pripelje do prepovedi. Branje stanja igre od zunaj pa prepovedujejo tudi pogoji iger. Izpostavljen del v igri z več igralci zato dobi mesto samo iz tega, kar igra objavi: njene game-state integration ali telemetrije, ki jo ob istem času zapiše drug adapter.
+- **Pomnilnik igre je v več igralcih nedotakljiv.** Položaj je v procesu igre, watcher pa pomnilnika igre za več igralcev nikoli ne bere: adapter pomnilnika za igro, označeno kot igrano na spletu, se zavrne, preden se kaj odpre (glej [Branje pomnilnika](memory-reading.md)). Igre z več igralci tečejo pod zaščito proti goljufanju (Easy Anti-Cheat, BattlEye, Vanguard, ...), ki štejejo, da drug program, ki odpre proces igre, pomeni goljufanje, kar lahko račun pripelje do prepovedi. Izpostavljen del v igri z več igralci zato dobi mesto samo iz tega, kar igra objavi: njene game-state integration ali telemetrije, ki jo ob istem času zapiše drug adapter.

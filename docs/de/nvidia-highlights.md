@@ -3,7 +3,7 @@ title: NVIDIA-Highlights
 nav_order: 8
 lang: "de"
 source: nvidia-highlights.md
-source_hash: "a3b769ab065c"
+source_hash: "cd2a5cc2c5fd"
 nav_exclude: true
 search_exclude: true
 ---
@@ -84,4 +84,4 @@ Wissenswert zur geliehenen Position:
 Der andere Weg zu einer Position wäre, sie aus dem Speicher zu lesen. Keiner der beiden Speicher funktioniert:
 
 - **Der Speicher von NVIDIA enthält keine Position.** Die NVIDIA-App erhält, was GfeSDK trägt - eine Highlight-ID und zwei Zeitversätze - plus das Video, das sie aufnimmt. Auf NVIDIAs Seite gibt es nirgends eine Position zu lesen. (Der Watcher liest den Speicher von NVIDIA ohnehin nicht; er liest die oben genannten Dateien.)
-- **Der Speicher des Spiels ist in Mehrspielerspielen tabu.** Die Position steht im Prozess des Spiels, aber der Watcher liest nie den Speicher eines Mehrspielerspiels: Ein Speicheradapter für ein als online gespieltes Spiel wird abgelehnt, bevor etwas geöffnet wird (siehe [Speicher lesen](memory-reading.md)). Mehrspielerspiele laufen unter Anti-Cheat-Systemen (Easy Anti-Cheat, BattlEye, Vanguard, ...), die es als Betrug behandeln, wenn ein anderes Programm den Prozess des Spiels öffnet, und das kann zu einer Kontosperre führen. Den Spielzustand von außen zu lesen, verbieten außerdem die Nutzungsbedingungen der Spiele. Ein Highlight in einem Mehrspielerspiel bekommt deshalb einen Ort nur aus dem, was das Spiel herausgibt: seiner Game-State-Integration oder Telemetrie, aufgezeichnet von einem anderen Adapter zur selben Zeit.
+- **Der Speicher des Spiels ist in Mehrspielerspielen tabu.** Die Position steht im Prozess des Spiels, aber der Watcher liest nie den Speicher eines Mehrspielerspiels: Ein Speicheradapter für ein als online gespieltes Spiel wird abgelehnt, bevor etwas geöffnet wird (siehe [Speicher lesen](memory-reading.md)). Mehrspielerspiele laufen unter Anti-Cheat-Systemen (Easy Anti-Cheat, BattlEye, Vanguard, ...), die es als Betrug behandeln, wenn ein anderes Programm den Prozess des Spiels öffnet, und das kann zu einer Kontosperre führen. Ein Highlight in einem Mehrspielerspiel bekommt deshalb einen Ort nur aus dem, was das Spiel herausgibt: seiner Game-State-Integration oder Telemetrie, aufgezeichnet von einem anderen Adapter zur selben Zeit.

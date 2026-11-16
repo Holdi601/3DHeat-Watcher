@@ -3,7 +3,7 @@ title: NVIDIA Highlights
 nav_order: 8
 lang: "sv"
 source: nvidia-highlights.md
-source_hash: "a3b769ab065c"
+source_hash: "cd2a5cc2c5fd"
 nav_exclude: true
 search_exclude: true
 ---
@@ -83,4 +83,4 @@ Saker att veta om den lånade positionen:
 Det andra sättet att få en position skulle vara att läsa den ur minnet. Inget av minnena fungerar:
 
 - **NVIDIAs minne har ingen position i sig.** NVIDIA-appen tar emot det GfeSDK bär - ett highlight-id och två tidsförskjutningar - plus videon den spelar in. Det finns ingen position någonstans på NVIDIAs sida att läsa. (Watchern läser inte NVIDIAs minne ändå; den läser filerna ovan.)
-- **Spelets minne är utom räckhåll i flerspelar.** Positionen finns i spelets process, men watchern läser aldrig ett flerspelarspels minne: en minnesadapter för ett spel markerat som spelat online avvisas innan något öppnas (se [Läsa minne](memory-reading.md)). Flerspelarspel körs under fusksskydd (Easy Anti-Cheat, BattlEye, Vanguard, ...) som behandlar att ett annat program öppnar spelets process som fusk, vilket kan leda till att kontot blir avstängt. Att läsa spelets tillstånd utifrån är dessutom något spelens villkor förbjuder. En highlight i ett flerspelarspel får därför bara en plats från det spelet publicerar: dess game-state integration eller telemetri, inspelad av en annan adapter vid samma tid.
+- **Spelets minne är utom räckhåll i flerspelar.** Positionen finns i spelets process, men watchern läser aldrig ett flerspelarspels minne: en minnesadapter för ett spel markerat som spelat online avvisas innan något öppnas (se [Läsa minne](memory-reading.md)). Flerspelarspel körs under fusksskydd (Easy Anti-Cheat, BattlEye, Vanguard, ...) som behandlar att ett annat program öppnar spelets process som fusk, vilket kan leda till att kontot blir avstängt. En highlight i ett flerspelarspel får därför bara en plats från det spelet publicerar: dess game-state integration eller telemetri, inspelad av en annan adapter vid samma tid.

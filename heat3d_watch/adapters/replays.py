@@ -35,8 +35,8 @@ match's replay on its servers for a few weeks, and `python -m heat3d_watch
 dota-replay <match id>` fetches one by its id through OpenDota. The watcher
 does not read them itself: an external reader does (3DHeat Dota Replay,
 github.com/Holdi601/3DHeat-Ext-DotaReplay, `exporters/ext/dota-replay`, command
-`heat3d-dota-replay`, reading through gem-dota, MIT), kept apart so that a
-problem with it touches nothing else, and run in a process of its own on each
+`heat3d-dota-replay`, reading through gem-dota, MIT), a project of its own,
+run in a process of its own on each
 new replay when it is on PATH, installed, or beside the watcher; missing, the
 watcher says once how to install it. It writes every hero's position,
 height, health, level, facing, mana, experience, attributes and items 7.5
@@ -67,8 +67,8 @@ War Thunder
 War Thunder saves a replay of each battle to `<War Thunder>/Replays/*.wrpl`
 when replay saving is on in its options. The watcher does not read them
 itself: an external converter does (3DHeat War Thunder replay converter,
-`exporters/ext/warthunder-replay`, command `heat3d-wt-replay`), kept apart so
-that a problem with it touches nothing else. When the command is on PATH, or
+`exporters/ext/warthunder-replay`, command `heat3d-wt-replay`), a project of
+its own. When the command is on PATH, or
 the package is installed or beside the watcher, each new replay is run through
 it into the session folder as `<map>/<match>.parquet` and `<match>.match.json`;
 when it is not, the watcher says once how to install it and leaves the folder
@@ -84,8 +84,8 @@ Game Center's list, `C:/Games/World_of_Tanks*` / `World_of_Warships*`, and
 Steam. As with War Thunder, the watcher does not read the files itself: an
 external converter of each does (`exporters/ext/wot-replay`, command
 `heat3d-wot-replay`; `exporters/ext/wows-replay`, command
-`heat3d-wows-replay`), kept apart so that a problem with Wargaming's terms
-touches only that converter. Found on PATH, installed, or beside the watcher,
+`heat3d-wows-replay`), each a project of its own. Found on PATH, installed,
+or beside the watcher,
 it turns each new replay into `<map>/<match>.parquet` and `<match>.match.json`
 in the session folder; missing, the watcher says once how to install it. The
 recording player's line - vehicle or ship, kills, damage (World of Tanks),
@@ -100,8 +100,8 @@ Squad's dedicated servers record a demo of a match when an admin with the
 `<server>/SquadGame/Saved/Demos/<name>.replay` - an Unreal Engine network
 replay holding what the server replicated, every player's movement included.
 The watcher does not read them itself: an external reader does (3DHeat Squad
-demo reader, `exporters/ext/squad-demo`, command `heat3d-squad-demo`), kept
-apart so that a problem with it touches nothing else. It is run on each new
+demo reader, `exporters/ext/squad-demo`, command `heat3d-squad-demo`), a
+project of its own. It is run on each new
 demo in the folders a local server writes to, or in a folder the settings add
 for demos copied off a rented server, into the session folder as
 `<map>/<match>.parquet` and `<match>.match.json`. The layer, the map, the
@@ -438,8 +438,8 @@ def count_events(session, table: Path) -> None:
 class ExtReader:
     """
     A replay reader kept outside the watcher, in a repository of its own
-    (`3DHeat-Ext-<Name>`, `exporters/ext/<folder>`), so that a licensing or
-    takedown problem with it touches nothing else. It is found as its command
+    (`3DHeat-Ext-<Name>`, `exporters/ext/<folder>`), so that it is installed,
+    updated and maintained on its own. It is found as its command
     on PATH, else run as `python -m <module>` when the package is installed or
     its source folder is found - in the environment variable `env`, or beside
     the watcher (`ext/<folder>`, `3DHeat-Ext-<Name>`). Nothing of it is
@@ -890,8 +890,7 @@ class WargamingReplays(ReplayAdapter):
     converter of each (exporters/ext/wot-replay, `heat3d-wot-replay`;
     exporters/ext/wows-replay, `heat3d-wows-replay`) into the session folder as
     `<map>/<match>.parquet` and `.match.json`. The watcher only runs the
-    command: reading the replay format lives in the converter alone, so a
-    problem with one touches nothing else.
+    command: reading the replay format lives in the converter alone.
     """
 
     #: The converter's command, its Python package, and its folder beside the watcher (`ext/<folder>`).

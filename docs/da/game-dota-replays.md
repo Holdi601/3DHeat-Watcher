@@ -3,7 +3,7 @@ title: "Dota 2 (replays)"
 nav_order: 12
 lang: "da"
 source: game-dota-replays.md
-source_hash: "c0ed25c261f6"
+source_hash: "88539ee6dc65"
 nav_exclude: true
 search_exclude: true
 ---
@@ -59,8 +59,8 @@ kamps replay på sine servere i nogle uger, og `python -m heat3d_watch
 dota-replay <match id>` henter et replay ud fra dets id via OpenDota. Watcheren læser
 dem ikke selv: en ekstern læser gør det (3DHeat Dota Replay,
 github.com/Holdi601/3DHeat-Ext-DotaReplay, `exporters/ext/dota-replay`, kommando
-`heat3d-dota-replay`, der læser via gem-dota, MIT), holdt adskilt, så et problem med
-den intet andet rører, og kørt i en proces for sig selv på hvert nyt replay, når den
+`heat3d-dota-replay`, der læser via gem-dota, MIT), et projekt for sig,
+kørt i en proces for sig selv på hvert nyt replay, når den
 er på PATH, installeret eller ved siden af watcheren; mangler den, siger watcheren én
 gang, hvordan den installeres. Den skriver hver helts position, højde, liv, level,
 retning, mana, erfaring, attributter og genstande 7,5 gange i sekundet, mens de er i

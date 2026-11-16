@@ -3,7 +3,7 @@ title: "Burimet dhe rregullat"
 nav_order: 7
 lang: "sq"
 source: sources-and-rules.md
-source_hash: "990402abdc5d"
+source_hash: "36c4836cad3f"
 nav_exclude: true
 search_exclude: true
 ---
@@ -90,15 +90,15 @@ ose dërgojnë loja, Steam ose NVIDIA App.
 
 ## Çfarë refuzohet dhe pse {#what-is-declined-and-why}
 
-Disa lojëra, dhe disa pjesë lojërash, nuk regjistrohen sepse e vetmja mënyrë për t'i marrë do të thyente një
-mbrojtje ose kushtet e një loje:
+Disa lojëra, dhe disa pjesë lojërash, nuk regjistrohen: të dhënat e tyre janë të mbrojtura, nuk
+publikohen, ose nuk janë fare në kompjuterin e lojtarit:
 
 | Loja | Çfarë lihet jashtë | Pse |
 |---|---|---|
-| VALORANT | pozicionet, emrat, pikët në riluajtje; pikat fundore lockfile të klientit | Rryma e lojës e riluajtjes është e errësuar me vlera të marra nga ekzekutuesja e çdo build-i. Rikuperimi i tyre do të thotë inxhinierim i kundërt i lojës, që Kushtet e Shërbimit të Riot e ndalojnë (seksionet 3.1 dhe 7.1), dhe loja punon nën Vanguard. Pikat fundore lockfile të klientit Riot nuk janë API e publikuar. **Lexohet:** çfarë bart riluajtja e hapur - harta, id-ja e ndeshjes, agjentët, afatkohë e vrasjeve dhe raundeve të serverit. |
-| League of Legends | pjesa moment pas momenti e riluajtjeve `.rofl`; pikat fundore lockfile të klientit | Të errësuara kundër mashtrimit, ndryshe në çdo patch; dekodimi do të thotë çmontim i lojës, që kushtet e Riot e ndalojnë. **Lexohet:** tabela e pikëve e fundit të lojës që bart çdo riluajtje si JSON i thjeshtë, Live Client Data API gjatë një ndeshjeje, dhe - me çelësin tënd të zhvilluesit - afatkohëzimi zyrtar Match-V5 (pozicione një herë në minutë, vrasjet aty ku ndodhën). |
-| Fortnite | riluajtjet | Të enkriptuara, dhe kushtet e Epic ndalojnë inxhinierimin e kundërt të tyre. |
-| World of Tanks, World of Warships | riluajtjet, në watcher | Të shifruara, me një çelës që bart loja dhe që mjetet e komunitetit e kanë publikuar prej vitesh. Watcher-i nuk i lexon; konvertues të veçantë jashtë tij i lexojnë (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), që një problem me kushtet e Wargaming - licenca e tyre ndalon inxhinierimin e kundërt (5.3 b) dhe softuerin e paautorizuar që ndërvepron me produktet e saj (12.1 k) - të prekë vetëm ata. **Lexohet, me një konvertues të instaluar:** pozicioni i çdo mjeti ose anijeje sa kohë e dinte klienti që regjistronte, dhe vrasjet. |
+| VALORANT | pozicionet, emrat, pikët në riluajtje; pikat fundore lockfile të klientit | Rryma e lojës e riluajtjes është e errësuar me vlera të marra nga ekzekutuesja e çdo build-i. Loja punon nën Vanguard. Pikat fundore lockfile të klientit Riot nuk janë API e publikuar. **Lexohet:** çfarë bart riluajtja e hapur - harta, id-ja e ndeshjes, agjentët, afatkohë e vrasjeve dhe raundeve të serverit. |
+| League of Legends | pjesa moment pas momenti e riluajtjeve `.rofl`; pikat fundore lockfile të klientit | Të errësuara kundër mashtrimit, ndryshe në çdo patch, dhe nuk dekodohen. **Lexohet:** tabela e pikëve e fundit të lojës që bart çdo riluajtje si JSON i thjeshtë, Live Client Data API gjatë një ndeshjeje, dhe - me çelësin tënd të zhvilluesit - afatkohëzimi zyrtar Match-V5 (pozicione një herë në minutë, vrasjet aty ku ndodhën). |
+| Fortnite | riluajtjet | Të enkriptuara. |
+| World of Tanks, World of Warships | riluajtjet, në watcher | Të shifruara. Watcher-i nuk i lexon; konvertues të veçantë jashtë tij i lexojnë (`exporters/ext/wot-replay`, `exporters/ext/wows-replay`), secili një projekt më vete. **Lexohet, me një konvertues të instaluar:** pozicioni i çdo mjeti ose anijeje sa kohë e dinte klienti që regjistronte, dhe vrasjet. |
 | Gran Turismo 7 | telemetria | Vetëm konsolë, dhe telemetria e tij është e enkriptuar me një çelës të rikuperuar nga loja. |
 | Apex Legends | gjithçka | LiveAPI i tij dërgon ngjarje të plota vetëm në lobi private dhe të personalizuara; përndryshe nuk ka asgjë lokalisht. |
 | Overwatch 2, Call of Duty, Battlefield 6, Hunt: Showdown 1896 | të dhënat e drejtpërdrejta | Nuk ka riluajtje lokale, ditar ose dalje të gjendjes së lojës për t'u lexuar. Statistikat e tyre vijnë aty ku i mban Steam ([Statistikat e Steam](game-steam-stats.md), [Steam Timeline](game-steam-timeline.md)), dhe klipet e tyre si [NVIDIA highlights](nvidia-highlights.md). |

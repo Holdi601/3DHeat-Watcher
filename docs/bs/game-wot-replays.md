@@ -55,8 +55,8 @@ Game Centera, `C:/Games/World_of_Tanks*` / `World_of_Warships*`, i
 Steama. Kao i kod War Thundera, watcher ne čita datoteke sam: čita ih
 po jedan vanjski konverter (`exporters/ext/wot-replay`, komanda
 `heat3d-wot-replay`; `exporters/ext/wows-replay`, komanda
-`heat3d-wows-replay`), držani odvojeno da problem s Wargamingovim uvjetima
-dira samo taj konverter. Nađen na PATH-u, instaliran ili pored watchera,
+`heat3d-wows-replay`), svaki zaseban
+projekat. Nađen na PATH-u, instaliran ili pored watchera,
 pretvara svaki novi snimak u `<map>/<match>.parquet` i `<match>.match.json`
 u folderu sesije; ako nedostaje, watcher jednom kaže kako ga instalirati. Red
 igrača koji snima - vozilo ili brod, ubistva, šteta (World of Tanks),

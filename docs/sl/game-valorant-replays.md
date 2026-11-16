@@ -31,7 +31,7 @@ shranite posnetek v VALORANT (kariera > tekma > prenesite posnetek)
 
 League of Legends in VALORANT: kar se od njunih posnetkov da prebrati tako, kot je.
 
-Obe igri shranita posnetke na igralčev disk in obe zaščitita vsebino: podatki igre minuto za minuto so zakriti in pri vsaki zakrpi drugače, da jih ni mogoče uporabiti za goljufanje. Da bi prišli do njih, bi bilo treba razstaviti igrino lastno kodo, kar Riotovi pogoji prepovedujejo (pogoji storitve 3.1 in 7.1) - zato tu ni narejeno. Prebere se, kar je v datoteki odprto, ostalo pa se ohrani tako, kot je: vsak del datoteke cel v `heat.raw.parquet` seje (pravilo pretvornika 3DHeat, docs/converters.md v repozitoriju pregledovalnikja), štet v `selfCheck.completeness` v meta.json.
+Obe igri shranita posnetke na igralčev disk in obe zaščitita vsebino: podatki igre minuto za minuto so zakriti in pri vsaki zakrpi drugače, da jih ni mogoče uporabiti za goljufanje. Ta del se nikjer v 3DHeat ne dekodira. Prebere se, kar je v datoteki odprto, ostalo pa se ohrani tako, kot je: vsak del datoteke cel v `heat.raw.parquet` seje (pravilo pretvornika 3DHeat, docs/converters.md v repozitoriju pregledovalnikja), štet v `selfCheck.completeness` v meta.json.
 
 #### Valorant (.vrf) {#valorant-vrf}
 
@@ -81,7 +81,7 @@ Watcher sledi [pravilu pretvornika](https://github.com/Holdi601/3DHeat/blob/main
 
 **Ni na voljo**
 
-- položaji, imena, rezultati, sposobnosti, vsak okvir igre: kosi podatkov ponovitve in kontrolnih točk so zakriti; branje pomeni razstaviti odjemalca, kar Riotovi pogoji prepovedujejo. Shranjeno cel, neprebrano
+- položaji, imena, rezultati, sposobnosti, vsak okvir igre: kosi podatkov ponovitve in kontrolnih točk so zakriti. Shranjeno cel, neprebrano
 - vsebina šifriranega posnetka: prehojen in shranjen cel, znotraj ničesar ni prebrano
 
 **Velikost**: surovi zapis je približno enako velik kot sam posnetek: zakriti tok se ne stisne

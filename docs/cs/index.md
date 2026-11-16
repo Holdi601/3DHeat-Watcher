@@ -131,6 +131,10 @@ používá 3DHeat CS2). Každý je samostatný projekt s vlastními vydáními a
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | mapy DCS World do 3D modelů | [web](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | mapy IL-2 Sturmovik do 3D modelů | [web](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+Každá čtečka hry je samostatný malý projekt s vlastním souborem licence, vydáními a evidencí
+problémů, takže ji lze instalovat, aktualizovat, udržovat – nebo na žádost držitele práv stáhnout –
+samostatně, bez dopadu na prohlížeč a ostatní nástroje.
+
 Licence: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Licence
 balíčků třetích stran, které používá, a to, co vyžadují hry, které čte, jsou uvedeny v
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

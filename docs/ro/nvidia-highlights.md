@@ -3,7 +3,7 @@ title: "NVIDIA Highlights"
 nav_order: 8
 lang: "ro"
 source: nvidia-highlights.md
-source_hash: "a3b769ab065c"
+source_hash: "cd2a5cc2c5fd"
 nav_exclude: true
 search_exclude: true
 ---
@@ -82,4 +82,4 @@ Lucruri de știut despre poziția împrumutată:
 Celălalt mod de a obține o poziție ar fi să o citești din memorie. Niciuna dintre memorii nu merge:
 
 - **Memoria NVIDIA nu are nicio poziție în ea.** Aplicația NVIDIA primește ce transportă GfeSDK - un id de highlight și două decalaje de timp - plus video-ul pe care îl înregistrează. Nu există nicio poziție nicăieri de partea NVIDIA ca să fie citită. (Watcher-ul nu citește oricum memoria NVIDIA; citește fișierele de mai sus.)
-- **Memoria jocului este interzisă în multiplayer.** Poziția este în procesul jocului, dar watcher-ul nu citește niciodată memoria unui joc multiplayer: un adaptor de memorie pentru un joc marcat ca jucat online este refuzat înainte să se deschidă ceva (vezi [Citirea memoriei](memory-reading.md)). Jocurile multiplayer rulează sub sisteme anti-cheat (Easy Anti-Cheat, BattlEye, Vanguard, ...) care tratează ca trișare ca un alt program să deschidă procesul jocului, ceea ce poate duce la suspendarea contului. Citirea stării jocului din exterior este și ceea ce interzic termenii jocurilor. Un highlight dintr-un joc multiplayer primește deci un loc doar din ce publică jocul: integrarea lui a stării jocului sau telemetria, înregistrate de alt adaptor în același timp.
+- **Memoria jocului este interzisă în multiplayer.** Poziția este în procesul jocului, dar watcher-ul nu citește niciodată memoria unui joc multiplayer: un adaptor de memorie pentru un joc marcat ca jucat online este refuzat înainte să se deschidă ceva (vezi [Citirea memoriei](memory-reading.md)). Jocurile multiplayer rulează sub sisteme anti-cheat (Easy Anti-Cheat, BattlEye, Vanguard, ...) care tratează ca trișare ca un alt program să deschidă procesul jocului, ceea ce poate duce la suspendarea contului. Un highlight dintr-un joc multiplayer primește deci un loc doar din ce publică jocul: integrarea lui a stării jocului sau telemetria, înregistrate de alt adaptor în același timp.

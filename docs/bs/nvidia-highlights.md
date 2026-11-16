@@ -3,7 +3,7 @@ title: "NVIDIA Highlights"
 nav_order: 8
 lang: "bs"
 source: nvidia-highlights.md
-source_hash: "a3b769ab065c"
+source_hash: "cd2a5cc2c5fd"
 nav_exclude: true
 search_exclude: true
 ---
@@ -143,7 +143,7 @@ Drugi način da se dobije pozicija bio bi čitanje iz memorije. Nijedna memorija
   watcher nikad ne čita memoriju multiplayer igre: memory adapter za igru označenu kao igranu online
   odbija se prije nego što se išta otvori (vidite [Čitanje memorije](memory-reading.md)). Multiplayer igre rade
   pod anti-cheatima (Easy Anti-Cheat, BattlEye, Vanguard, ...) koji otvaranje procesa igre od strane drugog programa
-  smatraju varanjem, zbog čega račun može dobiti ban. Čitanje stanja igre izvana
-  je također ono što uvjeti igara zabranjuju. Highlight u multiplayer igri zato dobiva mjesto samo
+  smatraju varanjem, zbog čega račun može dobiti ban. Highlight u multiplayer igri
+  zato dobiva mjesto samo
   iz onoga što igra objavljuje: njene game-state integracije ili telemetrije, koju u isto vrijeme
   snima neki drugi adapter.

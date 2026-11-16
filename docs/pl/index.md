@@ -128,6 +128,10 @@ do konwersji dem CS2). Każde jest osobnym projektem, z własnymi wydaniami i li
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | mapy DCS World jako modele 3D | [strona](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | mapy IL-2 Sturmovik jako modele 3D | [strona](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+Każdy czytnik gry to osobny mały projekt z własnym plikiem licencji, wydaniami i systemem zgłoszeń,
+więc można go instalować, aktualizować, utrzymywać – albo wycofać na prośbę właściciela praw –
+niezależnie, bez wpływu na przeglądarkę i pozostałe narzędzia.
+
 Licencja: MIT ([LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)). Licencje
 pakietów stron trzecich, których używa, oraz to, czego wymagają gry, które czyta, są wymienione w
 [LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md).

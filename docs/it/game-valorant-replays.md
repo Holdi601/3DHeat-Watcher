@@ -3,7 +3,7 @@ title: "VALORANT (replay)"
 nav_order: 44
 lang: "it"
 source: game-valorant-replays.md
-source_hash: "617e23a33a4c"
+source_hash: "a2c4144797e9"
 nav_exclude: true
 search_exclude: true
 ---
@@ -37,17 +37,15 @@ League of Legends e Valorant replay: ciò che di essi si può leggere così com'
 
 Entrambi i giochi salvano i replay sul disco del giocatore, e proteggono ciò che c'è dentro:
 i dati di gioco momento per momento sono offuscati, e in modo diverso a ogni patch,
-per impedire che vengano usati per barare. Superarlo significa smontare il codice del
-gioco stesso, cosa che i termini di Riot vietano (Condizioni d'uso 3.1 e 7.1)
-- quindi in 3DHeat non si fa in nessun punto. Viene letto ciò che ogni file contiene in chiaro, e il resto
+per impedire che vengano usati per barare. Quella parte non viene
+decodificata in nessun punto di 3DHeat. Viene letto ciò che ogni file contiene in chiaro, e il resto
 viene conservato così com'è: ogni parte del file, intera, in `heat.raw.parquet` della
 sessione (regola del convertitore di 3DHeat, docs/converters.md nel repository del
 visualizzatore), conteggiata in `selfCheck.completeness` di meta.json.
 
 Il watcher non legge i file da sé: lo fa un lettore esterno (3DHeat
 Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`,
-comando `heat3d-riot-replays`), tenuto separato perché un problema con i termini di Riot
-tocchi solo quel lettore. Se viene trovato nel PATH, installato o accanto al watcher, legge
+comando `heat3d-riot-replays`), un progetto a sé. Se viene trovato nel PATH, installato o accanto al watcher, legge
 ogni nuovo replay; se manca, il watcher dice una volta come installarlo. Ciò che il lettore
 legge, il watcher lo registra nella sessione; la timeline Match-V5 qui sotto viene
 scaricata dal watcher stesso, perché non è nel file.
@@ -107,7 +105,7 @@ Il watcher segue la [regola del convertitore](https://github.com/Holdi601/3DHeat
 
 **Non disponibile**
 
-- posizioni, nomi, punteggi, abilità, ogni fotogramma del gioco: i chunk dei dati di replay e dei checkpoint sono offuscati; leggerli significa smontare il client, cosa che i termini di Riot vietano. Conservati interi, non letti
+- posizioni, nomi, punteggi, abilità, ogni fotogramma del gioco: i chunk dei dati di replay e dei checkpoint sono offuscati. Conservati interi, non letti
 - il contenuto di un replay cifrato: attraversato e conservato intero, nulla letto all'interno
 
 **Dimensione**: i dati grezzi della sessione occupano circa quanto il replay stesso: il flusso offuscato non si comprime

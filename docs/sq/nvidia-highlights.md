@@ -3,7 +3,7 @@ title: "NVIDIA Highlights"
 nav_order: 8
 lang: "sq"
 source: nvidia-highlights.md
-source_hash: "a3b769ab065c"
+source_hash: "cd2a5cc2c5fd"
 nav_exclude: true
 search_exclude: true
 ---
@@ -142,7 +142,6 @@ Mënyra tjetër për të marrë një pozicion do të ishte leximi i tij nga memo
   watcher-i nuk e lexon kurrë memorien e një loje me shumë lojtarë: një adapter memorieje për një lojë të shënuar si e luajtur online
   refuzohet para se të hapet çfarëdo (shih [Leximi i memories](memory-reading.md)). Lojërat me shumë lojtarë punojnë
   nën anti-cheat (Easy Anti-Cheat, BattlEye, Vanguard, ...) që e trajtojnë hapjen e procesit të lojës nga një program tjetër
-  si mashtrim, gjë që mund të bëjë të ndalohet llogaria. Leximi i gjendjes së lojës nga jashtë
-  është edhe ajo që e ndalojnë kushtet e lojërave. Prandaj një moment i spikatur në një lojë me shumë lojtarë merr vend vetëm
+  si mashtrim, gjë që mund të bëjë të ndalohet llogaria. Prandaj një moment i spikatur në një lojë me shumë lojtarë merr vend vetëm
   nga çfarë publikon loja: integrimi i gjendjes së lojës ose telemetria, e regjistruar nga një adapter tjetër në
   të njëjtën kohë.

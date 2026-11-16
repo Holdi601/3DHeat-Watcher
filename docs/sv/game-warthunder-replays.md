@@ -3,7 +3,7 @@ title: "War Thunder (replayer)"
 nav_order: 45
 lang: "sv"
 source: game-warthunder-replays.md
-source_hash: "23676a6c5441"
+source_hash: "4bf6e2f218cb"
 nav_exclude: true
 search_exclude: true
 ---
@@ -51,7 +51,7 @@ omvandlar de befintliga när du begär det.
 War Thunder sparar en repris av varje strid till `<War Thunder>/Replays/*.wrpl` när sparande av
 repriser är på i dess inställningar. Watchern läser dem inte själv: en extern omvandlare gör det
 (3DHeat War Thunder-repriskonverterare, `exporters/ext/warthunder-replay`, kommandot `heat3d-wt-replay`),
-hållen separat så att ett problem med den inte påverkar något annat. När kommandot finns på PATH, eller
+ett eget projekt. När kommandot finns på PATH, eller
 paketet är installerat eller bredvid watchern, körs varje ny repris genom den till sessionsmappen som
 `<map>/<match>.parquet` och `<match>.match.json`; när den inte finns säger watchern en gång hur den
 installeras och lämnar mappen i fred. Vad omvandlaren läser, och vad den inte gör, står i dess README.

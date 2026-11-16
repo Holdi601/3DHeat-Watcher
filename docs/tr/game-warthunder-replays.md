@@ -3,7 +3,7 @@ title: "War Thunder (tekrarlar)"
 nav_order: 45
 lang: "tr"
 source: game-warthunder-replays.md
-source_hash: "23676a6c5441"
+source_hash: "4bf6e2f218cb"
 nav_exclude: true
 search_exclude: true
 ---
@@ -42,7 +42,7 @@ Bir klasör ilk kez görüldüğünde içindeki tekrarlar yalnızca not edilir, 
 
 #### War Thunder {#war-thunder}
 
-War Thunder, tekrar kaydetme seçeneği açıkken her savaşın tekrarını `<War Thunder>/Replays/*.wrpl` klasörüne kaydeder. Watcher bunları kendisi okumaz: dış bir çevirici okur (3DHeat War Thunder tekrar çeviricisi, `exporters/ext/warthunder-replay`, komut `heat3d-wt-replay`). Bu, çeviricideki bir sorunun başka hiçbir şeye dokunmamasını sağlar. Komut PATH üzerindeyse, ya da paket kuruluysa ya da watcher'ın yanındaysa, her yeni tekrar bu çeviriciden geçirilir ve sonuç `<map>/<match>.parquet` ve `<match>.match.json` olarak oturum klasörüne yazılır. Değilse, watcher bir kez nasıl kurulacağını söyler ve klasöre dokunmaz. Çeviricinin neyi okuyup neyi okumadığı README dosyasındadır. Tekrarın yazarının sonuç satırı — öldürmeler, kara öldürmeleri, ölümler, asistler, skor, bölge ele geçirmeleri — oturumun istatistikleri olur.
+War Thunder, tekrar kaydetme seçeneği açıkken her savaşın tekrarını `<War Thunder>/Replays/*.wrpl` klasörüne kaydeder. Watcher bunları kendisi okumaz: dış bir çevirici okur (3DHeat War Thunder tekrar çeviricisi, `exporters/ext/warthunder-replay`, komut `heat3d-wt-replay`); kendi başına bir projedir. Komut PATH üzerindeyse, ya da paket kuruluysa ya da watcher'ın yanındaysa, her yeni tekrar bu çeviriciden geçirilir ve sonuç `<map>/<match>.parquet` ve `<match>.match.json` olarak oturum klasörüne yazılır. Değilse, watcher bir kez nasıl kurulacağını söyler ve klasöre dokunmaz. Çeviricinin neyi okuyup neyi okumadığı README dosyasındadır. Tekrarın yazarının sonuç satırı — öldürmeler, kara öldürmeleri, ölümler, asistler, skor, bölge ele geçirmeleri — oturumun istatistikleri olur.
 
 Aynı modül şunlara da hizmet eder: [Counter-Strike 2 (tekrarlar)](game-cs2-demos.md), [Dota 2 (tekrarlar)](game-dota-replays.md), [Squad (tekrarlar)](game-squad-demos.md), [World of Tanks (tekrarlar)](game-wot-replays.md), [World of Warships (tekrarlar)](game-wows-replays.md).
 

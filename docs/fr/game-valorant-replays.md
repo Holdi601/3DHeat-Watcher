@@ -3,7 +3,7 @@ title: "VALORANT (replays)"
 nav_order: 44
 lang: "fr"
 source: game-valorant-replays.md
-source_hash: "617e23a33a4c"
+source_hash: "a2c4144797e9"
 nav_exclude: true
 search_exclude: true
 ---
@@ -36,9 +36,9 @@ Réglages par variables d'environnement :
 Replays de League of Legends et de Valorant : ce qu'on peut en lire tel quel.
 
 Les deux jeux sauvegardent les replays sur le disque du joueur, et protègent ce qui est à l'intérieur :
-les données de la partie seconde par seconde sont brouillées, et différemment à chaque patch, pour empêcher qu'on s'en serve pour tricher. En venir à bout supposerait de démonter le code du jeu, ce que les conditions de Riot interdisent (conditions d'utilisation 3.1 et 7.1) - donc ce n'est fait nulle part dans 3DHeat. Ce qui figure en clair dans chaque fichier est lu, et le reste est conservé tel quel : chaque partie du fichier, en entier, dans `heat.raw.parquet` de la session (règle du convertisseur de 3DHeat, docs/converters.md dans le dépôt du visualiseur), comptée dans `selfCheck.completeness` de meta.json.
+les données de la partie seconde par seconde sont brouillées, et différemment à chaque patch, pour empêcher qu'on s'en serve pour tricher. Cette partie n'est décodée nulle part dans 3DHeat. Ce qui figure en clair dans chaque fichier est lu, et le reste est conservé tel quel : chaque partie du fichier, en entier, dans `heat.raw.parquet` de la session (règle du convertisseur de 3DHeat, docs/converters.md dans le dépôt du visualiseur), comptée dans `selfCheck.completeness` de meta.json.
 
-Le watcher ne lit pas lui-même les fichiers : un lecteur externe le fait (3DHeat Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`, commande `heat3d-riot-replays`), tenu à part pour qu'un problème avec les conditions de Riot ne touche que ce lecteur. Trouvé dans le PATH, installé, ou à côté du watcher, il lit chaque nouveau replay ; s'il manque, le watcher indique une fois comment l'installer. Ce qu'il lit, le watcher le consigne dans la session ; la chronologie Match-V5 décrite plus bas est récupérée par le watcher lui-même, car elle ne se trouve pas dans le fichier.
+Le watcher ne lit pas lui-même les fichiers : un lecteur externe le fait (3DHeat Riot, github.com/Holdi601/3DHeat-Ext-Riot, `exporters/ext/riot-replays`, commande `heat3d-riot-replays`), un projet à part entière. Trouvé dans le PATH, installé, ou à côté du watcher, il lit chaque nouveau replay ; s'il manque, le watcher indique une fois comment l'installer. Ce qu'il lit, le watcher le consigne dans la session ; la chronologie Match-V5 décrite plus bas est récupérée par le watcher lui-même, car elle ne se trouve pas dans le fichier.
 
 #### Valorant (.vrf) {#valorant-vrf}
 
@@ -95,7 +95,7 @@ Le watcher suit la [règle du convertisseur](https://github.com/Holdi601/3DHeat/
 
 **Non disponible**
 
-- positions, noms, scores, capacités, chaque image du jeu : les morceaux de données du replay et de points de contrôle sont brouillés ; les lire supposerait de démonter le client, ce que les conditions de Riot interdisent. Conservé en entier, non lu
+- positions, noms, scores, capacités, chaque image du jeu : les morceaux de données du replay et de points de contrôle sont brouillés. Conservé en entier, non lu
 - le contenu d'un replay chiffré : parcouru et conservé en entier, rien n'est lu à l'intérieur
 
 **Taille** : le fichier brut conservé fait à peu près la taille du replay lui-même : le flux brouillé ne se compresse pas

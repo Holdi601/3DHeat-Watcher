@@ -103,4 +103,6 @@ python -m heat3d_watch stats --csv out  # セッション、出来事、統計�
 | [Ext-DCS](https://github.com/Holdi601/3DHeat-Ext-DCS) | DCS World のマップを3Dモデルに | [サイト](https://holdi601.github.io/3DHeat-Ext-DCS/) |
 | [Ext-IL2](https://github.com/Holdi601/3DHeat-Ext-IL2) | IL-2 Sturmovik のマップを3Dモデルに | [サイト](https://holdi601.github.io/3DHeat-Ext-IL2/) |
 
+各ゲームのリーダーは、それぞれ独自のライセンスファイル、リリース、課題トラッカーを持つ小さな独立したプロジェクトです。そのため、ビューアや他のツールに影響を与えることなく、個別にインストール、更新、保守でき、権利者から求められた場合には個別に取り下げることもできます。
+
 ライセンス: MIT（[LICENSE](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSE)）。使用しているサードパーティのパッケージのライセンスと、読み取るゲームが求めることは、[LICENSES.md](https://github.com/Holdi601/3DHeat-Watcher/blob/main/LICENSES.md) に一覧があります。

@@ -3,7 +3,7 @@ title: NVIDIA Highlights
 nav_order: 8
 lang: "nl"
 source: nvidia-highlights.md
-source_hash: "a3b769ab065c"
+source_hash: "cd2a5cc2c5fd"
 nav_exclude: true
 search_exclude: true
 ---
@@ -84,4 +84,4 @@ Dingen om te weten over de geleende positie:
 De andere manier om een positie te krijgen zou uit het geheugen zijn. Geen van beide werkt:
 
 - **Het geheugen van NVIDIA bevat geen positie.** De NVIDIA-app ontvangt wat de GfeSDK draagt - een highlight-id en twee tijdsverschuivingen - plus de video die hij opneemt. Er is nergens aan NVIDIA's kant een positie om te lezen. (De watcher leest het geheugen van NVIDIA sowieso niet; hij leest de bestanden hierboven.)
-- **Het geheugen van het spel is in multiplayer niet toegankelijk.** De positie staat in het proces van het spel, maar de watcher leest het geheugen van een multiplayerspel nooit: een geheugenadapter voor een spel dat als online gespeeld is gemarkeerd, wordt geweigerd voordat er iets geopend wordt (zie [Geheugen lezen](memory-reading.md)). Multiplayerspellen draaien onder anti-cheats (Easy Anti-Cheat, BattlEye, Vanguard, ...) die het door een ander programma laten openen van het proces van het spel als vals spelen zien, wat tot een geblokkeerd account kan leiden. Het spelstatus van buitenaf lezen is ook wat de voorwaarden van de spellen verbieden. Een highlight in een multiplayerspel krijgt dus alleen een plek uit wat het spel zelf publiceert: zijn game-state integration of telemetrie, vastgelegd door een andere adapter op hetzelfde moment.
+- **Het geheugen van het spel is in multiplayer niet toegankelijk.** De positie staat in het proces van het spel, maar de watcher leest het geheugen van een multiplayerspel nooit: een geheugenadapter voor een spel dat als online gespeeld is gemarkeerd, wordt geweigerd voordat er iets geopend wordt (zie [Geheugen lezen](memory-reading.md)). Multiplayerspellen draaien onder anti-cheats (Easy Anti-Cheat, BattlEye, Vanguard, ...) die het door een ander programma laten openen van het proces van het spel als vals spelen zien, wat tot een geblokkeerd account kan leiden. Een highlight in een multiplayerspel krijgt dus alleen een plek uit wat het spel zelf publiceert: zijn game-state integration of telemetrie, vastgelegd door een andere adapter op hetzelfde moment.

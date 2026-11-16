@@ -3,7 +3,7 @@ title: "War Thunder (replay)"
 nav_order: 45
 lang: "it"
 source: game-warthunder-replays.md
-source_hash: "23676a6c5441"
+source_hash: "4bf6e2f218cb"
 nav_exclude: true
 search_exclude: true
 ---
@@ -42,7 +42,7 @@ La prima volta che una cartella viene vista, i replay già presenti vengono solo
 
 #### War Thunder {#war-thunder}
 
-War Thunder salva il replay di ogni battaglia in `<War Thunder>/Replays/*.wrpl` quando il salvataggio dei replay è attivo nelle sue opzioni. Il watcher non li legge da solo: lo fa un convertitore esterno (il convertitore dei replay di War Thunder 3DHeat, `exporters/ext/warthunder-replay`, comando `heat3d-wt-replay`), tenuto separato in modo che un problema con esso non tocchi nient'altro. Quando il comando è nel PATH, oppure il pacchetto è installato o si trova accanto al watcher, ogni nuovo replay passa da lì e produce nella cartella della sessione `<mappa>/<partita>.parquet` e `<partita>.match.json`; quando non lo è, il watcher lo segnala una volta con le istruzioni per installarlo e lascia la cartella com'è. Ciò che il convertitore legge, e ciò che non legge, è nel suo README. La riga dell'autore del replay nei risultati - uccisioni, uccisioni a terra, morti, assist, punteggio, conquiste - diventa le statistiche della sessione.
+War Thunder salva il replay di ogni battaglia in `<War Thunder>/Replays/*.wrpl` quando il salvataggio dei replay è attivo nelle sue opzioni. Il watcher non li legge da solo: lo fa un convertitore esterno (il convertitore dei replay di War Thunder 3DHeat, `exporters/ext/warthunder-replay`, comando `heat3d-wt-replay`), un progetto a sé. Quando il comando è nel PATH, oppure il pacchetto è installato o si trova accanto al watcher, ogni nuovo replay passa da lì e produce nella cartella della sessione `<mappa>/<partita>.parquet` e `<partita>.match.json`; quando non lo è, il watcher lo segnala una volta con le istruzioni per installarlo e lascia la cartella com'è. Ciò che il convertitore legge, e ciò che non legge, è nel suo README. La riga dell'autore del replay nei risultati - uccisioni, uccisioni a terra, morti, assist, punteggio, conquiste - diventa le statistiche della sessione.
 
 Lo stesso modulo serve anche: [Counter-Strike 2 (replay)](game-cs2-demos.md), [Dota 2 (replay)](game-dota-replays.md), [Squad (replay)](game-squad-demos.md), [World of Tanks (replay)](game-wot-replays.md), [World of Warships (replay)](game-wows-replays.md).
 

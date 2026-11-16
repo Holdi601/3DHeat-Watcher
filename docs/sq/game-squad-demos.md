@@ -3,7 +3,7 @@ title: "Squad (riprodhime)"
 nav_order: 40
 lang: "sq"
 source: game-squad-demos.md
-source_hash: "a908f7e6d9c3"
+source_hash: "ddec19ea89bf"
 nav_exclude: true
 search_exclude: true
 ---
@@ -54,8 +54,8 @@ lejen `demos` ekzekuton AdminDemoRec &lt;name> (dhe AdminDemoStop), te
 `<server>/SquadGame/Saved/Demos/<name>.replay` - një riprodhim rrjeti i Unreal Engine
 që mban atë që serveri ka përsëritur, përfshirë lëvizjen e çdo lojtari.
 Watcher-i nuk i lexon vetë: i lexon një lexues i jashtëm (lexuesi i demove Squad i 3DHeat,
-`exporters/ext/squad-demo`, komanda `heat3d-squad-demo`), mbajtur
-i ndarë që një problem me të të mos prekë asgjë tjetër. Ai ekzekutohet për çdo demo
+`exporters/ext/squad-demo`, komanda `heat3d-squad-demo`), një projekt
+më vete. Ai ekzekutohet për çdo demo
 të re në dosjet ku shkruan një server lokal, ose në një dosje që e shtojnë cilësimet
 për demot e kopjuara nga një server i marrë me qira, drejt dosjes së sesionit si
 `<map>/<match>.parquet` dhe `<match>.match.json`. Shtresa (layer), harta, numri i

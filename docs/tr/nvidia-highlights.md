@@ -3,7 +3,7 @@ title: "NVIDIA Highlights"
 nav_order: 8
 lang: "tr"
 source: nvidia-highlights.md
-source_hash: "a3b769ab065c"
+source_hash: "cd2a5cc2c5fd"
 nav_exclude: true
 search_exclude: true
 ---
@@ -83,4 +83,4 @@ Bir satır bulunursa öne çıkanın `x`, `y`, `z` değerleri, `session` (ya da 
 Konumu almanın diğer yolu bellekten okumak olurdu. İki bellek de işe yaramaz:
 
 - **NVIDIA'nın belleğinde konum yoktur.** NVIDIA Uygulaması, GfeSDK'nın taşıdığını alır - bir öne çıkan kimliği ve iki zaman farkı - artı kaydettiği video. NVIDIA tarafında okunacak bir konum hiçbir yerde yoktur. (İzleyici zaten NVIDIA'nın belleğini okumaz; yukarıdaki dosyaları okur.)
-- **Oyunun belleği çok oyunculuda yasaktır.** Konum oyunun süreci içindedir, ama izleyici çok oyunculu bir oyunun belleğini asla okumaz: çevrimiçi oynanan olarak işaretli bir oyun için bir bellek adaptörü, hiçbir şey açılmadan reddedilir (bkz. [Bellek okuma](memory-reading.md)). Çok oyunculu oyunlar anti-hile sistemleri altında çalışır (Easy Anti-Cheat, BattlEye, Vanguard, ...); bunlar, başka bir programın oyunun sürecini açmasını hile sayar ve hesabın yasaklanmasına yol açabilir. Oyunun durumunu dışarıdan okumak da oyunların koşullarının yasakladığı bir şeydir. Bu yüzden çok oyunculu bir oyundaki öne çıkan, yalnızca oyunun yayımladığından - oyun durumu entegrasyonundan ya da telemetrisinden, aynı zamanda başka bir adaptörün kaydettiğinden - bir yer alır.
+- **Oyunun belleği çok oyunculuda yasaktır.** Konum oyunun süreci içindedir, ama izleyici çok oyunculu bir oyunun belleğini asla okumaz: çevrimiçi oynanan olarak işaretli bir oyun için bir bellek adaptörü, hiçbir şey açılmadan reddedilir (bkz. [Bellek okuma](memory-reading.md)). Çok oyunculu oyunlar anti-hile sistemleri altında çalışır (Easy Anti-Cheat, BattlEye, Vanguard, ...); bunlar, başka bir programın oyunun sürecini açmasını hile sayar ve hesabın yasaklanmasına yol açabilir. Bu yüzden çok oyunculu bir oyundaki öne çıkan, yalnızca oyunun yayımladığından - oyun durumu entegrasyonundan ya da telemetrisinden, aynı zamanda başka bir adaptörün kaydettiğinden - bir yer alır.

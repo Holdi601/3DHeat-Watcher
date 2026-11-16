@@ -3,7 +3,7 @@ title: "Dota 2 (endursýningar)"
 nav_order: 12
 lang: "is"
 source: game-dota-replays.md
-source_hash: "c0ed25c261f6"
+source_hash: "88539ee6dc65"
 nav_exclude: true
 search_exclude: true
 ---
@@ -59,8 +59,8 @@ opinberrar viðureignar á þjónum sínum í nokkrar vikur, og `python -m heat3
 dota-replay <match id>` sækir eina eftir auðkenni hennar í gegnum OpenDota. Watcher
 les þær ekki sjálft: ytri lesari gerir það (3DHeat Dota Replay,
 github.com/Holdi601/3DHeat-Ext-DotaReplay, `exporters/ext/dota-replay`, skipun
-`heat3d-dota-replay`, les í gegnum gem-dota, MIT), hafður sér svo að
-vandamál í honum snerti ekkert annað, og keyrður í eigin ferli á hverri
+`heat3d-dota-replay`, les í gegnum gem-dota, MIT), sjálfstætt verkefni,
+keyrður í eigin ferli á hverri
 nýrri endursýningu þegar hann er á PATH, uppsettur eða við hlið watcher; vanti hann,
 segir watcher einu sinni hvernig á að setja hann upp. Hann skrifar staðsetningu, hæð,
 heilsu, level, stefnu, mana, reynslu, eigindir og hluti hverrar hetju 7,5
