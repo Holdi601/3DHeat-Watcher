@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.0.3
 
 - osu! replays removed: out of scope (2D game).
 - Dota 2, League of Legends and VALORANT replays are read by tools of their own, each its own
@@ -22,6 +22,7 @@
   also refreshes the games table of `docs/watcher.md`.
 - Documentation: a "Before you start" page for newcomers, a generated command and column reference
   (`tools/gen_docs_reference.py`), the release checklist (`docs/maintaining.md`).
+- README: a quick start for new users.
 
 ## Docs
 

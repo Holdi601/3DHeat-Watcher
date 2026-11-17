@@ -55,7 +55,15 @@ inside the folder. The details, and the extras some games need, are in
 
 ## Quick start
 
+You need Windows, Python 3.10 or later ("Add python.exe to PATH" ticked in its
+installer) and the games you play; no Git.
+
+Download the release, <https://github.com/Holdi601/3DHeat-Watcher/archive/refs/tags/v1.0.3.zip>,
+unpack it and open PowerShell in the unpacked folder (`3DHeat-Watcher-1.0.3`; in File Explorer,
+type `powershell` in the address bar); run every command from there:
+
 ```bash
+python -m pip install -r requirements.txt
 python -m heat3d_watch games            # what each game gives, and from where
 python -m heat3d_watch setup all        # what would have to be switched on (nothing is changed)
 python -m heat3d_watch setup f1-25 --apply   # switch one game's output on (the original file is backed up)
@@ -63,6 +71,9 @@ python -m heat3d_watch run              # watch; leave it running while you play
 python -m heat3d_watch stats            # totals per game
 python -m heat3d_watch stats --csv out  # sessions, events and stats as CSV files
 ```
+
+Some games want an extra package or a reader of their own; `games` says which, and
+`requirements-optional.txt` lists them ([Installing and running](installing-and-running)).
 
 You should see: after `games`, a table with one line per game; `run` keeps going until you press
 Ctrl+C or close the window.
@@ -76,10 +87,17 @@ Everything is written to `%LOCALAPPDATA%\3DHeat\Watcher`. To use another folder,
 - `watcher.sqlite` - the statistics of every session, in three plain tables
 - `watcher.log` - what the watcher did
 
-The viewer opens a session's `heat.parquet` directly, with nothing to set (its axes and units are in
-the file). Converted replays are written as tables and match documents beside it; the viewer's own
+Then open a session in the [3DHeat viewer](https://github.com/Holdi601/3DHeat#quick-start):
+download it (**Code -> Download ZIP**, unpack), double-click `start.bat` (it offers to install
+Node.js when it is missing and opens `http://127.0.0.1:5273`), then **Source -> Files...** and pick
+the session's `heat.parquet` (or drop it on the Source panel); it opens with nothing to set (its axes
+and units are in the file). Converted replays are written as tables and match documents beside it:
+a `<match>.match.json` goes in the **Match** tab's **Load match files...**. The viewer's own
 one-file-a-match format is described in its [`.3dheat` container](https://holdi601.github.io/3DHeat/container.html)
 page, and every table's columns in [The data](the-data).
+
+When a new release is out, the watcher says so when it starts and offers to update the folder
+from the release (`python -m heat3d_watch update` does the same).
 
 ## The documentation
 

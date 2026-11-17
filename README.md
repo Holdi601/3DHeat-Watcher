@@ -27,6 +27,53 @@ highlights your graphics driver records. Nothing is sent anywhere.
 
 ![the watcher: what games publish, into files on your machine](docs/assets/img/overview.svg)
 
+## Quick start for new users
+
+You need: Windows, [Python](https://www.python.org/downloads/) 3.10 or later
+("Add python.exe to PATH" ticked in its installer), and the games you play.
+No Git is needed.
+
+1. Download the release,
+   <https://github.com/Holdi601/3DHeat-Watcher/archive/refs/tags/v1.0.3.zip>,
+   and unpack it. Open PowerShell in the unpacked folder (`3DHeat-Watcher-1.0.3`;
+   in File Explorer, type `powershell` in the address bar) and install what it
+   needs; run every command from that folder:
+
+   ```bash
+   python -m pip install -r requirements.txt
+   ```
+
+   Some games want an extra package or a reader of their own; `games` says
+   which, and `requirements-optional.txt` lists them.
+2. See what each game gives, switch a game's own output on where it needs it
+   (`setup <id>` shows the change, `--apply` makes it, the original file is
+   backed up), then watch while you play:
+
+   ```bash
+   python -m heat3d_watch games
+   python -m heat3d_watch setup all
+   python -m heat3d_watch setup <id> --apply
+   python -m heat3d_watch run
+   ```
+
+3. `run` keeps going until you press Ctrl+C or close the window. Everything
+   lands in `%LOCALAPPDATA%\3DHeat\Watcher`: one folder per sitting,
+   `sessions\<game>\<date>_<source>\`, with `heat.parquet` (the rows with a
+   position), `events.jsonl` and `meta.json`; converted replays write their
+   table and `<match>.match.json` there too. `python -m heat3d_watch stats`
+   prints the totals per game.
+4. Open it in the [3DHeat viewer](https://github.com/Holdi601/3DHeat#quick-start):
+   download the viewer (**Code -> Download ZIP**, unpack) and double-click
+   `start.bat`; it offers to install [Node.js](https://nodejs.org/) when it is
+   missing and opens Chrome or Edge at `http://127.0.0.1:5273`. There,
+   **Source -> Files...** and pick a session's `heat.parquet` (or drop it on
+   the Source panel); it opens with nothing to set. A replay's
+   `<match>.match.json` goes in the **Match** tab's **Load match files...**.
+
+When a new release is out, the watcher says so when it starts and offers to
+update the folder from the release (`python -m heat3d_watch update` does the
+same).
+
 ## Install and quick start
 
 New to the command line? Read [Before you start](https://holdi601.github.io/3DHeat-Watcher/before-you-start.html) first.

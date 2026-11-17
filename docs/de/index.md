@@ -3,7 +3,7 @@ title: "Startseite"
 nav_order: 1
 lang: "de"
 source: index.md
-source_hash: "09afd8dfdb26"
+source_hash: "b02d2f036888"
 nav_exclude: true
 search_exclude: true
 permalink: /de/
@@ -66,14 +66,25 @@ im Ordner ausführen. Die Einzelheiten und die Zusatzteile, die manche Spiele br
 
 ## Schnellstart {#quick-start}
 
+Du brauchst Windows, Python 3.10 oder neuer (im Installer "Add python.exe to PATH"
+ankreuzen) und die Spiele, die du spielst; Git ist nicht nötig.
+
+Lade das Release herunter, <https://github.com/Holdi601/3DHeat-Watcher/archive/refs/tags/v1.0.3.zip>,
+entpacke es und öffne PowerShell im entpackten Ordner (`3DHeat-Watcher-1.0.3`; im Datei-Explorer
+`powershell` in die Adresszeile tippen); führe jeden Befehl von dort aus:
+
 ```bash
-python -m heat3d_watch games            # what each game gives, and from where
-python -m heat3d_watch setup all        # what would have to be switched on (nothing is changed)
-python -m heat3d_watch setup f1-25 --apply   # switch one game's output on (the original file is backed up)
-python -m heat3d_watch run              # watch; leave it running while you play
-python -m heat3d_watch stats            # totals per game
-python -m heat3d_watch stats --csv out  # sessions, events and stats as CSV files
+python -m pip install -r requirements.txt
+python -m heat3d_watch games            # was jedes Spiel liefert, und woher
+python -m heat3d_watch setup all        # was eingeschaltet werden müsste (nichts wird geändert)
+python -m heat3d_watch setup f1-25 --apply   # die Ausgabe eines Spiels einschalten (die Originaldatei wird gesichert)
+python -m heat3d_watch run              # beobachten; laufen lassen, während du spielst
+python -m heat3d_watch stats            # Summen pro Spiel
+python -m heat3d_watch stats --csv out  # Sitzungen, Ereignisse und Statistiken als CSV-Dateien
 ```
+
+Manche Spiele wollen ein zusätzliches Paket oder einen eigenen Leser; `games` sagt welche, und
+`requirements-optional.txt` listet sie auf ([Installieren und Ausführen](installing-and-running.md)).
 
 Du solltest sehen: nach `games` eine Tabelle mit einer Zeile pro Spiel; `run` läuft weiter, bis du Strg+C drückst
 oder das Fenster schließt.
@@ -87,10 +98,18 @@ Umgebungsvariable `HEAT3D_WATCH_HOME` oder führe `python -m heat3d_watch config
 - `watcher.sqlite` - die Statistiken jeder Sitzung, in drei einfachen Tabellen
 - `watcher.log` - was der Watcher getan hat
 
-Der Viewer öffnet die `heat.parquet` einer Sitzung direkt, ohne Einstellung (ihre Achsen und Einheiten stehen in
-der Datei). Umgewandelte Replays werden daneben als Tabellen und Match-Dokumente geschrieben; das Ein-Datei-pro-Match-
-Format des Viewers steht auf seiner Seite zum [`.3dheat`-Container](https://holdi601.github.io/3DHeat/container.html),
-und die Spalten jeder Tabelle in [Die Daten](the-data.md).
+Dann öffne eine Sitzung im [3DHeat-Viewer](https://github.com/Holdi601/3DHeat#quick-start):
+herunterladen (**Code -> Download ZIP**, entpacken), `start.bat` doppelklicken (es bietet an, Node.js zu
+installieren, wenn es fehlt, und öffnet `http://127.0.0.1:5273`), dann **Quelle -> Dateien...** und die
+`heat.parquet` der Sitzung wählen (oder sie auf das Quelle-Panel ziehen); sie öffnet sich ohne Einstellung
+(ihre Achsen und Einheiten stehen in der Datei). Umgewandelte Replays werden daneben als Tabellen und
+Match-Dokumente geschrieben: eine `<match>.match.json` kommt in den **Match**-Tab über **Match-Dateien laden...**.
+Das Ein-Datei-pro-Match-Format des Viewers steht auf seiner Seite zum
+[`.3dheat`-Container](https://holdi601.github.io/3DHeat/container.html), und die Spalten jeder Tabelle in
+[Die Daten](the-data.md).
+
+Wenn ein neues Release erscheint, sagt der Watcher es beim Start und bietet an, den Ordner aus dem Release
+zu aktualisieren (`python -m heat3d_watch update` tut dasselbe).
 
 ## Die Dokumentation {#the-documentation}
 
