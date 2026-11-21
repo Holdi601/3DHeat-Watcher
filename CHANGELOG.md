@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.1.0
+
+- A standalone program for Windows, Linux and macOS (no Python needed), built by CI with a `SHA256SUMS` file.
+  Without arguments it opens a window: start and stop watching, open the sessions folder, which games are
+  running and what each gives, and updates. `heat3d-watcher <command>` runs every command unchanged.
+- Updates ask first. The background loop announces a newer release once (log and notification) and installs
+  it only when automatic updates were chosen (`--auto-update`, the window's *Update automatically*, or `HEAT3D_AUTO_UPDATE=1`); other commands show the release's notes and ask
+  (update now / later / skip this version).
+- `stop` asks a running watcher to end cleanly (it closes its sessions first); `open` opens the sessions folder.
+- A `pyproject.toml` with the watcher's needs and the `heat3d-watch` command.
+
 ## 1.0.3
 
 - osu! replays removed: out of scope (2D game).

@@ -20,7 +20,9 @@ from __future__ import annotations
 import argparse
 import csv
 import logging
+import os
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -54,12 +56,19 @@ def cmd_run(args: argparse.Namespace, s: Settings) -> int:
     lock = s.data_dir / "watcher.lock"
     try:
         pid = int(lock.read_text(encoding="utf-8").strip())
-        if pid != os.getpid() and psutil.pid_exists(pid) and "python" in psutil.Process(pid).name().lower():
+        name = psutil.Process(pid).name().lower() if pid != os.getpid() and psutil.pid_exists(pid) else ""
+        if "python" in name or "heat3d" in name:
             print(f"A watcher is already running (process {pid}) for {s.data_dir}.", file=sys.stderr)
             return 1
     except (OSError, ValueError, psutil.Error):
         pass
     lock.write_text(str(os.getpid()), encoding="utf-8")
+    from .watcher import STOP_FILE
+
+    try:
+        (s.data_dir / STOP_FILE).unlink()  # a stop asked of a watcher that is gone
+    except OSError:
+        pass
     try:
         Watcher(s).run(once=args.once)
     finally:
@@ -365,6 +374,36 @@ def cmd_dota_map(args: argparse.Namespace, s: Settings) -> int:
         return 1
 
 
+def cmd_stop(args: argparse.Namespace, s: Settings) -> int:
+    """Ask the running watcher to end: it closes its sessions at its next look (a few seconds)."""
+    from .watcher import STOP_FILE
+
+    lock = s.data_dir / "watcher.lock"
+    if not lock.exists():
+        print(f"No watcher is running for {s.data_dir}.")
+        return 0
+    s.data_dir.mkdir(parents=True, exist_ok=True)
+    (s.data_dir / STOP_FILE).write_text("stop\n", encoding="utf-8")
+    print(f"Asked the watcher for {s.data_dir} to stop; it ends within a few seconds.")
+    return 0
+
+
+def cmd_open(args: argparse.Namespace, s: Settings) -> int:
+    """Open the folder the sessions are recorded in, in the system's file manager."""
+    folder = s.data_dir
+    folder.mkdir(parents=True, exist_ok=True)
+    print(folder)
+    try:
+        if sys.platform == "win32":
+            os.startfile(folder)  # type: ignore[attr-defined]
+        else:
+            subprocess.Popen(["open" if sys.platform == "darwin" else "xdg-open", str(folder)])
+    except OSError as e:
+        print(f"could not open it: {e}", file=sys.stderr)
+        return 1
+    return 0
+
+
 def cmd_update(args: argparse.Namespace, s: Settings) -> int:
     import heat3d_update.__main__ as up
 
@@ -439,6 +478,8 @@ def main(argv: list[str] | None = None) -> int:
     dm.add_argument("--source2viewer", help="Source2Viewer-CLI's path (default: where heat3d-dota-maps finds it)")
     dm.add_argument("--detail", type=float, default=8.0,
                     help="buildings' vertex clustering cell in game units (default 8; 0 keeps every triangle)")
+    sub.add_parser("stop", help="ask the running watcher to stop (it closes its sessions first)")
+    sub.add_parser("open", help="open the folder the sessions are recorded in")
     u = sub.add_parser("update", help="update to the newest release")
     u.add_argument("--check", action="store_true")
     c = sub.add_parser("config", help="show or change the settings")
@@ -453,11 +494,12 @@ def main(argv: list[str] | None = None) -> int:
         except (AttributeError, ValueError):
             pass
     settings = load_settings()
-    if args.command not in ("update",):
+    # `run` looks for updates in its loop, while no game is running (watcher.py).
+    if args.command not in ("update", "run", "stop", "open"):
         try:
             import heat3d_update
 
-            heat3d_update.startup("heat3d_watch", ask=None if args.command != "run" else False)
+            heat3d_update.startup("heat3d_watch")
         except ImportError:
             pass
     handler = {
@@ -472,6 +514,8 @@ def main(argv: list[str] | None = None) -> int:
         "dota-replay": cmd_dota_replay,
         "dota-map": cmd_dota_map,
         "update": cmd_update,
+        "stop": cmd_stop,
+        "open": cmd_open,
         "config": cmd_config,
     }[args.command]
     return handler(args, settings)

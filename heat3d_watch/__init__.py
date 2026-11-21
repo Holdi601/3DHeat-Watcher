@@ -14,8 +14,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-#: The tools' version: the repository's VERSION file, which the updater compares with releases.
+#: The tools' version: the repository's VERSION file, which the updater compares with releases
+#: (the same number, for a copy without that file: a pip install or the standalone program).
 try:
     __version__ = (Path(__file__).resolve().parents[1] / "VERSION").read_text(encoding="utf-8").strip()
 except OSError:
-    __version__ = "0"
+    __version__ = "1.1.0"

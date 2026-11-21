@@ -27,6 +27,16 @@ highlights your graphics driver records. Nothing is sent anywhere.
 
 ![the watcher: what games publish, into files on your machine](docs/assets/img/overview.svg)
 
+## The standalone program
+
+No Python needed: download the file for your system (Windows, Linux, macOS) from the
+[latest release](https://github.com/Holdi601/3DHeat-Watcher/releases/latest), check it against
+`SHA256SUMS`, unpack it and start `heat3d-watcher`. Its window starts and stops watching, opens the
+sessions folder, says which games are running and what each game gives, and asks before it updates
+itself. `heat3d-watcher --help` lists its commands; `heat3d-watcher heat3d-watch <command>` (or simply
+`heat3d-watcher <command>`) runs every command below unchanged. The 3DHeat app's Extractors panel can
+install and update it for you. See [Before you start](https://holdi601.github.io/3DHeat-Watcher/before-you-start.html).
+
 ## Quick start for new users
 
 You need: Windows, [Python](https://www.python.org/downloads/) 3.10 or later
@@ -222,8 +232,10 @@ a 3D level under those tables - ground, cliffs, water, trees and buildings - fro
 the game's own files; once it is installed, `dota-map -o dota.glb` runs it:
 [Dota 2 map](https://holdi601.github.io/3DHeat-Watcher/dota-map.html).
 
-The watcher updates itself while no game is running and starts again - never
-in the middle of a game; `config --set auto_update=false` turns that off.
+While no game is running the watcher looks for a newer release and announces it once
+(log and notification). It installs it and starts again only when you chose automatic updates
+(`--auto-update`, the window's *Update automatically*, or `HEAT3D_AUTO_UPDATE=1`) - never in the middle of a game; otherwise update with `update` or from the window.
+`config --set auto_update=false` stops the looking.
 
 Which game is recorded how, and from where: [all games in one table](https://holdi601.github.io/3DHeat-Watcher/watcher.html)
 and a [page per game](https://holdi601.github.io/3DHeat-Watcher/games.html).
@@ -277,7 +289,8 @@ respond quickly and remove anything on request.
 
 3DHeat Watcher checks this repository's releases when it starts (at most every few
 hours, never holding it up for more than a few seconds), says when a newer
-version is out, and offers to update: a clone with `git pull` when it has no
+version is out with its notes, and asks before it updates (update now, later, or skip this
+version; by itself only when you chose automatic updates): a clone with `git pull` when it has no
 local changes, a downloaded copy by replacing its files from the release archive,
 after checking the archive is the version it claims. Your own files - recordings,
 settings, exports - are never touched. To update on request: `python -m heat3d_watch update`.

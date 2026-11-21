@@ -77,7 +77,8 @@ On start, `run`:
    their line in the statistics. Adapters that do not wait for a game (Steam statistics, Steam
    Timeline, NVIDIA highlights, the replay folders) run the whole time;
 4. while no game is running, looks for a newer release at most once an hour (the answer itself is cached for six hours) and, with `auto_update`
-   on, installs it and starts itself again (see [Updates](updates.md)).
+   on, announces it once; it installs it and starts itself again only when automatic updates were
+   chosen (`--auto-update`, the window's *Update automatically*, or `HEAT3D_AUTO_UPDATE=1`) (see [Updates](updates.md)).
 
 An adapter that fails is logged and does not stop the others. If an adapter's poll fails 20 times in a
 row, or its start fails, the adapter is stopped and not restarted until the game is started again (a
@@ -196,7 +197,7 @@ starts, so restart `run` after changing them.
 |---|---|---|
 | `data` | `""` | The data folder. Empty: the home folder. |
 | `disabled` | `[]` | Adapter ids that never run, for example `config --set disabled=steam-stats,nvidia-highlights`. Every other adapter runs when it finds its game. |
-| `auto_update` | `true` | While no game is running, install a newer release and restart (see [Updates](updates.md)). `false`: only a notice in the log. |
+| `auto_update` | `true` | While no game is running, look for a newer release and announce it; it is installed (and the watcher restarted) only when automatic updates were chosen (`--auto-update`, the window's *Update automatically*, or `HEAT3D_AUTO_UPDATE=1`) (see [Updates](updates.md)). `false`: no looking. |
 | `scan_seconds` | `2.0` | Seconds between looks at the process list. |
 | `memory` | `false` | Allow memory adapters (single-player games with a profile you wrote) to run. Off by default; see [Reading memory](memory-reading.md). |
 | `replays` | `true` | Run the `replay` adapters: all of them (see `python -m heat3d_watch replays` and [Games](games.md)) - CS2 demos, Dota 2, War Thunder, World of Tanks, World of Warships, Squad, League of Legends and VALORANT replays, IL-2 Tacview recordings. |
@@ -236,7 +237,7 @@ A `settings.json` with every default:
 | `HEAT3D_DOTA_GSI_PORT` | the Dota 2 game-state port (default 3312) |
 | `MSFS_SDK`, `MSFS2024_SDK` | the MSFS SDK folders, where `SimConnect SDK\lib\SimConnect.dll` is looked for |
 
-Windows notifications are used for updates only: "Updating to 1.2.0", or "1.2.0 is out; not updated:
-..." when the update could not be applied. They are shown through PowerShell's own notification API,
+Windows notifications are used for updates only: "1.2.0 is out", "Updating to 1.2.0" (automatic
+updates chosen), or "1.2.0 is out; not updated: ..." when the update could not be applied. They are shown through PowerShell's own notification API,
 so nothing has to be installed. The title and text are passed to PowerShell as environment variables,
 never as part of the script.

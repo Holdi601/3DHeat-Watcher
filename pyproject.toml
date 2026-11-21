@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+# The watcher and what its standalone program is built from (requirements.txt,
+# requirements-optional.txt). The updater, `heat3d_update`, stays in the
+# repository root: a checkout or a downloaded copy updates itself with it.
+[project]
+name = "heat3d-watch"
+version = "1.1.0"
+description = "Records what games publish about a player's play, in the background, for the 3DHeat viewer"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+dependencies = ["psutil>=6.0", "pyarrow>=15", "numpy>=1.24", "zstandard>=0.22"]
+
+[project.optional-dependencies]
+test = ["pytest>=8.0"]
+
+[project.scripts]
+heat3d-watch = "heat3d_watch.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["heat3d_watch*"]

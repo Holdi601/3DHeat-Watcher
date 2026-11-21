@@ -8,14 +8,19 @@ always-on adapters - platform statistics, highlights, replay folders - run the
 whole time. A failing adapter is logged and retried later; it never takes the
 others with it.
 
-While no game is running the loop also looks for a newer release, and with
-`auto_update` on installs it and starts itself again, so the watcher never
-interrupts a game to update.
+While no game is running the loop also looks for a newer release (with
+`auto_update` on) and announces it once. It installs it and starts itself
+again only when the user chose automatic updates (`--auto-update`, the
+window's "Update automatically", `HEAT3D_AUTO_UPDATE=1`), so the watcher never
+updates unasked and never interrupts a game to update. A `watcher.stop` file
+in the data folder (`heat3d_watch stop`) ends the loop cleanly.
 """
 
 from __future__ import annotations
 
 import logging
+import os
+import sys
 import threading
 import time
 from pathlib import Path
@@ -27,6 +32,8 @@ log = logging.getLogger("heat3d_watch")
 
 #: Consecutive failing polls before an adapter is stopped until its game starts again.
 MAX_FAILURES = 20
+#: Left in the data folder by `heat3d_watch stop`: the running watcher ends cleanly at its next look.
+STOP_FILE = "watcher.stop"
 
 
 def running_processes() -> dict[str, tuple[int, Path | None]]:
@@ -98,6 +105,8 @@ class Watcher:
         #: Adapters that gave up, by id -> the pid they gave up on, so they are not restarted at once.
         self.benched: dict[str, int | None] = {}
         self.last_update_check = 0.0
+        #: The release last announced, so a newer one is announced once, not every hour.
+        self.announced: str | None = None
 
     def wanted(self, procs: dict[str, tuple[int, Path | None]]) -> dict[str, Context]:
         """Adapters that should be running now, with the context each is started with."""
@@ -153,6 +162,10 @@ class Watcher:
         return any(not self.adapters[a].always for a in self.active)
 
     def maybe_update(self) -> None:
+        """
+        A newer release, while no game is running: announced once; installed
+        (and the watcher started again) only when automatic updates were chosen.
+        """
         if not self.settings.auto_update or self.games_running():
             return
         if time.time() - self.last_update_check < 3600:
@@ -160,23 +173,57 @@ class Watcher:
         self.last_update_check = time.time()
         try:
             import heat3d_update as up
+
+            from .app import update as app_update
         except ImportError:
             return
-        release = up.available()
+        target = up.target()
+        try:
+            release = app_update.available(target)
+        except Exception:  # noqa: BLE001 - an update check never stops the watcher
+            return
         if release is None:
             return
-        log.info("3DHeat Watcher %s is out (this is %s); updating", release.version, up.installed_version())
         from .notify import notify
 
+        if not app_update.auto_enabled(target.tool_id) or (app_update.managed() and app_update.frozen()):
+            if self.announced != release.version:
+                self.announced = release.version
+                log.info("%s", app_update.notice(target, release))
+                log.info("update with `heat3d_watch update` or from the window; automatic updates are off")
+                notify("3DHeat Watcher", f"{release.version} is out (this is {target.version}); "
+                                         "update it from its window or with `update`")
+            return
+        log.info("3DHeat Watcher %s is out (this is %s); updating (automatic updates are on)",
+                 release.version, target.version)
         notify("3DHeat Watcher", f"Updating to {release.version}")
+        windows_frozen = app_update.frozen() and os.name == "nt"
         try:
-            log.info(up.apply(release))
+            # A frozen copy on Windows is swapped by a script once this process has ended.
+            log.info(app_update.apply(target, release, restart_args=sys.argv[1:] if windows_frozen else None,
+                                      log=log.info))
         except RuntimeError as e:
             log.warning("update not applied: %s", e)
             notify("3DHeat Watcher", f"{release.version} is out; not updated: {e}")
             return
         self.shutdown()
+        if windows_frozen:
+            os._exit(0)
+        if app_update.frozen():
+            os.execv(sys.executable, [sys.executable, *sys.argv[1:]])
         up.restart()
+
+    def stop_requested(self) -> bool:
+        """`heat3d_watch stop` left a stop file: take it away and end the loop."""
+        f = self.settings.data_dir / STOP_FILE
+        if not f.exists():
+            return False
+        try:
+            f.unlink()
+        except OSError:
+            pass
+        log.info("asked to stop")
+        return True
 
     def run(self, *, once: bool = False, look: float = 10.0) -> None:
         """
@@ -193,6 +240,8 @@ class Watcher:
                     deadline = time.monotonic() + look
                     for runner in list(self.active.values()):
                         runner.looked.wait(max(0.0, deadline - time.monotonic()))
+                    break
+                if self.stop_requested():
                     break
                 self.maybe_update()
                 time.sleep(self.settings.scan_seconds)

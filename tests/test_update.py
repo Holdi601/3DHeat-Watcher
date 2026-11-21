@@ -68,10 +68,17 @@ def test_paths_that_climb_out_of_the_archive_are_ignored(tmp_path, monkeypatch):
     assert not (tmp_path / "escaped.txt").exists()
 
 
-def test_a_tool_says_a_newer_release_is_out_and_carries_on_when_nobody_can_answer(monkeypatch, capsys):
+def test_a_tool_says_a_newer_release_is_out_and_carries_on_when_nobody_can_answer(tmp_path, monkeypatch, capsys):
+    from heat3d_watch.app import update as app_update
+
     monkeypatch.delenv("HEAT3D_NO_UPDATE", raising=False)
-    release = up.Release(version="9.0.0", tag="v9.0.0", notes="", url="https://example.invalid/r", archive="")
-    monkeypatch.setattr(up, "latest", lambda use_cache=True: release)
+    monkeypatch.delenv("HEAT3D_AUTO_UPDATE", raising=False)
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+    monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path))
+    release = app_update.Release("9.0.0", "v9.0.0", "", "https://example.invalid/r")
+    monkeypatch.setattr(app_update, "latest", lambda target, use_cache=True: release)
+    applied = []
+    monkeypatch.setattr(app_update, "_apply_and_restart", lambda target, r: applied.append(r.version))
     up.startup("heat3d_test", ask=False)
     err = capsys.readouterr().err
-    assert "9.0.0 is out" in err and "heat3d_update" in err
+    assert "9.0.0 is out" in err and "--update" in err and applied == []

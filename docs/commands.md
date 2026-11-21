@@ -51,7 +51,7 @@ python -m heat3d_watch run [--once] [-v]
 
 Watches until stopped (Ctrl+C): every `scan_seconds` it reads the process list and runs an adapter for
 each game it finds, plus the always-on adapters. Before the first look it finishes the sessions an
-earlier run left open. While no game runs, it may update itself (with `auto_update` on). The details
+earlier run left open. While no game runs, it looks for a newer release and announces it; it installs it only when automatic updates were chosen (`--auto-update`, the window's *Update automatically*, or `HEAT3D_AUTO_UPDATE=1`). `stop` asks a running watcher to end cleanly, `open` opens the sessions folder. The details
 are in [Installing and running](installing-and-running.md#running).
 
 | Option | Effect |

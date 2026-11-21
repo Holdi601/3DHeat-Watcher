@@ -30,15 +30,16 @@ The watcher keeps itself current from the releases of
 ## What happens when a newer release is out
 
 - **`run`** prints a notice when it starts, and keeps running:
-  `[heat3d_watch] 3DHeat Watcher 1.2.0 is out (this is 1.0.2). <release page>`. While it runs, with
-  `auto_update` on (the default) and no game running, it then updates itself: the log line
-  `3DHeat Watcher 1.2.0 is out (this is 1.0.2); updating`, a Windows notification "Updating to 1.2.0",
-  the update, every adapter stopped and its sessions closed, and the same command started again on the
-  new code. The watcher never updates in the middle of a game. If the update
+  While it runs, with `auto_update` on (the default) and no game running, it looks for a newer
+  release and announces it once: the release's notes in the log and a Windows notification
+  "1.2.0 is out". It updates itself only when automatic updates were chosen (`--auto-update`, the window's *Update automatically*, or `HEAT3D_AUTO_UPDATE=1`): a notification
+  "Updating to 1.2.0", the update, every adapter stopped and its sessions closed, and the same command
+  started again on the new code. The watcher never updates in the middle of a game. If the update
   cannot be applied, the notification says so ("1.2.0 is out; not updated: ...") and the watcher keeps
-  running the old version. With `auto_update` off there is only the notice.
-- **Other commands** ask `Update now? [Y/n]` when they run in a terminal. Enter, `y`, `yes`, `j` or
-  `ja` updates and then runs the same command again on the new version. Without a terminal (a
+  running the old version. With `auto_update` off it does not look.
+- **Other commands** show the release's notes and ask `[U]pdate now, [L]ater, [S]kip this version?`
+  when they run in a terminal. `u` updates and then runs the same command again on the new version;
+  `s` skips this version until a newer one is out. Without a terminal (a
   scheduled run, a pipe), they print how to update and carry on.
 - **On request**: `python -m heat3d_watch update` (or `python -m heat3d_update`) asks GitHub without
   the cache and updates. `--check` only says whether a newer release is out. This works even with

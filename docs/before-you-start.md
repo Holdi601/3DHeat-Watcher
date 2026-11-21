@@ -9,6 +9,29 @@ New to the command line? This page gets you from nothing to a working
 3DHeat Watcher in about ten minutes. You type commands into a *terminal*, a window
 where you write a line and press Enter.
 
+## The standalone program (no Python needed)
+
+Each [release](https://github.com/Holdi601/3DHeat-Watcher/releases/latest)
+has a ready-to-run program for Windows (`heat3d-watcher-<version>-windows-x64.zip`),
+Linux (`...-linux-x64.tar.gz`) and macOS (`...-macos-arm64.tar.gz`), with a
+`SHA256SUMS` file to check the download. Unpack it anywhere and start
+`heat3d-watcher` (on macOS the first start may need *Open* from the right-click
+menu, as the program is not notarised); steps 1 to 4 below are then not needed.
+
+Started without arguments it opens a window that:
+
+- starts watching (*Stop* ends it), or asks a watcher started elsewhere to stop;
+- opens the sessions folder (by default `%LOCALAPPDATA%\3DHeat\Watcher` on Windows);
+- says which games are running now, and what each game gives and from where;
+- checks for updates and asks before installing one, unless you tick
+  *Update automatically*.
+
+The same program runs every command on these pages: `heat3d-watcher run`,
+`heat3d-watcher games`, `heat3d-watcher stop`, `heat3d-watcher open`.
+`heat3d-watcher --check --json` is for scripts; the watcher reads no maps, so
+`status --json` lists none. The 3DHeat app's Extractors panel installs, updates
+and starts it for you.
+
 ## 1. Install Python
 
 1. Download Python 3.10 or later from <https://www.python.org/downloads/>.

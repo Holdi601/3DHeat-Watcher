@@ -92,7 +92,7 @@ The watcher checks its GitHub releases when it starts
 (at most every six hours, never blocking for more than a few seconds), says so,
 and offers to update: a git checkout with `git pull --ff-only` when it has no
 local changes, a downloaded copy by replacing its files from the release
-archive. The watcher updates itself while no game is running and starts again.
+archive. While no game is running the watcher announces a newer release; it updates itself and starts again only when automatic updates were chosen.
 `HEAT3D_NO_UPDATE=1` turns the check off.
 
 ## The games

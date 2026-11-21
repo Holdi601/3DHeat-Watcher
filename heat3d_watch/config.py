@@ -30,7 +30,9 @@ class Settings:
     data: str = ""
     #: Adapters switched off by id. Everything else that finds its game runs.
     disabled: list[str] = field(default_factory=list)
-    #: Update the tools from GitHub releases while no game is running.
+    #: Look for a newer release while no game is running, and announce it. It is installed by
+    #: itself only when automatic updates were chosen (`--auto-update`, the window's "Update
+    #: automatically", HEAT3D_AUTO_UPDATE=1); otherwise with `update` or from the window.
     auto_update: bool = True
     #: Seconds between looks at which games are running.
     scan_seconds: float = 2.0
