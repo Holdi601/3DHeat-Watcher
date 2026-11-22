@@ -171,7 +171,8 @@ def test_cs2_every_document_is_kept_whole_in_the_raw_sidecar(tmp_path):
     t = raw_table(folder)
     assert t["type"] == ["gsi", "gsi-unreadable", "gsi", "gsi", "gsi"]
     assert t["used"] == [False, False, True, True, True]
-    assert t["time"][0] < 0 and t["time"][1] < 0  # posted in the menu, before the match began
+    # posted in the menu, before the match began (Windows' coarse clock can give the last menu post the start's own time)
+    assert t["time"][0] <= 0 and t["time"][1] <= 0
     assert t["payload"][1] == b"\xff not json" and t["length"][1] == len(b"\xff not json")
     kept = json.loads(t["text"][3])
     assert kept["map"]["round_wins"] == {"1": "ct_win_elimination"} and kept["something_new"] == {"a": 1}
