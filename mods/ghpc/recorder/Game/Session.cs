@@ -34,6 +34,8 @@ namespace Heat3D.Ghpc.Game
             public Vector3 LastPos;
             public float LastTurret = float.NaN, LastGun = float.NaN;
             public double LastSampleT = double.NegativeInfinity, LastPosT = double.NaN;
+            /// Where the unit was at its last look (sampled or not), for its speed.
+            public Vector3 SpeedPos;
             public float Speed;
             public List<Flag> Flags;
             public bool Neutralized, Destroyed;
@@ -334,10 +336,11 @@ namespace Heat3D.Ghpc.Game
             pose_pos = pos;
             if (!double.IsNaN(tr.LastPosT) && t > tr.LastPosT)
             {
-                float d = (pos - tr.LastPos).magnitude;
+                float d = (pos - tr.SpeedPos).magnitude;
                 tr.Speed = (float)(d / (t - tr.LastPosT));
             }
             tr.LastPosT = t;
+            tr.SpeedPos = pos;
             var f = T.forward;
             var p = new Pose
             {
