@@ -39,6 +39,8 @@ install and update it for you. See [Before you start](https://holdi601.github.io
 
 The window walks through four steps (find the game, choose, work, done) in the 3DHeat look, dark or light. On Windows the program opens only its window, with no console window; in a terminal it prints as usual, and `heat3d-watcher-cli.cmd` in the same folder makes the terminal wait for it and pass on its exit code.
 
+While it records, an icon by the clock (Windows) says what it is recording; its menu opens the window, pauses or resumes the recording, or quits. Closing the window during a recording keeps it recording in the background.
+
 ## Quick start for new users
 
 You need: Windows, [Python](https://www.python.org/downloads/) 3.10 or later
