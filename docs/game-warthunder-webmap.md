@@ -1,7 +1,7 @@
 ---
 title: "War Thunder (game state)"
 parent: Games
-nav_order: 46
+nav_order: 47
 ---
 
 # War Thunder (game state)

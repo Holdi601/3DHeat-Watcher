@@ -1,7 +1,7 @@
 ---
 title: "Hearthstone (log files)"
 parent: Games
-nav_order: 25
+nav_order: 26
 ---
 
 # Hearthstone (log files)

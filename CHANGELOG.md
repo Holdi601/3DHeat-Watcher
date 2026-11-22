@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.2.0
+
+- Gunner, HEAT, PC!: a recorder mod for MelonLoader ([mods/ghpc](mods/ghpc/README.md)).
+  - It writes each mission into one `.3dheat` file the 3DHeat viewer opens directly: every unit's track,
+    turret and gun, every round fired, hits with the point on the vehicle struck, the plate, the impact
+    angle and speed and whether it penetrated, what each hit did, kills, and the mission's result.
+  - It reads the game and changes nothing in play. Its file is written on a thread of its own.
+  - `ghpc status|install|remove` (and the window's *Install or update the GHPC recorder*) finds the game,
+    checks MelonLoader, and installs or updates the mod after asking. `setup ghpc --apply` does the same.
+  - The new `ghpc` adapter files each mission as a session.
+  - Not yet run in the game: the file format is tested with a made-up mission; the first run writes a probe
+    of what the mod found in the game.
+
 ## 1.1.0
 
 - A standalone program for Windows, Linux and macOS (no Python needed), built by CI with a `SHA256SUMS` file.

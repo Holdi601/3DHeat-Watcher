@@ -1,7 +1,7 @@
 ---
 title: "World of Warships (replays)"
 parent: Games
-nav_order: 48
+nav_order: 49
 ---
 
 # World of Warships (replays)

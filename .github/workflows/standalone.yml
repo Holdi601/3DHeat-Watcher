@@ -53,6 +53,21 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e ".[test]" pyinstaller pyinstaller-hooks-contrib
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - name: The Gunner, HEAT, PC! recorder mod, bundled into the release
+        shell: python
+        run: |
+          import hashlib, json, pathlib, re, shutil, subprocess
+          subprocess.run(["dotnet", "build", "mods/ghpc/recorder", "-c", "Release", "-nologo"], check=True)
+          dll = pathlib.Path("mods/ghpc/recorder/bin/Release/Heat3DRecorder.GHPC.dll")
+          out = pathlib.Path("heat3d_watch/data/ghpc")
+          out.mkdir(parents=True, exist_ok=True)
+          shutil.copy2(dll, out / dll.name)
+          version = re.search(r"<Version>([^<]+)</Version>", pathlib.Path("mods/ghpc/recorder/Heat3DRecorder.GHPC.csproj").read_text()).group(1)
+          (out / "recorder.json").write_text(json.dumps({"version": version, "sha256": hashlib.sha256(dll.read_bytes()).hexdigest()}))
+          print(version, (out / dll.name).stat().st_size)
       - name: Tests (no game files; the ones that need an install skip)
         run: python -m pytest -q -m "not local" ${{ matrix.platform == 'windows-x64' && 'tests' || 'tests/test_standalone.py' }}
       - name: Build and smoke-run

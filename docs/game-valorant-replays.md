@@ -1,7 +1,7 @@
 ---
 title: "VALORANT (replays)"
 parent: Games
-nav_order: 44
+nav_order: 45
 ---
 
 # VALORANT (replays)

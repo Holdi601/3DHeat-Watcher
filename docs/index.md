@@ -116,6 +116,7 @@ from the release (`python -m heat3d_watch update` does the same).
 | [Sources and rules](sources-and-rules.md) | the six kinds of source, the multiplayer rules, which games are left out and why |
 | [NVIDIA Highlights](nvidia-highlights.md) | what NVIDIA Highlights can and cannot deliver, and how a highlight gets a position |
 | [Server recorder mods](server-mods.md) | the Arma 3 and Arma Reforger server mods that record whole missions for the viewer |
+| [Gunner, HEAT, PC! recorder](ghpc-recorder.md) | the MelonLoader mod that writes each mission into one file the viewer opens |
 | [Reading memory](memory-reading.md) | single-player memory profiles: the format, the checks, how to write and verify one |
 | [Updates](updates.md) | how the watcher looks for new releases and updates itself |
 | [Development](development.md) | writing an adapter: the API, tests, an honest `verified`, regenerating the game pages |

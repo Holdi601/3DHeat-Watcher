@@ -1,7 +1,7 @@
 ---
 title: "Squad (replays)"
 parent: Games
-nav_order: 40
+nav_order: 41
 ---
 
 # Squad (replays)

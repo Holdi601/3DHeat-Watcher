@@ -1,7 +1,7 @@
 ---
 title: "IL-2 Sturmovik: Great Battles (replays)"
 parent: Games
-nav_order: 27
+nav_order: 28
 ---
 
 # IL-2 Sturmovik: Great Battles (replays)

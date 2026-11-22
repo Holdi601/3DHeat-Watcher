@@ -105,6 +105,10 @@ def smoke(spec, folder: Path) -> None:
         assert lines and lines[-1]["event"] == "done", lines
         for tool in spec.tools:
             run(tool, "--help")
+        if (ROOT / "heat3d_watch" / "data" / "ghpc").is_dir():
+            # The Gunner, HEAT, PC! recorder CI built goes into the release, where the installer finds it.
+            gh = json.loads(run("ghpc", "status", "--json"))
+            assert gh["bundled"] and gh["bundled"]["path"].endswith("Heat3DRecorder.GHPC.dll"), gh
 
 
 def main() -> int:

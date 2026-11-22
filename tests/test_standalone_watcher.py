@@ -26,7 +26,7 @@ def test_tasks_and_checks(tmp_path, capsys):
     assert [t.argv({}, tmp_path) for t in spec.tasks][:3] == [
         ["heat3d-watch", "run"], ["heat3d-watch", "stop"], ["heat3d-watch", "open"]]
     assert entry.main(spec, ["--check", "--json"]) == 0
-    assert [c["id"] for c in json.loads(capsys.readouterr().out)["checks"]] == ["data", "replays", "disk"]
+    assert [c["id"] for c in json.loads(capsys.readouterr().out)["checks"]] == ["data", "replays", "ghpc", "disk"]
 
 
 def _loop(tmp_path, monkeypatch, *, auto: bool):

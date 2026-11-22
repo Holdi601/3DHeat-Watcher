@@ -6,7 +6,7 @@ has_children: true
 
 # Games
 
-The watcher knows 49 sources in 44 games and platforms. Each has a page of its own, generated from its adapter: what it records, where from, how to switch it on, how it works, its axes, what was verified.
+The watcher knows 50 sources in 45 games and platforms. Each has a page of its own, generated from its adapter: what it records, where from, how to switch it on, how it works, its axes, what was verified.
 
 Kinds: `telemetry`, `gsi`, `log`, `replay` and `platform` - see [Sources and rules](sources-and-rules.md). Positions: *yes* when the adapter writes rows with a place, *borrowed* when it takes the place from another recording of the same game (see [NVIDIA Highlights](nvidia-highlights.md)), *no* when the source has none. Memory profiles are not listed: none ship, and each player writes their own (see [Reading memory](memory-reading.md)).
 
@@ -36,6 +36,7 @@ Kinds: `telemetry`, `gsi`, `log`, `replay` and `platform` - see [Sources and rul
 | [Forza Horizon 5 (live data)](game-forza-horizon-5.md) | telemetry | yes | Forza Data Out, UDP 127.0.0.1:5300 (Dash format); every packet relayed unchanged to 127.0.0.1:5301 |
 | [Forza Horizon 6 (live data)](game-forza-horizon-6.md) | telemetry | yes | Forza Data Out, UDP 127.0.0.1:5300 (Dash format); every packet relayed unchanged to 127.0.0.1:5301 |
 | [Forza Motorsport (live data)](game-forza-motorsport.md) | telemetry | yes | Forza Data Out, UDP 127.0.0.1:5300 (Dash format); every packet relayed unchanged to 127.0.0.1:5301 |
+| [Gunner, HEAT, PC! (log files)](game-ghpc.md) | log | yes | the 3DHeat recorder, a MelonLoader mod (mods/ghpc) the player installs: one .3dheat file a mission in %LOCALAPPDATA%/3DHeat/Watcher/recorders/ghpc, which the viewer opens directly |
 | [Hearthstone (log files)](game-hearthstone.md) | log | no | `<install>\Logs\Power.log` (or `Logs\Hearthstone_*\Power.log`), written once `%LOCALAPPDATA%\Blizzard\Hearthstone\log.config` has a [Power] section, and every other `*.log` the game writes there |
 | [IL-2 Sturmovik: Great Battles (live data)](game-il2.md) | telemetry | no | the game's telemetry UDP output to 127.0.0.1:41995 ([KEY = telemetrydevice] in `<game>\data\startup.cfg`) |
 | [IL-2 Sturmovik: Great Battles (replays)](game-il2-tacview.md) | replay | yes | the game's own Tacview recordings `<game>\data\Tracks\*.acmi` (ACMI 2.x text, plain or zipped) |

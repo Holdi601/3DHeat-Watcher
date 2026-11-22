@@ -29,11 +29,16 @@ Steam or the NVIDIA App has already written out or sends.
 
 ## How the sources are read
 
-- **Nothing is injected, hooked or changed in a game.** No code is loaded into a game, no window or
-  input is hooked, no game file is patched. The only files the watcher writes outside its data folder
+- **Nothing is injected, hooked or changed in a game by the watcher.** The watcher loads no code into a
+  game, hooks no window or input, patches no game file. The only files it writes outside its data folder
   are the ones [`setup --apply`](commands.md#setup) writes when you ask it to: a game's own settings
   file (with the original kept as `<file>.heat3d-backup`), a game-state cfg file, the DCS hook script,
-  the BeamNG protocol mod.
+  the BeamNG protocol mod, and the [Gunner, HEAT, PC! recorder](ghpc-recorder.md).
+- **The one mod that runs inside a game is your choice, for a single-player game.** Gunner, HEAT, PC!
+  keeps no replays and sends no telemetry, so its recorder is a mod you install into the game's own mod
+  loader (MelonLoader). It reads the game and changes nothing in play: its hooks only look at the
+  game's rounds as they fly and never alter or skip what the game does, and a test fails the build if
+  the mod's code sets anything in the game.
 - **Shared memory is opened read-only and never created.** The usual Python way to open a named
   mapping creates one when it does not exist yet. A game started after that would find the watcher's
   empty, read-only mapping instead of making its own, and its telemetry would be dead. The watcher

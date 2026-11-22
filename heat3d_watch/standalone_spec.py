@@ -23,10 +23,14 @@ TOOL = "heat3d-watch"
 def _checks(found: dict, levels: Path) -> list[Check]:
     from .config import load
 
+    from . import ghpc
+
     s = load()
+    g = ghpc.check_line()
     return [
         Check("data", "Sessions folder", True, str(s.data_dir)),
         Check("replays", "Saved replays converted", True, "on" if s.replays else "off (config --set replays=true)"),
+        Check(g["id"], g["label"], g["ok"], g["detail"]),
     ]
 
 
@@ -59,6 +63,9 @@ SPEC = Spec(
         Task("open", "Open the sessions folder", [], lambda v, levels: [TOOL, "open"]),
         Task("status", "Which games are running now", [], lambda v, levels: [TOOL, "status"]),
         Task("games", "What each game gives, and from where", [], lambda v, levels: [TOOL, "games"]),
+        Task("ghpc-install", "Install or update the GHPC recorder", [], lambda v, levels: [TOOL, "ghpc", "install", "--yes"],
+             help="puts the recorder mod into Gunner, HEAT, PC! (MelonLoader must be installed first); close the game before"),
+        Task("ghpc-status", "GHPC recorder: what is installed", [], lambda v, levels: [TOOL, "ghpc", "status"]),
     ],
     min_free_gb=1.0,
     notice="Not affiliated with or endorsed by any game's makers or publishers.",

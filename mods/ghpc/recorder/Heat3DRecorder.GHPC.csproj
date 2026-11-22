@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    The 3DHeat recorder for Gunner, HEAT, PC! (a MelonLoader mod).
+    Built against reference packages only: MelonLoader's (Apache-2.0), HarmonyX (MIT) and
+    Unity's module references; none of them is copied into the output, and nothing of the
+    game is referenced at build time (its types are found by name when the game runs).
+
+      dotnet build -c Release      ->  bin/Release/Heat3DRecorder.GHPC.dll
+  -->
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>Heat3DRecorder.GHPC</AssemblyName>
+    <RootNamespace>Heat3D.Ghpc</RootNamespace>
+    <Version>0.1.0</Version>
+    <Deterministic>true</Deterministic>
+    <DebugType>none</DebugType>
+    <OutputPath>bin/$(Configuration)/</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <Nullable>disable</Nullable>
+    <NoWarn>CS1591</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="LavaGang.MelonLoader" Version="0.6.6" ExcludeAssets="runtime" PrivateAssets="all" />
+    <PackageReference Include="HarmonyX" Version="2.10.1" ExcludeAssets="runtime" PrivateAssets="all" />
+    <PackageReference Include="UnityEngine.Modules" Version="2021.3.33" ExcludeAssets="runtime" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+</Project>

@@ -1,7 +1,7 @@
 ---
 title: "Microsoft Flight Simulator 2024 (live data)"
 parent: Games
-nav_order: 32
+nav_order: 33
 ---
 
 # Microsoft Flight Simulator 2024 (live data)

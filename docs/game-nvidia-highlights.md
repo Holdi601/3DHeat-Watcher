@@ -1,7 +1,7 @@
 ---
 title: "NVIDIA highlights (platform)"
 parent: Games
-nav_order: 34
+nav_order: 35
 ---
 
 # NVIDIA highlights (platform)

@@ -170,8 +170,11 @@ The viewer's one-file-a-match format, which the replay converters can write, is 
 - **Only what games publish.** Telemetry ports and shared memory the game
   creates for dashboards and motion rigs, game-state integrations and local APIs
   the game serves, files the game writes, replays the game saves, what Steam and
-  the graphics driver keep. Nothing is injected into a game, nothing is hooked,
-  nothing in a game is changed.
+  the graphics driver keep. The watcher injects nothing into a game, hooks
+  nothing, changes nothing in a game. The one exception is your choice: the
+  recorder mod for Gunner, HEAT, PC! (a single-player game with no replays or
+  telemetry), which you install into the game's mod loader; it only reads and
+  changes nothing in play ([mods/ghpc](mods/ghpc/README.md)).
 - **Multiplayer games: never their memory.** Reading a game's memory is allowed
   only for single-player games, only for builds a profile was checked on, only
   with no anti-cheat installed with the game or running on the machine, and only
@@ -241,7 +244,8 @@ Which game is recorded how, and from where: [all games in one table](https://hol
 and a [page per game](https://holdi601.github.io/3DHeat-Watcher/games.html).
 
 **Arma 3 and Arma Reforger servers** can record whole missions with the server mods in
-[`mods/`](mods/) (untested in the games so far): [Server recorder mods](https://holdi601.github.io/3DHeat-Watcher/server-mods.html).
+[`mods/`](mods/) (untested in the games so far): [Server recorder mods](https://holdi601.github.io/3DHeat-Watcher/server-mods.html),
+and the [Gunner, HEAT, PC! recorder](https://holdi601.github.io/3DHeat-Watcher/ghpc-recorder.html).
 
 Every adapter and replay decoder keeps everything its source holds: what it reads goes into the table and `meta.json`, everything it sent stays whole beside it (`heat.raw.parquet` for live feeds, the replay sidecars for replays), counted in `selfCheck.completeness` - [Converters keep everything](https://github.com/Holdi601/3DHeat/blob/main/docs/converters.md); each game's page has a Completeness section.
 

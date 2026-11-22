@@ -12,7 +12,7 @@ each command step by step; this page lists everything exactly as the program has
 
 ```text
 usage: heat3d_watch [-h] [--version]
-                    {run,games,setup,status,sessions,stats,table,replays,dota-replay,dota-map,update,config} ...
+                    {run,games,setup,status,sessions,stats,table,replays,dota-replay,dota-map,ghpc,stop,open,update,config} ...
 
 `python -m heat3d_watch <command>`
 
@@ -30,7 +30,7 @@ usage: heat3d_watch [-h] [--version]
     config     show the settings, or change them (--set key=value ...)
 
 positional arguments:
-  {run,games,setup,status,sessions,stats,table,replays,dota-replay,dota-map,update,config}
+  {run,games,setup,status,sessions,stats,table,replays,dota-replay,dota-map,ghpc,stop,open,update,config}
     run                 watch in the background
     games               what each game gives and from where
     setup               switch a game's own output on
@@ -41,6 +41,10 @@ positional arguments:
     replays             convert the replays already on disk
     dota-replay         download a public Dota 2 match's replay
     dota-map            the Dota 2 map as a level (.glb), by 3DHeat-Ext-Dota
+    ghpc                the recorder mod for Gunner, HEAT, PC!: status, install,
+                        update, remove
+    stop                ask the running watcher to stop (it closes its sessions first)
+    open                open the folder the sessions are recorded in
     update              update to the newest release
     config              show or change the settings
 
@@ -174,6 +178,42 @@ options:
                         finds it)
   --detail DETAIL       buildings' vertex clustering cell in game units (default 8; 0
                         keeps every triangle)
+```
+
+## `ghpc`
+
+```text
+usage: heat3d_watch ghpc [-h] [--game-dir GAME_DIR] [--yes] [--build] [--json]
+                         [{status,install,update,remove}]
+
+positional arguments:
+  {status,install,update,remove}
+
+options:
+  -h, --help            show this help message and exit
+  --game-dir GAME_DIR   the game's folder (the one with Bin/GHPC.exe), when it is not
+                        in a Steam library
+  --yes                 do it without asking
+  --build               build the mod from mods/ghpc first (needs the .NET SDK)
+  --json                status as JSON
+```
+
+## `stop`
+
+```text
+usage: heat3d_watch stop [-h]
+
+options:
+  -h, --help  show this help message and exit
+```
+
+## `open`
+
+```text
+usage: heat3d_watch open [-h]
+
+options:
+  -h, --help  show this help message and exit
 ```
 
 ## `update`

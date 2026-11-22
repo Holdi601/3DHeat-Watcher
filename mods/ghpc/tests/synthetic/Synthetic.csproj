@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- A made-up mission through the recorder's writer, for the tests: no game, no MelonLoader. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RollForward>Major</RollForward>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AssemblyName>ghpc-synthetic</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../recorder/Format/*.cs" />
+  </ItemGroup>
+</Project>

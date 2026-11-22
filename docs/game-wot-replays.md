@@ -1,7 +1,7 @@
 ---
 title: "World of Tanks (replays)"
 parent: Games
-nav_order: 47
+nav_order: 48
 ---
 
 # World of Tanks (replays)

@@ -374,6 +374,13 @@ def cmd_dota_map(args: argparse.Namespace, s: Settings) -> int:
         return 1
 
 
+def cmd_ghpc(args: argparse.Namespace, s: Settings) -> int:
+    from . import ghpc
+
+    return ghpc.main([args.action, *(["--game-dir", args.game_dir] if args.game_dir else []),
+                      *(["--yes"] if args.yes else []), *(["--build"] if args.build else []), *(["--json"] if args.json else [])])
+
+
 def cmd_stop(args: argparse.Namespace, s: Settings) -> int:
     """Ask the running watcher to end: it closes its sessions at its next look (a few seconds)."""
     from .watcher import STOP_FILE
@@ -478,6 +485,12 @@ def main(argv: list[str] | None = None) -> int:
     dm.add_argument("--source2viewer", help="Source2Viewer-CLI's path (default: where heat3d-dota-maps finds it)")
     dm.add_argument("--detail", type=float, default=8.0,
                     help="buildings' vertex clustering cell in game units (default 8; 0 keeps every triangle)")
+    gh = sub.add_parser("ghpc", help="the recorder mod for Gunner, HEAT, PC!: status, install, update, remove")
+    gh.add_argument("action", nargs="?", default="status", choices=("status", "install", "update", "remove"))
+    gh.add_argument("--game-dir", help="the game's folder (the one with Bin/GHPC.exe), when it is not in a Steam library")
+    gh.add_argument("--yes", action="store_true", help="do it without asking")
+    gh.add_argument("--build", action="store_true", help="build the mod from mods/ghpc first (needs the .NET SDK)")
+    gh.add_argument("--json", action="store_true", help="status as JSON")
     sub.add_parser("stop", help="ask the running watcher to stop (it closes its sessions first)")
     sub.add_parser("open", help="open the folder the sessions are recorded in")
     u = sub.add_parser("update", help="update to the newest release")
@@ -513,6 +526,7 @@ def main(argv: list[str] | None = None) -> int:
         "replays": cmd_replays,
         "dota-replay": cmd_dota_replay,
         "dota-map": cmd_dota_map,
+        "ghpc": cmd_ghpc,
         "update": cmd_update,
         "stop": cmd_stop,
         "open": cmd_open,

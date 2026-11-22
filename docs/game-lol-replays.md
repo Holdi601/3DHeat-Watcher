@@ -1,7 +1,7 @@
 ---
 title: "League of Legends (replays)"
 parent: Games
-nav_order: 30
+nav_order: 31
 ---
 
 # League of Legends (replays)

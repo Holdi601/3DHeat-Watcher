@@ -106,3 +106,11 @@ __pycache__/
 .DS_Store
 Thumbs.db
 dist-standalone/
+
+# The Gunner, HEAT, PC! recorder mod: build output, and the copy CI bundles into the release.
+mods/ghpc/**/bin/
+mods/ghpc/**/obj/
+heat3d_watch/data/ghpc/
+# Recordings: a mission's file, and the spool it is written from.
+*.3dheat
+*.spool

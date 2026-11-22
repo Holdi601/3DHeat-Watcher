@@ -278,6 +278,29 @@ vertex clustering cell for buildings in game units (default 8, 0 keeps every tri
 not installed it prints `dota-map: the Dota 2 map converter is not installed: ...` with where to get it
 and exits with code 2. Details: [Dota 2 map](dota-map.md).
 
+## ghpc
+
+```bash
+python -m heat3d_watch ghpc [status|install|update|remove] [--game-dir FOLDER] [--yes] [--build] [--json]
+```
+
+Looks after the [Gunner, HEAT, PC! recorder](ghpc-recorder.md), the MelonLoader mod that writes each
+mission into one `.3dheat` file.
+
+- `status` (the default) says where the game is, whether MelonLoader is installed, and whether the
+  recorder is installed and current. With `--json` it says the same as JSON.
+- `install` (or `update`) says what it will copy into the game's `Mods` folder and asks first. It does it
+  without asking with `--yes`, or when automatic updates are on.
+- `remove` takes the mod out again.
+
+The game is looked for in every Steam library. Use `--game-dir` (the folder with `Bin\GHPC.exe`) or
+`HEAT3D_GHPC_DIR` when it is somewhere else.
+
+Nothing is changed while the game runs. Nothing is installed without MelonLoader: the command then says
+where to get it (<https://github.com/LavaGang/MelonLoader/releases>). A DLL that is replaced or removed
+is kept in `<game>\Bin\UserData\Heat3DRecorder\backup\`. `--build` builds the mod from `mods/ghpc`
+first, which needs the .NET SDK; a release of the watcher already carries it.
+
 ## update
 
 ```bash
