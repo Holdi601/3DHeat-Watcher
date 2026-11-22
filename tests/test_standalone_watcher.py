@@ -23,8 +23,11 @@ def _appdata(tmp_path, monkeypatch):
 
 def test_tasks_and_checks(tmp_path, capsys):
     spec = standalone_spec.SPEC
-    assert [t.argv({}, tmp_path) for t in spec.tasks][:3] == [
-        ["heat3d-watch", "run"], ["heat3d-watch", "stop"], ["heat3d-watch", "open"]]
+    jobs = {t.id: (t.kind, t.argv({}, tmp_path)) for t in spec.tasks}
+    assert jobs["run"] == ("live", ["heat3d-watch", "run"])  # runs in the window until Stop
+    assert jobs["stop"] == ("quick", ["heat3d-watch", "stop"])
+    assert jobs["open"] == ("open", ["heat3d-watch", "open"])
+    assert jobs["status"][0] == jobs["games"][0] == "quick"
     assert entry.main(spec, ["--check", "--json"]) == 0
     assert [c["id"] for c in json.loads(capsys.readouterr().out)["checks"]] == ["data", "replays", "ghpc", "disk"]
 

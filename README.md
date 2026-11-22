@@ -37,6 +37,8 @@ itself. `heat3d-watcher --help` lists its commands; `heat3d-watcher heat3d-watch
 `heat3d-watcher <command>`) runs every command below unchanged. The 3DHeat app's Extractors panel can
 install and update it for you. See [Before you start](https://holdi601.github.io/3DHeat-Watcher/before-you-start.html).
 
+The window walks through four steps (find the game, choose, work, done) in the 3DHeat look, dark or light. On Windows the program opens only its window, with no console window; in a terminal it prints as usual, and `heat3d-watcher-cli.cmd` in the same folder makes the terminal wait for it and pass on its exit code.
+
 ## Quick start for new users
 
 You need: Windows, [Python](https://www.python.org/downloads/) 3.10 or later

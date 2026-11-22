@@ -114,3 +114,7 @@ heat3d_watch/data/ghpc/
 # Recordings: a mission's file, and the spool it is written from.
 *.3dheat
 *.spool
+# the window's own images (logo, icons): ours, not game data
+!*/app/assets/*.png
+!docs/assets/tool-64.png
+!docs/assets/favicon.ico

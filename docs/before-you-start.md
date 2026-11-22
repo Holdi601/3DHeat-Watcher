@@ -32,6 +32,8 @@ The same program runs every command on these pages: `heat3d-watcher run`,
 `status --json` lists none. The 3DHeat app's Extractors panel installs, updates
 and starts it for you.
 
+The window walks through four steps (find the game, choose, work, done) in the 3DHeat look, dark or light. On Windows the program opens only its window, with no console window; in a terminal it prints as usual, and `heat3d-watcher-cli.cmd` in the same folder makes the terminal wait for it and pass on its exit code.
+
 ## 1. Install Python
 
 1. Download Python 3.10 or later from <https://www.python.org/downloads/>.
