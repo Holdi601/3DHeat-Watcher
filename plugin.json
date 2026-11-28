@@ -1,0 +1,40 @@
+{
+  "format": "3dheat-plugin",
+  "version": 1,
+  "id": "watcher",
+  "name": "Watcher",
+  "kind": "tool",
+  "what": "Writes down where you went and what happened while you play, for many games",
+  "games": [
+    {
+      "id": "many",
+      "name": "Many games"
+    }
+  ],
+  "platforms": [
+    "windows-x64",
+    "linux-x64",
+    "macos-arm64"
+  ],
+  "icon": "icon-64.png",
+  "programs": [
+    {
+      "id": "heat3d-watcher",
+      "repo": "Holdi601/3DHeat-Watcher",
+      "verbs": {
+        "check": [
+          "--check",
+          "--json"
+        ]
+      }
+    }
+  ],
+  "capabilities": {
+    "replays": {
+      "program": "heat3d-watcher",
+      "live": true
+    }
+  },
+  "requirements": [],
+  "detect": {}
+}

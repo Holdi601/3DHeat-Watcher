@@ -27,6 +27,12 @@ highlights your graphics driver records. Nothing is sent anywhere.
 
 ![the watcher: what games publish, into files on your machine](docs/assets/img/overview.svg)
 
+## In 3DHeat
+
+Install it from the Games page of 3DHeat: 3DHeat installs it and runs it for you. The manifest
+[`plugin.json`](plugin.json) in this repository, also beside the program in every release, tells 3DHeat
+what the tool does, which games it is for and how to call it.
+
 ## The standalone program
 
 No Python needed: download the file for your system (Windows, Linux, macOS) from the
