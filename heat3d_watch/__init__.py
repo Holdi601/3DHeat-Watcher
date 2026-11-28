@@ -19,4 +19,4 @@ from pathlib import Path
 try:
     __version__ = (Path(__file__).resolve().parents[1] / "VERSION").read_text(encoding="utf-8").strip()
 except OSError:
-    __version__ = "1.3.0"
+    __version__ = "1.4.0"
